@@ -5,7 +5,7 @@ if (is_post()) {
     $new = (string) ($_POST['new'] ?? '');
     $conf = (string) ($_POST['confirm'] ?? '');
     if (!password_verify($cur, (string) $me['password_hash'])) flash('error', 'Mot de passe actuel incorrect.');
-    elseif (strlen($new) < 10 || !preg_match('/[A-Z]/', $new) || !preg_match('/[a-z]/', $new) || !preg_match('/\d/', $new)) flash('error', 'Le nouveau mot de passe doit contenir au moins 10 caractères, une majuscule, une minuscule et un chiffre.');
+    elseif (mb_strlen($new) < 8) flash('error', 'Le nouveau mot de passe doit contenir au moins 8 caractères (chiffres, lettres ou symboles, au choix).');
     elseif ($new !== $conf) flash('error', 'La confirmation ne correspond pas.');
     elseif ($new === $cur) flash('error', 'Choisissez un mot de passe différent de l\'actuel.');
     else {
@@ -24,9 +24,9 @@ view('admin/header', compact('page'));
   <?php if ((int) $me['must_change_password']): ?><div class="warn-box">Première connexion ou mot de passe réinitialisé : définissez votre mot de passe personnel pour continuer.</div><?php endif; ?>
   <form method="post"><?= csrf_field() ?>
     <label class="fld"><span>Mot de passe actuel</span><input type="password" name="current" required autocomplete="current-password"></label>
-    <label class="fld"><span>Nouveau mot de passe</span><input type="password" name="new" required minlength="10" autocomplete="new-password"></label>
-    <label class="fld"><span>Confirmer</span><input type="password" name="confirm" required minlength="10" autocomplete="new-password"></label>
-    <p class="fine">10 caractères minimum, avec majuscule, minuscule et chiffre.</p>
+    <label class="fld"><span>Nouveau mot de passe</span><input type="password" name="new" required minlength="8" autocomplete="new-password"></label>
+    <label class="fld"><span>Confirmer</span><input type="password" name="confirm" required minlength="8" autocomplete="new-password"></label>
+    <p class="fine">8 caractères minimum : chiffres, lettres ou symboles, au choix.</p>
     <button class="btn btn-primary mt">Enregistrer</button>
   </form>
 </div>

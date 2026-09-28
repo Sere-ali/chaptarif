@@ -7,8 +7,8 @@ $me = require_super();
 
 function admin_pw_error(string $pw, string $confirm): ?string
 {
-    if (strlen($pw) < 10 || !preg_match('/[A-Z]/', $pw) || !preg_match('/[a-z]/', $pw) || !preg_match('/\d/', $pw)) {
-        return 'Le mot de passe doit contenir au moins 10 caractères, une majuscule, une minuscule et un chiffre.';
+    if (mb_strlen($pw) < 8) {
+        return 'Le mot de passe doit contenir au moins 8 caractères (chiffres, lettres ou symboles, au choix).';
     }
     if ($pw !== $confirm) return 'La confirmation du mot de passe ne correspond pas.';
     return null;
@@ -105,11 +105,11 @@ $pwFields = function (bool $required, bool $showForce) {
     ?>
     <div class="row2">
       <label class="fld"><span>Mot de passe<?= $required ? '' : ' (laisser vide pour ne pas changer)' ?></span>
-        <input type="password" name="password" autocomplete="new-password" minlength="10" <?= $required ? 'required' : '' ?>></label>
+        <input type="password" name="password" autocomplete="new-password" minlength="8" <?= $required ? 'required' : '' ?>></label>
       <label class="fld"><span>Confirmer le mot de passe</span>
-        <input type="password" name="password_confirm" autocomplete="new-password" minlength="10" <?= $required ? 'required' : '' ?>></label>
+        <input type="password" name="password_confirm" autocomplete="new-password" minlength="8" <?= $required ? 'required' : '' ?>></label>
     </div>
-    <p class="fine">10 caractères minimum, avec une majuscule, une minuscule et un chiffre. Transmettez-le à l'intéressé par un moyen sûr (en main propre ou par appel).</p>
+    <p class="fine">8 caractères minimum : chiffres, lettres ou symboles, au choix. Transmettez-le à l'intéressé par un moyen sûr (en main propre ou par appel).</p>
     <?php if ($showForce): ?>
       <label class="check"><input type="checkbox" name="force_change"> Obliger l'administrateur à choisir son propre mot de passe à la prochaine connexion</label>
     <?php endif;

@@ -96,3 +96,7 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
 }
 @media (max-width: 520px) { .kpis { grid-template-columns: 1fr; } }
 .tbl a.mono, .tbl td.mono { white-space: nowrap; }
+.pw-wrap { position: relative; display: block; }
+.pw-wrap input { padding-right: 46px; }
+.pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border: 0; background: transparent; color: var(--muted); border-radius: 8px; cursor: pointer; display: grid; place-items: center; }
+.pw-eye:hover { color: var(--ink); background: var(--soft); }

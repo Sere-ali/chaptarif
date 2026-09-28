@@ -45,4 +45,5 @@ if (is_post()) {
     <p class="fine center">🔒 Connexions journalisées · blocage après 5 échecs</p>
   </div>
 </div>
+<script src="/assets/js/pw-eye.js?v=1"></script>
 </body></html>

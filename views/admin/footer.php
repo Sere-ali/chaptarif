@@ -8,6 +8,7 @@
   document.querySelectorAll('[data-toggle]').forEach(function(b){b.addEventListener('click',function(){var x=document.querySelector(b.dataset.toggle);if(x)x.hidden=!x.hidden;});});
 })();
 </script>
+<script src="/assets/js/pw-eye.js?v=1"></script>
 <?= $scripts ?? '' ?>
 </body>
 </html>
