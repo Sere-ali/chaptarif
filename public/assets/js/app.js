@@ -42,6 +42,10 @@
     rev.forEach(function (r) { io.observe(r); });
   } else rev.forEach(function (r) { r.classList.add('in'); });
 
+  // Défilement automatique vers la réservation mise en avant (ex. après paiement, /compte?ref=...)
+  var hl = $('.bk.hl');
+  if (hl) setTimeout(function () { hl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 250);
+
   // Compteurs animés
   $$('[data-count]').forEach(function (el) {
     var target = parseInt(el.dataset.count, 10) || 0, done = false;

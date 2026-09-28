@@ -35,7 +35,7 @@ view('layout/header', compact('title', 'active'));
 <section class="section-tight">
   <div class="container narrow-2">
     <?php if (isset($_GET['paid'])): ?>
-      <div class="paid-banner reveal"><span>🎉</span><div><b>Paiement reçu — fonds sécurisés !</b><p>Votre argent est bloqué sur le compte séquestre ChapTarif. Il ne sera versé qu'après votre confirmation.</p></div></div>
+      <div class="paid-banner reveal"><span>🎉</span><div><b>Paiement reçu, fonds sécurisés !</b><p>Votre argent est bloqué sur le compte séquestre ChapTarif. Il ne sera versé qu'après votre confirmation. Votre code de validation à remettre au prestataire se trouve ci-dessous, dans le bloc de votre réservation.</p></div></div>
     <?php endif; ?>
     <div class="acc-head">
       <div><h1 class="h2">Bonjour <?= e($u['name'] ?: '') ?> 👋</h1><p class="muted"><?= e(fmt_phone($u['phone'])) ?></p></div>
@@ -61,7 +61,7 @@ view('layout/header', compact('title', 'active'));
             <?php if ($b['universe'] === 'cars'): ?>
               <a class="btn btn-primary" href="/billet?ref=<?= urlencode($b['ref']) ?>">🎫 Afficher mon E-billet</a>
             <?php else: ?>
-              <div class="code-box"><span>Code de validation à remettre au prestataire <em>uniquement une fois le service terminé</em></span><b class="mono"><?= e($b['release_code']) ?></b></div>
+              <div class="code-box"><span>🔐 Votre code de validation à 4 chiffres<br>À remettre au prestataire <em>uniquement une fois le service terminé</em> pour qu'il reçoive son paiement</span><b class="mono"><?= e($b['release_code']) ?></b></div>
               <?php if (!empty($b['provider_name'])): ?><p class="muted small">Prestataire : <b><?= e($b['provider_name']) ?></b><?= $b['provider_phone'] ? ' · <a href="tel:' . e($b['provider_phone']) . '">' . e(fmt_phone($b['provider_phone'])) . '</a>' : '' ?></p><?php endif; ?>
               <div class="bk-actions">
                 <form method="post" data-confirm="Confirmez-vous que le service a bien été réalisé ? Le prestataire sera payé immédiatement."><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $b['id'] ?>"><button name="action" value="confirm" class="btn btn-primary">✓ Confirmer la fin du travail</button></form>

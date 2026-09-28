@@ -9,7 +9,7 @@ $U = universes();
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title><?= e($title === 'ChapTarif' ? 'ChapTarif — Comparez, réservez et payez en toute sécurité' : $title . ' · ChapTarif') ?></title>
+<title><?= e($title === 'ChapTarif' ? 'ChapTarif : comparez, réservez et payez en toute sécurité' : $title . ' · ChapTarif') ?></title>
 <meta name="description" content="<?= e($desc) ?>">
 <meta name="theme-color" content="#2E7D5B">
 <meta property="og:title" content="<?= e($title) ?> · ChapTarif">
@@ -32,7 +32,7 @@ $U = universes();
 <a class="skip" href="#main">Aller au contenu</a>
 <header class="topbar" id="top">
   <div class="container topbar-in">
-    <a class="brand" href="/" aria-label="ChapTarif — accueil">
+    <a class="brand" href="/" aria-label="ChapTarif, accueil">
       <img src="/assets/img/logo.svg" alt="" width="40" height="40">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>

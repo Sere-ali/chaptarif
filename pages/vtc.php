@@ -1,5 +1,5 @@
 <?php
-$title = 'VTC & Taxis à Abidjan — comparez les prix';
+$title = 'VTC & Taxis à Abidjan : comparez les prix';
 $desc = 'Comparez le prix de votre course à Abidjan (Yango, Uber, InDrive, taxi compteur) et commandez un chauffeur vérifié au tarif garanti ChapTarif.';
 $active = 'vtc';
 $leaflet = true;
@@ -13,7 +13,7 @@ view('layout/header', compact('title', 'desc', 'active', 'leaflet'));
 <section class="page-hero" style="--c:<?= $x['color'] ?>;--hero:url('<?= e(img($x['img'], 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
   <div class="container">
     <nav class="crumbs"><a href="/">Accueil</a> › VTC & Taxis</nav>
-    <h1><?= $x['emoji'] ?> Commande VTC — Abidjan</h1>
+    <h1><?= $x['emoji'] ?> Commande VTC à Abidjan</h1>
     <p>Comparaison en direct du marché et commande d'un chauffeur affilié au tarif garanti.</p>
   </div>
 </section>

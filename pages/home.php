@@ -7,11 +7,12 @@ $cities = array_column(all('SELECT DISTINCT to_city FROM trips WHERE active = 1 
 $demoFrom = one("SELECT * FROM zones WHERE name = 'Cocody St-Jean'");
 $demoTo = one("SELECT * FROM zones WHERE name = 'Yopougon Siporex'");
 $demo = ($demoFrom && $demoTo) ? vtc_estimate($demoFrom, $demoTo) : null;
-$counts = [
-    'providers' => (int) val("SELECT COUNT(*) FROM providers WHERE active = 1 AND kyc_status = 'verified'"),
-    'trips' => (int) val('SELECT COUNT(*) FROM trips WHERE active = 1'),
-    'props' => (int) val('SELECT COUNT(*) FROM properties WHERE active = 1 AND certified = 1'),
-];
+$c = one("SELECT
+    (SELECT COUNT(*) FROM providers WHERE active = 1 AND kyc_status = 'verified') AS providers,
+    (SELECT COUNT(*) FROM trips WHERE active = 1) AS trips,
+    (SELECT COUNT(*) FROM properties WHERE active = 1 AND certified = 1) AS props
+");
+$counts = ['providers' => (int) $c['providers'], 'trips' => (int) $c['trips'], 'props' => (int) $c['props']];
 view('layout/header', compact('title', 'active'));
 ?>
 <section class="hero">

@@ -26,6 +26,7 @@ view('layout/header', compact('title'));
     <div class="pm-big" style="--pm:#2E7D5B">✓</div>
     <h1 class="h2">Espace prestataire</h1>
     <p class="muted">Mission terminée ? Saisissez la référence de la réservation et le code à 4 chiffres que le client vous a remis pour recevoir votre paiement.</p>
+    <p class="fine">💡 Ce code n'est pas ici : il est affiché chez le <b>client</b>, dans son espace « Mes réservations », une fois son paiement effectué. Demandez-le-lui de vive voix à la fin de la mission.</p>
     <form method="post"><?= csrf_field() ?>
       <label class="fld"><span>Référence</span><input name="ref" required placeholder="CT-XXXXXX" class="mono" style="text-transform:uppercase"></label>
       <label class="fld"><span>Code client</span><input name="code" inputmode="numeric" maxlength="4" pattern="\d{4}" required class="otp-input" placeholder="••••"></label>
