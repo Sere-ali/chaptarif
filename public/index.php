@@ -33,6 +33,7 @@ $routes = [
     '/devenir-prestataire'  => 'pages/become_provider.php',
     '/prestataire/valider'  => 'pages/provider_validate.php',
     '/comment-ca-marche'    => 'pages/how.php',
+    '/garantie-dommage'     => 'pages/garantie_dommage.php',
     '/contact'              => 'pages/contact.php',
     '/mentions-legales'     => 'pages/legal.php',
     '/api/estimate'         => 'pages/api_estimate.php',

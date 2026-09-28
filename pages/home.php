@@ -131,6 +131,25 @@ view('layout/header', compact('title', 'active'));
   </div>
 </section>
 
+<section class="section" id="garantie-dommage">
+  <div class="container split">
+    <div class="reveal">
+      <span class="eyebrow">Option protection</span>
+      <h2>🛡️ La <span class="grad">Garantie Dommage</span></h2>
+      <p class="lead-sm">Une assurance interne ChapTarif, en option payante, sur Ménage & Aide, Pressing & Linge, Location de car et Location de camion. Service mal fait, vêtement brûlé, objet endommagé : vous êtes couvert.</p>
+      <ul class="checks">
+        <li>Indemnisation ou nouvelle prestation gratuite en cas de problème</li>
+        <li>À cocher au moment de la réservation, pour quelques % du prix</li>
+        <li>Réclamation traitée par l'équipe ChapTarif, comme un litige classique</li>
+      </ul>
+      <a class="btn btn-primary btn-lg" href="/garantie-dommage">Voir comment ça marche</a>
+    </div>
+    <div class="compare-card reveal">
+      <img src="<?= e(img('univers-menage', 'w_640,h_480,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
+    </div>
+  </div>
+</section>
+
 <section class="section">
   <div class="container split">
     <div class="reveal">

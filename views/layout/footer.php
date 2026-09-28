@@ -15,6 +15,7 @@
     <div>
       <h4>ChapTarif</h4>
       <a href="/comment-ca-marche">Comment ça marche</a>
+      <a href="/garantie-dommage">🛡️ Garantie Dommage</a>
       <a href="/devenir-prestataire">Devenir prestataire</a>
       <a href="/prestataire/valider">Valider une mission (prestataires)</a>
       <a href="/contact">Contact & réclamations</a>

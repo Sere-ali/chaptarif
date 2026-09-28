@@ -102,6 +102,7 @@ view('layout/header', compact('title', 'desc', 'active'));
             <input type="checkbox" name="garantie" value="1" data-garantie>
             🛡️ <b>Garantie Dommage</b> (+<?= e((string) $garantiePct) ?>%) : en cas de service mal exécuté ou d'objet endommagé, indemnisation ou nouvelle prestation.
           </label>
+          <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>
         <div class="total-box">
           <div><span>Formule</span><b data-sum-offer>—</b></div>

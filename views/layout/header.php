@@ -51,6 +51,7 @@ $U = universes();
         </div>
       </div>
       <a class="nav-link <?= $active === 'how' ? 'on' : '' ?>" href="/comment-ca-marche">Comment ça marche</a>
+      <a class="nav-link <?= $active === 'garantie' ? 'on' : '' ?>" href="/garantie-dommage">🛡️ Garantie Dommage</a>
       <a class="nav-link <?= $active === 'pro' ? 'on' : '' ?>" href="/devenir-prestataire">Devenir prestataire</a>
     </nav>
     <div class="top-actions">
@@ -73,6 +74,7 @@ $U = universes();
     <?php endforeach; ?>
     <hr>
     <a href="/comment-ca-marche">Comment ça marche</a>
+    <a href="/garantie-dommage">🛡️ Garantie Dommage</a>
     <a href="/devenir-prestataire">Devenir prestataire</a>
     <a href="/prestataire/valider">Espace prestataire · valider une mission</a>
     <a href="/contact">Contact & aide</a>
