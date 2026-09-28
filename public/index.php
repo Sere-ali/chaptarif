@@ -19,6 +19,7 @@ $routes = [
     '/reserver'             => 'pages/checkout.php',
     '/paiement'             => 'pages/pay.php',
     '/paiement/simulateur'  => 'pages/pay_simulator.php',
+    '/paiement/manuel'      => 'pages/pay_manual.php',
     '/paiement/retour'      => 'pages/pay_return.php',
     '/webhook/cinetpay'     => 'pages/webhook_cinetpay.php',
     '/connexion'            => 'pages/login.php',

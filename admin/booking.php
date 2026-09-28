@@ -104,7 +104,8 @@ view('admin/header', compact('page', 'nav'));
             <button class="btn btn-danger btn-sm" name="action" value="refund" onclick="return confirm('Rembourser intégralement le client ?')">↩ Rembourser le client</button>
           <?php endif; ?>
           <?php if ($b['status'] === 'EN_ATTENTE_PAIEMENT'): ?>
-            <?php if (payment_mode() === 'simulation' || is_super($me)): ?><button class="btn btn-soft btn-sm" name="action" value="mark_paid" onclick="return confirm('Marquer comme payé (paiement reçu hors ligne) ?')">Marquer payé</button><?php endif; ?>
+            <?php if ($b['payment_ref'] === 'EN_ATTENTE_VALIDATION'): ?><div class="alert alert-warn small" style="margin:0 0 8px">🕐 Le client indique avoir envoyé le paiement. Vérifiez la réception sur votre compte <?= e(payment_methods()[$b['payment_method']][0] ?? 'Mobile Money') ?> avant de valider.</div><?php endif; ?>
+            <?php if (payment_mode() === 'simulation' || is_super($me)): ?><button class="btn btn-soft btn-sm" name="action" value="mark_paid" onclick="return confirm('Confirmer que le paiement de ' + <?= json_encode(fcfa($b['total'])) ?> + ' a bien été reçu sur votre compte Mobile Money ?')">✓ Confirmer la réception du paiement</button><?php endif; ?>
             <button class="btn btn-ghost btn-sm" name="action" value="cancel">Annuler</button>
           <?php endif; ?>
           <button class="btn btn-ghost btn-sm" name="action" value="note">Ajouter la note</button>

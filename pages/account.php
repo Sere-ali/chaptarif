@@ -73,6 +73,11 @@ view('layout/header', compact('title', 'active'));
               <button name="action" value="dispute" class="btn btn-danger">Ouvrir une réclamation (gèle le paiement)</button>
             </form>
           </div>
+        <?php elseif ($b['status'] === 'EN_ATTENTE_PAIEMENT' && $b['payment_ref'] === 'EN_ATTENTE_VALIDATION'): ?>
+          <div class="alert alert-warn small">⏳ Paiement déclaré : notre équipe vérifie la réception sur <?= e(payment_methods()[$b['payment_method']][0] ?? 'Mobile Money') ?> et confirmera votre réservation très bientôt.</div>
+          <div class="bk-actions">
+            <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $b['id'] ?>"><button name="action" value="cancel" class="btn btn-ghost">Annuler</button></form>
+          </div>
         <?php elseif ($b['status'] === 'EN_ATTENTE_PAIEMENT'): ?>
           <div class="bk-actions">
             <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $b['id'] ?>"><button name="action" value="pay" class="btn btn-primary">Finaliser le paiement</button></form>

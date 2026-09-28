@@ -73,6 +73,19 @@ Render → service → **Settings → Custom Domains** → ajoutez `chaptarif.ci
 
 Par défaut `PAYMENT_MODE=simulation` : un écran de test remplace la passerelle (aucun argent débité).
 
+### Option A — Paiement manuel (sans API, recommandé pour démarrer)
+
+`PAYMENT_MODE=manuel` : le client envoie lui-même l'argent sur votre numéro Mobile Money (Wave, Orange Money, MTN MoMo ou Moov), puis vous (Super Admin) validez la réception dans le back-office.
+
+1. Sur Render, ajoutez la variable `PAYMENT_MODE=manuel`.
+2. Dans **Admin → Paramètres → Paiement manuel**, renseignez vos numéros de réception (le numéro Wave est déjà pré-rempli avec `01 00 35 40 93`, modifiable à tout moment).
+3. Quand un client commande, il voit le numéro à qui envoyer l'argent, puis clique « J'ai envoyé le paiement ». La réservation passe en attente de validation.
+4. Vous recevez l'alerte dans **Admin → Réservations → 🕐 paiement(s) manuel(s) à valider**. Après avoir vérifié la réception sur votre compte Wave/Orange/MTN/Moov, ouvrez la réservation et cliquez **« Confirmer la réception du paiement »** : les fonds passent alors sous séquestre ChapTarif comme pour tout paiement, avec le code de validation à 4 chiffres généré pour le client.
+
+Aucune clé API n'est nécessaire pour ce mode.
+
+### Option B — CinetPay (paiement automatique par API)
+
 1. Ouvrez un compte marchand **CinetPay** (couvre Wave, Orange Money, MTN, Moov en CI).
 2. Ajoutez `CINETPAY_APIKEY`, `CINETPAY_SITE_ID`, puis `PAYMENT_MODE=cinetpay`.
 3. Dans CinetPay, l'URL de notification est `https://VOTRE_DOMAINE/webhook/cinetpay` (déjà transmise automatiquement à chaque paiement).

@@ -6,7 +6,9 @@ $uk = (string) ($_GET['universe'] ?? '');
 $s = trim((string) ($_GET['q'] ?? ''));
 $where = ['1=1'];
 $p = [];
-if ($status !== '' && isset(statuses()[$status])) { $where[] = 'b.status = ?'; $p[] = $status; }
+$claim = isset($_GET['claim']);
+if ($claim) { $where[] = "b.status = 'EN_ATTENTE_PAIEMENT' AND b.payment_ref = 'EN_ATTENTE_VALIDATION'"; }
+elseif ($status !== '' && isset(statuses()[$status])) { $where[] = 'b.status = ?'; $p[] = $status; }
 if ($uk !== '' && isset(universes()[$uk])) { $where[] = 'b.universe = ?'; $p[] = $uk; }
 if ($s !== '') { $where[] = '(b.ref LIKE ? OR b.title LIKE ? OR u.phone LIKE ? OR u.name LIKE ?)'; array_push($p, "%$s%", "%$s%", '%' . preg_replace('/\D/', '', $s) . '%', "%$s%"); }
 $w = implode(' AND ', $where);
@@ -27,6 +29,7 @@ if (isset($_GET['export'])) {
 
 [$pg, $pages, $off, $per] = paginate($total, 30);
 $rows = all("SELECT b.*, u.name AS uname, u.phone AS uphone, pr.name AS pname FROM bookings b LEFT JOIN users u ON u.id = b.user_id LEFT JOIN providers pr ON pr.id = b.provider_id WHERE $w ORDER BY b.id DESC LIMIT $per OFFSET $off", $p);
+$claimCount = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_ATTENTE_PAIEMENT' AND payment_ref = 'EN_ATTENTE_VALIDATION'");
 $page = $isDisputes ? 'Litiges à arbitrer' : 'Réservations';
 $nav = $isDisputes ? 'disputes' : 'bookings';
 view('admin/header', compact('page', 'nav'));
@@ -40,6 +43,7 @@ view('admin/header', compact('page', 'nav'));
     <label class="fld"><span>Univers</span><select name="universe"><option value="">Tous</option><?php foreach (universes() as $k => $x): ?><option value="<?= $k ?>" <?= $uk === $k ? 'selected' : '' ?>><?= e($x['name']) ?></option><?php endforeach; ?></select></label>
     <button class="btn btn-primary">Filtrer</button>
     <a class="btn btn-ghost" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 1]))) ?>">⬇ Export CSV</a>
+    <?php if (!$isDisputes && $claimCount): ?><a class="btn btn-soft" href="/admin/reservations?claim=1">🕐 <?= $claimCount ?> paiement(s) manuel(s) à valider</a><?php endif; ?>
   </form>
   <p class="muted small"><?= $total ?> résultat(s)</p>
   <div class="tbl-wrap"><table class="tbl">
@@ -54,7 +58,7 @@ view('admin/header', compact('page', 'nav'));
         <td><?= fmt_date($b['service_date']) ?></td>
         <td class="num"><?= fcfa($b['total']) ?><small><?= e(payment_methods()[$b['payment_method']][0] ?? '') ?></small></td>
         <td class="num"><?= fcfa((int) $b['commission'] + (int) $b['service_fee']) ?></td>
-        <td><?= status_badge($b['status']) ?></td>
+        <td><?= status_badge($b['status']) ?><?php if ($b['status'] === 'EN_ATTENTE_PAIEMENT' && $b['payment_ref'] === 'EN_ATTENTE_VALIDATION'): ?><br><span class="badge badge-amber">🕐 À valider</span><?php endif; ?></td>
         <td><a class="btn btn-ghost btn-xs" href="/admin/reservation?id=<?= (int) $b['id'] ?>">Ouvrir</a></td>
       </tr>
       <?php if ($isDisputes && $b['dispute_reason']): ?><tr><td colspan="9"><div class="alert alert-error small" style="margin:0">« <?= e($b['dispute_reason']) ?> »</div></td></tr><?php endif; ?>

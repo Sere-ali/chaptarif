@@ -2,8 +2,11 @@
 /**
  * Passerelle de paiement Mobile Money.
  *
- * PAYMENT_MODE=simulation  → simulateur intégré (tests, démonstrations)
- * PAYMENT_MODE=cinetpay    → CinetPay Checkout v2 (Wave, Orange Money, MTN MoMo, Moov)
+ * PAYMENT_MODE=manuel     → le client envoie lui-même l'argent sur votre numéro Mobile Money
+ *   (Wave, Orange Money, MTN MoMo, Moov), puis un administrateur valide la réception
+ *   dans le back-office (bouton « Marquer payé »). Aucune API externe requise.
+ * PAYMENT_MODE=simulation → simulateur intégré (tests, démonstrations, aucun argent réel)
+ * PAYMENT_MODE=cinetpay   → CinetPay Checkout v2 (Wave, Orange Money, MTN MoMo, Moov)
  *   Variables : CINETPAY_APIKEY, CINETPAY_SITE_ID, APP_URL
  */
 
@@ -19,6 +22,17 @@ function payment_methods(): array
         'orange' => ['Orange Money', '#FF7900', 'Validation par code secret #144#'],
         'mtn'    => ['MTN MoMo', '#FFCB05', 'Validation sur votre téléphone MTN'],
         'moov'   => ['Moov Money', '#0066B3', 'Validation sur votre téléphone Moov'],
+    ];
+}
+
+/** Numéros de réception (mode manuel), configurables dans Admin › Paramètres. */
+function payment_numbers(): array
+{
+    return [
+        'wave'   => (string) setting('pay_wave_number', '0100354093'),
+        'orange' => (string) setting('pay_orange_number', ''),
+        'mtn'    => (string) setting('pay_mtn_number', ''),
+        'moov'   => (string) setting('pay_moov_number', ''),
     ];
 }
 
@@ -43,6 +57,9 @@ function payment_init(array $b, array $user): array
         }
         error_log('CinetPay init error: ' . json_encode($res));
         return ['ok' => false, 'error' => 'La passerelle de paiement est indisponible. Réessayez dans un instant.'];
+    }
+    if (payment_mode() === 'manuel') {
+        return ['ok' => true, 'url' => '/paiement/manuel?ref=' . urlencode($b['ref'])];
     }
     return ['ok' => true, 'url' => '/paiement/simulateur?ref=' . urlencode($b['ref'])];
 }
