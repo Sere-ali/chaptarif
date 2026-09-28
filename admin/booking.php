@@ -56,15 +56,16 @@ view('admin/header', compact('page', 'nav'));
         <dt>Référence</dt><dd class="mono"><?= e($b['ref']) ?></dd>
         <dt>Univers</dt><dd><?= e($x['name']) ?></dd>
         <dt>Date du service</dt><dd><?= fmt_date($b['service_date']) ?></dd>
-        <?php foreach ($d as $k => $v): if ($v === '' || $v === null) continue; ?>
+        <?php foreach ($d as $k => $v): if ($v === '' || $v === null || in_array($k, ['garantie_dommage', 'garantie_dommage_montant'], true)) continue; ?>
           <dt><?= e($labels[$k] ?? $k) ?></dt><dd><?= e(is_array($v) ? implode(', ', $v) : $v) ?></dd>
         <?php endforeach; ?>
+        <?php if (!empty($d['garantie_dommage'])): ?><dt>🛡️ Garantie Dommage</dt><dd><span class="badge badge-amber">Souscrite · <?= fcfa($d['garantie_dommage_montant'] ?? 0) ?></span></dd><?php endif; ?>
         <?php if ($b['seat_no']): ?><dt>Siège</dt><dd>N° <?= (int) $b['seat_no'] ?></dd><?php endif; ?>
         <dt>Créée le</dt><dd><?= fmt_date($b['created_at'], true) ?></dd>
         <dt>Payée le</dt><dd><?= fmt_date($b['paid_at'], true) ?></dd>
         <dt>Clôturée le</dt><dd><?= fmt_date($b['validated_at'], true) ?></dd>
       </dl>
-      <?php if ($b['dispute_reason']): ?><div class="alert alert-error mt"><b>Réclamation du client :</b> « <?= e($b['dispute_reason']) ?> »</div><?php endif; ?>
+      <?php if ($b['dispute_reason']): ?><div class="alert alert-error mt"><b>Réclamation du client :</b> « <?= e($b['dispute_reason']) ?> »<?php if (!empty($d['garantie_dommage'])): ?><br><span class="badge badge-amber mt">🛡️ Garantie Dommage souscrite (<?= fcfa($d['garantie_dommage_montant'] ?? 0) ?>) : indemnisation ou nouvelle prestation possible</span><?php endif; ?></div><?php endif; ?>
     </div>
     <div class="panel">
       <div class="panel-h"><h2>Mouvements financiers</h2></div>

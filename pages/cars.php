@@ -3,12 +3,12 @@ $title = 'Billets de car Abidjan – Yamoussoukro, Bouaké, Korhogo, San Pedro';
 $desc = 'Comparez les horaires et prix des cars interurbains en Côte d\'Ivoire et achetez votre E-billet QR code en 3 clics avec Wave ou Orange Money.';
 $active = 'cars';
 $x = universe('cars');
-$fromCities = array_column(all('SELECT DISTINCT from_city FROM trips WHERE active = 1 ORDER BY from_city'), 'from_city');
+$fromCities = array_column(all("SELECT DISTINCT from_city FROM trips WHERE active = 1 AND universe = 'cars' ORDER BY from_city"), 'from_city');
 $from = in_array($_GET['from'] ?? '', $fromCities, true) ? $_GET['from'] : 'Abidjan';
-$toCities = array_column(all('SELECT DISTINCT to_city FROM trips WHERE active = 1 AND from_city = ? ORDER BY to_city', [$from]), 'to_city');
+$toCities = array_column(all("SELECT DISTINCT to_city FROM trips WHERE active = 1 AND universe = 'cars' AND from_city = ? ORDER BY to_city", [$from]), 'to_city');
 $to = in_array($_GET['to'] ?? '', $toCities, true) ? $_GET['to'] : ($toCities[0] ?? '');
 $date = valid_future_date($_GET['date'] ?? null, 60) ? $_GET['date'] : date('Y-m-d');
-$trips = all('SELECT * FROM trips WHERE active = 1 AND from_city = ? AND to_city = ? ORDER BY depart_time', [$from, $to]);
+$trips = all("SELECT * FROM trips WHERE active = 1 AND universe = 'cars' AND from_city = ? AND to_city = ? ORDER BY depart_time", [$from, $to]);
 $fee = (int) setting('cars_service_fee', 400);
 view('layout/header', compact('title', 'desc', 'active'));
 ?>

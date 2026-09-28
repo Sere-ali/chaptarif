@@ -103,7 +103,10 @@ function build_quote(string $universe, array $in): array
             break;
         }
         case 'menage':
-        case 'pressing': {
+        case 'pressing':
+        case 'location_car':
+        case 'location_camion':
+        case 'chauffeurs': {
             $prov = one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) ($in['provider'] ?? 0), $universe]);
             $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
             $zone = zone((int) ($in['zone'] ?? 0));
@@ -113,12 +116,22 @@ function build_quote(string $universe, array $in): array
             if (!valid_future_date($in['date'] ?? null, 60)) return $fail('Choisissez une date valide.');
             $time = preg_match('/^\d{2}:\d{2}$/', $in['time'] ?? '') ? $in['time'] : '09:00';
             $qty = $offer['unit'] === 'pièce' ? max(1, min(50, (int) ($in['qty'] ?? 1))) : 1;
-            $q += ['title' => $offer['title'] . ($qty > 1 ? " × $qty" : '') . ' — ' . $prov['name'], 'amount' => (int) $offer['price'] * $qty, 'service_date' => $in['date']];
+            $amount = (int) $offer['price'] * $qty;
+            $q += ['title' => $offer['title'] . ($qty > 1 ? " × $qty" : '') . ' · ' . $prov['name'], 'amount' => $amount, 'service_date' => $in['date']];
             $q['provider_id'] = (int) $prov['id'];
             $q['item_type'] = 'offer';
             $q['item_id'] = (int) $offer['id'];
             $q['details'] = ['offer' => $offer['title'], 'qty' => $qty, 'zone' => $zone['name'], 'time' => $time, 'address' => mb_substr((string) ($in['address'] ?? ''), 0, 200), 'provider' => $prov['name']];
-            $q['summary'] = [[$universe === 'menage' ? 'Prestataire' : 'Pressing', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], [$universe === 'menage' ? 'Intervention' : 'Collecte', fmt_date($in['date']) . ' à ' . $time], ['Lieu', $zone['name']]];
+            $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', $zone['name']]];
+            // Garantie Dommage (option payante, disponible pour les services à domicile/matériel)
+            if (in_array($universe, ['menage', 'pressing', 'location_car', 'location_camion'], true) && !empty($in['garantie'])) {
+                $pct = (float) setting('garantie_dommage_pct', 5);
+                $fee = round50($amount * $pct / 100);
+                $q['service_fee'] += $fee;
+                $q['details']['garantie_dommage'] = true;
+                $q['details']['garantie_dommage_montant'] = $fee;
+                $q['summary'][] = ['🛡️ Garantie Dommage', fcfa($fee)];
+            }
             break;
         }
         case 'livreur': {
@@ -154,6 +167,25 @@ function build_quote(string $universe, array $in): array
             $q['item_id'] = (int) $trip['id'];
             $q['details'] = ['company' => $trip['company'], 'class' => $trip['class'], 'from' => $trip['from_city'], 'to' => $trip['to_city'], 'time' => $trip['depart_time'], 'station' => $trip['station'], 'duration' => $trip['duration'], 'passengers' => $n, 'passenger_name' => mb_substr((string) ($in['passenger_name'] ?? ''), 0, 80)];
             $q['summary'] = [['Compagnie', $trip['company'] . ' · ' . $trip['class']], ['Trajet', "{$trip['from_city']} → {$trip['to_city']}"], ['Départ', fmt_date($date) . ' à ' . $trip['depart_time'] . ' · ' . $trip['station']], ['Passagers', (string) $n]];
+            break;
+        }
+        case 'covoiturage': {
+            $trip = one("SELECT * FROM trips WHERE id = ? AND active = 1 AND universe = 'covoiturage'", [(int) ($in['trip'] ?? 0)]);
+            if (!$trip) return $fail('Trajet introuvable.');
+            $date = $in['date'] ?? date('Y-m-d');
+            if (!valid_future_date($date, 60)) return $fail('Date de voyage invalide.');
+            if ($date === date('Y-m-d') && $trip['depart_time'] <= date('H:i')) return $fail('Ce départ est déjà passé aujourd\'hui. Choisissez une autre date.');
+            $n = max(1, min(5, (int) ($in['passengers'] ?? 1)));
+            $sold = (int) val("SELECT COUNT(*) FROM bookings WHERE universe = 'covoiturage' AND item_id = ? AND service_date = ? AND status IN ('BLOQUE','VALIDE')", [$trip['id'], $date]);
+            if ($sold + $n > (int) $trip['seats_total']) return $fail('Plus assez de places sur ce trajet.');
+            $from = $trip['from_detail'] ?: $trip['from_city'];
+            $to = $trip['to_detail'] ?: $trip['to_city'];
+            $q += ['title' => "Covoiturage {$from} → {$to} · {$trip['depart_time']}", 'amount' => (int) $trip['price'] * $n, 'service_date' => $date];
+            $q['provider_id'] = $trip['provider_id'] ? (int) $trip['provider_id'] : null;
+            $q['item_type'] = 'trip';
+            $q['item_id'] = (int) $trip['id'];
+            $q['details'] = ['company' => $trip['company'], 'from' => $from, 'to' => $to, 'time' => $trip['depart_time'], 'station' => $trip['station'], 'duration' => $trip['duration'], 'passengers' => $n, 'passenger_name' => mb_substr((string) ($in['passenger_name'] ?? ''), 0, 80)];
+            $q['summary'] = [['Chauffeur', $trip['company']], ['Trajet', "{$from} → {$to}"], ['Départ', fmt_date($date) . ' à ' . $trip['depart_time']], ['Passagers', (string) $n]];
             break;
         }
         case 'immobilier': {

@@ -5,7 +5,7 @@ $b = null;
 if (is_post()) {
     $payload = (string) ($_POST['payload'] ?? '');
     $b = ticket_verify($payload);
-    if (!$b || $b['universe'] !== 'cars') $result = ['ko', '❌ Billet invalide ou falsifié', 'Ce QR code n\'a pas été émis par ChapTarif.'];
+    if (!$b || !in_array($b['universe'], ['cars', 'covoiturage'], true)) $result = ['ko', '❌ Billet invalide ou falsifié', 'Ce QR code n\'a pas été émis par ChapTarif.'];
     elseif ($b['status'] === 'VALIDE') $result = ['warn', '⚠️ Billet déjà utilisé', 'Embarquement déjà enregistré le ' . fmt_date($b['validated_at'], true) . '.'];
     elseif ($b['status'] !== 'BLOQUE') $result = ['ko', '❌ Billet non valable', 'Statut : ' . (statuses()[$b['status']][0] ?? $b['status'])];
     elseif ($b['service_date'] !== date('Y-m-d') && !isset($_POST['force'])) $result = ['warn', '⚠️ Billet pour une autre date', 'Voyage prévu le ' . fmt_date($b['service_date']) . '.'];

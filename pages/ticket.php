@@ -1,6 +1,6 @@
 <?php
 $u = require_client();
-$b = one("SELECT * FROM bookings WHERE ref = ? AND universe = 'cars'", [(string) ($_GET['ref'] ?? '')]);
+$b = one("SELECT * FROM bookings WHERE ref = ? AND universe IN ('cars','covoiturage')", [(string) ($_GET['ref'] ?? '')]);
 if (!$b || ((int) $b['user_id'] !== (int) $u['id'] && !is_admin($u))) not_found();
 if (!in_array($b['status'], ['BLOQUE', 'VALIDE'], true)) redirect('/compte');
 $d = json_decode((string) $b['details'], true) ?: [];

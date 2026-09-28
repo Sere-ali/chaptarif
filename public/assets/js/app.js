@@ -90,9 +90,20 @@
       var perPiece = o && o.dataset.unit === 'pièce';
       if (qty) perPiece ? qty.removeAttribute('hidden') : qty.setAttribute('hidden', '');
       var n = perPiece ? Math.max(1, parseInt(sf.elements.qty.value, 10) || 1) : 1;
+      var amount = o ? o.dataset.price * n : 0;
       $('[data-sum-offer]', sf).textContent = o ? o.dataset.title + (n > 1 ? ' × ' + n : '') : '—';
       $('[data-sum-prov]', sf).textContent = p ? p.dataset.name : '—';
-      $('[data-sum-total]', sf).textContent = o ? fcfa(o.dataset.price * n) : '—';
+      var garCb = $('[data-garantie]', sf), garRow = $('[data-sum-garantie-row]', sf);
+      var garFee = 0;
+      if (garCb && garRow) {
+        if (garCb.checked && o) {
+          var pct = parseFloat(sf.dataset.garantiePct || '0');
+          garFee = Math.ceil((amount * pct / 100) / 50) * 50;
+          $('[data-sum-garantie]', sf).textContent = fcfa(garFee);
+          garRow.removeAttribute('hidden');
+        } else garRow.setAttribute('hidden', '');
+      }
+      $('[data-sum-total]', sf).textContent = o ? fcfa(amount + garFee) : '—';
     };
     sf.addEventListener('change', upd); sf.addEventListener('input', upd); upd();
   }

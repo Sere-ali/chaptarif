@@ -15,6 +15,7 @@ $items = [
     ['providers', '/admin/prestataires', '🧑‍🔧', 'Prestataires & KYC', $pendingKyc],
     ['offers', '/admin/offres', '🏷️', 'Formules & tarifs', 0],
     ['trips', '/admin/cars', '🚌', 'Départs cars', 0],
+    ['covoiturage', '/admin/covoiturage', '🚙', 'Trajets covoiturage', 0],
     ['properties', '/admin/immobilier', '🏠', 'Immobilier', 0],
     ['zones', '/admin/zones', '📍', 'Zones & quartiers', 0],
     ['Relation client', null],

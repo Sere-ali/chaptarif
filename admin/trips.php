@@ -4,6 +4,7 @@ if (is_post()) {
     $act = $_POST['action'] ?? '';
     $id = (int) ($_POST['id'] ?? 0);
     $data = [
+        'universe' => 'cars',
         'company' => mb_substr(trim((string) ($_POST['company'] ?? '')), 0, 60),
         'class' => mb_substr(trim((string) ($_POST['class'] ?? '')), 0, 40),
         'from_city' => mb_substr(trim((string) ($_POST['from_city'] ?? '')), 0, 60),
@@ -21,7 +22,7 @@ if (is_post()) {
     elseif ($act === 'create') { insert('trips', $data); audit('car.creation', "{$data['company']} {$data['from_city']}→{$data['to_city']}", $data); flash('success', 'Départ ajouté.'); }
     redirect('/admin/cars');
 }
-$rows = all('SELECT * FROM trips ORDER BY active DESC, from_city, to_city, depart_time');
+$rows = all("SELECT * FROM trips WHERE universe = 'cars' ORDER BY active DESC, from_city, to_city, depart_time");
 $today = date('Y-m-d');
 $page = 'Départs cars & billetterie';
 $nav = 'trips';

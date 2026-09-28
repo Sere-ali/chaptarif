@@ -40,7 +40,9 @@ $U = universes();
       <div class="nav-drop">
         <button class="nav-link" aria-haspopup="true" aria-expanded="false">Services <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="drop">
-          <?php foreach ($U as $k => $x): ?>
+          <?php $lastGroup = null; foreach ($U as $k => $x): if (($x['group'] ?? '') !== $lastGroup): $lastGroup = $x['group'] ?? ''; ?>
+            <span class="drop-group"><?= e($lastGroup) ?></span>
+          <?php endif; ?>
             <a href="<?= $x['url'] ?>" class="drop-item" style="--c:<?= $x['color'] ?>;--bg:<?= $x['bg'] ?>">
               <span class="drop-ico"><?= $x['emoji'] ?></span>
               <span><strong><?= e($x['name']) ?></strong><small><?= e($x['sub']) ?></small></span>
@@ -64,7 +66,9 @@ $U = universes();
     </div>
   </div>
   <div class="mobile-menu" data-menu hidden>
-    <?php foreach ($U as $k => $x): ?>
+    <?php $lastGroup2 = null; foreach ($U as $k => $x): if (($x['group'] ?? '') !== $lastGroup2): $lastGroup2 = $x['group'] ?? ''; ?>
+      <span class="mm-group"><?= e($lastGroup2) ?></span>
+    <?php endif; ?>
       <a href="<?= $x['url'] ?>"><span><?= $x['emoji'] ?></span> <?= e($x['name']) ?></a>
     <?php endforeach; ?>
     <hr>

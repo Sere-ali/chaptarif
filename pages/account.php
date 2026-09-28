@@ -57,12 +57,13 @@ view('layout/header', compact('title', 'active'));
 
         <?php if ($b['status'] === 'BLOQUE'): ?>
           <div class="bk-escrow">
-            <div class="timeline"><span class="t-done">Payé</span><span class="t-done">Fonds bloqués</span><span class="t-on"><?= $b['universe'] === 'cars' ? 'Embarquement' : 'Service en cours' ?></span><span>Paiement libéré</span></div>
-            <?php if ($b['universe'] === 'cars'): ?>
+            <div class="timeline"><span class="t-done">Payé</span><span class="t-done">Fonds bloqués</span><span class="t-on"><?= in_array($b['universe'], ['cars', 'covoiturage'], true) ? 'Embarquement' : 'Service en cours' ?></span><span>Paiement libéré</span></div>
+            <?php if (in_array($b['universe'], ['cars', 'covoiturage'], true)): ?>
               <a class="btn btn-primary" href="/billet?ref=<?= urlencode($b['ref']) ?>">🎫 Afficher mon E-billet</a>
             <?php else: ?>
               <div class="code-box"><span>🔐 Votre code de validation à 4 chiffres<br>À remettre au prestataire <em>uniquement une fois le service terminé</em> pour qu'il reçoive son paiement</span><b class="mono"><?= e($b['release_code']) ?></b></div>
               <?php if (!empty($b['provider_name'])): ?><p class="muted small">Prestataire : <b><?= e($b['provider_name']) ?></b><?= $b['provider_phone'] ? ' · <a href="tel:' . e($b['provider_phone']) . '">' . e(fmt_phone($b['provider_phone'])) . '</a>' : '' ?></p><?php endif; ?>
+              <?php if (!empty($d['garantie_dommage'])): ?><p class="muted small">🛡️ <b>Garantie Dommage active</b> sur cette commande : en cas de problème, indemnisation ou nouvelle prestation possible.</p><?php endif; ?>
               <div class="bk-actions">
                 <form method="post" data-confirm="Confirmez-vous que le service a bien été réalisé ? Le prestataire sera payé immédiatement."><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $b['id'] ?>"><button name="action" value="confirm" class="btn btn-primary">✓ Confirmer la fin du travail</button></form>
                 <button class="btn btn-ghost" data-toggle="#dsp<?= (int) $b['id'] ?>">⚠️ Signaler un problème</button>
@@ -85,7 +86,7 @@ view('layout/header', compact('title', 'active'));
           </div>
         <?php elseif ($b['status'] === 'EN_LITIGE'): ?>
           <div class="alert alert-error small">Réclamation en cours d'examen : « <?= e($b['dispute_reason']) ?> ». Le paiement reste gelé jusqu'à la décision de notre équipe.</div>
-        <?php elseif ($b['status'] === 'VALIDE' && $b['universe'] === 'cars'): ?>
+        <?php elseif ($b['status'] === 'VALIDE' && in_array($b['universe'], ['cars', 'covoiturage'], true)): ?>
           <a class="btn btn-soft btn-sm" href="/billet?ref=<?= urlencode($b['ref']) ?>">Voir le billet</a>
         <?php endif; ?>
       </article>

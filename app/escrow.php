@@ -13,7 +13,7 @@ function booking_create(array $quote, array $user, string $method): array
 {
     return tx(function () use ($quote, $user, $method) {
         do {
-            $ref = ref_gen($quote['universe'] === 'cars' ? 'CT-BUS' : 'CT');
+            $ref = ref_gen(in_array($quote['universe'], ['cars', 'covoiturage'], true) ? 'CT-BUS' : 'CT');
         } while (val('SELECT 1 FROM bookings WHERE ref = ?', [$ref]));
         $id = insert('bookings', [
             'ref' => $ref, 'user_id' => $user['id'], 'universe' => $quote['universe'],
@@ -33,8 +33,8 @@ function booking_mark_paid(array $b, string $paymentRef): array
     if ($b['status'] !== 'EN_ATTENTE_PAIEMENT') return $b;
     tx(function () use ($b, $paymentRef) {
         $seat = null;
-        if ($b['universe'] === 'cars') {
-            $taken = (int) val("SELECT COALESCE(MAX(seat_no), 0) FROM bookings WHERE universe = 'cars' AND item_id = ? AND service_date = ? AND status IN ('BLOQUE','VALIDE')", [$b['item_id'], $b['service_date']]);
+        if (in_array($b['universe'], ['cars', 'covoiturage'], true)) {
+            $taken = (int) val("SELECT COALESCE(MAX(seat_no), 0) FROM bookings WHERE universe = ? AND item_id = ? AND service_date = ? AND status IN ('BLOQUE','VALIDE')", [$b['universe'], $b['item_id'], $b['service_date']]);
             $n = (int) (json_decode((string) $b['details'], true)['passengers'] ?? 1);
             $seat = $taken + 1;
             if ($n > 1) {
@@ -76,7 +76,7 @@ function booking_release(array $b, string $by = 'client', string $note = ''): bo
         $payout = payout_send($prov, (int) $b['provider_amount'], $b['ref']);
         insert('transactions', [
             'booking_id' => $b['id'], 'provider_id' => $b['provider_id'], 'type' => 'REVERSEMENT', 'amount' => (int) $b['provider_amount'],
-            'method' => $prov['payout_method'] ?? ($b['universe'] === 'cars' || $b['universe'] === 'immobilier' ? 'virement partenaire' : '—'),
+            'method' => $prov['payout_method'] ?? (in_array($b['universe'], ['cars', 'covoiturage', 'immobilier'], true) ? 'virement partenaire' : '—'),
             'status' => $payout['status'], 'reference' => $payout['reference'],
             'note' => 'Reversement ' . ($prov['name'] ?? 'partenaire') . " (validé par $by)", 'created_at' => now(),
         ]);

@@ -1,7 +1,7 @@
 # ChapTarif — Plateforme multi-services (Côte d'Ivoire)
 
-Comparateur + réservation + paiement sous séquestre pour 6 univers :
-**VTC & Taxis · Ménage & Aide · Pressing & Linge · Livreur Express · Cars Voyage · Immobilier**.
+Comparateur + réservation + paiement sous séquestre pour 10 univers, groupés en 4 familles :
+**Transport** (VTC & Taxis · Cars Voyage · Covoiturage · Location de car · Location de camion · Chauffeurs privés) · **Livraison** (Livreur Express) · **Maison** (Ménage & Aide · Pressing & Linge) · **Logement** (Immobilier).
 
 Stack : **HTML / CSS / JavaScript + PHP 8.3** (sans framework), PostgreSQL sur **Render**, images sur **Cloudinary**.
 
@@ -16,6 +16,9 @@ Stack : **HTML / CSS / JavaScript + PHP 8.3** (sans framework), PostgreSQL sur *
 - **Livreur Express** : tarifs zonés, types d'envoi, carte avec suivi animé.
 - **Cars** : départs par ligne et par date, places restantes, **E-billet QR code signé (HMAC)**, impression PDF.
 - **Immobilier** : annonces avec galerie Cloudinary, calcul nuitée / semaine, contrôle des disponibilités.
+- **Covoiturage** : un chauffeur vérifié (univers « Covoiturage » dans Prestataires) publie son trajet depuis **Admin → Trajets covoiturage** (ville + précision de départ/arrivée, heure, prix par place) ; le client réserve sa place, paiement sous séquestre, E-billet QR comme pour les Cars.
+- **Location de car / Location de camion / Chauffeurs privés** : mêmes mécanismes que Ménage/Pressing (prestataires + formules créées dans **Admin → Prestataires** et **Admin → Formules & tarifs**) — location de car pour sorties de groupe, camion pour déménagement, chauffeur à la journée/mois/année.
+- **Garantie Dommage** : option payante (+X % du prix, réglable dans **Admin → Paramètres**, 5 % par défaut) proposée sur Ménage, Pressing, Location de car et Location de camion. En cas de réclamation, elle est signalée à l'équipe (badge dans les litiges) qui décide d'indemniser ou de refaire la prestation.
 - Connexion client **sans mot de passe par OTP SMS** (au moment du paiement uniquement).
 - Paiement Wave / Orange Money / MTN / Moov → **fonds BLOQUÉS** → le client clique « Confirmer la fin du travail » **ou** remet un code à 4 chiffres au prestataire → **VALIDÉ** (commission retenue, reversement automatique). Réclamation → **EN LITIGE** (paiement gelé).
 - Espace prestataire public `/prestataire/valider` (saisie du code client pour être payé).

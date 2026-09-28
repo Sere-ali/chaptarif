@@ -61,7 +61,7 @@ view('admin/header', compact('page', 'nav'));
         <td><?= status_badge($b['status']) ?><?php if ($b['status'] === 'EN_ATTENTE_PAIEMENT' && $b['payment_ref'] === 'EN_ATTENTE_VALIDATION'): ?><br><span class="badge badge-amber">🕐 À valider</span><?php endif; ?></td>
         <td><a class="btn btn-ghost btn-xs" href="/admin/reservation?id=<?= (int) $b['id'] ?>">Ouvrir</a></td>
       </tr>
-      <?php if ($isDisputes && $b['dispute_reason']): ?><tr><td colspan="9"><div class="alert alert-error small" style="margin:0">« <?= e($b['dispute_reason']) ?> »</div></td></tr><?php endif; ?>
+      <?php if ($isDisputes && $b['dispute_reason']): $bd = json_decode((string) $b['details'], true) ?: []; ?><tr><td colspan="9"><div class="alert alert-error small" style="margin:0">« <?= e($b['dispute_reason']) ?> »<?php if (!empty($bd['garantie_dommage'])): ?> · <span class="badge badge-amber">🛡️ Garantie Dommage</span><?php endif; ?></div></td></tr><?php endif; ?>
     <?php endforeach; if (!$rows): ?><tr><td colspan="9" class="muted"><?= $isDisputes ? 'Aucun litige en cours. 👌' : 'Aucune réservation.' ?></td></tr><?php endif; ?>
     </tbody>
   </table></div>

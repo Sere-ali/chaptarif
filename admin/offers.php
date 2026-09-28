@@ -1,6 +1,7 @@
 <?php
 require_admin();
-$U = array_intersect_key(universes(), ['menage' => 1, 'pressing' => 1]);
+$U = array_intersect_key(universes(), ['menage' => 1, 'pressing' => 1, 'location_car' => 1, 'location_camion' => 1, 'chauffeurs' => 1]);
+$UNITS = ['séance', 'forfait', 'pièce', 'heure', 'jour', 'mois', 'année'];
 if (is_post()) {
     $act = $_POST['action'] ?? '';
     $id = (int) ($_POST['id'] ?? 0);
@@ -9,7 +10,7 @@ if (is_post()) {
         'title' => mb_substr(trim((string) ($_POST['title'] ?? '')), 0, 120),
         'subtitle' => mb_substr(trim((string) ($_POST['subtitle'] ?? '')), 0, 200),
         'price' => max(0, (int) ($_POST['price'] ?? 0)),
-        'unit' => in_array($_POST['unit'] ?? '', ['séance', 'forfait', 'pièce', 'heure'], true) ? $_POST['unit'] : 'forfait',
+        'unit' => in_array($_POST['unit'] ?? '', $UNITS, true) ? $_POST['unit'] : 'forfait',
         'popular' => isset($_POST['popular']) ? 1 : 0,
         'active' => isset($_POST['active']) ? 1 : 0,
         'sort' => (int) ($_POST['sort'] ?? 0),
@@ -20,7 +21,7 @@ if (is_post()) {
     elseif ($act === 'create') { insert('offers', $data); audit('offre.creation', $data['title'], $data); flash('success', 'Formule ajoutée.'); }
     redirect('/admin/offres');
 }
-$rows = all("SELECT * FROM offers WHERE universe IN ('menage','pressing') ORDER BY universe, sort, price");
+$rows = all("SELECT * FROM offers WHERE universe IN ('menage','pressing','location_car','location_camion','chauffeurs') ORDER BY universe, sort, price");
 $page = 'Formules & tarifs';
 $nav = 'offers';
 view('admin/header', compact('page', 'nav'));
@@ -32,7 +33,7 @@ view('admin/header', compact('page', 'nav'));
     <label class="fld"><span>Intitulé</span><input name="title" required></label>
     <label class="fld"><span>Description</span><input name="subtitle"></label>
     <label class="fld"><span>Prix (F)</span><input type="number" name="price" min="0" step="50" required></label>
-    <label class="fld"><span>Unité</span><select name="unit"><option>séance</option><option>forfait</option><option>pièce</option><option>heure</option></select></label>
+    <label class="fld"><span>Unité</span><select name="unit"><?php foreach ($UNITS as $un): ?><option><?= $un ?></option><?php endforeach; ?></select></label>
     <label class="fld"><span>Ordre</span><input type="number" name="sort" value="0"></label>
     <label class="check"><input type="checkbox" name="popular"> Populaire</label>
     <label class="check"><input type="checkbox" name="active" checked> Active</label>
@@ -51,7 +52,7 @@ view('admin/header', compact('page', 'nav'));
         <td><input form="<?= $f ?>" name="title" value="<?= e($o['title']) ?>"></td>
         <td><input form="<?= $f ?>" name="subtitle" value="<?= e($o['subtitle']) ?>"></td>
         <td><input form="<?= $f ?>" type="number" name="price" value="<?= (int) $o['price'] ?>" step="50" style="width:100px"></td>
-        <td><select form="<?= $f ?>" name="unit"><?php foreach (['séance', 'forfait', 'pièce', 'heure'] as $un): ?><option <?= $o['unit'] === $un ? 'selected' : '' ?>><?= $un ?></option><?php endforeach; ?></select></td>
+        <td><select form="<?= $f ?>" name="unit"><?php foreach ($UNITS as $un): ?><option <?= $o['unit'] === $un ? 'selected' : '' ?>><?= $un ?></option><?php endforeach; ?></select></td>
         <td><input form="<?= $f ?>" type="number" name="sort" value="<?= (int) $o['sort'] ?>" style="width:64px"></td>
         <td><input form="<?= $f ?>" type="checkbox" name="popular" <?= $o['popular'] ? 'checked' : '' ?>></td>
         <td><input form="<?= $f ?>" type="checkbox" name="active" <?= $o['active'] ? 'checked' : '' ?>></td>

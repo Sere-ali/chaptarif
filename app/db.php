@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
 
 function db(): PDO
 {
@@ -138,7 +138,8 @@ function db_migrate(): void
             id $PK, universe TEXT NOT NULL, title TEXT NOT NULL, subtitle TEXT, price INTEGER NOT NULL,
             unit TEXT, popular INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1, sort INTEGER NOT NULL DEFAULT 0)",
         "CREATE TABLE IF NOT EXISTS trips (
-            id $PK, company TEXT NOT NULL, class TEXT, from_city TEXT NOT NULL, to_city TEXT NOT NULL,
+            id $PK, universe TEXT NOT NULL DEFAULT 'cars', provider_id INTEGER, company TEXT NOT NULL, class TEXT,
+            from_city TEXT NOT NULL, to_city TEXT NOT NULL, from_detail TEXT, to_detail TEXT,
             depart_time TEXT NOT NULL, station TEXT, duration TEXT, price INTEGER NOT NULL,
             seats_total INTEGER NOT NULL DEFAULT 70, active INTEGER NOT NULL DEFAULT 1)",
         "CREATE TABLE IF NOT EXISTS properties (
@@ -170,6 +171,16 @@ function db_migrate(): void
         "CREATE INDEX IF NOT EXISTS idx_tx_booking ON transactions(booking_id)",
     ];
     foreach ($stmts as $s) db()->exec($s);
+
+    // Colonnes ajoutées après la mise en production (idempotent : ignore si déjà présentes).
+    foreach ([
+        "ALTER TABLE trips ADD COLUMN universe TEXT NOT NULL DEFAULT 'cars'",
+        "ALTER TABLE trips ADD COLUMN provider_id INTEGER",
+        "ALTER TABLE trips ADD COLUMN from_detail TEXT",
+        "ALTER TABLE trips ADD COLUMN to_detail TEXT",
+    ] as $alter) {
+        try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }
+    }
 
     if ($v === 0) db_seed();
 
