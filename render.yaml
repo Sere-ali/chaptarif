@@ -1,0 +1,45 @@
+# Blueprint Render : Dashboard → New → Blueprint → sélectionnez ce dépôt.
+services:
+  - type: web
+    name: chaptarif
+    runtime: docker
+    plan: free            # passez en "starter" pour éviter la mise en veille
+    region: frankfurt
+    healthCheckPath: /sante
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: chaptarif-db
+          property: connectionString
+      - key: CLOUDINARY_URL
+        sync: false         # cloudinary://API_KEY:API_SECRET@epxlbn9z
+      - key: SUPERADMIN_EMAIL
+        sync: false
+      - key: SUPERADMIN_PASSWORD
+        sync: false
+      - key: PAYMENT_MODE
+        value: simulation   # passez à "cinetpay" une fois le compte marchand validé
+      - key: CINETPAY_APIKEY
+        sync: false
+      - key: CINETPAY_SITE_ID
+        sync: false
+      - key: APP_URL
+        sync: false         # ex. https://chaptarif.onrender.com
+      - key: OTP_DEMO
+        value: "1"          # mettez "0" dès qu'une passerelle SMS est branchée
+      - key: SMS_API_URL
+        sync: false
+      - key: SMS_API_TOKEN
+        sync: false
+
+databases:
+  - name: chaptarif-db
+    plan: free
+    region: frankfurt
+    databaseName: chaptarif
+    user: chaptarif
