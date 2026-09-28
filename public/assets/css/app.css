@@ -523,7 +523,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 .moto-ico { font-size: 22px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35)); }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1080px) {
+@media (max-width: 1080px), (max-device-width: 1080px) {
   .steps { grid-template-columns: repeat(3, 1fr); }
   .steps li::after { display: none; }
   .trip { grid-template-columns: 1fr 1fr 1fr; }
@@ -531,7 +531,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .trip-buy { grid-column: 1 / -1; text-align: left; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
   .trip-actions { margin: 0; }
 }
-@media (max-width: 960px) {
+@media (max-width: 960px), (max-device-width: 960px) {
   .nav { display: none; }
   .burger { display: flex; }
   .hero-grid, .split, .two-col, .two-col.wide-left { grid-template-columns: 1fr; }
@@ -543,7 +543,16 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .sticky { position: static; }
   .split-rev .app-visual { order: 1; }
 }
-@media (max-width: 640px) {
+/* Filet de sécurité : certains navigateurs mobiles peu courants ignorent la balise viewport
+   et calculent une largeur de mise en page > 960px sur un téléphone. Le script inline dans
+   <head> ajoute alors .force-mobile sur <html> d'après la largeur réelle de l'écran. */
+html.force-mobile .nav { display: none !important; }
+html.force-mobile .burger { display: flex !important; }
+html.force-mobile .hero-grid, html.force-mobile .split, html.force-mobile .two-col, html.force-mobile .two-col.wide-left { grid-template-columns: 1fr !important; }
+html.force-mobile .hero-visual { display: none !important; }
+html.force-mobile .uni-grid, html.force-mobile .prop-grid, html.force-mobile .features, html.force-mobile .info-strip, html.force-mobile .row2, html.force-mobile .steps, html.force-mobile .footer-grid { grid-template-columns: 1fr !important; }
+html.force-mobile .stats { grid-template-columns: 1fr 1fr !important; }
+@media (max-width: 640px), (max-device-width: 640px) {
   body { padding-bottom: 68px; }
   .container { padding: 0 16px; }
   .section { padding: 60px 0; }
@@ -590,7 +599,7 @@ h1, h2 { overflow-wrap: break-word; }
 .gallery.g2 .g-main { grid-row: auto; }
 .gallery.g3 { grid-template-columns: 2fr 1fr; }
 .gallery.g4 img:last-child { grid-column: span 2; }
-@media (max-width: 640px) {
+@media (max-width: 640px), (max-device-width: 640px) {
   .gallery.g1, .gallery.g2, .gallery.g3, .gallery.g4 { grid-template-columns: 1fr 1fr; grid-template-rows: 220px 120px; }
   .gallery.g2 img:not(.g-main) { grid-column: span 2; }
   .gallery.g4 img:last-child { grid-column: auto; }
