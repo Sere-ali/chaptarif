@@ -13,28 +13,22 @@ function seed_all(): void
 
     // ---- Paramètres métier ----
     $settings = [
-        'commission_menage'    => '15',
-        'commission_pressing'  => '15',
-        'commission_livreur'   => '15',
-        'commission_vtc'       => '10',
-        'commission_immobilier'=> '10',
-        'commission_cars'      => '0',
-        'cars_service_fee'     => '400',
-        'sponsor_price'        => '5000',
-        'vtc_base'             => '500',
-        'vtc_per_km'           => '220',
-        'vtc_min'              => '1000',
-        'road_factor'          => '1.3',
-        'livreur_base'         => '800',
-        'livreur_per_km'       => '80',
-        'livreur_min'          => '1000',
-        'market_yango'         => '1.18',
-        'market_uber'          => '1.25',
-        'market_indrive'       => '1.08',
-        'market_taxi'          => '1.12',
-        'support_phone'        => '+225 07 00 00 00 00',
-        'support_email'        => 'contact@chaptarif.ci',
-        'maintenance'          => '0',
+        'commission_menage'     => '15',
+        'commission_pressing'   => '15',
+        'commission_coiffeuse'  => '15',
+        'commission_maquilleuse'=> '15',
+        'commission_onglerie'   => '15',
+        'commission_immobilier' => '10',
+        'commission_cars'       => '0',
+        'commission_covoiturage'=> '10',
+        'commission_location_car'   => '15',
+        'commission_location_camion'=> '15',
+        'cars_service_fee'      => '400',
+        'sponsor_price'         => '5000',
+        'garantie_dommage_pct'  => '5',
+        'support_phone'         => '+225 07 00 00 00 00',
+        'support_email'         => 'contact@chaptarif.ci',
+        'maintenance'           => '0',
     ];
     foreach ($settings as $k => $v) q('INSERT INTO settings (key, value) VALUES (?, ?)', [$k, $v]);
 
@@ -74,19 +68,19 @@ function seed_all(): void
         ['pressing', 'Pressing Le Lys', 'Cocody', 'Collecte à domicile 7j/7, retour 24h.', 4.8, 410, $sp],
         ['pressing', 'Clean Express CI', 'Marcory', 'Lavage pro, détachage, costumes & bazin.', 4.6, 205, null],
         ['pressing', 'Pressing Étoile', 'Yopougon', 'Tarifs à la pièce, repassage vapeur.', 4.5, 150, null],
-        ['livreur', 'Ibrahim S.', 'Cocody', 'Moto 125 cc, top-case sécurisé.', 4.9, 620, $sp],
-        ['livreur', 'Moussa C.', 'Plateau', 'Plis administratifs & colis urgents.', 4.7, 380, null],
-        ['livreur', 'Yao A.', 'Yopougon', 'Courses marché & livraisons express.', 4.6, 240, null],
-        ['vtc', 'Kouassi M.', 'Cocody', 'Toyota Corolla climatisée.', 4.9, 1240, $sp],
-        ['vtc', 'Serge B.', 'Marcory', 'Hyundai Elantra climatisée.', 4.8, 860, null],
-        ['vtc', 'Didier O.', 'Yopougon', 'Kia Rio climatisée.', 4.7, 540, null],
+        ['coiffeuse', 'Ama Styles', 'Cocody', 'Tresses, nattes et soins capillaires à domicile.', 4.9, 210, $sp],
+        ['coiffeuse', 'Marie-Ange Coiffure', 'Yopougon', 'Spécialiste tissages et défrisage.', 4.7, 95, null],
+        ['maquilleuse', 'Glow by Aïcha', 'Cocody', 'Maquillage mariage & cérémonies.', 4.9, 140, $sp],
+        ['maquilleuse', 'Belle Touch CI', 'Marcory', 'Maquillage événementiel, soirées & photoshoots.', 4.6, 78, null],
+        ['onglerie', 'Nails By Sarah', 'Cocody', 'Pose de capsules, vernis semi-permanent.', 4.8, 165, null],
+        ['onglerie', 'Onglerie Diamant', 'Yopougon', 'Manucure, pédicure & nail art.', 4.6, 90, null],
     ];
     foreach ($prov as [$u, $n, $c, $b, $r, $m, $s]) {
         insert('providers', [
             'universe' => $u, 'name' => $n, 'phone' => '+22507' . random_int(10000000, 99999999), 'commune' => $c,
             'bio' => $b, 'rating' => $r, 'missions' => $m, 'kyc_status' => 'verified', 'sponsored_until' => $s,
             'payout_method' => 'wave', 'payout_number' => '+22507' . random_int(10000000, 99999999),
-            'vehicle' => $u === 'vtc' ? $b : null, 'source' => 'admin', 'active' => 1, 'created_at' => $now,
+            'vehicle' => null, 'source' => 'admin', 'active' => 1, 'created_at' => $now,
         ]);
     }
 
@@ -101,6 +95,12 @@ function seed_all(): void
         ['pressing', 'Costume complet', 'Nettoyage à sec veste + pantalon', 2500, 'pièce', 0],
         ['pressing', 'Grand boubou / Bazin', 'Lavage délicat & amidonnage', 2000, 'pièce', 0],
         ['pressing', 'Draps & housse (2 places)', 'Lavage & repassage', 1500, 'pièce', 0],
+        ['coiffeuse', 'Tresses simples', 'Nattes collées ou box braids courtes', 3000, 'séance', 1],
+        ['coiffeuse', 'Tissage / Coiffure élaborée', 'Pose de tissage ou coiffure de cérémonie', 8000, 'séance', 0],
+        ['maquilleuse', 'Maquillage jour', 'Maquillage naturel pour événement en journée', 5000, 'séance', 0],
+        ['maquilleuse', 'Maquillage mariage', 'Maquillage complet + essai, longue tenue', 15000, 'forfait', 1],
+        ['onglerie', 'Pose vernis semi-permanent', 'Manucure + pose de vernis semi-permanent', 3000, 'séance', 1],
+        ['onglerie', 'Pose capsules', 'Pose de capsules avec finition au choix', 6000, 'séance', 0],
     ];
     foreach ($offers as $i => [$u, $t, $s, $p, $un, $pop]) {
         insert('offers', ['universe' => $u, 'title' => $t, 'subtitle' => $s, 'price' => $p, 'unit' => $un, 'popular' => $pop, 'active' => 1, 'sort' => $i]);

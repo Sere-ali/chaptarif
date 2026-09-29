@@ -1,6 +1,6 @@
 <?php
 require_admin();
-$U = array_intersect_key(universes(), ['menage' => 1, 'pressing' => 1, 'location_car' => 1, 'location_camion' => 1, 'chauffeurs' => 1]);
+$U = array_intersect_key(universes(), ['menage' => 1, 'pressing' => 1, 'location_car' => 1, 'location_camion' => 1, 'coiffeuse' => 1, 'maquilleuse' => 1, 'onglerie' => 1]);
 $UNITS = ['séance', 'forfait', 'pièce', 'heure', 'jour', 'mois', 'année'];
 if (is_post()) {
     $act = $_POST['action'] ?? '';
@@ -21,7 +21,7 @@ if (is_post()) {
     elseif ($act === 'create') { insert('offers', $data); audit('offre.creation', $data['title'], $data); flash('success', 'Formule ajoutée.'); }
     redirect('/admin/offres');
 }
-$rows = all("SELECT * FROM offers WHERE universe IN ('menage','pressing','location_car','location_camion','chauffeurs') ORDER BY universe, sort, price");
+$rows = all("SELECT * FROM offers WHERE universe IN ('menage','pressing','location_car','location_camion','coiffeuse','maquilleuse','onglerie') ORDER BY universe, sort, price");
 $page = 'Formules & tarifs';
 $nav = 'offers';
 view('admin/header', compact('page', 'nav'));
@@ -62,5 +62,5 @@ view('admin/header', compact('page', 'nav'));
     </tbody>
   </table></div>
 </div>
-<div class="panel"><h2 class="h4">Tarifs calculés automatiquement</h2><p class="muted">Les prix VTC et Livreur Express sont calculés selon la distance entre quartiers. Les paramètres (prix de base, prix au km, coefficients marché) se règlent dans <?= is_super() ? '<a href="/admin/parametres">Paramètres</a>' : 'les Paramètres (Super Admin)' ?>.</p></div>
+<div class="panel"><h2 class="h4">Tarifs calculés automatiquement</h2><p class="muted">Les prix des Cars, du Covoiturage et de l'Immobilier sont calculés à partir des départs, trajets et logements (voir <b>Cars</b>, <b>Trajets covoiturage</b> et <b>Immobilier</b> dans le menu). Les commissions se règlent dans <?= is_super() ? '<a href="/admin/parametres">Paramètres</a>' : 'les Paramètres (Super Admin)' ?>.</p></div>
 <?php view('admin/footer');

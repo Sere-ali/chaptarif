@@ -82,7 +82,7 @@ view('admin/header', compact('page', 'nav'));
       <label class="fld"><span>Note moyenne (0–5)</span><input name="rating" value="<?= e($p['rating']) ?>" inputmode="decimal"></label>
     </div>
     <label class="fld"><span>Présentation</span><textarea name="bio" rows="3" maxlength="400"><?= e($p['bio']) ?></textarea></label>
-    <label class="fld"><span>Véhicule (VTC / livreur)</span><input name="vehicle" value="<?= e($p['vehicle']) ?>"></label>
+    <label class="fld"><span>Véhicule (si applicable : car, camion…)</span><input name="vehicle" value="<?= e($p['vehicle']) ?>"></label>
     <div class="row2">
       <label class="fld"><span>Versements sur</span><select name="payout_method"><?php foreach (['wave' => 'Wave', 'orange' => 'Orange Money', 'mtn' => 'MTN MoMo', 'moov' => 'Moov Money'] as $k => $l): ?><option value="<?= $k ?>" <?= $p['payout_method'] === $k ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></label>
       <label class="fld"><span>Numéro de versement</span><input name="payout_number" value="<?= e($p['payout_number']) ?>"></label>

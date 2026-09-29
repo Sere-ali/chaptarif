@@ -10,14 +10,14 @@ $path = '/' . trim($path, '/');
 $routes = [
     // Site public
     '/'                     => 'pages/home.php',
-    '/vtc'                  => 'pages/vtc.php',
     '/menage'               => 'pages/services.php',
     '/pressing'             => 'pages/services.php',
     '/location-car'         => 'pages/services.php',
     '/location-camion'      => 'pages/services.php',
-    '/chauffeurs'           => 'pages/services.php',
+    '/coiffeuse'            => 'pages/services.php',
+    '/maquilleuse'          => 'pages/services.php',
+    '/onglerie'             => 'pages/services.php',
     '/covoiturage'          => 'pages/covoiturage.php',
-    '/livreur'              => 'pages/livreur.php',
     '/cars'                 => 'pages/cars.php',
     '/immobilier'           => 'pages/immobilier.php',
     '/reserver'             => 'pages/checkout.php',
@@ -36,7 +36,6 @@ $routes = [
     '/garantie-dommage'     => 'pages/garantie_dommage.php',
     '/contact'              => 'pages/contact.php',
     '/mentions-legales'     => 'pages/legal.php',
-    '/api/estimate'         => 'pages/api_estimate.php',
     '/sante'                => 'pages/health.php',
 
     // Back-office

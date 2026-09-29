@@ -1,7 +1,7 @@
 # ChapTarif — Plateforme multi-services (Côte d'Ivoire)
 
-Comparateur + réservation + paiement sous séquestre pour 10 univers, groupés en 4 familles :
-**Transport** (VTC & Taxis · Cars Voyage · Covoiturage · Location de car · Location de camion · Chauffeurs privés) · **Livraison** (Livreur Express) · **Maison** (Ménage & Aide · Pressing & Linge) · **Logement** (Immobilier).
+Comparateur + réservation + paiement sous séquestre pour 9 univers, groupés en 4 domaines :
+**Transports** (Cars Voyage · Louer un car · Location de gros camion · Covoiturage) · **Immobilier** (Location d'appartements, villas & studios) · **Service à la personne** (Ménage ou aide à domicile · Pressing & repassage) · **Beauté à domicile** (Coiffeuse · Maquilleuse · Onglerie).
 
 Stack : **HTML / CSS / JavaScript + PHP 8.3** (sans framework), PostgreSQL sur **Render**, images sur **Cloudinary**.
 
@@ -10,15 +10,13 @@ Stack : **HTML / CSS / JavaScript + PHP 8.3** (sans framework), PostgreSQL sur *
 ## 1. Fonctionnalités
 
 ### Site public
-- Accueil avec recherche rapide par univers, 6 cartes univers, explication du séquestre, comparateur VTC, FAQ.
-- **VTC** : estimation par distance entre quartiers, comparatif marché (Yango, Uber, InDrive, taxi compteur), carte OpenStreetMap, commande au tarif garanti.
-- **Ménage / Pressing** : formules à prix fixe, prestataires vérifiés filtrables par commune, badge « Recommandé » en tête de liste.
-- **Livreur Express** : tarifs zonés, types d'envoi, carte avec suivi animé.
+- Accueil avec recherche rapide par univers, cartes univers groupées par domaine, explication du séquestre, page Garantie Dommage, FAQ.
+- **Ménage / Pressing / Coiffeuse / Maquilleuse / Onglerie** : formules à prix fixe, prestataires vérifiés filtrables par commune, badge « Recommandé » en tête de liste.
 - **Cars** : départs par ligne et par date, places restantes, **E-billet QR code signé (HMAC)**, impression PDF.
-- **Immobilier** : annonces avec galerie Cloudinary, calcul nuitée / semaine, contrôle des disponibilités.
+- **Immobilier** : annonces avec galerie Cloudinary, filtre par type (appartement/villa/studio) et par commune, calcul nuitée / semaine, contrôle des disponibilités.
 - **Covoiturage** : un chauffeur vérifié (univers « Covoiturage » dans Prestataires) publie son trajet depuis **Admin → Trajets covoiturage** (ville + précision de départ/arrivée, heure, prix par place) ; le client réserve sa place, paiement sous séquestre, E-billet QR comme pour les Cars.
-- **Location de car / Location de camion / Chauffeurs privés** : mêmes mécanismes que Ménage/Pressing (prestataires + formules créées dans **Admin → Prestataires** et **Admin → Formules & tarifs**) — location de car pour sorties de groupe, camion pour déménagement, chauffeur à la journée/mois/année.
-- **Garantie Dommage** : option payante (+X % du prix, réglable dans **Admin → Paramètres**, 5 % par défaut) proposée sur Ménage, Pressing, Location de car et Location de camion. En cas de réclamation, elle est signalée à l'équipe (badge dans les litiges) qui décide d'indemniser ou de refaire la prestation.
+- **Location de car / Location de camion** : mêmes mécanismes que Ménage/Pressing (prestataires + formules créées dans **Admin → Prestataires** et **Admin → Formules & tarifs**) — location de car pour sorties de groupe, camion pour déménagement/fret.
+- **Garantie Dommage** : option payante (+X % du prix, réglable dans **Admin → Paramètres**, 5 % par défaut) proposée sur Ménage, Pressing, Location de car et Location de camion. En cas de réclamation, elle est signalée à l'équipe (badge dans les litiges) qui décide d'indemniser ou de refaire la prestation. Page d'explication publique : `/garantie-dommage`.
 - Connexion client **sans mot de passe par OTP SMS** (au moment du paiement uniquement).
 - Paiement Wave / Orange Money / MTN / Moov → **fonds BLOQUÉS** → le client clique « Confirmer la fin du travail » **ou** remet un code à 4 chiffres au prestataire → **VALIDÉ** (commission retenue, reversement automatique). Réclamation → **EN LITIGE** (paiement gelé).
 - Espace prestataire public `/prestataire/valider` (saisie du code client pour être payé).
@@ -37,7 +35,7 @@ Stack : **HTML / CSS / JavaScript + PHP 8.3** (sans framework), PostgreSQL sur *
 | Formules, départs de cars, logements (upload photos), zones GPS | ✓ | ✓ |
 | Clients, messages de contact | ✓ | ✓ |
 | **Gestion des administrateurs** (création, rôle, désactivation, réinit. mot de passe) | — | ✓ |
-| **Paramètres** (commissions, frais, tarifs VTC/livreur, coefficients marché, maintenance) | — | ✓ |
+| **Paramètres** (commissions par univers, frais, Garantie Dommage, maintenance) | — | ✓ |
 | **Journal d'audit** de toutes les actions sensibles | — | ✓ |
 
 Sécurité : CSRF sur tous les formulaires, requêtes préparées (PDO), mots de passe bcrypt, blocage après 5 échecs, session admin expirée après 2h d'inactivité, mot de passe provisoire à changer à la 1re connexion, au moins un Super Admin toujours actif, en-têtes de sécurité (HSTS, X-Frame-Options…), seul `public/` est exposé.

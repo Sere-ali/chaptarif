@@ -29,28 +29,6 @@ function commission_rate(string $universe): float
     return (float) setting('commission_' . $universe, 15);
 }
 
-/** Estimation VTC + comparatif marché (estimations indicatives). */
-function vtc_estimate(array $from, array $to): array
-{
-    $km = distance_km($from, $to);
-    $ours = max((int) setting('vtc_min', 1000), round50((int) setting('vtc_base', 500) + $km * (float) setting('vtc_per_km', 220)));
-    $market = [];
-    foreach (['yango' => 'Yango', 'uber' => 'Uber', 'indrive' => 'InDrive', 'taxi' => 'Taxi compteur'] as $k => $label) {
-        $market[] = ['name' => $label, 'price' => round50($ours * (float) setting('market_' . $k, 1.15))];
-    }
-    usort($market, fn($a, $b) => $a['price'] <=> $b['price']);
-    $minutes = (int) round($km / 22 * 60) + 4;
-    return ['km' => round($km, 1), 'minutes' => $minutes, 'price' => $ours, 'market' => $market, 'saving' => max(0, $market[0]['price'] - $ours)];
-}
-
-function livreur_estimate(array $from, array $to, string $type = 'colis'): array
-{
-    $km = distance_km($from, $to);
-    $extra = ['pli' => 0, 'colis' => 0, 'volumineux' => 1000, 'courses' => 500][$type] ?? 0;
-    $price = max((int) setting('livreur_min', 1000), round50((int) setting('livreur_base', 800) + $km * (float) setting('livreur_per_km', 80))) + $extra;
-    return ['km' => round($km, 1), 'minutes' => (int) round($km / 25 * 60) + 15, 'price' => $price];
-}
-
 function immo_price(array $p, int $nights): int
 {
     if ($nights >= 7 && (int) $p['price_week'] > 0) {
@@ -87,26 +65,13 @@ function build_quote(string $universe, array $in): array
     $q = ['universe' => $universe, 'service_fee' => 0, 'provider_id' => null, 'item_type' => null, 'item_id' => null, 'details' => [], 'summary' => []];
 
     switch ($universe) {
-        case 'vtc': {
-            $from = zone((int) ($in['from'] ?? 0));
-            $to = zone((int) ($in['to'] ?? 0));
-            if (!$from || !$to) return $fail('Choisissez un départ et une arrivée.');
-            if ($from['id'] === $to['id']) return $fail('Le départ et l\'arrivée doivent être différents.');
-            $est = vtc_estimate($from, $to);
-            $drv = best_provider('vtc', $from['commune']);
-            if (!$drv) return $fail('Aucun chauffeur disponible pour le moment.');
-            $q += ['title' => "Course {$from['name']} → {$to['name']}", 'amount' => $est['price'], 'service_date' => date('Y-m-d')];
-            $q['provider_id'] = (int) $drv['id'];
-            $q['item_type'] = 'course';
-            $q['details'] = ['from' => $from['name'], 'to' => $to['name'], 'km' => $est['km'], 'minutes' => $est['minutes'], 'vehicle' => $drv['vehicle'], 'driver' => $drv['name']];
-            $q['summary'] = [['Trajet', "{$from['name']} → {$to['name']}"], ['Distance estimée', $est['km'] . ' km · ~' . $est['minutes'] . ' min'], ['Chauffeur', $drv['name'] . ' · ' . $drv['vehicle']], ['Économie vs marché', fcfa($est['saving'])]];
-            break;
-        }
         case 'menage':
         case 'pressing':
         case 'location_car':
         case 'location_camion':
-        case 'chauffeurs': {
+        case 'coiffeuse':
+        case 'maquilleuse':
+        case 'onglerie': {
             $prov = one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) ($in['provider'] ?? 0), $universe]);
             $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
             $zone = zone((int) ($in['zone'] ?? 0));
@@ -132,23 +97,6 @@ function build_quote(string $universe, array $in): array
                 $q['details']['garantie_dommage_montant'] = $fee;
                 $q['summary'][] = ['🛡️ Garantie Dommage', fcfa($fee)];
             }
-            break;
-        }
-        case 'livreur': {
-            $from = zone((int) ($in['from'] ?? 0));
-            $to = zone((int) ($in['to'] ?? 0));
-            if (!$from || !$to) return $fail('Indiquez les zones de ramassage et de livraison.');
-            $type = in_array($in['type'] ?? '', ['pli', 'colis', 'volumineux', 'courses'], true) ? $in['type'] : 'colis';
-            $est = livreur_estimate($from, $to, $type);
-            $rider = best_provider('livreur', $from['commune']);
-            if (!$rider) return $fail('Aucun coursier disponible pour le moment.');
-            $rphone = normalize_phone((string) ($in['recipient_phone'] ?? ''));
-            $labels = ['pli' => 'Pli / document', 'colis' => 'Colis standard', 'volumineux' => 'Colis volumineux', 'courses' => 'Courses au marché'];
-            $q += ['title' => "{$labels[$type]} {$from['name']} → {$to['name']}", 'amount' => $est['price'], 'service_date' => date('Y-m-d')];
-            $q['provider_id'] = (int) $rider['id'];
-            $q['item_type'] = 'course';
-            $q['details'] = ['from' => $from['name'], 'to' => $to['name'], 'type' => $labels[$type], 'km' => $est['km'], 'minutes' => $est['minutes'], 'recipient' => mb_substr((string) ($in['recipient'] ?? ''), 0, 80), 'recipient_phone' => $rphone, 'note' => mb_substr((string) ($in['note'] ?? ''), 0, 300), 'rider' => $rider['name']];
-            $q['summary'] = [['Trajet', "{$from['name']} → {$to['name']}"], ['Type', $labels[$type]], ['Coursier', $rider['name']], ['Délai estimé', '~' . $est['minutes'] . ' min']];
             break;
         }
         case 'cars': {

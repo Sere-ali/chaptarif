@@ -33,11 +33,11 @@ if (is_post()) {
     redirect('/devenir-prestataire');
 }
 $title = 'Devenir prestataire ChapTarif';
-$desc = 'Aides ménagères, pressings, coursiers, chauffeurs, compagnies de cars et bailleurs : rejoignez ChapTarif et recevez des clients qui ont déjà payé.';
+$desc = 'Aides ménagères, pressings, coiffeuses, maquilleuses, prothésistes ongulaires, loueurs de car/camion et bailleurs : rejoignez ChapTarif et recevez des clients qui ont déjà payé.';
 $active = 'pro';
 view('layout/header', compact('title', 'desc', 'active'));
 ?>
-<section class="page-hero" style="--c:#2E7D5B;--hero:url('<?= e(img('univers-livreur', 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
+<section class="page-hero" style="--c:#2E7D5B;--hero:url('<?= e(img('univers-menage', 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
   <div class="container"><nav class="crumbs"><a href="/">Accueil</a> › Devenir prestataire</nav><h1>Rejoignez le réseau ChapTarif</h1><p>Des clients qui ont déjà payé, un paiement garanti après chaque mission.</p></div>
 </section>
 <section class="section-tight">
@@ -48,7 +48,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         <div><span>💰</span><b>Paiement garanti</b><small>Le client paie à la réservation. Vous êtes payé sur Wave / Orange Money dès la validation.</small></div>
         <div><span>📈</span><b>Plus de clients</b><small>Visibilité dans votre commune auprès de milliers d'Abidjanais.</small></div>
         <div><span>⭐</span><b>Badge « Recommandé »</b><small>Apparaissez en tête de liste pour <?= fcfa(setting('sponsor_price', 5000)) ?> / mois (optionnel).</small></div>
-        <div><span>🤝</span><b>Commission claire</b><small><?= (int) setting('commission_menage', 15) ?> % sur les services à domicile, <?= (int) setting('commission_vtc', 10) ?> % sur les courses VTC. Inscription gratuite.</small></div>
+        <div><span>🤝</span><b>Commission claire</b><small><?= (int) setting('commission_menage', 15) ?> % sur les services à domicile. Inscription gratuite.</small></div>
       </div>
       <div class="card mt">
         <h3 class="h4">Exemple sur un ménage à 5 000 F</h3>
@@ -68,7 +68,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       </div>
       <label class="fld"><span>E-mail (facultatif)</span><input type="email" name="email" maxlength="120"></label>
       <label class="fld"><span>Présentez votre activité</span><textarea name="bio" rows="3" maxlength="400" placeholder="Expérience, spécialités, horaires…"></textarea></label>
-      <label class="fld"><span>Véhicule (chauffeurs / coursiers)</span><input name="vehicle" maxlength="80" placeholder="Ex. Toyota Corolla climatisée"></label>
+      <label class="fld"><span>Véhicule (si applicable : car, camion…)</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>
       <div class="row2">
         <label class="fld"><span>Recevoir mes paiements sur</span><select name="payout_method"><option value="wave">Wave</option><option value="orange">Orange Money</option><option value="mtn">MTN MoMo</option><option value="moov">Moov Money</option></select></label>
         <label class="fld"><span>Numéro de paiement</span><input name="payout_number" inputmode="tel" placeholder="Si différent"></label>

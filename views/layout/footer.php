@@ -38,7 +38,7 @@
 <nav class="tabbar" aria-label="Navigation mobile">
   <a href="/" class="<?= ($active ?? '') === 'home' ? 'on' : '' ?>"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Accueil</a>
   <a href="/cars" class="<?= ($active ?? '') === 'cars' ? 'on' : '' ?>"><svg viewBox="0 0 24 24"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/></svg>Billets</a>
-  <a href="/vtc" class="<?= ($active ?? '') === 'vtc' ? 'on' : '' ?>"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Trajets</a>
+  <a href="/covoiturage" class="<?= ($active ?? '') === 'covoiturage' ? 'on' : '' ?>"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Trajets</a>
   <a href="/compte" class="<?= ($active ?? '') === 'account' ? 'on' : '' ?>"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Compte</a>
 </nav>
 

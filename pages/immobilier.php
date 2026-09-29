@@ -61,9 +61,11 @@ if ($id) {
 $title = 'Appartements meublés certifiés à Abidjan';
 $desc = 'Résidences et appartements meublés de courte durée à Abidjan, inspectés et certifiés. Photos réelles, paiement sous séquestre jusqu\'à la remise des clés.';
 $commune = (string) ($_GET['commune'] ?? '');
+$type = (string) ($_GET['type'] ?? '');
 $sql = 'SELECT * FROM properties WHERE active = 1';
 $params = [];
 if ($commune !== '') { $sql .= ' AND commune = ?'; $params[] = $commune; }
+if ($type !== '') { $sql .= ' AND type = ?'; $params[] = $type; }
 $props = all($sql . ' ORDER BY certified DESC, price_night', $params);
 $ci = valid_future_date($_GET['checkin'] ?? null, 365) ? $_GET['checkin'] : '';
 view('layout/header', compact('title', 'desc', 'active'));
@@ -78,9 +80,15 @@ view('layout/header', compact('title', 'desc', 'active'));
 <section class="section-tight">
   <div class="container">
     <div class="filter-chips mb">
-      <a class="fchip <?= $commune === '' ? 'on' : '' ?>" href="/immobilier">Toutes les communes</a>
+      <a class="fchip <?= $type === '' ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $commune])) ?>">Tous les types</a>
+      <?php foreach (array_column(all('SELECT DISTINCT type FROM properties WHERE active = 1 ORDER BY type'), 'type') as $t): if ($t === '') continue; ?>
+        <a class="fchip <?= $type === $t ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $commune, 'type' => $t])) ?>"><?= e($t) ?></a>
+      <?php endforeach; ?>
+    </div>
+    <div class="filter-chips mb">
+      <a class="fchip <?= $commune === '' ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['type' => $type])) ?>">Toutes les communes</a>
       <?php foreach (array_column(all('SELECT DISTINCT commune FROM properties WHERE active = 1 ORDER BY commune'), 'commune') as $c): ?>
-        <a class="fchip <?= $commune === $c ? 'on' : '' ?>" href="/immobilier?commune=<?= urlencode($c) ?>"><?= e($c) ?></a>
+        <a class="fchip <?= $commune === $c ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $c, 'type' => $type])) ?>"><?= e($c) ?></a>
       <?php endforeach; ?>
     </div>
     <?php if (!$props): ?><div class="empty"><div class="empty-ico">🏠</div><p>Aucun logement disponible dans cette commune.</p></div><?php endif; ?>

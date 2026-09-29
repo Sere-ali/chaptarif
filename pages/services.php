@@ -1,5 +1,5 @@
 <?php
-$uk = trim($path, '/'); // menage | pressing | location-car | location-camion | chauffeurs
+$uk = trim($path, '/'); // menage | pressing | location-car | location-camion | coiffeuse | maquilleuse | onglerie
 $uk = str_replace('-', '_', $uk);
 $x = universe($uk);
 $isM = $uk === 'menage';
@@ -8,7 +8,9 @@ $copy = [
     'pressing' => ['title' => 'Pressing & linge avec collecte à domicile', 'desc' => 'Collecte de linge à domicile, lavage professionnel et retour sous 24 à 48h. Tarifs transparents au forfait ou à la pièce.', 'step2' => 'votre pressing', 'prov_label' => 'Pressing', 'date_label' => 'Collecte le'],
     'location_car' => ['title' => 'Location de car avec chauffeur à Abidjan', 'desc' => 'Louez un car ou un minibus avec chauffeur pour vos sorties de groupe, mariages, EVJF ou excursions.', 'step2' => 'votre car', 'prov_label' => 'Loueur', 'date_label' => 'Date de la sortie'],
     'location_camion' => ['title' => 'Location de camion pour déménagement à Abidjan', 'desc' => 'Un camion avec chauffeur pour vos déménagements, ramassage de gravier, meubles ou marchandises.', 'step2' => 'votre camion', 'prov_label' => 'Loueur', 'date_label' => 'Date du transport'],
-    'chauffeurs' => ['title' => 'Recruter un chauffeur privé à Abidjan', 'desc' => 'Chauffeurs expérimentés disponibles à la journée, au mois ou à l\'année pour votre véhicule personnel.', 'step2' => 'votre chauffeur', 'prov_label' => 'Chauffeur', 'date_label' => 'Date de début'],
+    'coiffeuse' => ['title' => 'Coiffeuse à domicile à Abidjan', 'desc' => 'Coiffeuses vérifiées à domicile pour tresses, soins et coiffures, sans vous déplacer.', 'step2' => 'votre coiffeuse', 'prov_label' => 'Coiffeuse', 'date_label' => 'Date du rendez-vous'],
+    'maquilleuse' => ['title' => 'Maquilleuse à domicile à Abidjan', 'desc' => 'Maquillage professionnel à domicile pour vos mariages, cérémonies et événements.', 'step2' => 'votre maquilleuse', 'prov_label' => 'Maquilleuse', 'date_label' => 'Date de l\'événement'],
+    'onglerie' => ['title' => 'Onglerie à domicile à Abidjan', 'desc' => 'Pose de capsules, vernis semi-permanent et soins des ongles à domicile.', 'step2' => 'votre prothésiste ongulaire', 'prov_label' => 'Prothésiste', 'date_label' => 'Date du rendez-vous'],
 ][$uk] ?? ['title' => $x['name'], 'desc' => $x['pitch'], 'step2' => 'votre prestataire', 'prov_label' => 'Prestataire', 'date_label' => 'Date'];
 $title = $copy['title'];
 $desc = $copy['desc'];

@@ -113,26 +113,30 @@ function audit(string $action, string $target = '', $details = ''): void
 function universes(): array
 {
     return [
-        'vtc' => ['name' => 'VTC & Taxis', 'short' => 'VTC', 'emoji' => '🚕', 'sub' => 'En ville à Abidjan', 'color' => '#2F9E6B', 'bg' => '#ECF8F1', 'img' => 'univers-vtc', 'url' => '/vtc', 'group' => 'Transport',
-            'pitch' => 'Comparez Yango, Uber, InDrive et taxis compteurs, puis commandez au tarif garanti.'],
-        'cars' => ['name' => 'Cars Voyage', 'short' => 'Cars', 'emoji' => '🚌', 'sub' => 'Lignes CI (UTB…)', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/cars', 'group' => 'Transport',
+        // 🚌 Transports
+        'cars' => ['name' => 'Cars Voyage', 'short' => 'Cars', 'emoji' => '🚌', 'sub' => 'Lignes CI (UTB…)', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/cars', 'group' => 'Transports',
             'pitch' => 'Billets interurbains en 3 clics, E-billet QR code, zéro file en gare.'],
-        'covoiturage' => ['name' => 'Covoiturage', 'short' => 'Covoit.', 'emoji' => '🚙', 'sub' => 'Trajets de chauffeurs vérifiés', 'color' => '#0E9F8E', 'bg' => '#E9FAF6', 'img' => 'univers-covoiturage', 'url' => '/covoiturage', 'group' => 'Transport',
-            'pitch' => 'Un chauffeur vérifié propose son trajet (ex. Abidjan → Gagnoa) : réservez votre place, payez en sécurité.'],
-        'location_car' => ['name' => 'Location de car', 'short' => 'Car', 'emoji' => '🚐', 'sub' => 'Sorties & groupes', 'color' => '#3A6EA5', 'bg' => '#EEF4FA', 'img' => 'univers-location-car', 'url' => '/location-car', 'group' => 'Transport',
+        'location_car' => ['name' => 'Louer un car', 'short' => 'Car', 'emoji' => '🚐', 'sub' => 'Groupes & Événements', 'color' => '#3A6EA5', 'bg' => '#EEF4FA', 'img' => 'univers-location-car', 'url' => '/location-car', 'group' => 'Transports',
             'pitch' => 'Louez un car ou un minibus avec chauffeur pour vos sorties de groupe, mariages ou excursions.'],
-        'location_camion' => ['name' => 'Location de camion', 'short' => 'Camion', 'emoji' => '🚚', 'sub' => 'Déménagement & transport', 'color' => '#8A5A2B', 'bg' => '#FBF2E9', 'img' => 'univers-location-camion', 'url' => '/location-camion', 'group' => 'Transport',
+        'location_camion' => ['name' => 'Location de gros camion', 'short' => 'Camion', 'emoji' => '🚚', 'sub' => 'Fret & Déménagement', 'color' => '#8A5A2B', 'bg' => '#FBF2E9', 'img' => 'univers-location-camion', 'url' => '/location-camion', 'group' => 'Transports',
             'pitch' => 'Un camion et son chauffeur pour vos déménagements, ramassage de gravier, meubles ou marchandises.'],
-        'chauffeurs' => ['name' => 'Chauffeurs privés', 'short' => 'Chauffeur', 'emoji' => '🧑‍✈️', 'sub' => 'Journée, mois ou année', 'color' => '#2F7A4F', 'bg' => '#ECF7EF', 'img' => 'univers-chauffeurs', 'url' => '/chauffeurs', 'group' => 'Transport',
-            'pitch' => 'Recrutez un chauffeur expérimenté pour votre véhicule personnel, à la journée, au mois ou à l\'année.'],
-        'livreur' => ['name' => 'Livreur Express', 'short' => 'Livreur', 'emoji' => '📦', 'sub' => 'Plis, colis & courses', 'color' => '#C98512', 'bg' => '#FFF7E8', 'img' => 'univers-livreur', 'url' => '/livreur', 'group' => 'Livraison',
-            'pitch' => 'Coursiers moto dans toutes les communes, tarifs zonés et suivi en direct.'],
-        'menage' => ['name' => 'Ménage & Aide', 'short' => 'Ménage', 'emoji' => '🧹', 'sub' => 'Femmes de ménage pro', 'color' => '#C2407F', 'bg' => '#FCEFF5', 'img' => 'univers-menage', 'url' => '/menage', 'group' => 'Maison',
+        'covoiturage' => ['name' => 'Covoiturage', 'short' => 'Covoit.', 'emoji' => '🚙', 'sub' => 'Trajets économiques partagés', 'color' => '#0E9F8E', 'bg' => '#E9FAF6', 'img' => 'univers-covoiturage', 'url' => '/covoiturage', 'group' => 'Transports',
+            'pitch' => 'Un chauffeur vérifié propose son trajet (ex. Abidjan → Gagnoa) : réservez votre place, payez en sécurité.'],
+        // 🏡 Immobilier (Location)
+        'immobilier' => ['name' => 'Immobilier', 'short' => 'Immobilier', 'emoji' => '🏡', 'sub' => 'Appartements, villas & studios certifiés', 'color' => '#C98512', 'bg' => '#FFF7E8', 'img' => 'univers-immobilier', 'url' => '/immobilier', 'group' => 'Immobilier',
+            'pitch' => 'Appartements, villas & studios meublés inspectés, contrats et dépôts de garantie 100% sécurisés.'],
+        // 🧹 Service à la personne
+        'menage' => ['name' => 'Ménage ou aide à domicile', 'short' => 'Ménage', 'emoji' => '🧹', 'sub' => 'Femmes de ménage pro', 'color' => '#C2407F', 'bg' => '#FCEFF5', 'img' => 'univers-menage', 'url' => '/menage', 'group' => 'Service à la personne',
             'pitch' => 'Aides ménagères aux profils CNI vérifiés, tarif fixe à la séance.'],
-        'pressing' => ['name' => 'Pressing & Linge', 'short' => 'Pressing', 'emoji' => '👔', 'sub' => 'Repassage & Collecte', 'color' => '#2F6FB0', 'bg' => '#EEF5FC', 'img' => 'univers-pressing', 'url' => '/pressing', 'group' => 'Maison',
+        'pressing' => ['name' => 'Pressing & repassage', 'short' => 'Pressing', 'emoji' => '👔', 'sub' => 'Collecte & Livraison', 'color' => '#2F6FB0', 'bg' => '#EEF5FC', 'img' => 'univers-pressing', 'url' => '/pressing', 'group' => 'Service à la personne',
             'pitch' => 'Collecte à domicile, lavage pro et retour sous 24 à 48h.'],
-        'immobilier' => ['name' => 'Immobilier', 'short' => 'Immobilier', 'emoji' => '🏠', 'sub' => 'Meublés certifiés', 'color' => '#7E3FC4', 'bg' => '#F5EEFC', 'img' => 'univers-immobilier', 'url' => '/immobilier', 'group' => 'Logement',
-            'pitch' => 'Résidences meublées inspectées, photos réelles, argent bloqué jusqu\'à la remise des clés.'],
+        // 💄 Beauté à domicile
+        'coiffeuse' => ['name' => 'Coiffeuse à domicile', 'short' => 'Coiffure', 'emoji' => '💇‍♀️', 'sub' => 'Tresses & soins sans déplacement', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/coiffeuse', 'group' => 'Beauté',
+            'pitch' => 'Coiffeuses vérifiées à domicile : tresses, soins et coiffures, sans vous déplacer.'],
+        'maquilleuse' => ['name' => 'Maquilleuse à domicile', 'short' => 'Maquillage', 'emoji' => '💄', 'sub' => 'Cérémonies & Événements', 'color' => '#D6336C', 'bg' => '#FDEEF3', 'img' => 'univers-maquilleuse', 'url' => '/maquilleuse', 'group' => 'Beauté',
+            'pitch' => 'Maquillage professionnel à domicile pour vos mariages, cérémonies et événements.'],
+        'onglerie' => ['name' => 'Onglerie à domicile', 'short' => 'Onglerie', 'emoji' => '💅', 'sub' => 'Pose capsules & Vernis', 'color' => '#AD1457', 'bg' => '#FCE8EF', 'img' => 'univers-onglerie', 'url' => '/onglerie', 'group' => 'Beauté',
+            'pitch' => 'Pose de capsules, vernis semi-permanent et soins des ongles à domicile.'],
     ];
 }
 

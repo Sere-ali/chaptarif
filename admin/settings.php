@@ -2,16 +2,14 @@
 require_super();
 $groups = [
     'Commissions (%)' => [
-        'commission_menage' => 'Ménage & Aide', 'commission_pressing' => 'Pressing & Linge', 'commission_livreur' => 'Livreur Express',
-        'commission_vtc' => 'VTC & Taxis', 'commission_immobilier' => 'Immobilier', 'commission_cars' => 'Cars (sur le prix du billet)',
+        'commission_menage' => 'Ménage & Aide', 'commission_pressing' => 'Pressing & Linge',
+        'commission_immobilier' => 'Immobilier', 'commission_cars' => 'Cars (sur le prix du billet)',
         'commission_covoiturage' => 'Covoiturage (sur le prix de la place)', 'commission_location_car' => 'Location de car',
-        'commission_location_camion' => 'Location de camion', 'commission_chauffeurs' => 'Chauffeurs privés',
+        'commission_location_camion' => 'Location de camion', 'commission_coiffeuse' => 'Coiffeuse à domicile',
+        'commission_maquilleuse' => 'Maquilleuse à domicile', 'commission_onglerie' => 'Onglerie à domicile',
     ],
     'Frais & abonnements (F CFA)' => ['cars_service_fee' => 'Frais de service par billet de car', 'sponsor_price' => 'Abonnement « Recommandé » / mois'],
     'Garantie Dommage (option payante)' => ['garantie_dommage_pct' => 'Prix de la garantie, en % du prix du service'],
-    'Tarification VTC' => ['vtc_base' => 'Prise en charge (F)', 'vtc_per_km' => 'Prix au km (F)', 'vtc_min' => 'Course minimum (F)', 'road_factor' => 'Coefficient route / vol d\'oiseau'],
-    'Tarification Livreur' => ['livreur_base' => 'Prise en charge (F)', 'livreur_per_km' => 'Prix au km (F)', 'livreur_min' => 'Course minimum (F)'],
-    'Coefficients du comparateur marché (× tarif ChapTarif)' => ['market_yango' => 'Yango', 'market_uber' => 'Uber', 'market_indrive' => 'InDrive', 'market_taxi' => 'Taxi compteur'],
     'Support client' => ['support_phone' => 'Téléphone', 'support_email' => 'E-mail'],
     'Paiement manuel · numéros de réception Mobile Money' => [
         'pay_wave_number' => 'Numéro Wave', 'pay_orange_number' => 'Numéro Orange Money',
