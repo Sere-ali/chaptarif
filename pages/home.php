@@ -2,6 +2,7 @@
 $title = 'ChapTarif';
 $active = 'home';
 $U = universes();
+$N = nav_entries();
 $zones = zones_list();
 $cities = array_column(all('SELECT DISTINCT to_city FROM trips WHERE active = 1 AND universe = \'cars\' AND from_city = ? ORDER BY to_city', ['Abidjan']), 'to_city');
 $covCities = array_column(all('SELECT DISTINCT to_city FROM trips WHERE active = 1 AND universe = \'covoiturage\' AND from_city = ? ORDER BY to_city', ['Abidjan']), 'to_city');
@@ -116,7 +117,7 @@ view('layout/header', compact('title', 'active'));
       <p>Des prix affichés à l'avance et zéro négociation.</p>
     </div>
     <div class="uni-grid">
-      <?php foreach ($U as $k => $x): ?>
+      <?php foreach ($N as $k => $x): ?>
         <a class="uni reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>;--bg:<?= $x['bg'] ?>">
           <div class="uni-img"><img src="<?= e(img($x['img'], 'w_640,h_420,c_fill,q_auto,f_auto')) ?>" alt="<?= e($x['name']) ?>" loading="lazy" width="640" height="420"></div>
           <div class="uni-body"><span class="uni-emoji"><?= $x['emoji'] ?></span>

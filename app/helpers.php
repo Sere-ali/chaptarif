@@ -145,6 +145,50 @@ function universe(string $key): array
     return universes()[$key] ?? ['name' => $key, 'emoji' => '•', 'color' => '#555', 'bg' => '#eee', 'short' => $key];
 }
 
+// ---- Domaines (regroupements pour la navigation) -------------------------------
+// Certains univers sont réunis derrière un seul bouton (page /transport, /beaute)
+// qui liste ensuite les univers concernés ; les autres restent affichés individuellement.
+function domaines(): array
+{
+    return [
+        'transport' => ['name' => 'Transport', 'short' => 'Transport', 'emoji' => '🚌', 'sub' => 'Cars, covoiturage, location de car & de camion', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/transport', 'group' => 'Transports',
+            'pitch' => 'Cars interurbains, covoiturage, location de car ou de camion : comparez et réservez en un clic.',
+            'keys' => ['cars', 'covoiturage', 'location_car', 'location_camion']],
+        'beaute' => ['name' => 'Beauté à domicile', 'short' => 'Beauté', 'emoji' => '💄', 'sub' => 'Coiffeuse, maquilleuse & onglerie', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/beaute', 'group' => 'Beauté',
+            'pitch' => 'Coiffeuse, maquilleuse et prothésiste ongulaire à domicile, prestataires vérifiés.',
+            'keys' => ['coiffeuse', 'maquilleuse', 'onglerie']],
+    ];
+}
+
+function domaine(string $key): array
+{
+    return domaines()[$key] ?? ['name' => $key, 'emoji' => '•', 'color' => '#555', 'bg' => '#eee', 'short' => $key, 'keys' => []];
+}
+
+// Entrées affichées dans la navigation et sur la page d'accueil : les univers d'un
+// même domaine "regroupé" (Transport, Beauté) apparaissent sous un seul bouton qui
+// mène vers la page du domaine ; les autres univers (Immobilier, Ménage, Pressing)
+// restent affichés chacun avec leur propre bouton, comme avant.
+function nav_entries(): array
+{
+    $U = universes();
+    $D = domaines();
+    $grouped = [];
+    foreach ($D as $dk => $d) {
+        foreach ($d['keys'] as $k) $grouped[$k] = $dk;
+    }
+    $out = [];
+    foreach ($U as $k => $x) {
+        if (isset($grouped[$k])) {
+            $dk = $grouped[$k];
+            if (!isset($out[$dk])) $out[$dk] = $D[$dk];
+        } else {
+            $out[$k] = $x;
+        }
+    }
+    return $out;
+}
+
 // ---- Statuts de réservation ---------------------------------------------------
 function statuses(): array
 {

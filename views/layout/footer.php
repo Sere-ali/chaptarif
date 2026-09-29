@@ -10,7 +10,7 @@
     </div>
     <div>
       <h4>Services</h4>
-      <?php foreach (universes() as $x): ?><a href="<?= $x['url'] ?>"><?= e($x['name']) ?></a><?php endforeach; ?>
+      <?php foreach (nav_entries() as $x): ?><a href="<?= $x['url'] ?>"><?= e($x['name']) ?></a><?php endforeach; ?>
     </div>
     <div>
       <h4>ChapTarif</h4>

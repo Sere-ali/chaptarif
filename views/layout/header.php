@@ -3,7 +3,7 @@ $title = $title ?? 'ChapTarif';
 $active = $active ?? '';
 $desc = $desc ?? 'ChapTarif, votre meilleur comparateur en Côte d\'Ivoire : cars voyage, covoiturage, location de car/camion, ménage, pressing, coiffure, maquillage, onglerie et immobilier meublé. Comparez, réservez et payez en toute sécurité via Wave, Orange Money et MTN.';
 $u = current_user();
-$U = universes();
+$U = nav_entries();
 ?><!doctype html>
 <html lang="fr">
 <head>
