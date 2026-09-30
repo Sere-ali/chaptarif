@@ -10,7 +10,7 @@ if (is_post()) {
     if (mb_strlen($name) < 3) $errors[] = 'Indiquez votre nom complet ou celui de votre entreprise.';
     if (!$phone) $errors[] = 'Numéro de téléphone invalide.';
     if ($phone && val("SELECT 1 FROM providers WHERE phone = ? AND universe = ?", [$phone, $uk])) $errors[] = 'Une candidature existe déjà pour ce numéro.';
-    if (too_many_attempts('apply', 5, 60)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
+    if (too_many_attempts('apply:' . client_ip(), 5, 60)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
     $cni = null;
     if (!$errors && !empty($_FILES['cni']['name'])) {
         $r = cld_upload($_FILES['cni'], 'chaptarif/kyc', 'authenticated');
@@ -27,7 +27,7 @@ if (is_post()) {
         foreach ($errors as $er) flash('error', $er);
         redirect('/devenir-prestataire#form');
     }
-    record_attempt('apply');
+    record_attempt('apply:' . client_ip());
     insert('providers', [
         'universe' => $uk, 'name' => $name, 'phone' => $phone, 'email' => mb_substr((string) ($_POST['email'] ?? ''), 0, 120),
         'commune' => in_array($_POST['commune'] ?? '', communes(), true) ? $_POST['commune'] : null,
