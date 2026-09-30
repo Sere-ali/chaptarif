@@ -64,9 +64,9 @@ view('admin/header', compact('page', 'nav'));
     <?php endforeach; if (!$recent): ?><tr><td colspan="5" class="muted">Aucune réservation pour l'instant.</td></tr><?php endif; ?>
     </tbody></table></div>
   </div>
-  <div class="panel"><div class="panel-h"><h2>KYC à vérifier</h2><a class="btn btn-soft btn-sm" href="/admin/prestataires?kyc=pending">Tout voir</a></div>
+  <div class="panel"><div class="panel-h"><h2>KYC à vérifier</h2><a class="btn btn-soft btn-sm" href="/admin/candidatures">Tout voir</a></div>
     <?php foreach ($kyc as $p): ?>
-      <div class="prov-mini"><?= avatar($p) ?><div><b><?= e($p['name']) ?></b><small><?= e(universe($p['universe'])['name']) ?> · <?= e($p['commune']) ?> · <?= fmt_date($p['created_at']) ?></small></div><a class="btn btn-ghost btn-xs" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Examiner</a></div>
+      <div class="prov-mini"><?= avatar($p) ?><div><b><?= e($p['name']) ?></b><small><?= e(universe($p['universe'])['name']) ?> · <?= e($p['commune']) ?> · <?= fmt_date($p['created_at']) ?><?= $p['source'] === 'candidature' ? ' · candidature web' : '' ?></small></div><a class="btn btn-ghost btn-xs" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Examiner</a></div>
     <?php endforeach; if (!$kyc): ?><p class="muted">Aucun dossier en attente. 🎉</p><?php endif; ?>
   </div>
 </div>

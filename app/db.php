@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 
 function db(): PDO
 {
@@ -178,6 +178,7 @@ function db_migrate(): void
         "ALTER TABLE trips ADD COLUMN provider_id INTEGER",
         "ALTER TABLE trips ADD COLUMN from_detail TEXT",
         "ALTER TABLE trips ADD COLUMN to_detail TEXT",
+        "ALTER TABLE providers ADD COLUMN casier_public_id TEXT",
     ] as $alter) {
         try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }
     }

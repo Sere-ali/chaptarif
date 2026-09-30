@@ -17,6 +17,12 @@ if (is_post()) {
         if ($r['ok']) $cni = $r['public_id'] . '.' . $r['format'];
         else $errors[] = 'Pièce d\'identité : ' . $r['error'];
     }
+    $casier = null;
+    if (!$errors && !empty($_FILES['casier']['name'])) {
+        $r = cld_upload($_FILES['casier'], 'chaptarif/kyc', 'authenticated');
+        if ($r['ok']) $casier = $r['public_id'] . '.' . $r['format'];
+        else $errors[] = 'Casier judiciaire : ' . $r['error'];
+    }
     if ($errors) {
         foreach ($errors as $er) flash('error', $er);
         redirect('/devenir-prestataire#form');
@@ -26,12 +32,13 @@ if (is_post()) {
         'universe' => $uk, 'name' => $name, 'phone' => $phone, 'email' => mb_substr((string) ($_POST['email'] ?? ''), 0, 120),
         'commune' => in_array($_POST['commune'] ?? '', communes(), true) ? $_POST['commune'] : null,
         'bio' => mb_substr(trim((string) ($_POST['bio'] ?? '')), 0, 400), 'vehicle' => mb_substr((string) ($_POST['vehicle'] ?? ''), 0, 80),
-        'kyc_status' => 'pending', 'cni_public_id' => $cni, 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
+        'kyc_status' => 'pending', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
         'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
     ]);
-    flash('success', 'Candidature envoyée ! Notre équipe vérifie votre dossier et vous appelle sous 48h.');
+    flash('success', 'Candidature envoyée ! Notre équipe vérifie votre dossier (CNI + casier judiciaire) et vous appelle sous 30 minutes.');
     redirect('/devenir-prestataire');
 }
+$transportKeys = domaine('transport')['keys'];
 $title = 'Devenir prestataire ChapTarif';
 $desc = 'Aides ménagères, pressings, coiffeuses, maquilleuses, prothésistes ongulaires, loueurs de car/camion et bailleurs : rejoignez ChapTarif et recevez des clients qui ont déjà payé.';
 $active = 'pro';
@@ -60,7 +67,7 @@ view('layout/header', compact('title', 'desc', 'active'));
     <form class="card form-card" id="form" method="post" enctype="multipart/form-data">
       <?= csrf_field() ?>
       <h2 class="h3">Ma candidature</h2>
-      <label class="fld"><span>Activité</span><select name="universe" required><option value="">Choisir…</option><?php foreach ($U as $k => $x): ?><option value="<?= $k ?>"><?= $x['emoji'] ?> <?= e($x['name']) ?></option><?php endforeach; ?></select></label>
+      <label class="fld"><span>Activité</span><select name="universe" id="proUniverse" required><option value="">Choisir…</option><?php foreach ($U as $k => $x): ?><option value="<?= $k ?>" data-transport="<?= in_array($k, $transportKeys, true) ? '1' : '0' ?>"><?= $x['emoji'] ?> <?= e($x['name']) ?></option><?php endforeach; ?></select></label>
       <label class="fld"><span>Nom complet / Entreprise</span><input name="name" required maxlength="80"></label>
       <div class="row2">
         <label class="fld"><span>Téléphone</span><input name="phone" inputmode="tel" required placeholder="07 00 00 00 00"></label>
@@ -68,14 +75,28 @@ view('layout/header', compact('title', 'desc', 'active'));
       </div>
       <label class="fld"><span>E-mail (facultatif)</span><input type="email" name="email" maxlength="120"></label>
       <label class="fld"><span>Présentez votre activité</span><textarea name="bio" rows="3" maxlength="400" placeholder="Expérience, spécialités, horaires…"></textarea></label>
-      <label class="fld"><span>Véhicule (si applicable : car, camion…)</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>
+      <label class="fld" id="vehicleFld" hidden><span>Véhicule</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>
       <div class="row2">
         <label class="fld"><span>Recevoir mes paiements sur</span><select name="payout_method"><option value="wave">Wave</option><option value="orange">Orange Money</option><option value="mtn">MTN MoMo</option><option value="moov">Moov Money</option></select></label>
         <label class="fld"><span>Numéro de paiement</span><input name="payout_number" inputmode="tel" placeholder="Si différent"></label>
       </div>
       <label class="fld file"><span>🪪 Pièce d'identité (CNI, recto) — JPG/PNG/PDF</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
-      <p class="fine">Votre pièce est stockée de façon privée et consultée uniquement par l'équipe de vérification.</p>
+      <label class="fld file"><span>📄 Casier judiciaire (bulletin n°3) — JPG/PNG/PDF</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
+      <p class="fine">Vos documents sont stockés de façon privée et consultés uniquement par l'équipe de vérification.</p>
       <button class="btn btn-primary btn-block btn-lg">Envoyer ma candidature</button>
+      <script>
+      (function () {
+        var sel = document.getElementById('proUniverse'), fld = document.getElementById('vehicleFld');
+        if (!sel || !fld) return;
+        var upd = function () {
+          var opt = sel.options[sel.selectedIndex];
+          var isTransport = opt && opt.dataset.transport === '1';
+          fld.hidden = !isTransport;
+          fld.querySelector('input').required = !!isTransport;
+        };
+        sel.addEventListener('change', upd); upd();
+      })();
+      </script>
     </form>
   </div>
 </section>

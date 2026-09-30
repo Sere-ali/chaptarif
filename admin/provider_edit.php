@@ -46,6 +46,10 @@ if (is_post()) {
         $r = cld_upload($_FILES['cni'], 'chaptarif/kyc', 'authenticated');
         $r['ok'] ? $data['cni_public_id'] = $r['public_id'] . '.' . $r['format'] : flash('error', 'CNI : ' . $r['error']);
     }
+    if (!empty($_FILES['casier']['name'])) {
+        $r = cld_upload($_FILES['casier'], 'chaptarif/kyc', 'authenticated');
+        $r['ok'] ? $data['casier_public_id'] = $r['public_id'] . '.' . $r['format'] : flash('error', 'Casier judiciaire : ' . $r['error']);
+    }
     if ($p) {
         update('providers', (int) $p['id'], $data);
         audit('prestataire.modification', $data['name'] . ' #' . $p['id']);
@@ -59,7 +63,7 @@ if (is_post()) {
     redirect('/admin/prestataire?id=' . $pid);
 }
 
-$p ??= ['universe' => 'menage', 'name' => '', 'phone' => '', 'email' => '', 'commune' => '', 'bio' => '', 'vehicle' => '', 'rating' => 0, 'payout_method' => 'wave', 'payout_number' => '', 'kyc_status' => 'pending', 'active' => 1, 'photo_url' => null, 'cni_public_id' => null, 'missions' => 0];
+$p ??= ['universe' => 'menage', 'name' => '', 'phone' => '', 'email' => '', 'commune' => '', 'bio' => '', 'vehicle' => '', 'rating' => 0, 'payout_method' => 'wave', 'payout_number' => '', 'kyc_status' => 'pending', 'active' => 1, 'photo_url' => null, 'cni_public_id' => null, 'casier_public_id' => null, 'missions' => 0];
 $history = $id ? all('SELECT * FROM bookings WHERE provider_id = ? ORDER BY id DESC LIMIT 10', [$id]) : [];
 $earned = $id ? (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE provider_id = ? AND type = 'REVERSEMENT'", [$id]) : 0;
 $page = $id ? $p['name'] : 'Nouveau prestataire';
@@ -95,6 +99,7 @@ view('admin/header', compact('page', 'nav'));
       <label class="fld file"><span>📷 Photo de profil (Cloudinary)</span><input type="file" name="photo" accept="image/*"></label>
       <label class="fld file"><span>🪪 Pièce d'identité (privée)</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
     </div>
+    <label class="fld file"><span>📄 Casier judiciaire (privé)</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
     <button class="btn btn-primary">Enregistrer</button>
   </form>
   <div>
@@ -111,6 +116,16 @@ view('admin/header', compact('page', 'nav'));
         <a class="btn btn-soft" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['cni_public_id'])) ?>">Ouvrir le PDF</a>
       <?php else: ?>
         <a target="_blank" rel="noopener" href="<?= e(cld_private_url($p['cni_public_id'])) ?>"><img class="cni-thumb" src="<?= e(cld_private_url($p['cni_public_id'])) ?>" alt="CNI"></a>
+      <?php endif; ?>
+      <p class="fine">Document privé (lien signé Cloudinary). Consultation journalisée.</p>
+    </div>
+    <?php endif; ?>
+    <?php if (!empty($p['casier_public_id'])): ?>
+    <div class="panel"><h2 class="h4">Casier judiciaire</h2>
+      <?php if (str_ends_with((string) $p['casier_public_id'], '.pdf')): ?>
+        <a class="btn btn-soft" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['casier_public_id'])) ?>">Ouvrir le PDF</a>
+      <?php else: ?>
+        <a target="_blank" rel="noopener" href="<?= e(cld_private_url($p['casier_public_id'])) ?>"><img class="cni-thumb" src="<?= e(cld_private_url($p['casier_public_id'])) ?>" alt="Casier judiciaire"></a>
       <?php endif; ?>
       <p class="fine">Document privé (lien signé Cloudinary). Consultation journalisée.</p>
     </div>

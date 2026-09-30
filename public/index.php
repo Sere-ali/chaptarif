@@ -48,6 +48,7 @@ $routes = [
     '/admin/reservations'   => 'admin/bookings.php',
     '/admin/reservation'    => 'admin/booking.php',
     '/admin/litiges'        => 'admin/bookings.php',
+    '/admin/candidatures'   => 'admin/candidatures.php',
     '/admin/prestataires'   => 'admin/providers.php',
     '/admin/prestataire'    => 'admin/provider_edit.php',
     '/admin/offres'         => 'admin/offers.php',

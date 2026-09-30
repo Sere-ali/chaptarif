@@ -3,10 +3,12 @@ $me = current_user();
 $nav = $nav ?? '';
 $disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'");
 $pendingKyc = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'");
+$pendingCandidatures = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'");
 $unread = (int) val('SELECT COUNT(*) FROM contact_messages WHERE handled = 0');
 $items = [
     ['Pilotage', null],
     ['dashboard', '/admin', '📊', 'Tableau de bord', 0],
+    ['candidatures', '/admin/candidatures', '📋', 'Candidatures prestataires', $pendingCandidatures],
     ['bookings', '/admin/reservations', '🧾', 'Réservations', 0],
     ['disputes', '/admin/litiges', '⚠️', 'Litiges', $disputes],
     ['finances', '/admin/finances', '💰', 'Finances & séquestre', 0],
