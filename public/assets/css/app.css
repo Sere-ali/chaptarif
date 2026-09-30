@@ -87,6 +87,7 @@ hr { border: 0; border-top: 1px dashed var(--line); margin: 14px 0; }
 .brand-light .b1 { color: #7FE0B0; }
 .brand-light .b2 { color: #8FC4FF; }
 .nav { display: flex; align-items: center; gap: 4px; margin-left: 12px; }
+.install-btn { white-space: nowrap; flex: none; }
 .nav-link { background: none; border: 0; font: inherit; font-weight: 600; color: var(--ink-2); padding: 10px 14px; border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 .nav-link:hover, .nav-link.on { background: var(--soft); color: var(--ink); text-decoration: none; }
 .nav-drop { position: relative; }
@@ -561,6 +562,8 @@ html.force-mobile .stats { grid-template-columns: 1fr 1fr !important; }
   .brand img { width: 34px; height: 34px; }
   .top-actions .btn-ghost { display: none; }
   .top-actions .btn-soft { padding: 8px 10px; font-size: .78rem; }
+  .install-btn { padding: 6px 9px; font-size: 0; }
+  .install-btn::before { content: '⬇️'; font-size: 1rem; }
   .hero { padding: 36px 0 60px; }
   .lead { font-size: 1.02rem; }
   .uni-grid, .prop-grid, .features, .info-strip, .row2 { grid-template-columns: 1fr; }

@@ -37,6 +37,7 @@ $U = nav_entries();
       <img src="/assets/img/logo.svg" alt="" width="40" height="40">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
+    <button class="btn btn-ghost btn-sm install-btn" id="installBtn" type="button" hidden>⬇️ Télécharger</button>
     <nav class="nav" aria-label="Navigation principale">
       <div class="nav-drop">
         <button class="nav-link" aria-haspopup="true" aria-expanded="false">Services <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>

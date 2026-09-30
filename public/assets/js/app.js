@@ -160,4 +160,23 @@
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
   }
+
+  // Bouton "Télécharger" (installation de l'application) à côté du logo
+  var installBtn = document.getElementById('installBtn');
+  if (installBtn) {
+    var deferredPrompt = null;
+    var alreadyInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!alreadyInstalled) installBtn.hidden = false;
+    });
+    installBtn.addEventListener('click', function () {
+      if (!deferredPrompt) return;
+      installBtn.hidden = true;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.finally(function () { deferredPrompt = null; });
+    });
+    window.addEventListener('appinstalled', function () { installBtn.hidden = true; deferredPrompt = null; });
+  }
 })();
