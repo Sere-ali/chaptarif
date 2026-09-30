@@ -39,7 +39,7 @@ $routes = [
     '/contact'              => 'pages/contact.php',
     '/mentions-legales'     => 'pages/legal.php',
     '/sante'                => 'pages/health.php',
-    '/x7f2k9-debug'         => 'pages/debug_temp.php',
+    '/x7f2k9-debug-0veoQz3nQsJyuvKCCx-7TFa4roVCxMEV' => 'pages/debug_temp.php',
 
     // Back-office
     '/admin'                => 'admin/dashboard.php',
