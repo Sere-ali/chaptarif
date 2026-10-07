@@ -41,15 +41,15 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 <section class="d-home">
   <div class="container d-top">
     <a href="/" class="d-back" aria-label="Retour à l'accueil"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
-    <h1 class="d-top-title"><?= e($d['short'] ?: $d['name']) ?></h1>
+    <h1 class="d-top-title"><?= e($d['title_m'] ?? ($d['short'] ?: $d['name'])) ?></h1>
     <a href="/" class="d-home-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg> Chez vous</a>
   </div>
   <div class="d-hero" style="--hero:url('<?= e(img($d['img'], 'w_1200,h_700,c_fill,q_auto,f_auto')) ?>')">
     <span class="d-hero-tag"><?= e($d['tagline'] ?? $d['name']) ?></span>
   </div>
   <div class="container">
-    <h2 class="d-h2">Sélectionnez votre besoin</h2>
-    <p class="d-sub">Trouvez le meilleur tarif, en quelques clics.</p>
+    <h2 class="d-h2"><?= e($d['select_h2'] ?? 'Sélectionnez votre besoin') ?></h2>
+    <p class="d-sub"><?= e($d['select_sub'] ?? 'Trouvez le meilleur tarif, en quelques clics.') ?></p>
     <div class="d-list">
       <?php foreach ($subs as $x): ?>
         <a class="d-item reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
@@ -64,7 +64,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     </div>
     <div class="d-trust">
       <span class="d-trust-ico">✨</span>
-      <span><b>Paiement sécurisé après confirmation :</b><br><small>Votre paiement est bloqué sur ChapTarif et n'est versé au prestataire qu'après la réalisation du service.</small></span>
+      <span><b><?= e($d['trust_title'] ?? 'Paiement sécurisé après confirmation :') ?></b><br><small><?= e($d['trust_text'] ?? 'Votre paiement est bloqué sur ChapTarif et n\'est versé au prestataire qu\'après la réalisation du service.') ?></small></span>
     </div>
   </div>
 </section>
