@@ -35,7 +35,7 @@ view('layout/header', compact('title', 'active'));
     </ul>
 
     <div class="center mt">
-      <a class="btn btn-primary btn-lg" href="/#univers">Réserver un service</a>
+      <a class="btn btn-primary btn-lg" href="/#m-cats">Réserver un service</a>
     </div>
   </div>
 </section>

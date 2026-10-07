@@ -16,7 +16,7 @@ view('layout/header', compact('title', 'active'));
       <div class="how-step"><span>5</span><div><h3>Vous validez, il est payé</h3><p>Cliquez sur « Confirmer la fin du travail » ou remettez votre code de validation au prestataire. ChapTarif verse automatiquement sa part au prestataire.</p></div></div>
       <div class="how-step warn"><span>!</span><div><h3>Un problème ?</h3><p>Absence, travail non conforme : ouvrez une réclamation depuis « Mes réservations ». Le paiement est gelé et notre équipe arbitre. Si le service n'a pas été rendu, vous êtes remboursé.</p></div></div>
     </div>
-    <div class="center mt"><a class="btn btn-primary btn-lg" href="/#univers">Commencer maintenant</a></div>
+    <div class="center mt"><a class="btn btn-primary btn-lg" href="/#m-cats">Commencer maintenant</a></div>
   </div>
 </section>
 <?php view('layout/footer', compact('active'));

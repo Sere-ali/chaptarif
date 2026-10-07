@@ -43,7 +43,7 @@ view('layout/header', compact('title', 'active'));
     </div>
 
     <?php if (!$bookings): ?>
-      <div class="empty"><div class="empty-ico">🧾</div><h2 class="h3">Aucune réservation pour l'instant</h2><p>Comparez et réservez votre premier service en 3 clics.</p><a class="btn btn-primary" href="/#univers">Découvrir les services</a></div>
+      <div class="empty"><div class="empty-ico">🧾</div><h2 class="h3">Aucune réservation pour l'instant</h2><p>Comparez et réservez votre premier service en 3 clics.</p><a class="btn btn-primary" href="/#m-cats">Découvrir les services</a></div>
     <?php endif; ?>
 
     <div class="bk-list">
