@@ -33,6 +33,14 @@
     });
   });
 
+  // Ombre de l'en-tête au défilement
+  var topbar = $('.topbar');
+  if (topbar) {
+    var onScroll = function () { topbar.classList.toggle('is-scrolled', window.scrollY > 8); };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
   // Apparition au défilement
   var rev = $$('.reveal');
   if ('IntersectionObserver' in window) {

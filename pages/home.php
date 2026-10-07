@@ -40,7 +40,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     </form>
     <div class="m-grid" id="m-cats">
       <?php foreach ($N as $k => $x): ?>
-        <a class="m-cat" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
+        <a class="m-cat reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
           <span class="m-cat-ico"><?= $x['emoji'] ?></span>
           <b><?= e($x['short']) ?></b>
           <small><?= e($x['sub']) ?></small>
@@ -48,7 +48,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
         </a>
       <?php endforeach; ?>
     </div>
-    <div class="m-trust">
+    <div class="m-trust reveal">
       <span class="m-trust-ico">🛡️</span>
       <div><b>Séquestre Sécurisé</b><small>Payez en ligne, l'argent est bloqué jusqu'à votre validation.</small></div>
       <div class="m-trust-chips"><span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange</span><span class="chip chip-mtn">MTN</span></div>
