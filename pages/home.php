@@ -20,6 +20,19 @@ $popular = [
 ];
 $immoFrom = (int) val("SELECT MIN(price_night) FROM properties WHERE active = 1");
 $bodyClass = 'home-m';
+// Icônes de l'accueil mobile : couleur et taille écrites en dur dans le SVG
+// (pas seulement via CSS) pour qu'elles s'affichent toujours correctement,
+// même si la feuille de style met du temps à charger sur une connexion lente.
+$mCatIcon = function (string $key, string $c): string {
+    $icons = [
+        'transport' => '<path d="M9 26c0-2 1-3 2-3l2-7c1-3 4-5 11-5s10 2 11 5l2 7c1 0 2 1 2 3v7a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-1H15v1a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z" fill="%C"/><circle cx="16" cy="33" r="3" fill="#1C2733"/><circle cx="32" cy="33" r="3" fill="#1C2733"/><rect x="15" y="16" width="18" height="7" rx="2" fill="#fff"/>',
+        'immobilier' => '<circle cx="34" cy="16" r="5" fill="%C" opacity=".55"/><rect x="32" y="20" width="4" height="6" fill="%C" opacity=".55"/><path d="M11 25 24 13l13 12v12a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2z" fill="%C"/><rect x="20" y="27" width="8" height="10" fill="#fff"/><rect x="16" y="29" width="4" height="4" fill="#fff"/>',
+        'service-a-la-personne' => '<path d="M29 9 16 32" stroke="%C" stroke-width="3.2" stroke-linecap="round"/><path d="M12 36c1-6 5-8 8-8l5 3c-1 5-6 7-10 7z" fill="%C"/><rect x="25" y="32" width="13" height="10" rx="2" fill="%C" opacity=".5"/><path d="M27 32c0-2.2 1.3-4 4.5-4s4.5 1.8 4.5 4" stroke="%C" stroke-width="2" fill="none"/>',
+        'beaute' => '<path d="M24 10c7.5 0 13 5.8 13 13 0 4.2-1.1 7.9-2.7 10.5l-3.2-1.4c1.3-2.8 2.1-5.8 2.1-8.7 0-5.9-4-10.4-9.2-10.4s-9.2 4.5-9.2 10.4c0 2.9.8 5.9 2.1 8.7l-3.2 1.4C12.1 30.9 11 27.2 11 23c0-7.2 5.5-13 13-13z" fill="%C"/><circle cx="24" cy="24" r="6.5" fill="%C" opacity=".5"/>',
+    ];
+    $svg = $icons[$key] ?? '';
+    return '<svg width="28" height="28" viewBox="0 0 48 48" fill="none">' . str_replace('%C', $c, $svg) . '</svg>';
+};
 view('layout/header', compact('title', 'active', 'bodyClass'));
 ?>
 <section class="m-home">
@@ -41,7 +54,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     <div class="m-grid" id="m-cats">
       <?php foreach ($N as $k => $x): ?>
         <a class="m-cat reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
-          <span class="m-cat-ico"><?= $x['emoji'] ?></span>
+          <span class="m-cat-ico"><?= $mCatIcon($k, $x['color']) ?></span>
           <b><?= e($x['short']) ?></b>
           <small><?= e($x['sub']) ?></small>
           <span class="m-cat-arrow">→</span>
