@@ -153,12 +153,15 @@ function domaines(): array
     return [
         'transport' => ['name' => 'Transport', 'short' => 'Transports', 'emoji' => '🚌', 'sub' => 'Cars, covoiturage, location de car & de camion', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/transport', 'group' => 'Transports',
             'pitch' => 'Cars interurbains, covoiturage, location de car ou de camion : comparez et réservez en un clic.',
+            'tagline' => 'Voyagez simplement !',
             'keys' => ['cars', 'covoiturage', 'location_car', 'location_camion']],
         'beaute' => ['name' => 'Beauté à domicile', 'short' => 'Beauté', 'emoji' => '💄', 'sub' => 'Coiffeuse, maquilleuse & onglerie', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/beaute', 'group' => 'Beauté',
             'pitch' => 'Coiffeuse, maquilleuse et prothésiste ongulaire à domicile, prestataires vérifiés.',
+            'tagline' => 'Resplendissez chez vous !',
             'keys' => ['coiffeuse', 'maquilleuse', 'onglerie']],
         'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'emoji' => '🧹', 'sub' => 'Ménage, repassage & pressing de linge', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/service-a-la-personne', 'group' => 'Service à la personne',
             'pitch' => 'Ménage à domicile et pressing & repassage de linge, prestataires vérifiés, tarif fixe.',
+            'tagline' => 'Un intérieur impeccable !',
             'keys' => ['menage', 'pressing']],
     ];
 }
