@@ -656,6 +656,10 @@ html.force-mobile .stats { grid-template-columns: 1fr 1fr !important; }
   body.domaine-m .page-hero { display: none; }
   body.domaine-m .section-tight { display: none; }
   body.domaine-m .d-home { display: block; }
+  body.immo-m .topbar { display: none; }
+  body.immo-m .page-hero { display: none; }
+  body.immo-m .section-tight { display: none; }
+  body.immo-m .d-home { display: block; }
   .tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; background: rgba(255, 255, 255, .96); backdrop-filter: blur(12px); border-top: 1px solid var(--line); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
   .tabbar a { display: grid; justify-items: center; gap: 2px; font-size: .7rem; font-weight: 700; color: var(--muted); padding: 4px; border-radius: 10px; transition: color .18s ease, transform .15s ease; }
   .tabbar svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; transition: transform .18s ease; }

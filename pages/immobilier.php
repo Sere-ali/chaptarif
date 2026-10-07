@@ -62,13 +62,28 @@ $title = 'Appartements meublés certifiés à Abidjan';
 $desc = 'Résidences et appartements meublés de courte durée à Abidjan, inspectés et certifiés. Photos réelles, paiement sous séquestre jusqu\'à la remise des clés.';
 $commune = (string) ($_GET['commune'] ?? '');
 $type = (string) ($_GET['type'] ?? '');
+$cat = (string) ($_GET['cat'] ?? '');
+$catMap = [
+    'appart' => ['label' => 'Appartements & Studios', 'desc' => 'Studios, chambres et appartements meublés', 'types' => ['Studio', 'Chambre', 'Appartement'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
+    'villa'  => ['label' => 'Villas & Duplex', 'desc' => 'Maisons individuelles et duplex, avec plus d\'espace', 'types' => ['Villa', 'Duplex'], 'img' => 'univers-immobilier', 'color' => '#1F5C8C'],
+];
+// Écran de sélection façon app, affiché uniquement sur mobile et seulement
+// tant qu'aucun filtre n'est actif (avant que la personne ait choisi une famille de biens).
+$bodyClass = ($cat === '' && $type === '' && $commune === '') ? 'immo-m' : '';
 $sql = 'SELECT * FROM properties WHERE active = 1';
 $params = [];
 if ($commune !== '') { $sql .= ' AND commune = ?'; $params[] = $commune; }
-if ($type !== '') { $sql .= ' AND type = ?'; $params[] = $type; }
+if ($type !== '') {
+    $sql .= ' AND type = ?';
+    $params[] = $type;
+} elseif ($cat !== '' && isset($catMap[$cat])) {
+    $ph = implode(',', array_fill(0, count($catMap[$cat]['types']), '?'));
+    $sql .= " AND type IN ($ph)";
+    array_push($params, ...$catMap[$cat]['types']);
+}
 $props = all($sql . ' ORDER BY certified DESC, price_night', $params);
 $ci = valid_future_date($_GET['checkin'] ?? null, 365) ? $_GET['checkin'] : '';
-view('layout/header', compact('title', 'desc', 'active'));
+view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 ?>
 <section class="page-hero" style="--c:<?= $x['color'] ?>;--hero:url('<?= e(img($x['img'], 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
   <div class="container">
@@ -107,4 +122,39 @@ view('layout/header', compact('title', 'desc', 'active'));
     </div>
   </div>
 </section>
+
+<?php if ($bodyClass === 'immo-m'): ?>
+<!-- Écran de sélection mobile façon application -->
+<section class="d-home">
+  <div class="container d-top">
+    <a href="/" class="d-back" aria-label="Retour à l'accueil"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <h1 class="d-top-title">Immobilier</h1>
+    <a href="/" class="d-home-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg> Chez vous</a>
+  </div>
+  <div class="d-hero" style="--hero:url('<?= e(img($x['img'], 'w_1200,h_700,c_fill,q_auto,f_auto')) ?>')">
+    <span class="d-hero-tag">Trouvez le logement idéal !</span>
+  </div>
+  <div class="container">
+    <h2 class="d-h2">Sélectionnez votre besoin</h2>
+    <p class="d-sub">Trouvez le bien immobilier qui vous correspond.</p>
+    <div class="d-list">
+      <?php foreach ($catMap as $ck => $c): ?>
+        <a class="d-item reveal" href="/immobilier?cat=<?= e($ck) ?>" style="--c:<?= $c['color'] ?>">
+          <span class="d-item-img"><img src="<?= e(img($c['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
+          <span class="d-item-body">
+            <b><?= e($c['label']) ?></b>
+            <small><?= e($c['desc']) ?></small>
+          </span>
+          <span class="d-item-btn">Choisir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+    <div class="d-trust">
+      <span class="d-trust-ico">✨</span>
+      <span><b>Paiement sécurisé après confirmation :</b><br><small>Votre paiement est bloqué sur ChapTarif et n'est versé au propriétaire qu'après la remise des clés.</small></span>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
 <?php view('layout/footer', compact('active'));
