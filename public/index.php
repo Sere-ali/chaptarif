@@ -21,6 +21,7 @@ $routes = [
     '/cars'                 => 'pages/cars.php',
     '/transport'            => 'pages/domaine.php',
     '/beaute'               => 'pages/domaine.php',
+    '/service-a-la-personne' => 'pages/domaine.php',
     '/immobilier'           => 'pages/immobilier.php',
     '/reserver'             => 'pages/checkout.php',
     '/paiement'             => 'pages/pay.php',

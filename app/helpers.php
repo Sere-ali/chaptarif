@@ -157,6 +157,9 @@ function domaines(): array
         'beaute' => ['name' => 'Beauté à domicile', 'short' => 'Beauté', 'emoji' => '💄', 'sub' => 'Coiffeuse, maquilleuse & onglerie', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/beaute', 'group' => 'Beauté',
             'pitch' => 'Coiffeuse, maquilleuse et prothésiste ongulaire à domicile, prestataires vérifiés.',
             'keys' => ['coiffeuse', 'maquilleuse', 'onglerie']],
+        'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'emoji' => '🧹', 'sub' => 'Ménage, repassage & pressing de linge', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/service-a-la-personne', 'group' => 'Service à la personne',
+            'pitch' => 'Ménage à domicile et pressing & repassage de linge, prestataires vérifiés, tarif fixe.',
+            'keys' => ['menage', 'pressing']],
     ];
 }
 
