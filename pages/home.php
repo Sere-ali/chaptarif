@@ -20,12 +20,6 @@ $popular = [
 ];
 $immoFrom = (int) val("SELECT MIN(price_night) FROM properties WHERE active = 1");
 $bodyClass = 'home-m';
-$mCatIcons = [
-    'transport' => '<svg viewBox="0 0 48 48"><path d="M9 26c0-2 1-3 2-3l2-7c1-3 4-5 11-5s10 2 11 5l2 7c1 0 2 1 2 3v7a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-1H15v1a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z" fill="currentColor"/><circle cx="16" cy="33" r="3" fill="#fff"/><circle cx="32" cy="33" r="3" fill="#fff"/><rect x="15" y="16" width="18" height="7" rx="2" fill="#fff"/></svg>',
-    'immobilier' => '<svg viewBox="0 0 48 48"><path d="M12 24 24 13l12 11v12a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2z" fill="currentColor"/><rect x="21" y="27" width="6" height="9" fill="#fff"/><circle cx="35" cy="15" r="5" fill="currentColor" opacity=".55"/><rect x="33" y="19" width="4" height="6" fill="currentColor" opacity=".55"/></svg>',
-    'service-a-la-personne' => '<svg viewBox="0 0 48 48"><path d="M30 10 17 31" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M13 35c1-5 4-7 7-7l5 3c-1 4-5 6-9 6z" fill="currentColor"/><rect x="26" y="33" width="12" height="9" rx="2" fill="currentColor" opacity=".55"/><path d="M27 33c0-2 1-4 3-4s3 2 3 4" stroke="currentColor" stroke-width="2" fill="none"/></svg>',
-    'beaute' => '<svg viewBox="0 0 48 48"><path d="M24 11c7 0 12 5.5 12 12.5 0 4-1 7.5-2.5 10l-3-1.3c1.2-2.7 2-5.5 2-8.2 0-5.6-3.8-9.8-8.5-9.8s-8.5 4.2-8.5 9.8c0 2.7.8 5.5 2 8.2l-3 1.3c-1.5-2.5-2.5-6-2.5-10C12 16.5 17 11 24 11z" fill="currentColor"/><circle cx="24" cy="24" r="6" fill="currentColor" opacity=".55"/></svg>',
-];
 view('layout/header', compact('title', 'active', 'bodyClass'));
 ?>
 <section class="m-home">
@@ -35,21 +29,19 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
     <span class="m-loc">📍 Abidjan</span>
-    <a class="m-bell" href="/compte" aria-label="Mon compte & notifications">
-      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-    </a>
+    <a class="m-bell" href="/compte" aria-label="Mon compte & notifications">🔔</a>
   </div>
   <div class="container">
     <h1 class="m-title">Que souhaitez-vous<br>aujourd’hui&nbsp;?</h1>
     <p class="m-sub">Tarifs transparents&nbsp;• Paiement sous séquestre</p>
     <form class="m-search" action="#m-cats" onsubmit="return false">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span class="m-search-ico">🔎</span>
       <input type="search" placeholder="Rechercher un service, car, logement…" onfocus="document.getElementById('m-cats').scrollIntoView({behavior:'smooth'})">
     </form>
     <div class="m-grid" id="m-cats">
       <?php foreach ($N as $k => $x): ?>
         <a class="m-cat" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
-          <span class="m-cat-ico"><?= $mCatIcons[$k] ?? $x['emoji'] ?></span>
+          <span class="m-cat-ico"><?= $x['emoji'] ?></span>
           <b><?= e($x['short']) ?></b>
           <small><?= e($x['sub']) ?></small>
           <span class="m-cat-arrow">→</span>
