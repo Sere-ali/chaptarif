@@ -151,7 +151,7 @@ function universe(string $key): array
 function domaines(): array
 {
     return [
-        'transport' => ['name' => 'Transport', 'short' => 'Transport', 'emoji' => '🚌', 'sub' => 'Cars, covoiturage, location de car & de camion', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/transport', 'group' => 'Transports',
+        'transport' => ['name' => 'Transport', 'short' => 'Transports', 'emoji' => '🚌', 'sub' => 'Cars, covoiturage, location de car & de camion', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/transport', 'group' => 'Transports',
             'pitch' => 'Cars interurbains, covoiturage, location de car ou de camion : comparez et réservez en un clic.',
             'keys' => ['cars', 'covoiturage', 'location_car', 'location_camion']],
         'beaute' => ['name' => 'Beauté à domicile', 'short' => 'Beauté', 'emoji' => '💄', 'sub' => 'Coiffeuse, maquilleuse & onglerie', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/beaute', 'group' => 'Beauté',

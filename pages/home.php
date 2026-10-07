@@ -19,8 +19,44 @@ $popular = [
     ['label' => 'Coiffeuse à domicile', 'sub' => 'Tresses & soins sans déplacement', 'price' => (int) val("SELECT MIN(price) FROM offers WHERE active = 1 AND universe = 'coiffeuse'")],
 ];
 $immoFrom = (int) val("SELECT MIN(price_night) FROM properties WHERE active = 1");
-view('layout/header', compact('title', 'active'));
+$bodyClass = 'home-m';
+view('layout/header', compact('title', 'active', 'bodyClass'));
 ?>
+<section class="m-home">
+  <div class="container m-home-top">
+    <a class="m-brand" href="/" aria-label="ChapTarif, accueil">
+      <img src="/assets/img/logo.svg" alt="" width="34" height="34">
+      <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
+    </a>
+    <span class="m-loc">📍 Abidjan</span>
+    <a class="m-bell" href="/compte" aria-label="Mon compte & notifications">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </a>
+  </div>
+  <div class="container">
+    <h1 class="m-title">Que souhaitez-vous<br>aujourd'hui&nbsp;?</h1>
+    <p class="m-sub">Tarifs transparents&nbsp;• Paiement sous séquestre</p>
+    <form class="m-search" action="#m-cats" onsubmit="return false">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" placeholder="Rechercher un service, car, logement…" onfocus="document.getElementById('m-cats').scrollIntoView({behavior:'smooth'})">
+    </form>
+    <div class="m-grid" id="m-cats">
+      <?php foreach ($N as $k => $x): ?>
+        <a class="m-cat" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
+          <span class="m-cat-ico"><?= $x['emoji'] ?></span>
+          <b><?= e($x['short']) ?></b>
+          <small><?= e($x['sub']) ?></small>
+          <span class="m-cat-arrow">→</span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+    <div class="m-trust">
+      <span class="m-trust-ico">🛡️</span>
+      <div><b>Séquestre Sécurisé</b><small>Payez en ligne, l'argent est bloqué jusqu'à votre validation.</small></div>
+      <div class="m-trust-chips"><span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange</span><span class="chip chip-mtn">MTN</span></div>
+    </div>
+  </div>
+</section>
 <section class="hero">
   <div class="hero-bg" style="--hero:url('<?= e(img('hero-abidjan', 'w_1800,h_1000,c_fill,q_auto,f_auto')) ?>')"></div>
   <div class="container hero-grid">
