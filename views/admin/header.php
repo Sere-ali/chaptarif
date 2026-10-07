@@ -5,9 +5,11 @@ $disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'"
 $pendingKyc = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'");
 $pendingCandidatures = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'");
 $unread = (int) val('SELECT COUNT(*) FROM contact_messages WHERE handled = 0');
+$myOpenTasks = $me ? (int) val("SELECT COUNT(*) FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule')", [$me['id']]) : 0;
 $items = [
     ['Pilotage', null],
     ['dashboard', '/admin', '📊', 'Tableau de bord', 0],
+    ['tasks', '/admin/taches', '📌', 'Mes tâches', $myOpenTasks],
     ['candidatures', '/admin/candidatures', '📋', 'Candidatures prestataires', $pendingCandidatures],
     ['bookings', '/admin/reservations', '🧾', 'Réservations', 0],
     ['disputes', '/admin/litiges', '⚠️', 'Litiges', $disputes],

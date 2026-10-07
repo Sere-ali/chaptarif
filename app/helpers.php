@@ -201,6 +201,55 @@ function nav_entries(): array
     return $out;
 }
 
+// ---- Tâches internes (attribution du Super Admin aux administrateurs) --------
+// Une catégorie de tâche par « bouton » du site (les mêmes entrées que la
+// navigation : Transport, Immobilier, Beauté, Service à la personne), plus
+// une catégorie « Général » pour tout ce qui ne concerne pas un service précis.
+function task_categories(): array
+{
+    return array_merge(
+        ['general' => ['name' => 'Général / Autre', 'short' => 'Général', 'emoji' => '🗂️', 'color' => '#5A6778']],
+        nav_entries()
+    );
+}
+
+function task_category(string $key): array
+{
+    return task_categories()[$key] ?? ['name' => $key, 'short' => $key, 'emoji' => '•', 'color' => '#555'];
+}
+
+function task_statuses(): array
+{
+    return [
+        'a_faire'  => ['À faire', 'gray'],
+        'en_cours' => ['En cours', 'blue'],
+        'termine'  => ['Terminé', 'green'],
+        'annule'   => ['Annulé', 'red'],
+    ];
+}
+
+function task_status_badge(string $s): string
+{
+    [$label, $c] = task_statuses()[$s] ?? [$s, 'gray'];
+    return '<span class="badge badge-' . $c . '">' . e($label) . '</span>';
+}
+
+function task_priorities(): array
+{
+    return [
+        'basse'   => ['Basse', 'gray'],
+        'normale' => ['Normale', 'blue'],
+        'haute'   => ['Haute', 'amber'],
+        'urgente' => ['Urgente', 'red'],
+    ];
+}
+
+function task_priority_badge(string $p): string
+{
+    [$label, $c] = task_priorities()[$p] ?? [$p, 'gray'];
+    return '<span class="badge badge-' . $c . '">' . e($label) . '</span>';
+}
+
 // ---- Statuts de réservation ---------------------------------------------------
 function statuses(): array
 {

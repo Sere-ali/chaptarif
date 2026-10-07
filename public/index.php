@@ -46,6 +46,7 @@ $routes = [
     '/admin/login'          => 'admin/login.php',
     '/admin/logout'         => 'admin/logout.php',
     '/admin/mot-de-passe'   => 'admin/password.php',
+    '/admin/taches'         => 'admin/tasks.php',
     '/admin/reservations'   => 'admin/bookings.php',
     '/admin/reservation'    => 'admin/booking.php',
     '/admin/litiges'        => 'admin/bookings.php',

@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 
 function db(): PDO
 {
@@ -165,10 +165,17 @@ function db_migrate(): void
             id $PK, user_id INTEGER, user_label TEXT, action TEXT, target TEXT, details TEXT, ip TEXT, created_at TEXT)",
         "CREATE TABLE IF NOT EXISTS contact_messages (
             id $PK, name TEXT, phone TEXT, email TEXT, message TEXT, handled INTEGER NOT NULL DEFAULT 0, created_at TEXT)",
+        "CREATE TABLE IF NOT EXISTS tasks (
+            id $PK, title TEXT NOT NULL, description TEXT, category TEXT NOT NULL DEFAULT 'general',
+            priority TEXT NOT NULL DEFAULT 'normale', status TEXT NOT NULL DEFAULT 'a_faire',
+            assigned_to INTEGER, assigned_by INTEGER, booking_ref TEXT, due_date TEXT,
+            created_at TEXT, updated_at TEXT, completed_at TEXT)",
         "CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id)",
         "CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)",
         "CREATE INDEX IF NOT EXISTS idx_providers_univ ON providers(universe)",
         "CREATE INDEX IF NOT EXISTS idx_tx_booking ON transactions(booking_id)",
+        "CREATE INDEX IF NOT EXISTS idx_tasks_assigned ON tasks(assigned_to)",
+        "CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status)",
     ];
     foreach ($stmts as $s) db()->exec($s);
 

@@ -19,6 +19,7 @@ foreach (all("SELECT universe, COUNT(*) AS n, COALESCE(SUM(total),0) AS v FROM b
 $maxU = max([1, ...array_values(array_map(fn($r) => (int) $r['v'], $byU))]);
 $recent = all('SELECT b.*, u.name AS uname, u.phone AS uphone FROM bookings b LEFT JOIN users u ON u.id = b.user_id ORDER BY b.id DESC LIMIT 8');
 $kyc = all("SELECT * FROM providers WHERE kyc_status = 'pending' ORDER BY id DESC LIMIT 5");
+$myTasks = all("SELECT * FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule') ORDER BY CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date, id DESC LIMIT 5", [$me['id']]);
 
 $page = 'Tableau de bord';
 $nav = 'dashboard';
@@ -69,5 +70,11 @@ view('admin/header', compact('page', 'nav'));
       <div class="prov-mini"><?= avatar($p) ?><div><b><?= e($p['name']) ?></b><small><?= e(universe($p['universe'])['name']) ?> · <?= e($p['commune']) ?> · <?= fmt_date($p['created_at']) ?><?= $p['source'] === 'candidature' ? ' · candidature web' : '' ?></small></div><a class="btn btn-ghost btn-xs" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Examiner</a></div>
     <?php endforeach; if (!$kyc): ?><p class="muted">Aucun dossier en attente. 🎉</p><?php endif; ?>
   </div>
+</div>
+<div class="panel">
+  <div class="panel-h"><h2>📌 Mes tâches</h2><a class="btn btn-soft btn-sm" href="/admin/taches">Tout voir</a></div>
+  <?php $today = date('Y-m-d'); foreach ($myTasks as $t): $c = task_category($t['category']); $late = $t['due_date'] && $t['due_date'] < $today; ?>
+    <div class="prov-mini"><span class="uni-dot" style="--c:<?= $c['color'] ?>"><i></i><?= $c['emoji'] ?></span><div><b><?= e($t['title']) ?></b><small><?= e($c['short'] ?? $c['name']) ?> · <?= task_priority_badge($t['priority']) ?> <?= $t['due_date'] ? '· Échéance ' . fmt_date($t['due_date']) : '' ?><?= $late ? ' · <span class="badge badge-red">En retard</span>' : '' ?></small></div><?= task_status_badge($t['status']) ?></div>
+  <?php endforeach; if (!$myTasks): ?><p class="muted">Aucune tâche en attente pour vous. 🎉</p><?php endif; ?>
 </div>
 <?php view('admin/footer', compact('scripts'));
