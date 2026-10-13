@@ -45,7 +45,7 @@ view('layout/header', compact('title', 'desc', 'active'));
   </div>
 </section>
 
-<form class="section-tight" method="post" action="/reserver" data-service-form data-garantie-pct="<?= e((string) $garantiePct) ?>">
+<form class="section-tight" method="post" action="/reserver" data-service-form data-universe="<?= e($uk) ?>" data-garantie-pct="<?= e((string) $garantiePct) ?>">
   <?= csrf_field() ?>
   <input type="hidden" name="universe" value="<?= e($uk) ?>">
   <div class="container two-col wide-left">
@@ -100,6 +100,53 @@ view('layout/header', compact('title', 'desc', 'active'));
 
     <aside class="sticky">
       <div class="card form-card">
+<?php
+$isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'location_camion'], true);
+$dtMin = date('Y-m-d\TH:i', strtotime('+1 hour'));
+$dtDef = date('Y-m-d\T09:00', strtotime('+1 day'));
+$dtMax = date('Y-m-d\TH:i', strtotime('+90 days'));
+$dtEnd = date('Y-m-d\T18:00', strtotime('+1 day'));
+$destSel = '<select name="dest" required><option value="abidjan">Abidjan</option><option value="hors">Hors Abidjan</option></select>';
+?>
+        <?php if ($isRental): ?>
+        <h2 class="h3">3. Votre demande</h2>
+        <?php if ($uk === 'location_vehicule'): ?>
+          <label class="fld"><span>📍 Commune ou lieu de prise en charge</span><input name="pickup" required maxlength="200" placeholder="Ex. Cocody, Angré 8e tranche"></label>
+          <label class="fld"><span>📅 Date et heure de début</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
+          <label class="fld"><span>📅 Date et heure de retour</span><input type="datetime-local" name="end" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtEnd ?>"></label>
+          <div class="row2">
+            <label class="fld"><span>🚙 Type de véhicule</span><select name="vtype"><option value="4x4">4×4</option><option value="autre">Autres</option></select></label>
+            <label class="fld"><span>🧑 Chauffeur</span><select name="driver"><option value="sans">Sans chauffeur</option><option value="avec">Avec chauffeur</option></select></label>
+          </div>
+        <?php elseif ($uk === 'location_car'): ?>
+          <label class="fld"><span>📍 Lieu de départ</span><input name="from_place" required maxlength="200" placeholder="Ex. Yopougon, Siporex"></label>
+          <label class="fld"><span>🏁 Destination</span><?= $destSel ?></label>
+          <div class="row2">
+            <label class="fld"><span>📅 Date</span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+90 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
+            <label class="fld"><span>⏱️ Durée</span><select name="days"><?php for ($i = 1; $i <= 7; $i++): ?><option value="<?= $i ?>"><?= $i ?> jour<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
+          </div>
+          <div class="row2">
+            <label class="fld"><span>💺 Places souhaitées</span><select name="seats"><option value="30">30 places</option><option value="70">70 places</option></select></label>
+            <label class="fld"><span>🎉 Motif</span><select name="motif" required><option value="mariage">Mariage</option><option value="excursion">Excursion</option><option value="sortie_scolaire">Sortie scolaire</option><option value="evenement">Événement</option><option value="autres">Autres</option></select></label>
+          </div>
+        <?php elseif ($uk === 'chauffeur'): ?>
+          <label class="fld"><span>📍 Adresse de prise en charge</span><input name="pickup" id="pickupAddr" required maxlength="200" placeholder="Ex. Marcory, Zone 4"></label>
+          <input type="hidden" name="lat" id="geoLat"><input type="hidden" name="lng" id="geoLng">
+          <button type="button" class="btn btn-soft btn-block" id="geoBtn" style="margin:-4px 0 12px">📡 Activer ma localisation</button>
+          <p class="fine" id="geoMsg" style="margin:-6px 0 10px" hidden></p>
+          <label class="fld"><span>🏁 Destination</span><?= $destSel ?></label>
+          <label class="fld"><span>🕘 Date et heure d'arrivée du chauffeur</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
+          <label class="fld"><span>⏱️ Durée souhaitée</span><select name="duree"><?php for ($i = 1; $i <= 7; $i++): ?><option value="<?= $i ?>"><?= $i ?> jour<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?><option value="semaine">1 semaine</option><option value="mois">1 mois</option></select></label>
+        <?php else: ?>
+          <label class="fld"><span>📦 Adresse de chargement</span><input name="load" required maxlength="200" placeholder="Ex. Abobo, Sagbé"></label>
+          <label class="fld"><span>🏠 Adresse de livraison</span><input name="deliver" required maxlength="200" placeholder="Ex. Bingerville"></label>
+          <label class="fld"><span>📅 Date et heure souhaitées</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
+          <div class="row2">
+            <label class="fld"><span>💪 Manutention / déménageurs</span><select name="handling"><option value="non">Non</option><option value="oui">Oui, j'en ai besoin</option></select></label>
+            <label class="fld"><span>🚛 Type de camion</span><select name="ttype"><option value="moyen">Moyen</option><option value="gros">Gros</option></select></label>
+          </div>
+        <?php endif; ?>
+        <?php else: ?>
         <h2 class="h3">3. Date & lieu</h2>
         <div class="row2">
           <label class="fld"><span>📅 <?= e($copy['date_label']) ?></span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
@@ -108,6 +155,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         <label class="fld"><span>📍 Quartier</span><select name="zone" required><option value="">Choisir…</option><?= zone_options() ?></select></label>
         <label class="fld"><span>🏠 Repère / adresse</span><input name="address" maxlength="200" placeholder="Ex. Immeuble Les Palmiers, 3e étage, porte B"></label>
         <label class="fld qty-fld" data-qty hidden><span>🔢 Nombre de pièces</span><input type="number" name="qty" min="1" max="50" value="1"></label>
+        <?php endif; ?>
         <?php if ($hasGarantie): ?>
           <label class="check garantie-check">
             <input type="checkbox" name="garantie" value="1" data-garantie>

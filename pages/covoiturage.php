@@ -8,6 +8,7 @@ $from = in_array($_GET['from'] ?? '', $fromCities, true) ? $_GET['from'] : ($fro
 $toCities = array_column(all("SELECT DISTINCT to_city FROM trips WHERE active = 1 AND universe = 'covoiturage' AND from_city = ? ORDER BY to_city", [$from]), 'to_city');
 $to = in_array($_GET['to'] ?? '', $toCities, true) ? $_GET['to'] : ($toCities[0] ?? '');
 $date = valid_future_date($_GET['date'] ?? null, 60) ? $_GET['date'] : date('Y-m-d');
+$seats = max(1, min(5, (int) ($_GET['seats'] ?? 1)));
 $trips = $to ? all("SELECT * FROM trips WHERE active = 1 AND universe = 'covoiturage' AND from_city = ? AND to_city = ? ORDER BY depart_time", [$from, $to]) : [];
 view('layout/header', compact('title', 'desc', 'active'));
 ?>
@@ -25,9 +26,10 @@ view('layout/header', compact('title', 'desc', 'active'));
       <div class="empty"><div class="empty-ico">🚙</div><p>Aucun trajet de covoiturage publié pour le moment. Revenez bientôt.</p></div>
     <?php else: ?>
     <form class="card search-bar" method="get" action="/covoiturage">
-      <label class="fld"><span>Départ</span><select name="from" onchange="this.form.submit()"><?php foreach ($fromCities as $c): ?><option <?= $c === $from ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
-      <label class="fld"><span>Destination</span><select name="to"><?php foreach ($toCities as $c): ?><option <?= $c === $to ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
-      <label class="fld"><span>Date</span><input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
+      <label class="fld"><span>Ville ou point de départ</span><select name="from" onchange="this.form.submit()"><?php foreach ($fromCities as $c): ?><option <?= $c === $from ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
+      <label class="fld"><span>Ville ou point d'arrivée</span><select name="to"><?php foreach ($toCities as $c): ?><option <?= $c === $to ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
+      <label class="fld"><span>Date du trajet</span><input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
+      <label class="fld"><span>Nombre de places recherchées</span><select name="seats"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>" <?= $i === $seats ? 'selected' : '' ?>><?= $i ?> place<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
       <button class="btn btn-primary btn-lg">Rechercher</button>
     </form>
 
@@ -38,6 +40,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         $past = $date === date('Y-m-d') && $t['depart_time'] <= date('H:i');
         $sold = (int) val("SELECT COUNT(*) FROM bookings WHERE universe = 'covoiturage' AND item_id = ? AND service_date = ? AND status IN ('BLOQUE','VALIDE')", [$t['id'], $date]);
         $left = max(0, (int) $t['seats_total'] - $sold);
+        $enough = $left >= $seats;
         $fromLabel = $t['from_detail'] ?: $t['from_city'];
         $toLabel = $t['to_detail'] ?: $t['to_city']; ?>
         <form class="trip <?= $past ? 'past' : '' ?>" method="post" action="/reserver">
@@ -51,8 +54,8 @@ view('layout/header', compact('title', 'desc', 'active'));
             <div class="big-price"><?= fcfa($t['price']) ?></div>
             <small>par place</small>
             <div class="trip-actions">
-              <select name="passengers" aria-label="Passagers"><?php for ($i = 1; $i <= min(5, (int) $t['seats_total']); $i++): ?><option value="<?= $i ?>"><?= $i ?> pers.</option><?php endfor; ?></select>
-              <button class="btn btn-primary" <?= ($past || !$left) ? 'disabled' : '' ?>><?= $past ? 'Parti' : 'Réserver ma place' ?></button>
+              <select name="passengers" aria-label="Passagers"><?php for ($i = 1; $i <= min(5, (int) $t['seats_total']); $i++): ?><option value="<?= $i ?>" <?= $i === $seats ? 'selected' : '' ?>><?= $i ?> pers.</option><?php endfor; ?></select>
+              <button class="btn btn-primary" <?= ($past || !$enough) ? 'disabled' : '' ?>><?= $past ? 'Parti' : (!$enough ? 'Pas assez de places' : 'Réserver ma place') ?></button>
             </div>
           </div>
         </form>

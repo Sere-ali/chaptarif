@@ -67,10 +67,6 @@ function build_quote(string $universe, array $in): array
     switch ($universe) {
         case 'menage':
         case 'pressing':
-        case 'location_car':
-        case 'location_camion':
-        case 'location_vehicule':
-        case 'chauffeur':
         case 'coiffeuse':
         case 'maquilleuse':
         case 'onglerie': {
@@ -91,7 +87,118 @@ function build_quote(string $universe, array $in): array
             $q['details'] = ['offer' => $offer['title'], 'qty' => $qty, 'zone' => $zone['name'], 'time' => $time, 'address' => mb_substr((string) ($in['address'] ?? ''), 0, 200), 'provider' => $prov['name']];
             $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', $zone['name']]];
             // Garantie Dommage (option payante, disponible pour les services à domicile/matériel)
-            if (in_array($universe, ['menage', 'pressing', 'location_car', 'location_camion', 'location_vehicule'], true) && !empty($in['garantie'])) {
+            if (in_array($universe, ['menage', 'pressing'], true) && !empty($in['garantie'])) {
+                $pct = (float) setting('garantie_dommage_pct', 5);
+                $fee = round50($amount * $pct / 100);
+                $q['service_fee'] += $fee;
+                $q['details']['garantie_dommage'] = true;
+                $q['details']['garantie_dommage_montant'] = $fee;
+                $q['summary'][] = ['🛡️ Garantie Dommage', fcfa($fee)];
+            }
+            break;
+        }
+        case 'location_vehicule':
+        case 'location_car':
+        case 'chauffeur':
+        case 'location_camion': {
+            $prov = one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) ($in['provider'] ?? 0), $universe]);
+            $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
+            if (!$prov) return $fail('Choisissez un prestataire.');
+            if (!$offer) return $fail('Choisissez une formule.');
+            $txt = fn(string $k, int $max = 200) => trim(mb_substr((string) ($in[$k] ?? ''), 0, $max));
+            $dt = function (string $k) use ($in) {
+                $v = (string) ($in[$k] ?? '');
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $v)) return null;
+                $t = strtotime(str_replace('T', ' ', $v));
+                if (!$t || $t < time() - 3600 || $t > time() + 86400 * 90) return null;
+                return $t;
+            };
+            $fdt = fn(int $t) => fmt_date(date('Y-m-d', $t)) . ' à ' . date('H:i', $t);
+            $dest = ($in['dest'] ?? '') === 'hors' ? 'Hors Abidjan' : 'Abidjan';
+            $days = 1;
+            $d = [];
+            $s = [['Prestataire', $prov['name']], ['Formule', $offer['title']]];
+            $date = null;
+
+            if ($universe === 'location_vehicule') {
+                $pickup = $txt('pickup');
+                $t1 = $dt('start'); $t2 = $dt('end');
+                if ($pickup === '') return $fail('Indiquez la commune ou le lieu de prise en charge.');
+                if (!$t1) return $fail('Indiquez une date et une heure de début valides.');
+                if (!$t2 || $t2 <= $t1) return $fail('La date de retour doit être après le début.');
+                $days = max(1, (int) ceil(($t2 - $t1) / 86400));
+                if ($days > 60) return $fail('Location limitée à 60 jours.');
+                $vt = ($in['vtype'] ?? '') === '4x4' ? '4×4' : 'Autre véhicule';
+                $dr = ($in['driver'] ?? '') === 'avec' ? 'Avec chauffeur' : 'Sans chauffeur';
+                $d = ['pickup' => $pickup, 'start' => date('d/m/Y H:i', $t1), 'end' => date('d/m/Y H:i', $t2), 'days' => $days, 'vehicle_type' => $vt, 'driver_option' => $dr];
+                $s[] = ['Prise en charge', $pickup];
+                $s[] = ['Début', $fdt($t1)];
+                $s[] = ['Retour', $fdt($t2)];
+                $s[] = ['Véhicule', $vt . ' · ' . $dr];
+                $date = date('Y-m-d', $t1);
+            } elseif ($universe === 'location_car') {
+                $from = $txt('from_place');
+                if ($from === '') return $fail('Indiquez le lieu de départ.');
+                $dd = (string) ($in['date'] ?? '');
+                if (!valid_future_date($dd, 90)) return $fail('Choisissez une date valide.');
+                $days = (int) ($in['days'] ?? 1);
+                if ($days < 1 || $days > 7) return $fail('La durée doit être de 1 à 7 jours.');
+                $seats = (int) ($in['seats'] ?? 0);
+                if (!in_array($seats, [30, 70], true)) return $fail('Choisissez 30 ou 70 places.');
+                $motifs = ['mariage' => 'Mariage', 'excursion' => 'Excursion', 'sortie_scolaire' => 'Sortie scolaire', 'evenement' => 'Événement', 'autres' => 'Autres'];
+                $mk = (string) ($in['motif'] ?? '');
+                if (!isset($motifs[$mk])) return $fail('Indiquez le motif de la location.');
+                $d = ['from_place' => $from, 'destination' => $dest, 'days' => $days, 'seats' => $seats, 'motif' => $motifs[$mk]];
+                $s[] = ['Départ', $from];
+                $s[] = ['Destination', $dest];
+                $s[] = ['Date', fmt_date($dd)];
+                $s[] = ['Durée', $days . ' jour' . ($days > 1 ? 's' : '')];
+                $s[] = ['Places', (string) $seats];
+                $s[] = ['Motif', $motifs[$mk]];
+                $date = $dd;
+            } elseif ($universe === 'chauffeur') {
+                $pickup = $txt('pickup');
+                if ($pickup === '') return $fail('Indiquez l\'adresse de prise en charge.');
+                $t1 = $dt('start');
+                if (!$t1) return $fail('Indiquez une date et une heure d\'arrivée valides.');
+                $du = (string) ($in['duree'] ?? '');
+                $map = ['1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, 'semaine' => 7, 'mois' => 30];
+                if (!isset($map[$du])) return $fail('Choisissez la durée souhaitée.');
+                $days = $map[$du];
+                $dl = $du === 'semaine' ? '1 semaine' : ($du === 'mois' ? '1 mois' : $du . ' jour' . ((int) $du > 1 ? 's' : ''));
+                $lat = $in['lat'] ?? ''; $lng = $in['lng'] ?? '';
+                $geo = (is_numeric($lat) && is_numeric($lng) && abs((float) $lat) <= 90 && abs((float) $lng) <= 180) ? round((float) $lat, 5) . ', ' . round((float) $lng, 5) : '';
+                $d = ['pickup' => $pickup, 'gps' => $geo, 'destination' => $dest, 'arrival' => date('d/m/Y H:i', $t1), 'duration' => $dl, 'days' => $days];
+                $s[] = ['Prise en charge', $pickup . ($geo ? ' (position partagée)' : '')];
+                $s[] = ['Destination', $dest];
+                $s[] = ['Arrivée du chauffeur', $fdt($t1)];
+                $s[] = ['Durée', $dl];
+                $date = date('Y-m-d', $t1);
+            } else { // location_camion
+                $load = $txt('load'); $deliver = $txt('deliver');
+                if ($load === '' || $deliver === '') return $fail('Indiquez l\'adresse de chargement et de livraison.');
+                $t1 = $dt('start');
+                if (!$t1) return $fail('Indiquez une date et une heure valides.');
+                $hand = ($in['handling'] ?? '') === 'oui' ? 'Oui' : 'Non';
+                $tt = ($in['ttype'] ?? '') === 'gros' ? 'Gros camion' : 'Camion moyen';
+                $d = ['load' => $load, 'deliver' => $deliver, 'when' => date('d/m/Y H:i', $t1), 'handling' => $hand, 'truck_type' => $tt];
+                $s[] = ['Chargement', $load];
+                $s[] = ['Livraison', $deliver];
+                $s[] = ['Date et heure', $fdt($t1)];
+                $s[] = ['Camion', $tt . ' · Manutention : ' . $hand];
+                $date = date('Y-m-d', $t1);
+            }
+
+            $mult = $offer['unit'] === 'jour' ? $days : 1;
+            $amount = (int) $offer['price'] * $mult;
+            $q += ['title' => $offer['title'] . ($mult > 1 ? " × $mult j" : '') . ' · ' . $prov['name'], 'amount' => $amount, 'service_date' => $date];
+            $q['provider_id'] = (int) $prov['id'];
+            $q['item_type'] = 'offer';
+            $q['item_id'] = (int) $offer['id'];
+            $q['details'] = ['offer' => $offer['title'], 'provider' => $prov['name']] + $d;
+            $q['summary'] = $s;
+            if ($mult > 1) $q['summary'][] = ['Tarif', fcfa($offer['price']) . ' × ' . $mult . ' jours'];
+            if ($universe !== 'chauffeur' && !empty($in['garantie'])) {
                 $pct = (float) setting('garantie_dommage_pct', 5);
                 $fee = round50($amount * $pct / 100);
                 $q['service_fee'] += $fee;

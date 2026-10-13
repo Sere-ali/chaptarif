@@ -98,8 +98,17 @@
       var perPiece = o && o.dataset.unit === 'pièce';
       if (qty) perPiece ? qty.removeAttribute('hidden') : qty.setAttribute('hidden', '');
       var n = perPiece ? Math.max(1, parseInt(sf.elements.qty.value, 10) || 1) : 1;
-      var amount = o ? o.dataset.price * n : 0;
-      $('[data-sum-offer]', sf).textContent = o ? o.dataset.title + (n > 1 ? ' × ' + n : '') : '—';
+      var days = 1;
+      if (o && o.dataset.unit === 'jour') {
+        var el = sf.elements, u = sf.dataset.universe;
+        if (u === 'location_car' && el.days) days = parseInt(el.days.value, 10) || 1;
+        else if (u === 'chauffeur' && el.duree) days = ({ semaine: 7, mois: 30 })[el.duree.value] || parseInt(el.duree.value, 10) || 1;
+        else if (u === 'location_vehicule' && el.start && el.end && el.start.value && el.end.value) {
+          days = Math.max(1, Math.ceil((new Date(el.end.value) - new Date(el.start.value)) / 864e5)) || 1;
+        }
+      }
+      var amount = o ? o.dataset.price * n * days : 0;
+      $('[data-sum-offer]', sf).textContent = o ? o.dataset.title + (n > 1 ? ' × ' + n : '') + (days > 1 ? ' × ' + days + ' j' : '') : '—';
       $('[data-sum-prov]', sf).textContent = p ? p.dataset.name : '—';
       var garCb = $('[data-garantie]', sf), garRow = $('[data-sum-garantie-row]', sf);
       var garFee = 0;
@@ -115,6 +124,23 @@
     };
     sf.addEventListener('change', upd); sf.addEventListener('input', upd); upd();
   }
+
+  // Chauffeur : localisation
+  var geoBtn = document.getElementById('geoBtn');
+  if (geoBtn) geoBtn.addEventListener('click', function () {
+    var msg = document.getElementById('geoMsg');
+    var say = function (t) { msg.textContent = t; msg.hidden = false; };
+    if (!navigator.geolocation) return say('Localisation indisponible sur cet appareil : saisissez votre adresse.');
+    geoBtn.disabled = true; say('Localisation en cours…');
+    navigator.geolocation.getCurrentPosition(function (p) {
+      document.getElementById('geoLat').value = p.coords.latitude.toFixed(5);
+      document.getElementById('geoLng').value = p.coords.longitude.toFixed(5);
+      var a = document.getElementById('pickupAddr');
+      if (!a.value) a.value = 'Ma position actuelle';
+      say('✅ Position enregistrée. Précisez un repère dans l\'adresse si besoin.');
+      geoBtn.disabled = false;
+    }, function () { say('Localisation refusée : saisissez votre adresse.'); geoBtn.disabled = false; }, { enableHighAccuracy: true, timeout: 12000 });
+  });
 
   // Calcul séjour immobilier
   var im = $('[data-immo]');
