@@ -41,11 +41,11 @@ if (is_post()) {
     // Compte d'accès : jamais écrasé si le numéro a déjà un compte.
     if (!one('SELECT id FROM users WHERE phone = ?', [$phone])) {
         insert('users', ['role' => 'client', 'name' => $name, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
-        flash('success', 'Candidature envoyée ! Connectez-vous avec votre numéro et votre mot de passe pour présenter vos services. Notre équipe vérifie votre dossier (CNI + casier judiciaire) et vous appelle sous 30 minutes.');
+        flash('success', 'Candidature envoyée ! Connectez-vous juste à côté avec votre numéro et votre mot de passe pour présenter vos services. Notre équipe vérifie votre dossier (CNI + casier judiciaire) et vous appelle sous 30 minutes.');
     } else {
         flash('success', 'Candidature envoyée ! Ce numéro a déjà un compte : connectez-vous (code ou mot de passe existant) pour accéder à votre espace. Notre équipe vérifie votre dossier sous 30 minutes.');
     }
-    redirect('/connexion?next=' . urlencode('/espace-prestataire'));
+    redirect('/devenir-prestataire#connexion');
 }
 $transportKeys = domaine('transport')['keys'];
 $title = 'Devenir prestataire ChapTarif';
@@ -73,6 +73,15 @@ view('layout/header', compact('title', 'desc', 'active'));
         <div class="price-row best"><span>Vous recevez</span><b><?= fcfa(5000 - 5000 * (int) setting('commission_menage', 15) / 100) ?></b></div>
       </div>
     </div>
+    <div>
+    <form class="card form-card" id="connexion" method="post" action="/connexion" style="margin-bottom:18px">
+      <?= csrf_field() ?><input type="hidden" name="step" value="pwd"><input type="hidden" name="back" value="prestataire"><input type="hidden" name="next" value="/espace-prestataire">
+      <h2 class="h3">🔑 Déjà prestataire ? Connectez-vous</h2>
+      <p class="muted">Accédez à votre espace pour créer vos services et vos annonces.</p>
+      <label class="fld"><span>Téléphone</span><div class="tel"><span>🇨🇮 +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
+      <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
+      <button class="btn btn-primary btn-block">Me connecter</button>
+    </form>
     <form class="card form-card" id="form" method="post" enctype="multipart/form-data">
       <?= csrf_field() ?>
       <h2 class="h3">Ma candidature</h2>
@@ -111,6 +120,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       })();
       </script>
     </form>
+    </div>
   </div>
 </section>
 <?php view('layout/footer', compact('active'));

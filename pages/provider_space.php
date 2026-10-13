@@ -1,6 +1,7 @@
 <?php
 // Espace prestataire : le prestataire gère son profil et publie lui-même ses annonces (validées par l'équipe).
-$me = require_client('/espace-prestataire');
+$me = current_user();
+if (!$me) redirect('/devenir-prestataire#connexion');
 $mine = all('SELECT * FROM providers WHERE phone = ? ORDER BY id', [$me['phone']]);
 $U = universes();
 $units = ['séance', 'heure', 'jour', 'pièce', 'forfait', 'nuit', 'trajet', 'personne'];
