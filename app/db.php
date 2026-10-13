@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 9;
+const SCHEMA_VERSION = 10;
 
 function db(): PDO
 {
@@ -217,6 +217,29 @@ function db_migrate(): void
             if (!val('SELECT 1 FROM offers WHERE universe = ? AND title = ?', [$u, $t])) {
                 insert('offers', ['universe' => $u, 'title' => $t, 'subtitle' => $sub, 'price' => $pr, 'unit' => $un, 'popular' => $pop, 'active' => 0, 'sort' => $i]);
             }
+        }
+    }
+
+    // v10 : nouveaux forfaits « service à la personne » (ménage, coiffure, maquillage, onglerie) + Garantie Dommage 6,72 %.
+    if ($v > 0 && $v < 10) {
+        q("DELETE FROM settings WHERE key = 'garantie_dommage_pct'");
+        q("INSERT INTO settings (key, value) VALUES ('garantie_dommage_pct', '6.72')");
+        $new = [
+            ['menage', 'Forfait 1 — Ménage standard', 'Jusqu\'à 3 pièces : sols, poussière, cuisine et sanitaires.', 7000, 'forfait', 1],
+            ['menage', 'Forfait 2 — Ménage grand logement', 'À partir de 4 pièces : nettoyage général du logement.', 13500, 'forfait', 0],
+            ['coiffeuse', 'Forfait 1 — Tissage ou perruque', 'Tissage · Pose de perruque', 8000, 'séance', 1],
+            ['coiffeuse', 'Forfait 2 — Nattes, tresses ou chignon', 'Knotless Braids, Boho/Goddess Braids, Fulani Braids, Cornrows artistiques, Wash and Go, Twists/Vanilles, Puff, Bantu Knots, autres coiffures', 3000, 'séance', 0],
+            ['maquilleuse', 'Option 1 — Maquillage de jour', 'Maquillage naturel en journée', 5000, 'séance', 0],
+            ['maquilleuse', 'Option 2 — Maquillage pour événement', 'Mariage, baptême, anniversaire, etc.', 15000, 'forfait', 1],
+            ['maquilleuse', 'Option 3 — Maquillage artistique', 'Maquillage créatif, effets spéciaux ou looks artistiques.', 10000, 'séance', 0],
+            ['onglerie', 'Option 1 — Beauté de l\'ongle naturel', 'Manucure et entretien de l\'ongle naturel · Vernis classique · Vernis semi-permanent', 3000, 'séance', 1],
+            ['onglerie', 'Option 2 — Pose et stylisme ongulaire', 'Capsules, gel et acrygel, gainage, remplissage, extensions, nail art, dépose de faux ongles ou de gel', 6000, 'séance', 0],
+        ];
+        foreach (array_unique(array_column($new, 0)) as $u) q('UPDATE offers SET active = 0 WHERE universe = ?', [$u]);
+        foreach ($new as $i => [$u, $t, $sub, $pr, $un, $pop]) {
+            $ex = one('SELECT id FROM offers WHERE universe = ? AND title = ?', [$u, $t]);
+            if ($ex) q('UPDATE offers SET active = 1, subtitle = ? WHERE id = ?', [$sub, $ex['id']]);
+            else insert('offers', ['universe' => $u, 'title' => $t, 'subtitle' => $sub, 'price' => $pr, 'unit' => $un, 'popular' => $pop, 'active' => 1, 'sort' => $i]);
         }
     }
 

@@ -206,7 +206,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     <div class="reveal">
       <span class="eyebrow">Option protection</span>
       <h2>🛡️ La <span class="grad">Garantie Dommage</span></h2>
-      <p class="lead-sm">Une assurance interne ChapTarif, en option payante, sur Ménage & Aide, Pressing & Linge, Location de car et Location de camion. Service mal fait, vêtement brûlé, objet endommagé : vous êtes couvert.</p>
+      <p class="lead-sm">Une assurance interne ChapTarif, en option payante, sur Ménage & Aide et Pressing & Linge. Service mal fait, vêtement brûlé, objet endommagé : vous êtes couvert.</p>
       <ul class="checks">
         <li>Indemnisation ou nouvelle prestation gratuite en cas de problème</li>
         <li>À cocher au moment de la réservation, pour quelques % du prix</li>

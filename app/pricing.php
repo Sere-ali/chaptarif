@@ -198,14 +198,6 @@ function build_quote(string $universe, array $in): array
             $q['details'] = ['offer' => $offer['title'], 'provider' => $prov['name']] + $d;
             $q['summary'] = $s;
             if ($mult > 1) $q['summary'][] = ['Tarif', fcfa($offer['price']) . ' × ' . $mult . ' jours'];
-            if ($universe !== 'chauffeur' && !empty($in['garantie'])) {
-                $pct = (float) setting('garantie_dommage_pct', 5);
-                $fee = round50($amount * $pct / 100);
-                $q['service_fee'] += $fee;
-                $q['details']['garantie_dommage'] = true;
-                $q['details']['garantie_dommage_montant'] = $fee;
-                $q['summary'][] = ['🛡️ Garantie Dommage', fcfa($fee)];
-            }
             break;
         }
         case 'cars': {
