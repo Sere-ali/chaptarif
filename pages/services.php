@@ -26,7 +26,7 @@ $sql .= ' ORDER BY CASE WHEN sponsored_until >= ? THEN 0 ELSE 1 END, rating DESC
 $providers = all($sql, $params);
 $pServices = [];
 foreach ($providers as $pp) {
-    $pServices[(int) $pp['id']] = all('SELECT title, description FROM provider_services WHERE provider_id = ? AND active = 1 ORDER BY sort, id LIMIT 4', [$pp['id']]);
+    $pServices[(int) $pp['id']] = all("SELECT title, description, price, unit FROM provider_services WHERE provider_id = ? AND active = 1 AND status = 'approved' ORDER BY sort, id LIMIT 3", [$pp['id']]);
 }
 $offers = all('SELECT * FROM offers WHERE universe = ? AND active = 1 ORDER BY sort, price', [$uk]);
 $selProv = (int) ($_GET['provider'] ?? ($providers[0]['id'] ?? 0));
@@ -86,9 +86,9 @@ view('layout/header', compact('title', 'desc', 'active'));
               <small>📍 <?= e($p['commune']) ?> · <?= stars((float) $p['rating']) ?> · <?= (int) $p['missions'] ?> missions</small>
               <p><?= e($p['bio']) ?></p>
               <?php if (!empty($pServices[(int) $p['id']])): ?>
-                <ul class="prov-svc"><?php foreach ($pServices[(int) $p['id']] as $ps): ?><li><b><?= e($ps['title']) ?></b><?= $ps['description'] ? ' · ' . e(mb_strimwidth($ps['description'], 0, 80, '…')) : '' ?></li><?php endforeach; ?></ul>
+                <ul class="prov-svc"><?php foreach ($pServices[(int) $p['id']] as $ps): ?><li><b><?= e($ps['title']) ?></b><?= $ps['price'] ? ' · ' . fcfa($ps['price']) . ($ps['unit'] ? ' / ' . e($ps['unit']) : '') : '' ?></li><?php endforeach; ?></ul>
               <?php endif; ?>
-              <?= kyc_badge($p['kyc_status']) ?>
+              <?= kyc_badge($p['kyc_status']) ?> <a class="fine" href="/profil-prestataire?id=<?= (int) $p['id'] ?>" onclick="event.stopPropagation()">Voir toutes ses annonces →</a>
             </div>
             <span class="prov-check" aria-hidden="true">✓</span>
           </label>

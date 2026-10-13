@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 7;
+const SCHEMA_VERSION = 8;
 
 function db(): PDO
 {
@@ -190,6 +190,12 @@ function db_migrate(): void
         "ALTER TABLE trips ADD COLUMN from_detail TEXT",
         "ALTER TABLE trips ADD COLUMN to_detail TEXT",
         "ALTER TABLE providers ADD COLUMN casier_public_id TEXT",
+        "ALTER TABLE provider_services ADD COLUMN price INTEGER",
+        "ALTER TABLE provider_services ADD COLUMN unit TEXT",
+        "ALTER TABLE provider_services ADD COLUMN photo_url TEXT",
+        "ALTER TABLE provider_services ADD COLUMN status TEXT NOT NULL DEFAULT 'pending'",
+        "ALTER TABLE provider_services ADD COLUMN reject_reason TEXT",
+        "ALTER TABLE provider_services ADD COLUMN updated_at TEXT",
     ] as $alter) {
         try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }
     }

@@ -5,6 +5,7 @@ $disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'"
 $pendingKyc = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'");
 $pendingCandidatures = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'");
 $unread = (int) val('SELECT COUNT(*) FROM contact_messages WHERE handled = 0');
+$pendingListings = (int) val("SELECT COUNT(*) FROM provider_services WHERE status = 'pending'");
 $myOpenTasks = $me ? (int) val("SELECT COUNT(*) FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule')", [$me['id']]) : 0;
 $items = [
     ['Pilotage', null],
@@ -16,6 +17,7 @@ $items = [
     ['finances', '/admin/finances', '💰', 'Finances & séquestre', 0],
     ['control', '/admin/controle', '🎫', 'Contrôle billets', 0],
     ['Catalogue', null],
+    ['listings', '/admin/annonces', '📣', 'Annonces prestataires', $pendingListings],
     ['providers', '/admin/prestataires', '🧑‍🔧', 'Prestataires & KYC', $pendingKyc],
     ['offers', '/admin/offres', '🏷️', 'Formules & tarifs', 0],
     ['trips', '/admin/cars', '🚌', 'Départs cars', 0],
