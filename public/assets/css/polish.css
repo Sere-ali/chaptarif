@@ -133,3 +133,48 @@ body.home-m .m-search { animation-delay: .24s; }
   .m-cat small { font-size: .68rem; line-height: 1.25; margin: 3px 0 6px; display: -webkit-box; -webkit-line-clamp: 2; flex-shrink: 0; -webkit-box-orient: vertical; overflow: hidden; }
   .m-cat-arrow { width: 28px; height: 28px; }
 }
+
+/* ==========================================================================
+   Accueil — « Lagune » : bandeau vert-bleu profond, motif géométrique inspiré des tissages ivoiriens,
+   soleil de latérite et vagues animées. Les quatre cercles chevauchent le bandeau.
+   ========================================================================== */
+.m-home::before { display: none; }
+.m-hero {
+  --pat: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 3 53 28 28 53 3 28Z' fill='none' stroke='white' stroke-opacity='.09' stroke-width='1.4'/%3E%3Cpath d='M28 15 41 28 28 41 15 28Z' fill='none' stroke='white' stroke-opacity='.06' stroke-width='1.2'/%3E%3Ccircle cx='28' cy='28' r='2.4' fill='white' fill-opacity='.10'/%3E%3C/svg%3E");
+  --wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 80' preserveAspectRatio='none'%3E%3Cpath d='M0 44C150 8 300 80 450 44S750 8 900 44 1100 80 1200 44V80H0Z' fill='white'/%3E%3C/svg%3E");
+  position: relative; isolation: isolate; overflow: hidden; color: #fff; padding-bottom: 92px;
+  background: var(--pat), linear-gradient(158deg, #0A3A31 0%, #14604A 46%, #245E9B 100%);
+  background-size: 56px 56px, auto;
+}
+.m-hero::before { content: ''; position: absolute; z-index: -1; right: -26px; top: 150px; width: 112px; height: 112px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 32%, #FFD9A0 0%, #F7A64A 46%, #F28A2E 100%);
+  box-shadow: 0 0 0 16px rgba(242, 138, 46, .16), 0 0 0 38px rgba(242, 138, 46, .08), 0 0 70px 10px rgba(242, 138, 46, .35);
+  animation: sun-rise 1.6s var(--ease) both; }
+@keyframes sun-rise { from { transform: translateY(90px) scale(.7); opacity: 0; } }
+.m-hero::after { content: ''; position: absolute; z-index: -1; left: 0; right: 0; bottom: -1px; height: 64px;
+  background: var(--wave) repeat-x 0 100% / 1200px 64px, var(--wave) repeat-x 0 100% / 900px 52px;
+  animation: waves 22s linear infinite; }
+@keyframes waves { to { background-position: -1200px 100%, 900px 100%; } }
+.m-hero .m-home-top, .m-hero .m-hero-in { position: relative; }
+.m-hero .m-title { color: #fff; text-shadow: 0 2px 24px rgba(0, 0, 0, .18); }
+.m-hero .m-sub { color: rgba(255, 255, 255, .8); }
+.m-hero .m-brand .b1 { color: #9BE8C1; }
+.m-hero .m-brand .b2 { color: #A8D2FF; }
+.m-hero .m-loc { color: rgba(255, 255, 255, .92); }
+.m-hero .m-bell { background: rgba(255, 255, 255, .16); color: #fff; backdrop-filter: blur(6px); }
+.m-hero .m-search { background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .3); margin-bottom: 8px; }
+.m-hero .m-search input { color: #fff; }
+.m-hero .m-search input::placeholder { color: rgba(255, 255, 255, .75); }
+.m-hero .m-search:focus-within { background: #fff; border-color: #fff; }
+.m-hero .m-search:focus-within input { color: var(--ink); }
+.m-body { position: relative; z-index: 2; margin-top: -68px; }
+@media (min-width: 641px) {
+  .m-hero .m-hero-in { padding-top: 64px; }
+  .m-hero .m-title { font-size: clamp(2.6rem, 4.4vw, 3.6rem); }
+  .m-hero .m-sub { font-size: 1.05rem; }
+  .m-hero::before { right: 8%; top: 70px; width: 150px; height: 150px; }
+  .m-home { padding: 0 0 72px; }
+  .m-hero { padding-bottom: 110px; }
+  .m-body { margin-top: -84px; }
+}
+@media (prefers-reduced-motion: reduce) { .m-hero::after, .m-hero::before { animation: none; } }

@@ -36,6 +36,7 @@ $mCatIcon = function (string $key, string $c): string {
 view('layout/header', compact('title', 'active', 'bodyClass'));
 ?>
 <section class="m-home">
+  <div class="m-hero">
   <div class="container m-home-top">
     <a class="m-brand" href="/" aria-label="ChapTarif, accueil">
       <img src="/assets/img/logo.svg" alt="" width="34" height="34">
@@ -44,13 +45,16 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     <span class="m-loc">📍 Abidjan</span>
     <a class="m-bell" href="/compte" aria-label="Mon compte & notifications">🔔</a>
   </div>
-  <div class="container">
+  <div class="container m-hero-in">
     <h1 class="m-title">Que souhaitez-vous<br>aujourd’hui&nbsp;?</h1>
     <p class="m-sub">Tarifs transparents&nbsp;• Paiement sous séquestre</p>
     <form class="m-search" action="#m-cats" onsubmit="return false">
       <span class="m-search-ico">🔎</span>
       <input type="search" placeholder="Rechercher un service, car, logement…" onfocus="document.getElementById('m-cats').scrollIntoView({behavior:'smooth'})">
     </form>
+  </div>
+  </div>
+  <div class="container m-body">
     <div class="m-grid" id="m-cats">
       <?php foreach ($N as $k => $x): ?>
         <a class="m-cat reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
