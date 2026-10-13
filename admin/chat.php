@@ -8,7 +8,7 @@ if (is_post() && $uid) {
     $att = chat_attachment();
     $ok = false; $err = $att['ok'] ? null : $att['error'];
     if ($att['ok'] && ($body !== '' || $att['data']) && one('SELECT id FROM users WHERE id = ?', [$uid])) {
-        insert('chat_messages', ['user_id' => $uid, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => $body, 'read_by_user' => 0, 'read_by_admin' => 1, 'created_at' => now()] + $att['data']);
+        insert('chat_messages', ['user_id' => $uid, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => $body, 'read_by_user' => 0, 'read_by_admin' => 1, 'reply_to' => chat_reply_id($uid), 'created_at' => now()] + $att['data']);
         $ok = true;
     }
     if ($isAjax) { header('Content-Type: application/json'); echo json_encode(['ok' => $ok, 'error' => $err]); exit; }
@@ -18,10 +18,12 @@ if (is_post() && $uid) {
 
 if ($uid && isset($_GET['poll'])) {
     $after = (int) ($_GET['after'] ?? 0);
-    $rows = all('SELECT * FROM chat_messages WHERE user_id = ? AND id > ? ORDER BY id LIMIT 100', [$uid, $after]);
+    $cu = one('SELECT name FROM users WHERE id = ?', [$uid]);
+    $rows = chat_decorate(all('SELECT * FROM chat_messages WHERE user_id = ? AND id > ? ORDER BY id LIMIT 100', [$uid, $after]), true, $cu['name'] ?? 'Client');
     q("UPDATE chat_messages SET read_by_admin = 1 WHERE user_id = ? AND sender = 'user' AND read_by_admin = 0", [$uid]);
+    $reads = array_map('intval', array_column(all("SELECT id FROM chat_messages WHERE user_id = ? AND sender = 'admin' AND read_by_user = 1 ORDER BY id DESC LIMIT 60", [$uid]), 'id'));
     header('Content-Type: application/json');
-    echo json_encode(['messages' => array_map(fn($r) => chat_json($r, true), $rows)]);
+    echo json_encode(['messages' => array_map('chat_json', $rows), 'reads' => $reads]);
     exit;
 }
 
@@ -31,29 +33,12 @@ view('admin/header', compact('page', 'nav'));
 if ($uid):
     $u = one('SELECT * FROM users WHERE id = ?', [$uid]);
     q("UPDATE chat_messages SET read_by_admin = 1 WHERE user_id = ? AND sender = 'user' AND read_by_admin = 0", [$uid]);
-    $msgs = array_reverse(all('SELECT * FROM chat_messages WHERE user_id = ? ORDER BY id DESC LIMIT 200', [$uid]));
+    $msgs = chat_decorate(array_reverse(all('SELECT * FROM chat_messages WHERE user_id = ? ORDER BY id DESC LIMIT 200', [$uid])), true, $u['name'] ?: 'Client');
     $last = $msgs ? (int) end($msgs)['id'] : 0;
     $prov = $u ? one('SELECT name, universe FROM providers WHERE phone = ? LIMIT 1', [$u['phone'] ?? '']) : null;
 ?>
-<p><a href="/admin/chat">← Toutes les conversations</a></p>
-<div class="panel" style="max-width:760px">
-  <div class="panel-h"><h2>💬 <?= e($u['name'] ?: 'Sans nom') ?> <small class="muted"><?= e($u['phone'] ?? '') ?><?= $prov ? ' · prestataire : ' . e($prov['name']) : '' ?></small></h2></div>
-  <div class="chat" data-chat data-url="/admin/chat?u=<?= $uid ?>" data-last="<?= $last ?>">
-    <div class="chat-log" data-chat-log>
-      <?php foreach ($msgs as $m): ?>
-        <div class="cmsg <?= $m['sender'] === 'admin' ? 'me' : 'them' ?>"><?= chat_att_html($m) ?><?= $m['body'] !== '' ? nl2br(e($m['body'])) : '' ?><small><?= e(substr($m['created_at'], 11, 5)) ?></small></div>
-      <?php endforeach; ?>
-    </div>
-    <form class="chat-form" method="post" action="/admin/chat?u=<?= $uid ?>" data-chat-form>
-      <?= csrf_field() ?>
-      <input type="file" name="file" hidden data-chat-file accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt">
-      <button type="button" class="chat-ic" data-chat-attach aria-label="Joindre un fichier">📎</button>
-      <textarea name="body" rows="1" maxlength="1000" placeholder="Votre réponse…"></textarea>
-      <button type="button" class="chat-ic" data-chat-mic aria-label="Message vocal">🎤</button>
-      <button class="btn btn-primary">Répondre</button>
-      <div class="chat-rec" data-chat-rec hidden><span class="rec-dot"></span> <b data-rec-time>0:00</b> <button type="button" data-rec-cancel>✕ Annuler</button><button type="button" class="btn btn-primary btn-sm" data-rec-send>Envoyer</button></div>
-    </form>
-  </div>
+<div class="wa-admin">
+<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => $u['name'] ?: 'Sans nom', 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
 </div>
 <?php else:
     $threads = all("SELECT u.id, u.name, u.phone, MAX(c.id) AS last_id, SUM(CASE WHEN c.sender = 'user' AND c.read_by_admin = 0 THEN 1 ELSE 0 END) AS unread
@@ -72,5 +57,4 @@ if ($uid):
 </div>
 <script>setTimeout(function(){ location.reload(); }, 30000);</script>
 <?php endif;
-echo '<script src="/assets/js/app.js?v=11" defer></script>';
 view('admin/footer');

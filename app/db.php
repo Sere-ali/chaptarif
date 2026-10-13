@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 12;
+const SCHEMA_VERSION = 13;
 
 function db(): PDO
 {
@@ -203,6 +203,7 @@ function db_migrate(): void
         "ALTER TABLE chat_messages ADD COLUMN att_url TEXT",
         "ALTER TABLE chat_messages ADD COLUMN att_type TEXT",
         "ALTER TABLE chat_messages ADD COLUMN att_name TEXT",
+        "ALTER TABLE chat_messages ADD COLUMN reply_to INTEGER",
     ] as $alter) {
         try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }
     }

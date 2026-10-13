@@ -9,7 +9,7 @@ if (is_post()) {
     $att = chat_attachment();
     $ok = false; $err = $att['ok'] ? null : $att['error'];
     if ($att['ok'] && ($body !== '' || $att['data']) && $recent < 15) {
-        insert('chat_messages', ['user_id' => $me['id'], 'sender' => 'user', 'body' => $body, 'read_by_user' => 1, 'read_by_admin' => 0, 'created_at' => now()] + $att['data']);
+        insert('chat_messages', ['user_id' => $me['id'], 'sender' => 'user', 'body' => $body, 'read_by_user' => 1, 'read_by_admin' => 0, 'reply_to' => chat_reply_id((int) $me['id']), 'created_at' => now()] + $att['data']);
         $ok = true;
     } elseif ($att['ok'] && $recent >= 15) $err = 'Trop de messages : patientez une minute.';
     if ($isAjax) { header('Content-Type: application/json'); echo json_encode(['ok' => $ok, 'error' => $err]); exit; }
@@ -19,42 +19,24 @@ if (is_post()) {
 
 if (isset($_GET['poll'])) {
     $after = (int) ($_GET['after'] ?? 0);
-    $rows = all('SELECT * FROM chat_messages WHERE user_id = ? AND id > ? ORDER BY id LIMIT 100', [$me['id'], $after]);
+    $rows = chat_decorate(all('SELECT * FROM chat_messages WHERE user_id = ? AND id > ? ORDER BY id LIMIT 100', [$me['id'], $after]), false, 'Service client');
     q("UPDATE chat_messages SET read_by_user = 1 WHERE user_id = ? AND sender = 'admin' AND read_by_user = 0", [$me['id']]);
+    $reads = array_map('intval', array_column(all("SELECT id FROM chat_messages WHERE user_id = ? AND sender = 'user' AND read_by_admin = 1 ORDER BY id DESC LIMIT 60", [$me['id']]), 'id'));
     header('Content-Type: application/json');
-    echo json_encode(['messages' => array_map(fn($r) => chat_json($r, false), $rows)]);
+    echo json_encode(['messages' => array_map('chat_json', $rows), 'reads' => $reads]);
     exit;
 }
 
 q("UPDATE chat_messages SET read_by_user = 1 WHERE user_id = ? AND sender = 'admin' AND read_by_user = 0", [$me['id']]);
-$msgs = all('SELECT * FROM chat_messages WHERE user_id = ? ORDER BY id DESC LIMIT 100', [$me['id']]);
-$msgs = array_reverse($msgs);
+$msgs = chat_decorate(array_reverse(all('SELECT * FROM chat_messages WHERE user_id = ? ORDER BY id DESC LIMIT 100', [$me['id']])), false, 'Service client');
 $last = $msgs ? (int) end($msgs)['id'] : 0;
 $title = 'Chat avec le service client';
 $active = 'chat';
-view('layout/header', compact('title', 'active', 'providerMode'));
+$bodyClass = 'chat-page';
+view('layout/header', compact('title', 'active', 'providerMode', 'bodyClass'));
+$url = '/chat' . ($providerMode ? '?pro=1' : '');
 ?>
-<section class="section-tight">
-  <div class="container" style="max-width:720px">
-    <h1 class="h2">💬 Service client ChapTarif</h1>
-    <p class="muted">Écrivez-nous : clients et prestataires, notre équipe vous répond ici dès que possible.</p>
-    <div class="chat" data-chat data-url="/chat<?= $providerMode ? '?pro=1' : '' ?>" data-last="<?= $last ?>">
-      <div class="chat-log" data-chat-log>
-        <?php if (!$msgs): ?><p class="chat-empty" data-chat-empty>👋 Bonjour <?= e($me['name'] ?: '') ?> ! Comment pouvons-nous vous aider ?</p><?php endif; ?>
-        <?php foreach ($msgs as $m): ?>
-          <div class="cmsg <?= $m['sender'] === 'user' ? 'me' : 'them' ?>"><?= chat_att_html($m) ?><?= $m['body'] !== '' ? nl2br(e($m['body'])) : '' ?><small><?= e(substr($m['created_at'], 11, 5)) ?></small></div>
-        <?php endforeach; ?>
-      </div>
-      <form class="chat-form" method="post" action="/chat<?= $providerMode ? '?pro=1' : '' ?>" data-chat-form>
-        <?= csrf_field() ?>
-        <input type="file" name="file" hidden data-chat-file accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt">
-        <button type="button" class="chat-ic" data-chat-attach aria-label="Joindre un fichier" title="Joindre un fichier">📎</button>
-        <textarea name="body" rows="1" maxlength="1000" placeholder="Votre message…" aria-label="Votre message"></textarea>
-        <button type="button" class="chat-ic" data-chat-mic aria-label="Message vocal" title="Message vocal">🎤</button>
-        <button class="btn btn-primary" aria-label="Envoyer">Envoyer</button>
-        <div class="chat-rec" data-chat-rec hidden><span class="rec-dot"></span> <b data-rec-time>0:00</b> <button type="button" data-rec-cancel>✕ Annuler</button><button type="button" class="btn btn-primary btn-sm" data-rec-send>Envoyer</button></div>
-      </form>
-    </div>
-  </div>
+<section class="wa-wrap">
+<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => $url, 'name' => 'Service client ChapTarif', 'sub' => 'Nous répondons dès que possible', 'back' => $providerMode ? '/espace-prestataire' : '/', 'admin' => false]); ?>
 </section>
 <?php view('layout/footer', compact('active', 'providerMode'));
