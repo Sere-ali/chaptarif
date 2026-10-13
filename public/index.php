@@ -34,6 +34,7 @@ $routes = [
     '/compte'               => 'pages/account.php',
     '/billet'               => 'pages/ticket.php',
     '/devenir-prestataire'  => 'pages/become_provider.php',
+    '/espace-prestataire'   => 'pages/provider_space.php',
     '/prestataire/valider'  => 'pages/provider_validate.php',
     '/comment-ca-marche'    => 'pages/how.php',
     '/garantie-dommage'     => 'pages/garantie_dommage.php',

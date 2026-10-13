@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 6;
+const SCHEMA_VERSION = 7;
 
 function db(): PDO
 {
@@ -170,6 +170,10 @@ function db_migrate(): void
             priority TEXT NOT NULL DEFAULT 'normale', status TEXT NOT NULL DEFAULT 'a_faire',
             assigned_to INTEGER, assigned_by INTEGER, booking_ref TEXT, due_date TEXT,
             created_at TEXT, updated_at TEXT, completed_at TEXT)",
+        "CREATE TABLE IF NOT EXISTS provider_services (
+            id $PK, provider_id INTEGER NOT NULL, title TEXT NOT NULL, description TEXT,
+            active INTEGER NOT NULL DEFAULT 1, sort INTEGER NOT NULL DEFAULT 0, created_at TEXT)",
+        "CREATE INDEX IF NOT EXISTS idx_pservices_provider ON provider_services(provider_id)",
         "CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id)",
         "CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)",
         "CREATE INDEX IF NOT EXISTS idx_providers_univ ON providers(universe)",

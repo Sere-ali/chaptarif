@@ -35,8 +35,8 @@ if (is_post()) {
         'kyc_status' => 'pending', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
         'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
     ]);
-    flash('success', 'Candidature envoyée ! Notre équipe vérifie votre dossier (CNI + casier judiciaire) et vous appelle sous 30 minutes.');
-    redirect('/devenir-prestataire');
+    flash('success', 'Candidature envoyée ! Connectez-vous avec ce même numéro pour accéder à votre espace et présenter vos services. Notre équipe vérifie votre dossier (CNI + casier judiciaire) et vous appelle sous 30 minutes.');
+    redirect('/connexion?next=' . urlencode('/espace-prestataire'));
 }
 $transportKeys = domaine('transport')['keys'];
 $title = 'Devenir prestataire ChapTarif';

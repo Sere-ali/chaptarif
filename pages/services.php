@@ -24,6 +24,10 @@ $sql = "SELECT * FROM providers WHERE universe = ? AND active = 1 AND kyc_status
 if ($commune !== '') { $sql .= ' AND commune = ?'; $params = [$uk, $commune, $today]; }
 $sql .= ' ORDER BY CASE WHEN sponsored_until >= ? THEN 0 ELSE 1 END, rating DESC';
 $providers = all($sql, $params);
+$pServices = [];
+foreach ($providers as $pp) {
+    $pServices[(int) $pp['id']] = all('SELECT title, description FROM provider_services WHERE provider_id = ? AND active = 1 ORDER BY sort, id LIMIT 4', [$pp['id']]);
+}
 $offers = all('SELECT * FROM offers WHERE universe = ? AND active = 1 ORDER BY sort, price', [$uk]);
 $selProv = (int) ($_GET['provider'] ?? ($providers[0]['id'] ?? 0));
 $selOffer = (int) ($_GET['offer'] ?? 0);
@@ -81,6 +85,9 @@ view('layout/header', compact('title', 'desc', 'active'));
               <div class="prov-top"><b><?= e($p['name']) ?></b><?php if (is_sponsored($p)): ?><span class="badge badge-gold">★ Recommandé</span><?php endif; ?></div>
               <small>📍 <?= e($p['commune']) ?> · <?= stars((float) $p['rating']) ?> · <?= (int) $p['missions'] ?> missions</small>
               <p><?= e($p['bio']) ?></p>
+              <?php if (!empty($pServices[(int) $p['id']])): ?>
+                <ul class="prov-svc"><?php foreach ($pServices[(int) $p['id']] as $ps): ?><li><b><?= e($ps['title']) ?></b><?= $ps['description'] ? ' · ' . e(mb_strimwidth($ps['description'], 0, 80, '…')) : '' ?></li><?php endforeach; ?></ul>
+              <?php endif; ?>
               <?= kyc_badge($p['kyc_status']) ?>
             </div>
             <span class="prov-check" aria-hidden="true">✓</span>
