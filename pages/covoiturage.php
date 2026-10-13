@@ -1,5 +1,5 @@
 <?php
-$title = 'Covoiturage entre villes en Côte d\'Ivoire';
+$title = 'Covoiturage entre particuliers en Côte d\'Ivoire';
 $desc = 'Réservez une place chez un chauffeur vérifié qui propose son trajet (ex. Abidjan → Gagnoa). Paiement sécurisé, argent bloqué jusqu\'à l\'arrivée.';
 $active = 'covoiturage';
 $x = universe('covoiturage');
@@ -14,8 +14,8 @@ view('layout/header', compact('title', 'desc', 'active'));
 <section class="page-hero" style="--c:<?= $x['color'] ?>;--hero:url('<?= e(img($x['img'], 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
   <div class="container">
     <nav class="crumbs"><a href="/">Accueil</a> › Covoiturage</nav>
-    <h1><?= $x['emoji'] ?> Covoiturage entre villes</h1>
-    <p>Un chauffeur vérifié propose son trajet : réservez votre place et payez en sécurité, comme pour tout service ChapTarif.</p>
+    <h1><?= $x['emoji'] ?> Covoiturage entre particuliers</h1>
+    <p>Voyagez à prix réduit, en toute sécurité, et partagez votre trajet avec des personnes qui vont dans la même direction que vous.</p>
   </div>
 </section>
 

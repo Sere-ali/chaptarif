@@ -125,7 +125,7 @@ function universes(): array
         'location_camion' => ['name' => 'Location de gros camion', 'short' => 'Camion', 'emoji' => '🚚', 'sub' => 'Fret & Déménagement', 'color' => '#8A5A2B', 'bg' => '#FBF2E9', 'img' => 'univers-location-camion', 'url' => '/location-camion', 'group' => 'Transports',
             'pitch' => 'Un camion et son chauffeur pour vos déménagements, ramassage de gravier, meubles ou marchandises.'],
         'covoiturage' => ['name' => 'Covoiturage', 'short' => 'Covoit.', 'emoji' => '🚙', 'sub' => 'Trajets économiques partagés', 'color' => '#0E9F8E', 'bg' => '#E9FAF6', 'img' => 'univers-covoiturage', 'url' => '/covoiturage', 'group' => 'Transports',
-            'pitch' => 'Un chauffeur vérifié propose son trajet (ex. Abidjan → Gagnoa) : réservez votre place, payez en sécurité.'],
+            'pitch' => 'Voyagez à prix réduit, en toute sécurité, et partagez votre trajet avec des personnes qui vont dans la même direction que vous.'],
         // 🏡 Immobilier (Location)
         'immobilier' => ['name' => 'Immobilier', 'short' => 'Immobilier', 'emoji' => '🏡', 'sub' => 'Studios, villas & appartements', 'color' => '#C98512', 'bg' => '#FFF7E8', 'img' => 'univers-immobilier', 'url' => '/immobilier', 'group' => 'Immobilier',
             'pitch' => 'Appartements, villas & studios meublés inspectés, contrats et dépôts de garantie 100% sécurisés.'],
