@@ -1,0 +1,135 @@
+/* ==========================================================================
+   ChapTarif — couche de finition : profondeur, mouvement, micro-interactions.
+   Chargée après app.css : n'altère aucune mise en page, uniquement l'apparence.
+   Palette : vert lagune #2E7D5B · bleu #3A7FC1 · latérite #F28A2E (touche d'accent, drapeau ivoirien)
+   ========================================================================== */
+:root {
+  --lat: #F28A2E;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --spring: cubic-bezier(.34, 1.45, .64, 1);
+  --sh-1: 0 1px 2px rgba(15, 27, 45, .05), 0 6px 16px -6px rgba(15, 27, 45, .10);
+  --sh-2: 0 2px 4px rgba(15, 27, 45, .05), 0 18px 36px -14px rgba(15, 27, 45, .20);
+}
+
+/* ---- Typographie : équilibre des titres, texte plus lisible ---- */
+h1, h2, h3, .h2, .h3 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+body { font-feature-settings: 'ss01', 'cv11'; text-rendering: optimizeLegibility; }
+h1, h2, .h2 { letter-spacing: -.03em; }
+::selection { background: rgba(46, 125, 91, .22); }
+:focus-visible { outline: 3px solid rgba(46, 125, 91, .5); outline-offset: 3px; border-radius: 10px; }
+
+/* ---- Transition douce entre les pages (en-tête et barre du bas restent fixes) ---- */
+@view-transition { navigation: auto; }
+.topbar { view-transition-name: topbar; }
+.tabbar { view-transition-name: tabbar; }
+::view-transition-old(root) { animation: vt-out .16s ease both; }
+::view-transition-new(root) { animation: vt-in .34s var(--ease) both; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-4px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+
+/* ---- Barre de progression de lecture ---- */
+.sp-bar { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 90; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--green), var(--blue) 70%, var(--lat)); pointer-events: none; }
+
+/* ---- En-tête : se resserre au défilement ---- */
+.topbar-in { transition: height .3s var(--ease); }
+.topbar.is-scrolled .topbar-in { height: 62px; }
+.topbar .nav-link { position: relative; }
+.topbar .nav-link::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 2px; border-radius: 2px; background: var(--grad); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--ease); }
+.topbar .nav-link:hover::after, .topbar .nav-link.on::after { transform: scaleX(1); }
+
+/* ---- Boutons : reflet au survol, pression, onde au toucher ---- */
+.btn { position: relative; overflow: hidden; isolation: isolate; transition: transform .2s var(--ease), box-shadow .25s ease, background .2s ease, border-color .2s ease; -webkit-tap-highlight-color: transparent; }
+.btn-primary::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .28) 50%, transparent 70%); transform: translateX(-120%); transition: transform .7s var(--ease); }
+.btn-primary:hover::before { transform: translateX(120%); }
+.btn:active { transform: scale(.97); }
+.btn .rpl { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, .45); transform: scale(0); animation: rpl .6s ease-out forwards; pointer-events: none; z-index: -1; }
+.btn-ghost .rpl, .btn-soft .rpl { background: rgba(46, 125, 91, .18); }
+@keyframes rpl { to { transform: scale(1); opacity: 0; } }
+.btn.is-loading { pointer-events: none; opacity: .85; }
+.btn.is-loading::after { content: ''; width: 16px; height: 16px; margin-left: 8px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---- Cartes et listes : relief et élévation au survol (souris uniquement) ---- */
+.card, .ps-card, .d-item, .prov, .offer { box-shadow: var(--sh-1); }
+@media (hover: hover) {
+  .d-item, .ps-card, .prov { transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .25s ease; }
+  .d-item:hover, .ps-card:hover { transform: translateY(-4px); box-shadow: var(--sh-2); }
+  .ps-card img, .d-item-img img { transition: transform .6s var(--ease); }
+  .ps-card:hover img, .d-item:hover .d-item-img img { transform: scale(1.06); }
+  .ps-card { overflow: hidden; }
+}
+.d-item-btn { transition: transform .25s var(--spring), filter .2s ease; }
+.d-item:hover .d-item-btn { transform: translateX(3px); filter: brightness(1.06); }
+.prov:has(input:checked), .offer:has(input:checked) { animation: pick .4s var(--spring); }
+@keyframes pick { 0% { transform: scale(.985); } 60% { transform: scale(1.012); } 100% { transform: none; } }
+
+/* ---- Champs de formulaire ---- */
+.fld input, .fld select, .fld textarea { transition: border-color .2s ease, box-shadow .25s ease, background .2s ease; }
+.fld input:focus, .fld select:focus, .fld textarea:focus { border-color: var(--green); box-shadow: 0 0 0 4px rgba(46, 125, 91, .14); outline: none; background: #fff; }
+
+/* ---- Messages : entrée en glissant, disparition douce ---- */
+.alert { animation: alert-in .5s var(--spring) both; transition: opacity .5s ease, transform .5s ease, max-height .5s ease, margin .5s ease, padding .5s ease; }
+.alert.is-gone { opacity: 0; transform: translateY(-8px); max-height: 0; margin: 0; padding-top: 0; padding-bottom: 0; overflow: hidden; }
+@keyframes alert-in { from { opacity: 0; transform: translateY(-10px) scale(.98); } }
+
+/* ---- Images : apparition en fondu une fois chargées ---- */
+img.img-wait { opacity: 0; }
+img.img-wait.img-ok { opacity: 1; transition: opacity .6s ease; }
+
+/* ---- Apparition au défilement : plus fluide, sans effet « template » ---- */
+.reveal { transform: translateY(14px); transition: opacity .7s var(--ease), transform .8s var(--ease); }
+
+/* ---- Accueil : l'unique moment orchestré ---- */
+.m-home { position: relative; isolation: isolate; overflow-x: clip; }
+.m-home::before { content: ''; position: absolute; z-index: -1; left: 50%; top: -60px; width: min(1100px, 140vw); height: 560px; transform: translateX(-50%);
+  background:
+    radial-gradient(38% 46% at 22% 38%, rgba(46, 125, 91, .20), transparent 70%),
+    radial-gradient(34% 42% at 78% 30%, rgba(58, 127, 193, .20), transparent 70%),
+    radial-gradient(26% 32% at 54% 72%, rgba(242, 138, 46, .13), transparent 70%);
+  filter: blur(22px); animation: aurora 26s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes aurora { to { transform: translateX(-46%) translateY(14px) scale(1.06); } }
+body.home-m .m-home-top, body.home-m .m-title, body.home-m .m-sub, body.home-m .m-search { animation: rise .8s var(--ease) both; }
+body.home-m .m-title { animation-delay: .08s; }
+body.home-m .m-sub { animation-delay: .16s; }
+body.home-m .m-search { animation-delay: .24s; }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+.m-search { box-shadow: var(--sh-1); background: rgba(255, 255, 255, .78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: box-shadow .3s ease, border-color .3s ease, transform .3s var(--ease); }
+.m-search:focus-within { border-color: var(--green); box-shadow: 0 0 0 4px rgba(46, 125, 91, .14), var(--sh-2); transform: translateY(-1px); }
+.m-cat.reveal { transform: translateY(28px) scale(.86); transition: opacity .7s var(--ease), transform .9s var(--spring), box-shadow .35s ease; }
+.m-cat.reveal.in { transform: none; }
+.m-cat { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 22px 40px -22px color-mix(in srgb, var(--c) 55%, transparent); }
+.m-cat-ico { transition: transform .45s var(--spring), box-shadow .3s ease; }
+@media (hover: hover) {
+  .m-cat:hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 30px 50px -20px color-mix(in srgb, var(--c) 65%, transparent); }
+  .m-cat:hover .m-cat-ico { transform: translateY(-3px) scale(1.07); box-shadow: 0 14px 26px rgba(15, 27, 45, .14); }
+}
+.m-trust { box-shadow: var(--sh-1); }
+
+/* ---- Barre du bas (téléphone) : repère actif ---- */
+.tabbar a { position: relative; transition: color .25s ease, transform .25s var(--spring); }
+.tabbar a:active { transform: scale(.92); }
+.tabbar a.on::before { content: ''; position: absolute; top: 0; left: 50%; width: 26px; height: 3px; margin-left: -13px; border-radius: 0 0 4px 4px; background: var(--grad); animation: tab-in .4s var(--spring) both; }
+@keyframes tab-in { from { transform: scaleX(0); } }
+
+/* ---- Chiffres clés ---- */
+.stats-band { position: relative; overflow: hidden; }
+.stats-band::after { content: ''; position: absolute; inset: auto -10% -60% auto; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(242, 138, 46, .28), transparent 65%); pointer-events: none; }
+.stat b { font-variant-numeric: tabular-nums; }
+
+/* ---- Respect des préférences d'accessibilité ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .m-home::before { animation: none; }
+  .btn-primary::before { display: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+/* ---- Petits écrans : le contenu des cercles tient toujours à l'intérieur ---- */
+@media (max-width: 430px) {
+  .m-cat { padding: 8% 7% 7%; gap: 0; }
+  .m-cat-ico { width: 34%; margin-bottom: 4px; }
+  .m-cat b { font-size: .95rem; line-height: 1.15; }
+  .m-cat small { font-size: .68rem; line-height: 1.25; margin: 3px 0 6px; display: -webkit-box; -webkit-line-clamp: 2; flex-shrink: 0; -webkit-box-orient: vertical; overflow: hidden; }
+  .m-cat-arrow { width: 28px; height: 28px; }
+}

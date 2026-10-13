@@ -47,6 +47,7 @@
 
 <?php endif; ?>
 <script src="/assets/js/app.js?v=8" defer></script>
+<script src="/assets/js/polish.js?v=1" defer></script>
 <?php if (!empty($leaflet)): ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
 <?php endif; ?>

@@ -127,7 +127,7 @@ function universes(): array
         'covoiturage' => ['name' => 'Covoiturage', 'short' => 'Covoit.', 'emoji' => '🚙', 'sub' => 'Trajets économiques partagés', 'color' => '#0E9F8E', 'bg' => '#E9FAF6', 'img' => 'univers-covoiturage', 'url' => '/covoiturage', 'group' => 'Transports',
             'pitch' => 'Un chauffeur vérifié propose son trajet (ex. Abidjan → Gagnoa) : réservez votre place, payez en sécurité.'],
         // 🏡 Immobilier (Location)
-        'immobilier' => ['name' => 'Immobilier', 'short' => 'Immobilier', 'emoji' => '🏡', 'sub' => 'Appartements, villas & studios certifiés', 'color' => '#C98512', 'bg' => '#FFF7E8', 'img' => 'univers-immobilier', 'url' => '/immobilier', 'group' => 'Immobilier',
+        'immobilier' => ['name' => 'Immobilier', 'short' => 'Immobilier', 'emoji' => '🏡', 'sub' => 'Studios, villas & appartements', 'color' => '#C98512', 'bg' => '#FFF7E8', 'img' => 'univers-immobilier', 'url' => '/immobilier', 'group' => 'Immobilier',
             'pitch' => 'Appartements, villas & studios meublés inspectés, contrats et dépôts de garantie 100% sécurisés.'],
         // 🧹 Service à la personne
         'menage' => ['name' => 'Ménage ou aide à domicile', 'short' => 'Ménage', 'emoji' => '🧹', 'sub' => 'Femmes de ménage pro', 'color' => '#C2407F', 'bg' => '#FCEFF5', 'img' => 'univers-menage', 'url' => '/menage', 'group' => 'Service à la personne',
@@ -155,19 +155,19 @@ function universe(string $key): array
 function domaines(): array
 {
     return [
-        'transport' => ['name' => 'Transport', 'short' => 'Transports', 'emoji' => '🚌', 'sub' => 'Cars, covoiturage, location de véhicule, chauffeur & camion', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/transport', 'group' => 'Transports',
+        'transport' => ['name' => 'Transport', 'short' => 'Transports', 'emoji' => '🚌', 'sub' => 'Cars, location & chauffeur', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/transport', 'group' => 'Transports',
             'pitch' => 'Cars interurbains, covoiturage, location de car ou de camion : comparez et réservez en un clic.',
             'tagline' => 'Voyagez simplement !',
             'select_h2' => 'Sélectionnez votre besoin', 'select_sub' => 'Trouvez le meilleur tarif, en quelques clics.',
             'trust_title' => 'Paiement sécurisé après confirmation :', 'trust_text' => 'Votre paiement est bloqué sur ChapTarif et n\'est versé au prestataire qu\'après la réalisation du service.',
             'keys' => ['cars', 'covoiturage', 'location_car', 'location_vehicule', 'chauffeur', 'location_camion']],
-        'beaute' => ['name' => 'Beauté à domicile', 'short' => 'Beauté', 'title_m' => 'Beauté à Domicile', 'emoji' => '💄', 'sub' => 'Coiffeuse, maquilleuse & onglerie', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/beaute', 'group' => 'Beauté',
+        'beaute' => ['name' => 'Beauté à domicile', 'short' => 'Beauté', 'title_m' => 'Beauté à Domicile', 'emoji' => '💄', 'sub' => 'Coiffure & maquillage', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/beaute', 'group' => 'Beauté',
             'pitch' => 'Coiffeuse, maquilleuse et prothésiste ongulaire à domicile, prestataires vérifiés.',
             'tagline' => 'La beauté vient à vous !',
             'select_h2' => 'Sélectionnez votre prestation', 'select_sub' => 'La prestataire se déplace directement à votre adresse.',
             'trust_title' => 'Paiement débloqué après prestation :', 'trust_text' => 'Vous validez sur votre téléphone une fois votre coiffure, maquillage ou manucure terminée.',
             'keys' => ['coiffeuse', 'maquilleuse', 'onglerie']],
-        'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'title_m' => 'Service à la personne', 'emoji' => '🧹', 'sub' => 'Ménage, repassage & pressing de linge', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/service-a-la-personne', 'group' => 'Service à la personne',
+        'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'title_m' => 'Service à la personne', 'emoji' => '🧹', 'sub' => 'Ménage & pressing', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/service-a-la-personne', 'group' => 'Service à la personne',
             'pitch' => 'Ménage à domicile et pressing & repassage de linge, prestataires vérifiés, tarif fixe.',
             'tagline' => 'Un intérieur propre, un quotidien plus serein !',
             'select_h2' => 'Sélectionnez votre besoin', 'select_sub' => 'Trouvez le prestataire idéal, en quelques clics.',
