@@ -68,12 +68,13 @@ if (is_post() && $mine) {
 $title = 'Mon espace prestataire';
 $active = 'pro';
 $editId = (int) ($_GET['edit'] ?? 0);
-view('layout/header', compact('title', 'active'));
+$providerMode = true;
+view('layout/header', compact('title', 'active', 'providerMode'));
 ?>
 <section class="section-tight ps">
   <div class="container" style="max-width:900px">
     <h1 class="h2">🧑‍🔧 Mon espace prestataire</h1>
-    <p class="muted">Publiez vos services et vos offres : ils apparaissent sur le site après validation par l'équipe ChapTarif.</p>
+    <p class="muted">C'est ici que vous créez vos services et vos offres. Ils apparaissent sur le site pour les clients après validation par l'équipe ChapTarif.</p>
 
     <?php if (!$mine): ?>
       <div class="card"><h2 class="h3">Vous n'êtes pas encore prestataire</h2>
@@ -111,7 +112,7 @@ view('layout/header', compact('title', 'active'));
         <div><b><?= (float) $p['rating'] > 0 ? number_format((float) $p['rating'], 1, ',', '') . ' ★' : '—' ?></b><small>Note clients</small></div>
       </div>
 
-      <h3 class="h4 mt">📣 Mes annonces</h3>
+      <h3 class="h4 mt" id="annonces">📣 Mes annonces</h3>
       <?php if ($nRej): ?><div class="alert alert-error"><?= $nRej ?> annonce(s) refusée(s) : lisez le motif, corrigez puis renvoyez.</div><?php endif; ?>
       <?php foreach ($svcs as $s): ?>
         <div class="ps-ad <?= $s['active'] ? '' : 'off' ?>">
@@ -153,7 +154,7 @@ view('layout/header', compact('title', 'active'));
         <?php foreach ($recent as $b): ?><div class="prov-mini"><div><b><?= e($b['title']) ?></b><small><?= e($b['ref']) ?> · <?= fmt_date($b['created_at']) ?></small></div><?= status_badge($b['status']) ?></div><?php endforeach; ?>
       <?php endif; ?>
 
-      <h3 class="h4 mt">👤 Mon profil</h3>
+      <h3 class="h4 mt" id="profil">👤 Mon profil</h3>
       <form method="post" enctype="multipart/form-data">
         <?= csrf_field() ?><input type="hidden" name="provider_id" value="<?= (int) $p['id'] ?>"><input type="hidden" name="action" value="profile">
         <label class="fld"><span>Nom / Entreprise</span><input name="name" required maxlength="80" value="<?= e($p['name']) ?>"></label>
@@ -168,4 +169,4 @@ view('layout/header', compact('title', 'active'));
     <?php endforeach; ?>
   </div>
 </section>
-<?php view('layout/footer', compact('active'));
+<?php view('layout/footer', compact('active', 'providerMode'));

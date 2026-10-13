@@ -24,13 +24,28 @@ $U = nav_entries();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/app.css?v=15">
+<link rel="stylesheet" href="/assets/css/app.css?v=16">
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <?php endif; ?>
 </head>
 <body class="<?= e($bodyClass ?? '') ?>">
 <a class="skip" href="#main">Aller au contenu</a>
+<?php if (!empty($providerMode)): ?>
+<header class="topbar ps-bar" id="top">
+  <div class="container topbar-in">
+    <a class="brand" href="/espace-prestataire" aria-label="Mon espace prestataire">
+      <img src="/assets/img/logo.svg" alt="" width="40" height="40">
+      <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span><span class="ps-tag">Espace prestataire</span>
+    </a>
+    <div class="top-actions">
+      <a class="btn btn-ghost btn-sm" href="/espace-prestataire#annonces">📣 Mes annonces</a>
+      <a class="btn btn-ghost btn-sm" href="/espace-prestataire#profil">👤 Mon profil</a>
+      <form method="post" action="/deconnexion" style="display:inline"><?= csrf_field() ?><button class="btn btn-soft btn-sm">Se déconnecter</button></form>
+    </div>
+  </div>
+</header>
+<?php else: ?>
 <header class="topbar" id="top">
   <div class="container topbar-in">
     <a class="brand" href="/" aria-label="ChapTarif, accueil">
@@ -83,6 +98,7 @@ $U = nav_entries();
     <a href="/contact">Contact & aide</a>
   </div>
 </header>
+<?php endif; ?>
 <main id="main">
 <?php foreach (flashes() as [$t, $m]): ?>
   <div class="container"><div class="alert alert-<?= e($t) ?>" role="status"><?= e($m) ?></div></div>

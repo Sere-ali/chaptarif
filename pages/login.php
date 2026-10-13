@@ -2,7 +2,13 @@
 $next = (string) ($_POST['next'] ?? $_GET['next'] ?? '/compte');
 if (!str_starts_with($next, '/') || str_starts_with($next, '//')) $next = '/compte';
 
-if (current_user() && !is_post()) redirect($next);
+// Un prestataire qui se connecte sans destination précise arrive dans son espace, pas sur le site public.
+function login_dest(string $next, array $user): string
+{
+    if ($next === '/compte' && $user && val('SELECT 1 FROM providers WHERE phone = ?', [$user['phone']])) return '/espace-prestataire';
+    return $next;
+}
+if (current_user() && !is_post()) redirect(login_dest($next, current_user()));
 
 $step = 'phone';
 $demoCode = null;
@@ -42,7 +48,7 @@ if (is_post()) {
         clear_attempts($key);
         login_user($user);
         flash('success', 'Bienvenue sur ChapTarif !');
-        redirect($next);
+        redirect(login_dest($next, $user));
     }
     if ($action === 'verify') {
         $phone = $_SESSION['otp_phone'] ?? null;
@@ -72,7 +78,7 @@ if (is_post()) {
         unset($_SESSION['otp_phone'], $_SESSION['otp_name'], $_SESSION['otp_demo']);
         login_user($user);
         flash('success', 'Bienvenue sur ChapTarif !');
-        redirect($next);
+        redirect(login_dest($next, $user));
     }
 }
 

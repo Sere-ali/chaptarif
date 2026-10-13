@@ -1,4 +1,7 @@
 </main>
+<?php if (!empty($providerMode)): ?>
+<footer class="footer ps-foot"><div class="container footer-bottom"><span>© <?= date('Y') ?> ChapTarif · Espace prestataire</span><span>Besoin d'aide ? <a href="/contact">Contactez l'équipe</a></span></div></footer>
+<?php else: ?>
 <footer class="footer">
   <div class="container footer-grid">
     <div>
@@ -42,6 +45,7 @@
   <a href="/compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</a>
 </nav>
 
+<?php endif; ?>
 <script src="/assets/js/app.js?v=7" defer></script>
 <?php if (!empty($leaflet)): ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
