@@ -737,3 +737,8 @@ h1, h2 { overflow-wrap: break-word; }
 @media (max-width: 640px) { .ps-kpis { grid-template-columns: repeat(2, 1fr); } .ps-ad img, .ps-noimg { width: 84px; height: 66px; } }
 .ps-tag { margin-left: 8px; font-size: .72rem; font-weight: 800; background: #E4F5EC; color: #1D7348; border-radius: 999px; padding: 3px 9px; align-self: center; }
 @media (max-width: 640px) { body .ps-bar { display: block !important; } .ps-bar .top-actions { flex-wrap: wrap; gap: 6px; } .ps-tag { display: none; } }
+
+/* Bouton Retour */
+.back-bar { padding-top: 14px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .92rem; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px 8px 10px; box-shadow: var(--sh); text-decoration: none; }
+.back-btn:hover { background: #F3F7F5; }

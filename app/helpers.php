@@ -399,3 +399,25 @@ function pager(int $page, int $pages): string
     }
     return $h . '</nav>';
 }
+
+
+/**
+ * Cible du bouton « Retour » : la page parente logique (jamais vide hors accueil).
+ * @return array{0:string,1:string}|null  [url, libellé] ou null (accueil)
+ */
+function back_target(string $path): ?array
+{
+    $path = '/' . trim($path, '/');
+    if ($path === '/') return null;
+    $key = str_replace('-', '_', trim($path, '/'));
+    foreach (domaines() as $d) {
+        if (in_array($key, $d['keys'], true)) return [$d['url'], $d['name']];
+    }
+    if ($path === '/immobilier') return !empty($_GET['id']) || !empty($_GET['cat']) || !empty($_GET['type']) || !empty($_GET['commune']) ? ['/immobilier', 'Immobilier'] : ['/', 'Accueil'];
+    if ($path === '/profil-prestataire') {
+        $p = one('SELECT universe FROM providers WHERE id = ?', [(int) ($_GET['id'] ?? 0)]);
+        return $p ? ['/' . str_replace('_', '-', $p['universe']), 'la liste'] : ['/', 'Accueil'];
+    }
+    if (str_starts_with($path, '/reserver') || str_starts_with($path, '/paiement') || $path === '/billet') return ['history', 'Retour'];
+    return ['/', 'Accueil'];
+}
