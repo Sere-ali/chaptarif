@@ -6,6 +6,7 @@ $pendingKyc = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pend
 $pendingCandidatures = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'");
 $unread = (int) val('SELECT COUNT(*) FROM contact_messages WHERE handled = 0');
 $pendingListings = (int) val("SELECT COUNT(*) FROM provider_services WHERE status = 'pending'");
+$chatUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0");
 $myOpenTasks = $me ? (int) val("SELECT COUNT(*) FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule')", [$me['id']]) : 0;
 $items = [
     ['Pilotage', null],
@@ -26,6 +27,7 @@ $items = [
     ['zones', '/admin/zones', '📍', 'Zones & quartiers', 0],
     ['Relation client', null],
     ['clients', '/admin/clients', '👥', 'Clients', 0],
+    ['chat', '/admin/chat', '💬', 'Chat service client', $chatUnread],
     ['messages', '/admin/messages', '✉️', 'Messages', $unread],
 ];
 if (is_super($me)) {
@@ -45,7 +47,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=3">
+<link rel="stylesheet" href="/assets/css/admin.css?v=4">
 </head>
 <body class="adm">
 <aside class="side" data-side>

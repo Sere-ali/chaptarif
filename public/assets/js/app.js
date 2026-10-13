@@ -241,3 +241,37 @@
     wrap.appendChild(b);
   });
 })();
+
+/* Chat : envoi et actualisation automatique */
+(function () {
+  var box = document.querySelector('[data-chat]');
+  if (!box) return;
+  var log = box.querySelector('[data-chat-log]'), form = box.querySelector('[data-chat-form]'), ta = form.elements.body;
+  var last = parseInt(box.dataset.last, 10) || 0, url = box.dataset.url, sep = url.indexOf('?') > -1 ? '&' : '?';
+  var seen = {};
+  var down = function () { log.scrollTop = log.scrollHeight; };
+  var add = function (m) {
+    if (seen[m.id]) return; seen[m.id] = 1;
+    var emp = box.querySelector('[data-chat-empty]'); if (emp) emp.remove();
+    var d = document.createElement('div'); d.className = 'cmsg ' + (m.me ? 'me' : 'them');
+    d.appendChild(document.createTextNode(m.body));
+    var t = document.createElement('small'); t.textContent = m.time; d.appendChild(t);
+    log.appendChild(d); last = Math.max(last, m.id); down();
+  };
+  var poll = function () {
+    if (document.hidden) return;
+    fetch(url + sep + 'poll=1&after=' + last, { credentials: 'same-origin' }).then(function (r) { return r.json(); })
+      .then(function (j) { (j.messages || []).forEach(add); }).catch(function () {});
+  };
+  down(); setInterval(poll, 4000);
+  document.addEventListener('visibilitychange', poll);
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = ta.value.trim(); if (!v) return;
+    var data = new FormData(form);
+    ta.value = '';
+    fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: data })
+      .then(function () { poll(); }).catch(function () { ta.value = v; });
+  });
+  ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 700) { e.preventDefault(); form.requestSubmit(); } });
+})();
