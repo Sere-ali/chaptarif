@@ -23,6 +23,8 @@ function seed_all(): void
         'commission_covoiturage'=> '10',
         'commission_location_car'   => '15',
         'commission_location_camion'=> '15',
+        'commission_location_vehicule'=> '15',
+        'commission_chauffeur'  => '15',
         'cars_service_fee'      => '400',
         'sponsor_price'         => '5000',
         'garantie_dommage_pct'  => '5',

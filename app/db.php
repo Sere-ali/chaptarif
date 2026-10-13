@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 8;
+const SCHEMA_VERSION = 9;
 
 function db(): PDO
 {
@@ -201,6 +201,24 @@ function db_migrate(): void
     }
 
     if ($v === 0) db_seed();
+
+    // v9 : nouvelles catégories « Location de véhicule » et « Louer un chauffeur » (formules en brouillon, à tarifer par l'admin).
+    if ($v > 0 && $v < 9) {
+        foreach (['commission_location_vehicule' => '15', 'commission_chauffeur' => '15'] as $k => $val) {
+            if (val('SELECT 1 FROM settings WHERE key = ?', [$k]) === null) q('INSERT INTO settings (key, value) VALUES (?, ?)', [$k, $val]);
+        }
+        foreach ([
+            ['location_vehicule', 'Citadine / berline', 'Voiture compacte, journée de 24h', 25000, 'jour', 1],
+            ['location_vehicule', '4x4 / SUV', 'Véhicule tout-terrain, journée de 24h', 45000, 'jour', 0],
+            ['location_vehicule', 'Minibus', 'Minibus sans chauffeur, journée de 24h', 60000, 'jour', 0],
+            ['chauffeur', 'Chauffeur — demi-journée', 'Jusqu\'à 5 heures, avec votre véhicule', 8000, 'séance', 1],
+            ['chauffeur', 'Chauffeur — journée', 'Jusqu\'à 10 heures, avec votre véhicule', 15000, 'jour', 0],
+        ] as $i => [$u, $t, $sub, $pr, $un, $pop]) {
+            if (!val('SELECT 1 FROM offers WHERE universe = ? AND title = ?', [$u, $t])) {
+                insert('offers', ['universe' => $u, 'title' => $t, 'subtitle' => $sub, 'price' => $pr, 'unit' => $un, 'popular' => $pop, 'active' => 0, 'sort' => $i]);
+            }
+        }
+    }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");
     q("INSERT INTO settings (key, value) VALUES ('schema_version', ?)", [(string) SCHEMA_VERSION]);

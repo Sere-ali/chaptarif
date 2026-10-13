@@ -5,7 +5,7 @@ $groups = [
         'commission_menage' => 'Ménage & Aide', 'commission_pressing' => 'Pressing & Linge',
         'commission_immobilier' => 'Immobilier', 'commission_cars' => 'Cars (sur le prix du billet)',
         'commission_covoiturage' => 'Covoiturage (sur le prix de la place)', 'commission_location_car' => 'Location de car',
-        'commission_location_camion' => 'Location de camion', 'commission_coiffeuse' => 'Coiffeuse à domicile',
+        'commission_location_camion' => 'Location de camion', 'commission_location_vehicule' => 'Location de véhicule', 'commission_chauffeur' => 'Louer un chauffeur', 'commission_coiffeuse' => 'Coiffeuse à domicile',
         'commission_maquilleuse' => 'Maquilleuse à domicile', 'commission_onglerie' => 'Onglerie à domicile',
     ],
     'Frais & abonnements (F CFA)' => ['cars_service_fee' => 'Frais de service par billet de car', 'sponsor_price' => 'Abonnement « Recommandé » / mois'],
