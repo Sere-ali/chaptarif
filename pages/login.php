@@ -25,6 +25,25 @@ if (is_post()) {
         $_SESSION['otp_demo'] = $r['demo_code'];
         redirect('/connexion?step=code&next=' . urlencode($next));
     }
+    if ($action === 'pwd') {
+        $phone = normalize_phone((string) ($_POST['phone'] ?? ''));
+        $pw = (string) ($_POST['password'] ?? '');
+        $key = 'pwd:' . ($phone ?: 'x');
+        if (too_many_attempts($key, 8)) {
+            flash('error', 'Trop de tentatives. Patientez 15 minutes.');
+            redirect('/connexion?next=' . urlencode($next));
+        }
+        $user = $phone ? one("SELECT * FROM users WHERE phone = ? AND role = 'client' AND active = 1", [$phone]) : null;
+        if (!$user || empty($user['password_hash']) || !password_verify($pw, $user['password_hash'])) {
+            record_attempt($key);
+            flash('error', 'Numéro ou mot de passe incorrect.');
+            redirect('/connexion?next=' . urlencode($next));
+        }
+        clear_attempts($key);
+        login_user($user);
+        flash('success', 'Bienvenue sur ChapTarif !');
+        redirect($next);
+    }
     if ($action === 'verify') {
         $phone = $_SESSION['otp_phone'] ?? null;
         $code = preg_replace('/\D/', '', (string) ($_POST['code'] ?? ''));
@@ -78,6 +97,16 @@ view('layout/header', compact('title'));
         <label class="fld"><span>Téléphone</span><div class="tel"><span>🇨🇮 +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required autofocus></div></label>
         <button class="btn btn-primary btn-block btn-lg">Recevoir mon code</button>
       </form>
+      <details class="mt" <?= str_contains($next, 'espace-prestataire') ? 'open' : '' ?>>
+        <summary><b>🧑‍🔧 Prestataire : me connecter avec mon mot de passe</b></summary>
+        <form method="post" action="/connexion" class="mt">
+          <?= csrf_field() ?>
+          <input type="hidden" name="step" value="pwd"><input type="hidden" name="next" value="<?= e($next) ?>">
+          <label class="fld"><span>Téléphone</span><div class="tel"><span>🇨🇮 +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
+          <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
+          <button class="btn btn-primary btn-block">Me connecter</button>
+        </form>
+      </details>
     <?php else: ?>
       <h1 class="h2">Entrez votre code</h1>
       <p class="muted">Code envoyé au <b><?= e(fmt_phone($_SESSION['otp_phone'])) ?></b>. <a href="/connexion?next=<?= e(urlencode($next)) ?>">Modifier</a></p>

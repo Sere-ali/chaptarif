@@ -15,6 +15,20 @@ if (is_post()) {
         flash('success', 'Prestataire supprimé.');
         redirect('/admin/prestataires');
     }
+    if (($_POST['action'] ?? '') === 'set_password' && $p) {
+        $pw = (string) ($_POST['new_password'] ?? '');
+        $u = one('SELECT * FROM users WHERE phone = ?', [$p['phone']]);
+        if (strlen($pw) < 8) flash('error', 'Mot de passe : 8 caractères minimum.');
+        elseif ($u && $u['role'] !== 'client') flash('error', 'Ce numéro appartient à un compte administrateur : action refusée.');
+        else {
+            $hash = password_hash($pw, PASSWORD_DEFAULT);
+            if ($u) q('UPDATE users SET password_hash = ?, active = 1 WHERE id = ?', [$hash, $u['id']]);
+            else insert('users', ['role' => 'client', 'name' => $p['name'], 'phone' => $p['phone'], 'password_hash' => $hash, 'active' => 1, 'created_at' => now()]);
+            audit('prestataire.mot_de_passe', $p['name'] . ' #' . $p['id']);
+            flash('success', 'Mot de passe défini. Le prestataire se connecte sur /connexion avec son numéro et ce mot de passe.');
+        }
+        redirect('/admin/prestataire?id=' . $p['id']);
+    }
     if (($_POST['action'] ?? '') === 'remove_photo' && $p) {
         q('UPDATE providers SET photo_url = NULL WHERE id = ?', [$p['id']]);
         flash('success', 'Photo retirée.');
@@ -136,6 +150,10 @@ view('admin/header', compact('page', 'nav'));
     </div>
     <?php endif; ?>
     <?php if ($id): ?>
+    <form method="post" class="mt"><?= csrf_field() ?>
+      <label class="fld"><span>🔑 Définir / réinitialiser son mot de passe d'accès</span><input type="text" name="new_password" minlength="8" placeholder="8 caractères minimum" autocomplete="off"></label>
+      <button class="btn btn-soft btn-sm" name="action" value="set_password">Enregistrer le mot de passe</button>
+    </form>
     <form method="post" data-confirm="Supprimer définitivement ce prestataire ?"><?= csrf_field() ?><button class="btn btn-ghost btn-sm" name="action" value="delete">🗑 Supprimer</button></form>
     <?php endif; ?>
   </div>
