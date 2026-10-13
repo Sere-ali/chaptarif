@@ -114,8 +114,10 @@ function otp_send(string $phone): array
         'phone' => $phone, 'code_hash' => password_hash($code, PASSWORD_DEFAULT),
         'expires_at' => date('Y-m-d H:i:s', time() + 300), 'attempts' => 0, 'used' => 0, 'created_at' => now(),
     ]);
-    $sent = sms_send($phone, "ChapTarif : votre code de connexion est $code. Il expire dans 5 minutes. Ne le partagez jamais.");
-    return ['ok' => true, 'demo_code' => sms_demo_mode() ? $code : null, 'sent' => $sent];
+    $sent = whatsapp_send_code($phone, $code)
+        || sms_send($phone, "ChapTarif : votre code de connexion est $code. Il expire dans 5 minutes. Ne le partagez jamais.");
+    // Le code n'est affiché à l'écran qu'en mode démonstration ET si aucun envoi réel n'a réussi.
+    return ['ok' => true, 'demo_code' => (sms_demo_mode() && !$sent) ? $code : null, 'sent' => $sent];
 }
 
 function otp_verify(string $phone, string $code): bool
