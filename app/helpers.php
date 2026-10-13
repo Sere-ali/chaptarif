@@ -421,3 +421,39 @@ function back_target(string $path): ?array
     if (str_starts_with($path, '/reserver') || str_starts_with($path, '/paiement') || $path === '/billet') return ['history', 'Retour'];
     return ['/', 'Accueil'];
 }
+
+
+/** Reçoit la pièce jointe d'un message de chat (fichier ou note vocale). @return array{ok:bool,error?:string,data?:array} */
+function chat_attachment(): array
+{
+    if (empty($_FILES['file']) || ($_FILES['file']['error'] ?? 4) === UPLOAD_ERR_NO_FILE) return ['ok' => true, 'data' => []];
+    $f = $_FILES['file'];
+    $extra = ['audio/webm', 'audio/ogg', 'audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/wav', 'audio/x-wav', 'video/webm', 'video/mp4', 'video/ogg', 'application/ogg',
+        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain', 'image/gif'];
+    $r = cld_upload($f, 'chaptarif/chat', 'upload', $extra);
+    if (!$r['ok']) return $r;
+    $voice = !empty($_POST['voice']);
+    $m = $r['mime'] ?? '';
+    $type = ($voice && (str_starts_with($m, 'audio/') || str_starts_with($m, 'video/'))) ? 'audio' : (str_starts_with($m, 'audio/') ? 'audio' : (str_starts_with($m, 'image/') ? 'image' : 'file'));
+    if (str_starts_with($m, 'video/') && !$voice) return ['ok' => false, 'error' => 'Les vidéos ne sont pas acceptées.'];
+    return ['ok' => true, 'data' => ['att_url' => $r['url'], 'att_type' => $type, 'att_name' => mb_substr(basename((string) $f['name']), 0, 80)]];
+}
+
+/** Rendu HTML d'une pièce jointe de chat. */
+function chat_att_html(array $m): string
+{
+    if (empty($m['att_url'])) return '';
+    $u = e($m['att_url']);
+    return match ($m['att_type']) {
+        'image' => '<a href="' . $u . '" target="_blank" rel="noopener"><img class="cmsg-img" src="' . e(cld($m['att_url'], 'w_480,q_auto,f_auto')) . '" alt="Image" loading="lazy"></a>',
+        'audio' => '<audio controls preload="none" src="' . $u . '"></audio>',
+        default => '<a class="cmsg-file" href="' . $u . '" target="_blank" rel="noopener">📎 ' . e($m['att_name'] ?: 'Fichier') . '</a>',
+    };
+}
+
+function chat_json(array $r, bool $admin): array
+{
+    return ['id' => (int) $r['id'], 'me' => $r['sender'] === ($admin ? 'admin' : 'user'), 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5),
+        'att' => empty($r['att_url']) ? null : ['type' => $r['att_type'], 'url' => $r['att_url'], 'name' => $r['att_name'], 'img' => $r['att_type'] === 'image' ? cld($r['att_url'], 'w_480,q_auto,f_auto') : null]];
+}

@@ -35,13 +35,14 @@ function cld(string $url, string $t = 'q_auto,f_auto'): string
  * Upload d'un fichier reçu ($_FILES['x']).
  * @return array{ok:bool, url?:string, public_id?:string, error?:string}
  */
-function cld_upload(array $file, string $folder = 'chaptarif/uploads', string $type = 'upload'): array
+function cld_upload(array $file, string $folder = 'chaptarif/uploads', string $type = 'upload', ?array $extraMimes = null): array
 {
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) return ['ok' => false, 'error' => 'Aucun fichier reçu.'];
     if ($file['size'] > 8 * 1024 * 1024) return ['ok' => false, 'error' => 'Fichier trop lourd (8 Mo max).'];
     $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
     $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'];
-    if (!in_array($mime, $allowed, true)) return ['ok' => false, 'error' => 'Format non accepté (JPG, PNG, WEBP, PDF).'];
+    if ($extraMimes) $allowed = array_merge($allowed, $extraMimes);
+    if (!in_array($mime, $allowed, true)) return ['ok' => false, 'error' => $extraMimes ? 'Format de fichier non accepté.' : 'Format non accepté (JPG, PNG, WEBP, PDF).'];
 
     $c = cld_config();
     if (!$c) return ['ok' => false, 'error' => 'Cloudinary non configuré (variable CLOUDINARY_URL manquante).'];
@@ -59,7 +60,7 @@ function cld_upload(array $file, string $folder = 'chaptarif/uploads', string $t
     $res = json_decode((string) curl_exec($ch), true);
     curl_close($ch);
     if (empty($res['secure_url'])) return ['ok' => false, 'error' => 'Échec Cloudinary : ' . ($res['error']['message'] ?? 'erreur inconnue')];
-    return ['ok' => true, 'url' => $res['secure_url'], 'public_id' => $res['public_id'], 'format' => $res['format'] ?? 'jpg'];
+    return ['ok' => true, 'url' => $res['secure_url'], 'public_id' => $res['public_id'], 'format' => $res['format'] ?? 'jpg', 'mime' => $mime];
 }
 
 /** Upload de plusieurs fichiers (input name="x[]"). */

@@ -5,19 +5,23 @@ $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch';
 
 if (is_post() && $uid) {
     $body = trim(mb_substr((string) ($_POST['body'] ?? ''), 0, 1000));
-    if ($body !== '' && one('SELECT id FROM users WHERE id = ?', [$uid])) {
-        insert('chat_messages', ['user_id' => $uid, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => $body, 'read_by_user' => 0, 'read_by_admin' => 1, 'created_at' => now()]);
+    $att = chat_attachment();
+    $ok = false; $err = $att['ok'] ? null : $att['error'];
+    if ($att['ok'] && ($body !== '' || $att['data']) && one('SELECT id FROM users WHERE id = ?', [$uid])) {
+        insert('chat_messages', ['user_id' => $uid, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => $body, 'read_by_user' => 0, 'read_by_admin' => 1, 'created_at' => now()] + $att['data']);
+        $ok = true;
     }
-    if ($isAjax) { header('Content-Type: application/json'); echo json_encode(['ok' => $body !== '']); exit; }
+    if ($isAjax) { header('Content-Type: application/json'); echo json_encode(['ok' => $ok, 'error' => $err]); exit; }
+    if ($err) flash('error', $err);
     redirect('/admin/chat?u=' . $uid);
 }
 
 if ($uid && isset($_GET['poll'])) {
     $after = (int) ($_GET['after'] ?? 0);
-    $rows = all('SELECT id, sender, body, created_at FROM chat_messages WHERE user_id = ? AND id > ? ORDER BY id LIMIT 100', [$uid, $after]);
+    $rows = all('SELECT * FROM chat_messages WHERE user_id = ? AND id > ? ORDER BY id LIMIT 100', [$uid, $after]);
     q("UPDATE chat_messages SET read_by_admin = 1 WHERE user_id = ? AND sender = 'user' AND read_by_admin = 0", [$uid]);
     header('Content-Type: application/json');
-    echo json_encode(['messages' => array_map(fn($r) => ['id' => (int) $r['id'], 'me' => $r['sender'] === 'admin', 'body' => $r['body'], 'time' => substr($r['created_at'], 11, 5)], $rows)]);
+    echo json_encode(['messages' => array_map(fn($r) => chat_json($r, true), $rows)]);
     exit;
 }
 
@@ -37,13 +41,17 @@ if ($uid):
   <div class="chat" data-chat data-url="/admin/chat?u=<?= $uid ?>" data-last="<?= $last ?>">
     <div class="chat-log" data-chat-log>
       <?php foreach ($msgs as $m): ?>
-        <div class="cmsg <?= $m['sender'] === 'admin' ? 'me' : 'them' ?>"><?= nl2br(e($m['body'])) ?><small><?= e(substr($m['created_at'], 11, 5)) ?></small></div>
+        <div class="cmsg <?= $m['sender'] === 'admin' ? 'me' : 'them' ?>"><?= chat_att_html($m) ?><?= $m['body'] !== '' ? nl2br(e($m['body'])) : '' ?><small><?= e(substr($m['created_at'], 11, 5)) ?></small></div>
       <?php endforeach; ?>
     </div>
     <form class="chat-form" method="post" action="/admin/chat?u=<?= $uid ?>" data-chat-form>
       <?= csrf_field() ?>
-      <textarea name="body" rows="1" maxlength="1000" placeholder="Votre réponse…" required></textarea>
+      <input type="file" name="file" hidden data-chat-file accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt">
+      <button type="button" class="chat-ic" data-chat-attach aria-label="Joindre un fichier">📎</button>
+      <textarea name="body" rows="1" maxlength="1000" placeholder="Votre réponse…"></textarea>
+      <button type="button" class="chat-ic" data-chat-mic aria-label="Message vocal">🎤</button>
       <button class="btn btn-primary">Répondre</button>
+      <div class="chat-rec" data-chat-rec hidden><span class="rec-dot"></span> <b data-rec-time>0:00</b> <button type="button" data-rec-cancel>✕ Annuler</button><button type="button" class="btn btn-primary btn-sm" data-rec-send>Envoyer</button></div>
     </form>
   </div>
 </div>
@@ -64,5 +72,5 @@ if ($uid):
 </div>
 <script>setTimeout(function(){ location.reload(); }, 30000);</script>
 <?php endif;
-echo '<script src="/assets/js/app.js?v=10" defer></script>';
+echo '<script src="/assets/js/app.js?v=11" defer></script>';
 view('admin/footer');
