@@ -117,7 +117,7 @@ function universes(): array
         'cars' => ['name' => 'Cars Voyage', 'short' => 'Cars', 'emoji' => '🚌', 'sub' => 'Lignes CI (UTB…)', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/cars', 'group' => 'Transports',
             'pitch' => 'Billets interurbains en 3 clics, E-billet QR code, zéro file en gare.'],
         'location_car' => ['name' => 'Louer un car', 'short' => 'Car', 'emoji' => '🚐', 'sub' => 'Groupes & Événements', 'color' => '#3A6EA5', 'bg' => '#EEF4FA', 'img' => 'univers-location-car', 'url' => '/location-car', 'group' => 'Transports',
-            'pitch' => 'Louez un car ou un minibus avec chauffeur pour vos sorties de groupe, mariages ou excursions.'],
+            'pitch' => 'Réservez un car ou un minibus avec chauffeur expérimenté pour vos événements'],
         'location_vehicule' => ['name' => 'Location de véhicule', 'short' => 'Véhicule', 'emoji' => '🚗', 'sub' => 'Voitures, 4x4 & minibus', 'color' => '#2F7FBF', 'bg' => '#EAF3FB', 'img' => 'univers-location-car', 'url' => '/location-vehicule', 'group' => 'Transports',
             'pitch' => 'Louez votre véhicule en toute tranquillité'],
         'chauffeur' => ['name' => 'Louer un chauffeur', 'short' => 'Chauffeur', 'emoji' => '🚘', 'sub' => 'Chauffeur privé à la demande', 'color' => '#35557A', 'bg' => '#ECF1F7', 'img' => 'univers-covoiturage', 'url' => '/chauffeur', 'group' => 'Transports',
