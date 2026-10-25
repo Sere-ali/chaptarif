@@ -141,6 +141,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <button type="button" class="btn btn-soft btn-block" data-geo="pickup" style="margin:-4px 0 6px">📡 Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
           <label class="fld"><span>🏁 Destination</span><?= $destSel ?></label>
           <label class="fld"><span>🕘 Date et heure d'arrivée du chauffeur</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
+          <label class="fld"><span>⚙️ Boîte de vitesse</span><select name="gearbox"><option value="les2">Les deux (manuelle ou automatique)</option><option value="manuelle">Manuelle</option><option value="automatique">Automatique</option></select></label>
           <label class="fld"><span>⏱️ Durée souhaitée</span><select name="duree"><?php for ($i = 1; $i <= 7; $i++): ?><option value="<?= $i ?>"><?= $i ?> jour<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?><option value="semaine">1 semaine</option><option value="mois">1 mois</option></select></label>
         <?php else: ?>
           <label class="fld"><span>📦 Adresse de chargement</span><input name="load" required maxlength="200" placeholder="Ex. Abobo, Sagbé"></label>

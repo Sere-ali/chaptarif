@@ -194,10 +194,12 @@ function build_quote(string $universe, array $in): array
                 $days = $map[$du];
                 $dl = $du === 'semaine' ? '1 semaine' : ($du === 'mois' ? '1 mois' : $du . ' jour' . ((int) $du > 1 ? 's' : ''));
                 $geo = $geo0;
-                $d = ['pickup' => $pickup, 'gps' => $geo, 'destination' => $dest, 'arrival' => date('d/m/Y H:i', $t1), 'duration' => $dl, 'days' => $days];
+                $gb = ['manuelle' => 'Manuelle', 'automatique' => 'Automatique'][(string) ($in['gearbox'] ?? '')] ?? 'Manuelle ou automatique';
+                $d = ['pickup' => $pickup, 'gps' => $geo, 'destination' => $dest, 'arrival' => date('d/m/Y H:i', $t1), 'duration' => $dl, 'days' => $days, 'gearbox' => $gb];
                 $s[] = ['Prise en charge', $pickup . ($geo ? ' (position partagée)' : '')];
                 $s[] = ['Destination', $dest];
                 $s[] = ['Arrivée du chauffeur', $fdt($t1)];
+                $s[] = ['Boîte de vitesse', $gb];
                 $s[] = ['Durée', $dl];
                 $date = date('Y-m-d', $t1);
             } else { // location_camion
