@@ -23,7 +23,7 @@ view('layout/header', compact('title'));
         <div class="right"><small>Arrivée</small><b><?= e($d['to'] ?? '') ?></b><span><?= fmt_date($b['service_date']) ?></span></div>
       </div>
       <div class="tk-grid">
-        <div><small>Passager</small><b><?= e(($d['passenger_name'] ?? '') ?: ($u['name'] ?: fmt_phone($u['phone']))) ?></b></div>
+        <div><small>Passager<?= count($d['passenger_names'] ?? []) > 1 ? 's' : '' ?></small><b><?= e(!empty($d['passenger_names']) ? implode(', ', array_filter($d['passenger_names'])) : (($d['passenger_name'] ?? '') ?: ($u['name'] ?: fmt_phone($u['phone'])))) ?></b></div>
         <div><small>Siège(s)</small><b>N° <?= e(implode(', ', array_filter($seats))) ?></b></div>
         <div><small>Gare</small><b><?= e($d['station'] ?? '') ?></b></div>
         <div><small>Passagers</small><b><?= (int) ($d['passengers'] ?? 1) ?></b></div>

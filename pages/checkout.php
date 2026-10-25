@@ -56,8 +56,15 @@ view('layout/header', compact('title', 'active'));
         <?php else: ?>
           <form class="card form-card" method="post" action="/paiement">
             <?= csrf_field() ?>
-            <h2 class="h3">💳 Choisissez votre moyen de paiement</h2>
             <p class="muted">Connecté en tant que <b><?= e($u['name'] ?: fmt_phone($u['phone'])) ?></b> · <?= e(fmt_phone($u['phone'])) ?></p>
+            <?php if (in_array($q['universe'], ['cars', 'covoiturage'], true)): $np = (int) ($q['details']['passengers'] ?? 1); $pn = $q['details']['passenger_names'] ?? []; ?>
+              <h2 class="h3">👥 <?= $np > 1 ? 'Nom de chaque passager' : 'Nom du passager' ?></h2>
+              <p class="muted">Le nom de chaque passager figurera sur son billet.</p>
+              <?php for ($i = 0; $i < $np; $i++): ?>
+                <label class="fld"><span>Passager <?= $i + 1 ?></span><input name="passenger_names[]" maxlength="60" required autocomplete="off" placeholder="Nom et prénom" value="<?= e($pn[$i] ?? ($i === 0 && $np === 1 ? ($u['name'] ?? '') : '')) ?>"></label>
+              <?php endfor; ?>
+            <?php endif; ?>
+            <h2 class="h3">💳 Choisissez votre moyen de paiement</h2>
             <div class="pay-methods">
               <?php $i = 0; foreach (payment_methods() as $k => [$label, $color, $hint]): ?>
                 <label class="pm" style="--pm:<?= $color ?>">

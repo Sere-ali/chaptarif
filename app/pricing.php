@@ -70,6 +70,16 @@ function auto_offer(string $universe, array $in): ?array
     return $offers[0];
 }
 
+/** Noms des passagers saisis avant paiement (cars, covoiturage). */
+function passenger_names_in(array $in, int $n): array
+{
+    $raw = $in['passenger_names'] ?? [];
+    if (!is_array($raw)) return [];
+    $names = [];
+    foreach (array_slice(array_values($raw), 0, $n) as $v) $names[] = mb_substr(trim(preg_replace('/\s+/', ' ', (string) $v)), 0, 60);
+    return $names;
+}
+
 function valid_future_date(?string $d, int $maxDays = 180): bool
 {
     if (!$d || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $d)) return false;
@@ -243,8 +253,8 @@ function build_quote(string $universe, array $in): array
             $q['service_fee'] = $fee * $n;
             $q['item_type'] = 'trip';
             $q['item_id'] = (int) $trip['id'];
-            $q['details'] = ['company' => $trip['company'], 'class' => $trip['class'], 'from' => $trip['from_city'], 'to' => $trip['to_city'], 'time' => $trip['depart_time'], 'station' => $trip['station'], 'duration' => $trip['duration'], 'passengers' => $n, 'passenger_name' => mb_substr((string) ($in['passenger_name'] ?? ''), 0, 80)];
-            $q['summary'] = [['Compagnie', $trip['company'] . ' · ' . $trip['class']], ['Trajet', "{$trip['from_city']} → {$trip['to_city']}"], ['Départ', fmt_date($date) . ' à ' . $trip['depart_time'] . ' · ' . $trip['station']], ['Passagers', (string) $n]];
+            $q['details'] = ['company' => $trip['company'], 'class' => $trip['class'], 'from' => $trip['from_city'], 'to' => $trip['to_city'], 'time' => $trip['depart_time'], 'station' => $trip['station'], 'duration' => $trip['duration'], 'passengers' => $n, 'passenger_name' => (passenger_names_in($in, $n)[0] ?? '') ?: mb_substr((string) ($in['passenger_name'] ?? ''), 0, 80), 'passenger_names' => passenger_names_in($in, $n)];
+            $q['summary'] = [['Compagnie', $trip['company'] . ' · ' . $trip['class']], ['Trajet', "{$trip['from_city']} → {$trip['to_city']}"], ['Départ', fmt_date($date) . ' à ' . $trip['depart_time'] . ' · ' . $trip['station']], ['Passagers', (string) $n . (passenger_names_in($in, $n) ? ' : ' . implode(', ', passenger_names_in($in, $n)) : '')]];
             break;
         }
         case 'covoiturage': {
@@ -262,8 +272,8 @@ function build_quote(string $universe, array $in): array
             $q['provider_id'] = $trip['provider_id'] ? (int) $trip['provider_id'] : null;
             $q['item_type'] = 'trip';
             $q['item_id'] = (int) $trip['id'];
-            $q['details'] = ['company' => $trip['company'], 'from' => $from, 'to' => $to, 'time' => $trip['depart_time'], 'station' => $trip['station'], 'duration' => $trip['duration'], 'passengers' => $n, 'passenger_name' => mb_substr((string) ($in['passenger_name'] ?? ''), 0, 80)];
-            $q['summary'] = [['Chauffeur', $trip['company']], ['Trajet', "{$from} → {$to}"], ['Départ', fmt_date($date) . ' à ' . $trip['depart_time']], ['Passagers', (string) $n]];
+            $q['details'] = ['company' => $trip['company'], 'from' => $from, 'to' => $to, 'time' => $trip['depart_time'], 'station' => $trip['station'], 'duration' => $trip['duration'], 'passengers' => $n, 'passenger_name' => (passenger_names_in($in, $n)[0] ?? '') ?: mb_substr((string) ($in['passenger_name'] ?? ''), 0, 80), 'passenger_names' => passenger_names_in($in, $n)];
+            $q['summary'] = [['Chauffeur', $trip['company']], ['Trajet', "{$from} → {$to}"], ['Départ', fmt_date($date) . ' à ' . $trip['depart_time']], ['Passagers', (string) $n . (passenger_names_in($in, $n) ? ' : ' . implode(', ', passenger_names_in($in, $n)) : '')]];
             break;
         }
         case 'immobilier': {
