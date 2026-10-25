@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 13;
+const SCHEMA_VERSION = 14;
 
 function db(): PDO
 {
@@ -249,6 +249,11 @@ function db_migrate(): void
             if ($ex) q('UPDATE offers SET active = 1, subtitle = ? WHERE id = ?', [$sub, $ex['id']]);
             else insert('offers', ['universe' => $u, 'title' => $t, 'subtitle' => $sub, 'price' => $pr, 'unit' => $un, 'popular' => $pop, 'active' => 1, 'sort' => $i]);
         }
+    }
+
+    // v14 : immobilier = location classique (plus de « meublé »).
+    if ($v > 0 && $v < 14) {
+        q("UPDATE properties SET description = REPLACE(description, 'Logement meublé', 'Logement') WHERE description LIKE '%Logement meublé%'");
     }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");

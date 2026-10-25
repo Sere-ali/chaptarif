@@ -108,7 +108,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
         <form class="quick-pane" data-pane="immobilier" action="/immobilier" method="get">
           <label class="fld"><span>🏙️ Commune</span><select name="commune"><option value="">Toutes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <label class="fld"><span>📅 Arrivée</span><input type="date" name="checkin" min="<?= date('Y-m-d') ?>"></label>
-          <button class="btn btn-primary btn-lg">Trouver un meublé</button>
+          <button class="btn btn-primary btn-lg">Trouver un logement</button>
         </form>
         <form class="quick-pane" data-pane="menage" action="/menage" method="get">
           <label class="fld"><span>📍 Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>

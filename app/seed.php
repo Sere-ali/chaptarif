@@ -140,7 +140,7 @@ function seed_all(): void
     foreach ($props as [$t, $c, $qr, $ty, $pn, $pw, $cap, $am, $imgs]) {
         insert('properties', [
             'title' => $t, 'commune' => $c, 'quartier' => $qr, 'type' => $ty,
-            'description' => "Logement meublé vérifié physiquement par l'équipe ChapTarif. Photos réelles, check-in avec remise des clés en main propre. Le paiement reste bloqué sous séquestre jusqu'à votre arrivée.",
+            'description' => "Logement vérifié physiquement par l'équipe ChapTarif. Photos réelles, check-in avec remise des clés en main propre. Le paiement reste bloqué sous séquestre jusqu'à votre arrivée.",
             'price_night' => $pn, 'price_week' => $pw, 'capacity' => $cap, 'amenities' => $am,
             'images' => json_encode(array_map(fn($i) => CLD_BASE . "chaptarif/$i.jpg", $imgs)),
             'owner_name' => 'Bailleur certifié', 'owner_phone' => '', 'certified' => 1, 'active' => 1, 'created_at' => $now,

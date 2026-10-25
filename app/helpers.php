@@ -128,7 +128,7 @@ function universes(): array
             'pitch' => 'Voyagez à prix réduit, en toute sécurité, et partagez votre trajet avec des personnes qui vont dans la même direction que vous.'],
         // 🏡 Immobilier (Location)
         'immobilier' => ['name' => 'Immobilier', 'short' => 'Immobilier', 'emoji' => '🏡', 'sub' => 'Studios, villas & appartements', 'color' => '#C98512', 'bg' => '#FFF7E8', 'img' => 'univers-immobilier', 'url' => '/immobilier', 'group' => 'Immobilier',
-            'pitch' => 'Appartements, villas & studios meublés inspectés, contrats et dépôts de garantie 100% sécurisés.'],
+            'pitch' => 'Appartements, villas & studios à louer, inspectés, contrats et dépôts de garantie 100% sécurisés.'],
         // 🧹 Service à la personne
         'menage' => ['name' => 'Ménage ou aide à domicile', 'short' => 'Ménage', 'emoji' => '🧹', 'sub' => 'Femmes de ménage pro', 'color' => '#C2407F', 'bg' => '#FCEFF5', 'img' => 'univers-menage', 'url' => '/menage', 'group' => 'Service à la personne',
             'pitch' => 'Aides ménagères aux profils CNI vérifiés, tarif fixe à la séance.'],

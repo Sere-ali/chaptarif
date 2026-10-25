@@ -58,13 +58,13 @@ if ($id) {
     return;
 }
 
-$title = 'Appartements meublés certifiés à Abidjan';
-$desc = 'Résidences et appartements meublés de courte durée à Abidjan, inspectés et certifiés. Photos réelles, paiement sous séquestre jusqu\'à la remise des clés.';
+$title = 'Location d\'appartements et de villas certifiés à Abidjan';
+$desc = 'Appartements, studios et villas à louer à Abidjan, inspectés et certifiés. Photos réelles, paiement sous séquestre jusqu\'à la remise des clés.';
 $commune = (string) ($_GET['commune'] ?? '');
 $type = (string) ($_GET['type'] ?? '');
 $cat = (string) ($_GET['cat'] ?? '');
 $catMap = [
-    'appart' => ['label' => 'Appartements & Studios', 'desc' => 'Studios, chambres et appartements meublés', 'types' => ['Studio', 'Chambre', 'Appartement'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
+    'appart' => ['label' => 'Appartements & Studios', 'desc' => 'Studios, chambres et appartements à louer', 'types' => ['Studio', 'Chambre', 'Appartement'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
     'villa'  => ['label' => 'Villas & Duplex', 'desc' => 'Maisons individuelles et duplex, avec plus d\'espace', 'types' => ['Villa', 'Duplex'], 'img' => 'univers-immobilier', 'color' => '#1F5C8C'],
 ];
 // Écran de sélection façon app, affiché uniquement sur mobile et seulement
@@ -88,7 +88,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 <section class="page-hero" style="--c:<?= $x['color'] ?>;--hero:url('<?= e(img($x['img'], 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
   <div class="container">
     <nav class="crumbs"><a href="/">Accueil</a> › Immobilier</nav>
-    <h1><?= $x['emoji'] ?> Résidences meublées vérifiées</h1>
+    <h1><?= $x['emoji'] ?> Logements à louer vérifiés</h1>
     <p>Photos réelles, inspections physiques et caution protégée sous séquestre.</p>
   </div>
 </section>
