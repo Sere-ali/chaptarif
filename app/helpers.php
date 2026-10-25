@@ -121,7 +121,7 @@ function universes(): array
         'location_vehicule' => ['name' => 'Location de véhicule', 'short' => 'Véhicule', 'emoji' => '🚗', 'sub' => 'Voitures, 4x4 & minibus', 'color' => '#2F7FBF', 'bg' => '#EAF3FB', 'img' => 'univers-location-car', 'url' => '/location-vehicule', 'group' => 'Transports',
             'pitch' => 'Louez votre véhicule en toute tranquillité'],
         'chauffeur' => ['name' => 'Louer un chauffeur', 'short' => 'Chauffeur', 'emoji' => '🚘', 'sub' => 'Chauffeur privé à la demande', 'color' => '#35557A', 'bg' => '#ECF1F7', 'img' => 'univers-covoiturage', 'url' => '/chauffeur', 'group' => 'Transports',
-            'pitch' => 'Un chauffeur professionnel vérifié, avec ou sans votre véhicule, pour la journée, un événement ou un trajet.'],
+            'pitch' => 'Déplacez-vous en toute sérénité avec un chauffeur'],
         'location_camion' => ['name' => 'Location de gros camion', 'short' => 'Camion', 'emoji' => '🚚', 'sub' => 'Fret & Déménagement', 'color' => '#8A5A2B', 'bg' => '#FBF2E9', 'img' => 'univers-location-camion', 'url' => '/location-camion', 'group' => 'Transports',
             'pitch' => 'Un camion et son chauffeur pour vos déménagements, ramassage de gravier, meubles ou marchandises.'],
         'covoiturage' => ['name' => 'Covoiturage', 'short' => 'Covoit.', 'emoji' => '🚙', 'sub' => 'Trajets économiques partagés', 'color' => '#0E9F8E', 'bg' => '#E9FAF6', 'img' => 'univers-covoiturage', 'url' => '/covoiturage', 'group' => 'Transports',
