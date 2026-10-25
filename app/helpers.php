@@ -119,7 +119,7 @@ function universes(): array
         'location_car' => ['name' => 'Louer un car', 'short' => 'Car', 'emoji' => '🚐', 'sub' => 'Groupes & Événements', 'color' => '#3A6EA5', 'bg' => '#EEF4FA', 'img' => 'univers-location-car', 'url' => '/location-car', 'group' => 'Transports',
             'pitch' => 'Louez un car ou un minibus avec chauffeur pour vos sorties de groupe, mariages ou excursions.'],
         'location_vehicule' => ['name' => 'Location de véhicule', 'short' => 'Véhicule', 'emoji' => '🚗', 'sub' => 'Voitures, 4x4 & minibus', 'color' => '#2F7FBF', 'bg' => '#EAF3FB', 'img' => 'univers-location-car', 'url' => '/location-vehicule', 'group' => 'Transports',
-            'pitch' => 'Louez une voiture, un 4x4 ou un minibus à la journée, avec un propriétaire vérifié.'],
+            'pitch' => 'Louez votre véhicule en toute tranquillité'],
         'chauffeur' => ['name' => 'Louer un chauffeur', 'short' => 'Chauffeur', 'emoji' => '🚘', 'sub' => 'Chauffeur privé à la demande', 'color' => '#35557A', 'bg' => '#ECF1F7', 'img' => 'univers-covoiturage', 'url' => '/chauffeur', 'group' => 'Transports',
             'pitch' => 'Un chauffeur professionnel vérifié, avec ou sans votre véhicule, pour la journée, un événement ou un trajet.'],
         'location_camion' => ['name' => 'Location de gros camion', 'short' => 'Camion', 'emoji' => '🚚', 'sub' => 'Fret & Déménagement', 'color' => '#8A5A2B', 'bg' => '#FBF2E9', 'img' => 'univers-location-camion', 'url' => '/location-camion', 'group' => 'Transports',
