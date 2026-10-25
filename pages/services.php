@@ -90,7 +90,7 @@ view('layout/header', compact('title', 'desc', 'active'));
               <small>📍 <?= e($p['commune']) ?> · <?= stars((float) $p['rating']) ?> · <?= (int) $p['missions'] ?> missions</small>
               <p><?= e($p['bio']) ?></p>
               <?php if (!empty($pServices[(int) $p['id']])): ?>
-                <ul class="prov-svc"><?php foreach ($pServices[(int) $p['id']] as $ps): ?><li><b><?= e($ps['title']) ?></b><?= $ps['price'] ? ' · ' . fcfa($ps['price']) . ($ps['unit'] ? ' / ' . e($ps['unit']) : '') : '' ?></li><?php endforeach; ?></ul>
+                <ul class="prov-svc"><?php foreach ($pServices[(int) $p['id']] as $ps): ?><li><b><?= e($ps['title']) ?></b></li><?php endforeach; ?></ul>
               <?php endif; ?>
               <?= kyc_badge($p['kyc_status']) ?> <a class="fine" href="/profil-prestataire?id=<?= (int) $p['id'] ?>" onclick="event.stopPropagation()">Voir toutes ses annonces →</a>
             </div>
@@ -160,8 +160,10 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <label class="fld"><span>📅 <?= e($copy['date_label']) ?></span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
           <label class="fld"><span>🕘 Heure</span><select name="time"><?php foreach (['07:00', '08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $h): ?><option <?= $h === '09:00' ? 'selected' : '' ?>><?= $h ?></option><?php endforeach; ?></select></label>
         </div>
-        <label class="fld"><span>📍 Quartier</span><select name="zone" required><option value="">Choisir…</option><?= zone_options() ?></select></label>
-        <label class="fld"><span>🏠 Repère / adresse</span><input name="address" maxlength="200" placeholder="Ex. Immeuble Les Palmiers, 3e étage, porte B"></label>
+        <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
+        <button type="button" class="btn btn-soft btn-block" data-geo="address" style="margin:0 0 6px">📡 Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
+        <label class="fld"><span>🏠 Votre lieu (ou saisissez-le vous-même)</span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
+        <label class="fld"><span>📍 Quartier (facultatif)</span><select name="zone"><option value="">Choisir…</option><?= zone_options() ?></select></label>
         <label class="fld qty-fld" data-qty hidden><span>🔢 Nombre de pièces</span><input type="number" name="qty" min="1" max="50" value="1"></label>
         <?php endif; ?>
         <?php if ($hasGarantie): ?>

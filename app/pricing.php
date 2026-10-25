@@ -104,9 +104,12 @@ function build_quote(string $universe, array $in): array
             $prov = one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) ($in['provider'] ?? 0), $universe]);
             $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
             $zone = zone((int) ($in['zone'] ?? 0));
+            $addr0 = trim((string) ($in['address'] ?? ''));
+            $lat0 = $in['lat'] ?? null; $lng0 = $in['lng'] ?? null;
+            $gps0 = (is_numeric($lat0) && is_numeric($lng0) && abs((float) $lat0) <= 90 && abs((float) $lng0) <= 180) ? round((float) $lat0, 5) . ', ' . round((float) $lng0, 5) : '';
             if (!$prov) return $fail('Choisissez un prestataire.');
             if (!$offer) return $fail('Choisissez une formule.');
-            if (!$zone) return $fail('Indiquez votre quartier.');
+            if (!$zone && $addr0 === '' && $gps0 === '') return $fail('Indiquez votre lieu (activez la localisation ou saisissez votre adresse).');
             if (!valid_future_date($in['date'] ?? null, 60)) return $fail('Choisissez une date valide.');
             $time = preg_match('/^\d{2}:\d{2}$/', $in['time'] ?? '') ? $in['time'] : '09:00';
             $qty = $offer['unit'] === 'pièce' ? max(1, min(50, (int) ($in['qty'] ?? 1))) : 1;
@@ -115,8 +118,8 @@ function build_quote(string $universe, array $in): array
             $q['provider_id'] = (int) $prov['id'];
             $q['item_type'] = 'offer';
             $q['item_id'] = (int) $offer['id'];
-            $q['details'] = ['offer' => $offer['title'], 'qty' => $qty, 'zone' => $zone['name'], 'time' => $time, 'address' => mb_substr((string) ($in['address'] ?? ''), 0, 200), 'provider' => $prov['name']];
-            $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', $zone['name']]];
+            $q['details'] = ['offer' => $offer['title'], 'qty' => $qty, 'zone' => $zone['name'] ?? '', 'gps' => $gps0, 'time' => $time, 'address' => mb_substr((string) ($in['address'] ?? ''), 0, 200), 'provider' => $prov['name']];
+            $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', trim(($zone['name'] ?? '') . ($addr0 !== '' ? ($zone ? ' · ' : '') . mb_substr($addr0, 0, 200) : '') . ($gps0 !== '' && $addr0 === '' && !$zone ? 'Position partagée' : ''))]];
             // Garantie Dommage (option payante, disponible pour les services à domicile/matériel)
             if (in_array($universe, ['menage', 'pressing'], true) && !empty($in['garantie'])) {
                 $pct = (float) setting('garantie_dommage_pct', 5);
