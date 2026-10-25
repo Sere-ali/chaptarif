@@ -9,6 +9,7 @@ $toCities = array_column(all("SELECT DISTINCT to_city FROM trips WHERE active = 
 $to = in_array($_GET['to'] ?? '', $toCities, true) ? $_GET['to'] : ($toCities[0] ?? '');
 $date = valid_future_date($_GET['date'] ?? null, 60) ? $_GET['date'] : date('Y-m-d');
 $trips = all("SELECT * FROM trips WHERE active = 1 AND universe = 'cars' AND from_city = ? AND to_city = ? ORDER BY depart_time", [$from, $to]);
+$passengers = max(1, min(5, (int) ($_GET['passengers'] ?? 1)));
 $fee = (int) setting('cars_service_fee', 400);
 view('layout/header', compact('title', 'desc', 'active'));
 ?>
@@ -26,6 +27,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       <label class="fld"><span>Départ</span><select name="from" onchange="this.form.submit()"><?php foreach ($fromCities as $c): ?><option <?= $c === $from ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
       <label class="fld"><span>Destination</span><select name="to"><?php foreach ($toCities as $c): ?><option <?= $c === $to ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
       <label class="fld"><span>Date</span><input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
+      <label class="fld"><span>👥 Nombre de passagers</span><select name="passengers"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>" <?= $i === $passengers ? 'selected' : '' ?>><?= $i ?> passager<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
       <button class="btn btn-primary btn-lg">Rechercher</button>
     </form>
 
@@ -47,8 +49,8 @@ view('layout/header', compact('title', 'desc', 'active'));
             <div class="big-price"><?= fcfa($t['price']) ?></div>
             <small>+ <?= fcfa($fee) ?> frais de service</small>
             <div class="trip-actions">
-              <select name="passengers" aria-label="Passagers"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>"><?= $i ?> pers.</option><?php endfor; ?></select>
-              <button class="btn btn-primary" <?= ($past || !$left) ? 'disabled' : '' ?>><?= $past ? 'Parti' : 'Prendre mon ticket' ?></button>
+              <select name="passengers" aria-label="Passagers"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>" <?= $i === $passengers ? 'selected' : '' ?>><?= $i ?> pers.</option><?php endfor; ?></select>
+              <button class="btn btn-primary" <?= ($past || $left < $passengers) ? 'disabled' : '' ?>><?= $past ? 'Parti' : ($left < $passengers ? 'Pas assez de places' : 'Prendre mon ticket') ?></button>
             </div>
           </div>
         </form>
