@@ -4,12 +4,18 @@ $desc = 'Réservez une place chez un chauffeur vérifié qui propose son trajet 
 $active = 'covoiturage';
 $x = universe('covoiturage');
 $fromCities = array_column(all("SELECT DISTINCT from_city FROM trips WHERE active = 1 AND universe = 'covoiturage' ORDER BY from_city"), 'from_city');
-$from = in_array($_GET['from'] ?? '', $fromCities, true) ? $_GET['from'] : ($fromCities[0] ?? 'Abidjan');
-$toCities = array_column(all("SELECT DISTINCT to_city FROM trips WHERE active = 1 AND universe = 'covoiturage' AND from_city = ? ORDER BY to_city", [$from]), 'to_city');
-$to = in_array($_GET['to'] ?? '', $toCities, true) ? $_GET['to'] : ($toCities[0] ?? '');
+$toCities = array_column(all("SELECT DISTINCT to_city FROM trips WHERE active = 1 AND universe = 'covoiturage' ORDER BY to_city"), 'to_city');
+$from = mb_substr(trim((string) ($_GET['from'] ?? '')), 0, 80);
+$to = mb_substr(trim((string) ($_GET['to'] ?? '')), 0, 80);
 $date = valid_future_date($_GET['date'] ?? null, 60) ? $_GET['date'] : date('Y-m-d');
 $seats = max(1, min(5, (int) ($_GET['seats'] ?? 1)));
-$trips = $to ? all("SELECT * FROM trips WHERE active = 1 AND universe = 'covoiturage' AND from_city = ? AND to_city = ? ORDER BY depart_time", [$from, $to]) : [];
+$sql = "SELECT * FROM trips WHERE active = 1 AND universe = 'covoiturage'";
+$par = [];
+$esc = fn(string $v) => '%' . str_replace(['%', '_'], ['\\%', '\\_'], mb_strtolower($v)) . '%';
+if ($from !== '') { $sql .= " AND (LOWER(from_city) LIKE ? ESCAPE '\\' OR LOWER(COALESCE(from_detail, '')) LIKE ? ESCAPE '\\')"; $par[] = $esc($from); $par[] = $esc($from); }
+if ($to !== '') { $sql .= " AND (LOWER(to_city) LIKE ? ESCAPE '\\' OR LOWER(COALESCE(to_detail, '')) LIKE ? ESCAPE '\\')"; $par[] = $esc($to); $par[] = $esc($to); }
+$trips = all($sql . ' ORDER BY depart_time LIMIT 60', $par);
+$searched = $from !== '' || $to !== '';
 view('layout/header', compact('title', 'desc', 'active'));
 ?>
 <section class="page-hero" style="--c:<?= $x['color'] ?>;--hero:url('<?= e(img($x['img'], 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
@@ -22,19 +28,20 @@ view('layout/header', compact('title', 'desc', 'active'));
 
 <section class="section-tight">
   <div class="container">
-    <?php if (!$fromCities): ?>
-      <div class="empty"><div class="empty-ico">🚙</div><p>Aucun trajet de covoiturage publié pour le moment. Revenez bientôt.</p></div>
-    <?php else: ?>
     <form class="card search-bar" method="get" action="/covoiturage">
-      <label class="fld"><span>Ville ou point de départ</span><select name="from" onchange="this.form.submit()"><?php foreach ($fromCities as $c): ?><option <?= $c === $from ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
-      <label class="fld"><span>Ville ou point d'arrivée</span><select name="to"><?php foreach ($toCities as $c): ?><option <?= $c === $to ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
-      <label class="fld"><span>Date du trajet</span><input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
-      <label class="fld"><span>Nombre de places recherchées</span><select name="seats"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>" <?= $i === $seats ? 'selected' : '' ?>><?= $i ?> place<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
+      <label class="fld"><span>📍 Départ — ville ou point de départ</span><input name="from" value="<?= e($from) ?>" list="cv-from" maxlength="80" placeholder="Ex. Abidjan, Cocody Angré" autocomplete="off">
+        <button type="button" class="fine linkbtn" data-geo="from" style="margin-top:4px;background:none;border:0;color:var(--green);font-weight:700;cursor:pointer;text-align:left;padding:0">📡 Activer ma localisation</button><small class="fine" data-geo-msg hidden></small></label>
+      <label class="fld"><span>🏁 Arrivée — ville ou point d'arrivée</span><input name="to" value="<?= e($to) ?>" list="cv-to" maxlength="80" placeholder="Ex. Gagnoa, Yamoussoukro" autocomplete="off"></label>
+      <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
+      <datalist id="cv-from"><?php foreach ($fromCities as $c): ?><option value="<?= e($c) ?>"><?php endforeach; ?></datalist>
+      <datalist id="cv-to"><?php foreach ($toCities as $c): ?><option value="<?= e($c) ?>"><?php endforeach; ?></datalist>
+      <label class="fld"><span>📅 Date du trajet</span><input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
+      <label class="fld"><span>💺 Nombre de places recherchées</span><select name="seats"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>" <?= $i === $seats ? 'selected' : '' ?>><?= $i ?> place<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
       <button class="btn btn-primary btn-lg">Rechercher</button>
     </form>
 
-    <div class="h-row"><h2 class="h3">🚙 <?= e($from) ?> → <?= e($to) ?> · <?= fmt_date($date) ?></h2><span class="muted"><?= count($trips) ?> trajet(s)</span></div>
-    <?php if (!$trips): ?><div class="empty"><div class="empty-ico">🔎</div><p>Aucun trajet sur cette liaison pour le moment.</p></div><?php endif; ?>
+    <?php if ($searched): ?><div class="h-row"><h2 class="h3">🚙 <?= e($from ?: 'Partout') ?> → <?= e($to ?: 'Partout') ?> · <?= fmt_date($date) ?></h2><span class="muted"><?= count($trips) ?> trajet(s)</span></div><?php endif; ?>
+    <?php if (!$trips): ?><div class="empty"><div class="empty-ico">🔎</div><p><?= $searched ? 'Aucun trajet pour cette recherche pour le moment.' : 'Aucun trajet de covoiturage publié pour le moment.' ?></p><a class="btn btn-soft" href="/chat">💬 Nous écrire, nous cherchons pour vous</a></div><?php endif; ?>
     <div class="trip-list">
       <?php foreach ($trips as $t):
         $past = $date === date('Y-m-d') && $t['depart_time'] <= date('H:i');
@@ -61,7 +68,6 @@ view('layout/header', compact('title', 'desc', 'active'));
         </form>
       <?php endforeach; ?>
     </div>
-    <?php endif; ?>
 
     <div class="info-strip">
       <div><span>🛡️</span><b>Chauffeurs vérifiés</b><small>Profil et pièce d'identité contrôlés</small></div>
