@@ -179,10 +179,10 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>
         <?php else: ?>
-        <p class="fine">💡 Le prix vous est affiché avant le paiement. Nous attribuons un loueur vérifié à votre demande.</p>
+        <p class="fine">Prix transparents et professionnels qualifiés garantis.</p>
         <?php endif; ?>
         <button class="btn btn-primary btn-block btn-lg"><?= $isRental ? 'Voir le prix & réserver' : 'Réserver & payer' ?></button>
-        <p class="fine">🔒 Le paiement reste bloqué jusqu'à ce que vous confirmiez la fin du travail.</p>
+        <p class="fine">🔒 Paiement bloqué et sécurisé jusqu'à la fin de la prestation.</p>
       </div>
     </aside>
   </div>
