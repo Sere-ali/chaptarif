@@ -132,9 +132,9 @@ function seed_all(): void
             'Wifi haut débit,Smart TV,Climatisation,Groupe électrogène,Sécurité 24/7', ['univers-immobilier', 'immo-2']],
         ['Villa avec piscine — Riviera Palmeraie', 'Cocody', 'Riviera Palmeraie', 'Villa', 85000, 520000, 6,
             'Piscine,Wifi,Climatisation,Parking,Gardien,Groupe électrogène', ['immo-3', 'immo-2']],
-        ['Appartement 2 chambres — Marcory Zone 4', 'Marcory', 'Zone 4', 'Appartement', 40000, 250000, 4,
+        ['Appartement 2 chambres — Marcory Zone 4', 'Marcory', 'Zone 4', '2 chambres salon', 40000, 250000, 4,
             'Wifi,Climatisation,Cuisine équipée,Parking,Sécurité 24/7', ['immo-4', 'immo-2']],
-        ['Chambre cosy — Deux-Plateaux Vallon', 'Cocody', 'Deux-Plateaux', 'Chambre', 18000, 110000, 2,
+        ['Chambre cosy — Deux-Plateaux Vallon', 'Cocody', 'Deux-Plateaux', '1 chambre salon', 18000, 110000, 2,
             'Wifi,Climatisation,Smart TV,Eau chaude', ['immo-2', 'univers-immobilier']],
     ];
     foreach ($props as [$t, $c, $qr, $ty, $pn, $pw, $cap, $am, $imgs]) {

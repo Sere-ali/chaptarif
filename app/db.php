@@ -3,7 +3,8 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 14;
+const SCHEMA_VERSION = 15;
+const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa'];
 
 function db(): PDO
 {
@@ -254,6 +255,13 @@ function db_migrate(): void
     // v14 : immobilier = location classique (plus de « meublé »).
     if ($v > 0 && $v < 14) {
         q("UPDATE properties SET description = REPLACE(description, 'Logement meublé', 'Logement') WHERE description LIKE '%Logement meublé%'");
+    }
+
+    // v15 : types de logements = Studio, N chambres salon, Villa.
+    if ($v > 0 && $v < 15) {
+        q("UPDATE properties SET type = '1 chambre salon' WHERE type = 'Chambre'");
+        q("UPDATE properties SET type = '2 chambres salon' WHERE type = 'Appartement'");
+        q("UPDATE properties SET type = 'Villa' WHERE type = 'Duplex'");
     }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");

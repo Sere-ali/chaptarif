@@ -38,7 +38,7 @@ if (is_post()) {
     flash('success', 'Logement enregistré' . ($new ? ' · ' . count($new) . ' photo(s) envoyée(s) sur Cloudinary' : '') . '.');
     redirect('/admin/bien?id=' . $id);
 }
-$p ??= ['title' => '', 'type' => 'Appartement', 'commune' => 'Cocody', 'quartier' => '', 'description' => '', 'price_night' => '', 'price_week' => '', 'capacity' => 2, 'amenities' => 'Wifi,Climatisation,Sécurité 24/7', 'owner_name' => '', 'owner_phone' => '', 'certified' => 0, 'active' => 1, 'images' => '[]'];
+$p ??= ['title' => '', 'type' => '2 chambres salon', 'commune' => 'Cocody', 'quartier' => '', 'description' => '', 'price_night' => '', 'price_week' => '', 'capacity' => 2, 'amenities' => 'Wifi,Climatisation,Sécurité 24/7', 'owner_name' => '', 'owner_phone' => '', 'certified' => 0, 'active' => 1, 'images' => '[]'];
 $imgs = json_decode((string) $p['images'], true) ?: [];
 $page = $id ? 'Modifier : ' . $p['title'] : 'Nouveau logement';
 $nav = 'properties';
@@ -50,7 +50,7 @@ view('admin/header', compact('page', 'nav'));
     <div>
       <label class="fld"><span>Titre de l'annonce</span><input name="title" value="<?= e($p['title']) ?>" required></label>
       <div class="row2">
-        <label class="fld"><span>Type</span><select name="type"><?php foreach (['Studio', 'Chambre', 'Appartement', 'Villa', 'Duplex'] as $t): ?><option <?= $p['type'] === $t ? 'selected' : '' ?>><?= $t ?></option><?php endforeach; ?></select></label>
+        <label class="fld"><span>Type</span><select name="type"><?php foreach (PROPERTY_TYPES as $t): ?><option <?= $p['type'] === $t ? 'selected' : '' ?>><?= $t ?></option><?php endforeach; ?></select></label>
         <label class="fld"><span>Capacité (voyageurs)</span><input type="number" name="capacity" value="<?= (int) $p['capacity'] ?>" min="1" max="20"></label>
       </div>
       <div class="row2">

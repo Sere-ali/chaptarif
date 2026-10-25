@@ -64,8 +64,8 @@ $commune = (string) ($_GET['commune'] ?? '');
 $type = (string) ($_GET['type'] ?? '');
 $cat = (string) ($_GET['cat'] ?? '');
 $catMap = [
-    'appart' => ['label' => 'Appartements & Studios', 'desc' => 'Studios, chambres et appartements à louer', 'types' => ['Studio', 'Chambre', 'Appartement'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
-    'villa'  => ['label' => 'Villas & Duplex', 'desc' => 'Maisons individuelles et duplex, avec plus d\'espace', 'types' => ['Villa', 'Duplex'], 'img' => 'univers-immobilier', 'color' => '#1F5C8C'],
+    'appart' => ['label' => 'Appartements & Studios', 'desc' => 'Studios, chambres et appartements à louer', 'types' => ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
+    'villa'  => ['label' => 'Villas', 'desc' => 'Maisons individuelles, avec plus d\'espace', 'types' => ['Villa'], 'img' => 'univers-immobilier', 'color' => '#1F5C8C'],
 ];
 // Écran de sélection façon app, affiché uniquement sur mobile et seulement
 // tant qu'aucun filtre n'est actif (avant que la personne ait choisi une famille de biens).
@@ -96,7 +96,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
   <div class="container">
     <div class="filter-chips mb">
       <a class="fchip <?= $type === '' ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $commune])) ?>">Tous les types</a>
-      <?php foreach (array_column(all('SELECT DISTINCT type FROM properties WHERE active = 1 ORDER BY type'), 'type') as $t): if ($t === '') continue; ?>
+      <?php foreach (PROPERTY_TYPES as $t): ?>
         <a class="fchip <?= $type === $t ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $commune, 'type' => $t])) ?>"><?= e($t) ?></a>
       <?php endforeach; ?>
     </div>
