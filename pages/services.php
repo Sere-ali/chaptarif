@@ -18,6 +18,7 @@ $title = $copy['title'];
 $desc = $copy['desc'];
 $active = $uk;
 $isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'location_camion'], true);
+$autoProv = $uk === 'pressing';
 $hasGarantie = in_array($uk, ['menage', 'pressing'], true);
 $garantiePct = (float) setting('garantie_dommage_pct', 5);
 $commune = (string) ($_GET['commune'] ?? '');
@@ -68,6 +69,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         <?php endforeach; ?>
       </div>
 
+      <?php if (!$autoProv): ?>
       <div class="h-row">
         <h2 class="h3">2. Choisissez <?= e($copy['step2']) ?></h2>
         <div class="filter-chips">
@@ -98,6 +100,7 @@ view('layout/header', compact('title', 'desc', 'active'));
           </label>
         <?php endforeach; ?>
       </div>
+      <?php endif; ?>
       <?php endif; ?>
     </div>
 
@@ -155,14 +158,14 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </div>
         <?php endif; ?>
         <?php else: ?>
-        <h2 class="h3">3. Date & lieu</h2>
+        <h2 class="h3"><?= $autoProv ? '2' : '3' ?>. Date & lieu</h2>
         <div class="row2">
           <label class="fld"><span>📅 <?= e($copy['date_label']) ?></span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
           <label class="fld"><span>🕘 Heure</span><select name="time"><?php foreach (['07:00', '08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $h): ?><option <?= $h === '09:00' ? 'selected' : '' ?>><?= $h ?></option><?php endforeach; ?></select></label>
         </div>
         <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
         <button type="button" class="btn btn-soft btn-block" data-geo="address" style="margin:0 0 6px">📡 Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
-        <label class="fld"><span>🏠 Votre lieu (ou saisissez-le vous-même)</span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
+        <label class="fld"><span><?= $autoProv ? '🏠 Lieu de récupération' : '🏠 Votre lieu' ?> (ou saisissez-le vous-même)</span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
         <label class="fld"><span>📍 Quartier (facultatif)</span><select name="zone"><option value="">Choisir…</option><?= zone_options() ?></select></label>
         <label class="fld qty-fld" data-qty hidden><span>🔢 Nombre de pièces</span><input type="number" name="qty" min="1" max="50" value="1"></label>
         <?php endif; ?>
@@ -176,7 +179,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <?php if (!$isRental): ?>
         <div class="total-box">
           <div><span>Formule</span><b data-sum-offer>—</b></div>
-          <div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div>
+          <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
           <?php if ($hasGarantie): ?><div data-sum-garantie-row hidden><span>🛡️ Garantie Dommage</span><b data-sum-garantie>—</b></div><?php endif; ?>
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>

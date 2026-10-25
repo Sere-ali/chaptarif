@@ -109,7 +109,7 @@
       }
       var amount = o ? o.dataset.price * n * days : 0;
       $('[data-sum-offer]', sf).textContent = o ? o.dataset.title + (n > 1 ? ' × ' + n : '') + (days > 1 ? ' × ' + days + ' j' : '') : '—';
-      $('[data-sum-prov]', sf).textContent = p ? p.dataset.name : '—';
+      var sp = $('[data-sum-prov]', sf); if (sp) sp.textContent = p ? p.dataset.name : '—';
       var garCb = $('[data-garantie]', sf), garRow = $('[data-sum-garantie-row]', sf);
       var garFee = 0;
       if (garCb && garRow) {
