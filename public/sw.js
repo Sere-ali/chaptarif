@@ -1,6 +1,6 @@
 /* Service worker ChapTarif : cache des ressources statiques, réseau d'abord pour les pages */
-const CACHE = 'chaptarif-v22';
-const ASSETS = ['/assets/css/app.css?v=21', '/assets/css/polish.css?v=6', '/assets/js/app.js?v=12', '/assets/js/polish.js?v=1', '/assets/img/logo.svg', '/manifest.webmanifest'];
+const CACHE = 'chaptarif-v23';
+const ASSETS = ['/assets/css/app.css?v=21', '/assets/css/polish.css?v=6', '/assets/js/app.js?v=13', '/assets/js/polish.js?v=1', '/assets/img/logo.svg', '/manifest.webmanifest'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x))))); self.clients.claim(); });
 self.addEventListener('fetch', e => {

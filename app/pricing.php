@@ -49,6 +49,27 @@ function best_provider(string $universe, ?string $commune = null): ?array
     return one($sql . $order, [$universe, $today]);
 }
 
+/** Choisit la formule la plus adaptée à la demande (type de véhicule, nombre de places, taille du camion). */
+function auto_offer(string $universe, array $in): ?array
+{
+    $offers = all('SELECT * FROM offers WHERE universe = ? AND active = 1 ORDER BY sort, price', [$universe]);
+    if (!$offers) return null;
+    $want = match ($universe) {
+        'location_vehicule' => ($in['vtype'] ?? '') === '4x4' ? ['4x4', 'suv'] : [],
+        'location_car' => [(string) (int) ($in['seats'] ?? 0)],
+        'location_camion' => [($in['ttype'] ?? '') === 'gros' ? 'gros' : 'moyen'],
+        default => [],
+    };
+    foreach ($offers as $o) {
+        $hay = mb_strtolower($o['title'] . ' ' . $o['subtitle']);
+        foreach ($want as $w) if ($w !== '' && $w !== '0' && str_contains($hay, $w)) return $o;
+    }
+    if ($universe === 'location_vehicule' && ($in['vtype'] ?? '') !== '4x4') {
+        foreach ($offers as $o) if (!str_contains(mb_strtolower($o['title']), '4x4')) return $o;
+    }
+    return $offers[0];
+}
+
 function valid_future_date(?string $d, int $maxDays = 180): bool
 {
     if (!$d || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $d)) return false;
@@ -101,10 +122,16 @@ function build_quote(string $universe, array $in): array
         case 'location_car':
         case 'chauffeur':
         case 'location_camion': {
-            $prov = one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) ($in['provider'] ?? 0), $universe]);
-            $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
-            if (!$prov) return $fail('Choisissez un prestataire.');
-            if (!$offer) return $fail('Choisissez une formule.');
+            // Plus de choix manuel du loueur / de la formule : ChapTarif attribue automatiquement.
+            $prov = !empty($in['provider'])
+                ? one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) $in['provider'], $universe])
+                : best_provider($universe);
+            $offer = !empty($in['offer'])
+                ? one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) $in['offer'], $universe])
+                : auto_offer($universe, $in);
+            if (!$prov || !$offer) return $fail('Ce service ouvre bientôt dans votre zone. Écrivez-nous via l\'onglet Chat : nous vous trouvons un loueur.');
+            $lat = $in['lat'] ?? ''; $lng = $in['lng'] ?? '';
+            $geo0 = (is_numeric($lat) && is_numeric($lng) && abs((float) $lat) <= 90 && abs((float) $lng) <= 180) ? round((float) $lat, 5) . ', ' . round((float) $lng, 5) : '';
             $txt = fn(string $k, int $max = 200) => trim(mb_substr((string) ($in[$k] ?? ''), 0, $max));
             $dt = function (string $k) use ($in) {
                 $v = (string) ($in[$k] ?? '');
@@ -166,8 +193,7 @@ function build_quote(string $universe, array $in): array
                 if (!isset($map[$du])) return $fail('Choisissez la durée souhaitée.');
                 $days = $map[$du];
                 $dl = $du === 'semaine' ? '1 semaine' : ($du === 'mois' ? '1 mois' : $du . ' jour' . ((int) $du > 1 ? 's' : ''));
-                $lat = $in['lat'] ?? ''; $lng = $in['lng'] ?? '';
-                $geo = (is_numeric($lat) && is_numeric($lng) && abs((float) $lat) <= 90 && abs((float) $lng) <= 180) ? round((float) $lat, 5) . ', ' . round((float) $lng, 5) : '';
+                $geo = $geo0;
                 $d = ['pickup' => $pickup, 'gps' => $geo, 'destination' => $dest, 'arrival' => date('d/m/Y H:i', $t1), 'duration' => $dl, 'days' => $days];
                 $s[] = ['Prise en charge', $pickup . ($geo ? ' (position partagée)' : '')];
                 $s[] = ['Destination', $dest];
@@ -189,6 +215,7 @@ function build_quote(string $universe, array $in): array
                 $date = date('Y-m-d', $t1);
             }
 
+            if ($geo0 !== '' && $universe !== 'chauffeur') { $d['gps'] = $geo0; $s[] = ['Position partagée', $geo0]; }
             $mult = $offer['unit'] === 'jour' ? $days : 1;
             $amount = (int) $offer['price'] * $mult;
             $q += ['title' => $offer['title'] . ($mult > 1 ? " × $mult j" : '') . ' · ' . $prov['name'], 'amount' => $amount, 'service_date' => $date];

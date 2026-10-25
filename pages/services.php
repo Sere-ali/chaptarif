@@ -17,6 +17,7 @@ $copy = [
 $title = $copy['title'];
 $desc = $copy['desc'];
 $active = $uk;
+$isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'location_camion'], true);
 $hasGarantie = in_array($uk, ['menage', 'pressing'], true);
 $garantiePct = (float) setting('garantie_dommage_pct', 5);
 $commune = (string) ($_GET['commune'] ?? '');
@@ -48,8 +49,9 @@ view('layout/header', compact('title', 'desc', 'active'));
 <form class="section-tight" method="post" action="/reserver" data-service-form data-universe="<?= e($uk) ?>" data-garantie-pct="<?= e((string) $garantiePct) ?>">
   <?= csrf_field() ?>
   <input type="hidden" name="universe" value="<?= e($uk) ?>">
-  <div class="container two-col wide-left">
+  <div class="container <?= $isRental ? 'narrow-2' : 'two-col wide-left' ?>">
     <div>
+      <?php if (!$isRental): ?>
       <h2 class="h3">1. Choisissez votre formule</h2>
       <?php if (!$offers): ?>
         <div class="empty"><div class="empty-ico">🗒️</div><p>Aucune formule publiée pour le moment. Revenez bientôt.</p></div>
@@ -96,12 +98,12 @@ view('layout/header', compact('title', 'desc', 'active'));
           </label>
         <?php endforeach; ?>
       </div>
+      <?php endif; ?>
     </div>
 
-    <aside class="sticky">
+    <aside class="<?= $isRental ? '' : 'sticky' ?>">
       <div class="card form-card">
 <?php
-$isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'location_camion'], true);
 $dtMin = date('Y-m-d\TH:i', strtotime('+1 hour'));
 $dtDef = date('Y-m-d\T09:00', strtotime('+1 day'));
 $dtMax = date('Y-m-d\TH:i', strtotime('+90 days'));
@@ -109,9 +111,11 @@ $dtEnd = date('Y-m-d\T18:00', strtotime('+1 day'));
 $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option><option value="hors">Hors Abidjan</option></select>';
 ?>
         <?php if ($isRental): ?>
-        <h2 class="h3">3. Votre demande</h2>
+        <h2 class="h3">Votre demande</h2>
         <?php if ($uk === 'location_vehicule'): ?>
           <label class="fld"><span>📍 Commune ou lieu de prise en charge</span><input name="pickup" required maxlength="200" placeholder="Ex. Cocody, Angré 8e tranche"></label>
+          <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
+          <button type="button" class="btn btn-soft btn-block" data-geo="pickup" style="margin:-4px 0 6px">📡 Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
           <label class="fld"><span>📅 Date et heure de début</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
           <label class="fld"><span>📅 Date et heure de retour</span><input type="datetime-local" name="end" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtEnd ?>"></label>
           <div class="row2">
@@ -120,6 +124,8 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </div>
         <?php elseif ($uk === 'location_car'): ?>
           <label class="fld"><span>📍 Lieu de départ</span><input name="from_place" required maxlength="200" placeholder="Ex. Yopougon, Siporex"></label>
+          <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
+          <button type="button" class="btn btn-soft btn-block" data-geo="from_place" style="margin:-4px 0 6px">📡 Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
           <label class="fld"><span>🏁 Destination</span><?= $destSel ?></label>
           <div class="row2">
             <label class="fld"><span>📅 Date</span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+90 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
@@ -130,15 +136,16 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
             <label class="fld"><span>🎉 Motif</span><select name="motif" required><option value="mariage">Mariage</option><option value="excursion">Excursion</option><option value="sortie_scolaire">Sortie scolaire</option><option value="evenement">Événement</option><option value="autres">Autres</option></select></label>
           </div>
         <?php elseif ($uk === 'chauffeur'): ?>
-          <label class="fld"><span>📍 Adresse de prise en charge</span><input name="pickup" id="pickupAddr" required maxlength="200" placeholder="Ex. Marcory, Zone 4"></label>
-          <input type="hidden" name="lat" id="geoLat"><input type="hidden" name="lng" id="geoLng">
-          <button type="button" class="btn btn-soft btn-block" id="geoBtn" style="margin:-4px 0 12px">📡 Activer ma localisation</button>
-          <p class="fine" id="geoMsg" style="margin:-6px 0 10px" hidden></p>
+          <label class="fld"><span>📍 Adresse de prise en charge</span><input name="pickup" required maxlength="200" placeholder="Ex. Marcory, Zone 4"></label>
+          <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
+          <button type="button" class="btn btn-soft btn-block" data-geo="pickup" style="margin:-4px 0 6px">📡 Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
           <label class="fld"><span>🏁 Destination</span><?= $destSel ?></label>
           <label class="fld"><span>🕘 Date et heure d'arrivée du chauffeur</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
           <label class="fld"><span>⏱️ Durée souhaitée</span><select name="duree"><?php for ($i = 1; $i <= 7; $i++): ?><option value="<?= $i ?>"><?= $i ?> jour<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?><option value="semaine">1 semaine</option><option value="mois">1 mois</option></select></label>
         <?php else: ?>
           <label class="fld"><span>📦 Adresse de chargement</span><input name="load" required maxlength="200" placeholder="Ex. Abobo, Sagbé"></label>
+          <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
+          <button type="button" class="btn btn-soft btn-block" data-geo="load" style="margin:-4px 0 6px">📡 Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
           <label class="fld"><span>🏠 Adresse de livraison</span><input name="deliver" required maxlength="200" placeholder="Ex. Bingerville"></label>
           <label class="fld"><span>📅 Date et heure souhaitées</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
           <div class="row2">
@@ -163,13 +170,17 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </label>
           <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>
+        <?php if (!$isRental): ?>
         <div class="total-box">
           <div><span>Formule</span><b data-sum-offer>—</b></div>
           <div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div>
           <?php if ($hasGarantie): ?><div data-sum-garantie-row hidden><span>🛡️ Garantie Dommage</span><b data-sum-garantie>—</b></div><?php endif; ?>
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>
-        <button class="btn btn-primary btn-block btn-lg">Réserver & payer</button>
+        <?php else: ?>
+        <p class="fine">💡 Le prix vous est affiché avant le paiement. Nous attribuons un loueur vérifié à votre demande.</p>
+        <?php endif; ?>
+        <button class="btn btn-primary btn-block btn-lg"><?= $isRental ? 'Voir le prix & réserver' : 'Réserver & payer' ?></button>
         <p class="fine">🔒 Le paiement reste bloqué jusqu'à ce que vous confirmiez la fin du travail.</p>
       </div>
     </aside>

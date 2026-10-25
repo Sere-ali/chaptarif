@@ -92,7 +92,7 @@
 
   // Récapitulatif ménage / pressing
   var sf = $('[data-service-form]');
-  if (sf) {
+  if (sf && $('[data-sum-total]', sf)) {
     var upd = function () {
       var o = $('input[name=offer]:checked', sf), p = $('input[name=provider]:checked', sf), qty = $('[data-qty]', sf);
       var perPiece = o && o.dataset.unit === 'pièce';
@@ -125,21 +125,25 @@
     sf.addEventListener('change', upd); sf.addEventListener('input', upd); upd();
   }
 
-  // Chauffeur : localisation
-  var geoBtn = document.getElementById('geoBtn');
-  if (geoBtn) geoBtn.addEventListener('click', function () {
-    var msg = document.getElementById('geoMsg');
-    var say = function (t) { msg.textContent = t; msg.hidden = false; };
-    if (!navigator.geolocation) return say('Localisation indisponible sur cet appareil : saisissez votre adresse.');
-    geoBtn.disabled = true; say('Localisation en cours…');
-    navigator.geolocation.getCurrentPosition(function (p) {
-      document.getElementById('geoLat').value = p.coords.latitude.toFixed(5);
-      document.getElementById('geoLng').value = p.coords.longitude.toFixed(5);
-      var a = document.getElementById('pickupAddr');
-      if (!a.value) a.value = 'Ma position actuelle';
-      say('✅ Position enregistrée. Précisez un repère dans l\'adresse si besoin.');
-      geoBtn.disabled = false;
-    }, function () { say('Localisation refusée : saisissez votre adresse.'); geoBtn.disabled = false; }, { enableHighAccuracy: true, timeout: 12000 });
+  // Localisation : remplit l'adresse (modifiable à la main)
+  $$('[data-geo]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var f = btn.form, input = f.elements[btn.dataset.geo], msg = btn.parentNode.querySelector('[data-geo-msg]') || $('[data-geo-msg]', f);
+      var say = function (t) { msg.textContent = t; msg.hidden = false; };
+      if (!navigator.geolocation) return say('Localisation indisponible : saisissez votre adresse.');
+      btn.disabled = true; say('Localisation en cours…');
+      navigator.geolocation.getCurrentPosition(function (p) {
+        var lat = p.coords.latitude.toFixed(5), lng = p.coords.longitude.toFixed(5);
+        $('[data-geo-lat]', f).value = lat; $('[data-geo-lng]', f).value = lng;
+        input.value = 'Ma position actuelle';
+        say('✅ Position enregistrée. Vous pouvez modifier l\'adresse ci-dessus.');
+        btn.disabled = false;
+        fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=fr&zoom=18&lat=' + lat + '&lon=' + lng)
+          .then(function (r) { return r.json(); })
+          .then(function (j) { if (j && j.display_name && input.value === 'Ma position actuelle') input.value = j.display_name.split(', ').slice(0, 3).join(', '); })
+          .catch(function () {});
+      }, function () { say('Localisation refusée : saisissez votre adresse.'); btn.disabled = false; }, { enableHighAccuracy: true, timeout: 12000 });
+    });
   });
 
   // Calcul séjour immobilier
