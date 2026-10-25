@@ -21,6 +21,9 @@ function cld_cloud(): string
 /** Image publique du dossier chaptarif/ avec transformation. */
 function img(string $publicId, string $t = 'q_auto,f_auto'): string
 {
+    // Image fournie dans le site (public/assets/img/<id>.jpg) : prioritaire sur Cloudinary.
+    $local = dirname(__DIR__) . '/public/assets/img/' . $publicId . '.jpg';
+    if (preg_match('/^[a-z0-9_-]+$/i', $publicId) && is_file($local)) return '/assets/img/' . $publicId . '.jpg?v=' . filemtime($local);
     return 'https://res.cloudinary.com/' . cld_cloud() . '/image/upload/' . $t . '/chaptarif/' . $publicId . '.jpg';
 }
 
