@@ -263,7 +263,7 @@ function build_quote(string $universe, array $in): array
             $date = $in['date'] ?? date('Y-m-d');
             if (!valid_future_date($date, 60)) return $fail('Date de voyage invalide.');
             if ($date === date('Y-m-d') && $trip['depart_time'] <= date('H:i')) return $fail('Ce départ est déjà passé aujourd\'hui. Choisissez une autre date.');
-            $n = max(1, min(5, (int) ($in['passengers'] ?? 1)));
+            $n = max(1, min(4, (int) ($in['passengers'] ?? 1)));
             $sold = (int) val("SELECT COUNT(*) FROM bookings WHERE universe = 'covoiturage' AND item_id = ? AND service_date = ? AND status IN ('BLOQUE','VALIDE')", [$trip['id'], $date]);
             if ($sold + $n > (int) $trip['seats_total']) return $fail('Plus assez de places sur ce trajet.');
             $from = $trip['from_detail'] ?: $trip['from_city'];

@@ -18,7 +18,7 @@ if (is_post()) {
         'station' => mb_substr(trim((string) ($_POST['station'] ?? '')), 0, 80),
         'duration' => mb_substr(trim((string) ($_POST['duration'] ?? '')), 0, 20),
         'price' => max(0, (int) ($_POST['price'] ?? 0)),
-        'seats_total' => max(1, min(9, (int) ($_POST['seats_total'] ?? 3))),
+        'seats_total' => max(1, min(4, (int) ($_POST['seats_total'] ?? 3))),
         'active' => isset($_POST['active']) ? 1 : 0,
     ];
     if ($act === 'delete' && $id) { q("UPDATE trips SET active = 0 WHERE id = ? AND universe = 'covoiturage'", [$id]); flash('success', 'Trajet désactivé.'); audit('covoiturage.desactivation', "#$id"); }
@@ -49,7 +49,7 @@ view('admin/header', compact('page', 'nav'));
     <label class="fld"><span>Point de RDV</span><input name="station" placeholder="Ex. Rond-point Adjamé"></label>
     <label class="fld"><span>Durée estimée</span><input name="duration" placeholder="4h"></label>
     <label class="fld"><span>Prix / place (F)</span><input type="number" name="price" min="0" step="100" required></label>
-    <label class="fld"><span>Places</span><input type="number" name="seats_total" value="3" max="9"></label>
+    <label class="fld"><span>Places</span><input type="number" name="seats_total" value="3" min="1" max="4"></label>
     <label class="check"><input type="checkbox" name="active" checked> Actif</label>
     <button class="btn btn-primary">Publier le trajet</button>
   </form>
@@ -70,7 +70,7 @@ view('admin/header', compact('page', 'nav'));
         <td><input form="<?= $f ?>" type="time" name="depart_time" value="<?= e($t['depart_time']) ?>"></td>
         <td><input form="<?= $f ?>" name="duration" value="<?= e($t['duration']) ?>" style="width:64px"></td>
         <td><input form="<?= $f ?>" type="number" name="price" value="<?= (int) $t['price'] ?>" step="100" style="width:90px"></td>
-        <td><input form="<?= $f ?>" type="number" name="seats_total" value="<?= (int) $t['seats_total'] ?>" max="9" style="width:56px"></td>
+        <td><input form="<?= $f ?>" type="number" name="seats_total" value="<?= (int) $t['seats_total'] ?>" min="1" max="4" style="width:56px"></td>
         <td class="num"><?= $sold ?></td>
         <td><input form="<?= $f ?>" type="checkbox" name="active" <?= $t['active'] ? 'checked' : '' ?>></td>
         <td><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button></td>
