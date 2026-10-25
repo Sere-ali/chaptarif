@@ -32,7 +32,7 @@ $items = [
 ];
 if (is_super($me)) {
     $items[] = ['Super admin', null];
-    $items[] = ['admins', '/admin/administrateurs', '🛡️', 'Administrateurs', 0];
+    $items[] = ['admins', '/admin/administrateurs', '🛡️', 'Admins', 0];
     $items[] = ['settings', '/admin/parametres', '⚙️', 'Paramètres', 0];
     $items[] = ['audit', '/admin/journal', '📜', "Journal d'audit", 0];
 }
@@ -47,7 +47,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=9">
+<link rel="stylesheet" href="/assets/css/admin.css?v=12">
 </head>
 <body class="adm">
 <div class="main">
