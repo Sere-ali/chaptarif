@@ -18,6 +18,7 @@ $title = $copy['title'];
 $desc = $copy['desc'];
 $active = $uk;
 $isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'location_camion'], true);
+$noPrice = $uk === 'menage';
 $autoProv = in_array($uk, ['pressing', 'menage', 'coiffeuse', 'maquilleuse', 'onglerie'], true);
 $hasGarantie = in_array($uk, ['menage', 'pressing'], true);
 $garantiePct = (float) setting('garantie_dommage_pct', 5);
@@ -64,7 +65,7 @@ view('layout/header', compact('title', 'desc', 'active'));
             <?php if ($o['popular']): ?><span class="ribbon">Populaire</span><?php endif; ?>
             <b><?= e($o['title']) ?></b>
             <small><?= e($o['subtitle']) ?></small>
-            <span class="offer-price"><?= fcfa($o['price']) ?><em>/ <?= e($o['unit']) ?></em></span>
+            <?php if (!$noPrice): ?><span class="offer-price"><?= fcfa($o['price']) ?><em>/ <?= e($o['unit']) ?></em></span><?php endif; ?>
           </label>
         <?php endforeach; ?>
       </div>
@@ -176,7 +177,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </label>
           <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>
-        <?php if (!$isRental): ?>
+        <?php if (!$isRental && !$noPrice): ?>
         <div class="total-box">
           <div><span>Formule</span><b data-sum-offer>—</b></div>
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
@@ -186,7 +187,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <?php else: ?>
         <p class="fine">Prix transparents et professionnels qualifiés garantis.</p>
         <?php endif; ?>
-        <button class="btn btn-primary btn-block btn-lg"><?= $isRental ? 'Voir le prix & réserver' : 'Réserver & payer' ?></button>
+        <button class="btn btn-primary btn-block btn-lg"><?= ($isRental || $noPrice) ? 'Voir le prix & réserver' : 'Réserver & payer' ?></button>
         <p class="fine">🔒 Paiement bloqué et sécurisé jusqu'à la fin de la prestation.</p>
       </div>
     </aside>
