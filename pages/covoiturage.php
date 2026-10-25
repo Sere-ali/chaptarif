@@ -50,7 +50,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         $enough = $left >= $seats;
         $fromLabel = $t['from_detail'] ?: $t['from_city'];
         $toLabel = $t['to_detail'] ?: $t['to_city']; ?>
-        <form class="trip <?= $past ? 'past' : '' ?>" method="post" action="/reserver">
+        <form data-trip-price="<?= (int) $t['price'] ?>" data-trip-fee="0" class="trip <?= $past ? 'past' : '' ?>" method="post" action="/reserver">
           <?= csrf_field() ?>
           <input type="hidden" name="universe" value="covoiturage"><input type="hidden" name="trip" value="<?= (int) $t['id'] ?>"><input type="hidden" name="date" value="<?= e($date) ?>">
           <div class="trip-co"><span class="co-logo"><?= e(mb_substr($t['company'], 0, 4)) ?></span><div><b><?= e($t['company']) ?></b><small>Chauffeur vérifié</small></div></div>
@@ -58,8 +58,9 @@ view('layout/header', compact('title', 'desc', 'active'));
           <div class="trip-line"><span></span><small><?= e($t['duration']) ?></small></div>
           <div class="trip-time"><b><?= e($toLabel) ?></b><small><?= $left ?> place(s)</small></div>
           <div class="trip-buy">
-            <div class="big-price"><?= fcfa($t['price']) ?></div>
-            <small>par place</small>
+            <div class="big-price"><?= fcfa($t['price']) ?><em class="per-pers" data-per hidden> / personne</em></div>
+            <small data-fee-line>par place</small>
+            <small class="trip-total" data-total hidden></small>
             <div class="trip-actions">
               <select name="passengers" aria-label="Passagers"><?php for ($i = 1; $i <= min(5, (int) $t['seats_total']); $i++): ?><option value="<?= $i ?>" <?= $i === $seats ? 'selected' : '' ?>><?= $i ?> pers.</option><?php endfor; ?></select>
               <button class="btn btn-primary" <?= ($past || !$enough) ? 'disabled' : '' ?>><?= $past ? 'Parti' : (!$enough ? 'Pas assez de places' : 'Réserver ma place') ?></button>

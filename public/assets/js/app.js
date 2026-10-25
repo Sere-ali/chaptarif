@@ -125,6 +125,22 @@
     sf.addEventListener('change', upd); sf.addEventListener('input', upd); upd();
   }
 
+  // Billets : « 7 000 F / personne » dès 2 passagers + total
+  $$('form[data-trip-price]').forEach(function (f) {
+    var sel = f.elements.passengers; if (!sel) return;
+    var price = +f.dataset.tripPrice, fee = +f.dataset.tripFee || 0;
+    var per = $('[data-per]', f), tot = $('[data-total]', f), feeLine = $('[data-fee-line]', f);
+    var upd = function () {
+      var n = parseInt(sel.value, 10) || 1;
+      per.hidden = n < 2; tot.hidden = n < 2;
+      if (n >= 2) {
+        tot.textContent = 'Total ' + n + ' pers. : ' + fcfa(price * n) + (fee ? ' + ' + fcfa(fee * n) + ' de frais' : '');
+        if (fee) feeLine.textContent = '+ ' + fcfa(fee) + ' frais de service / personne';
+      } else if (fee) feeLine.textContent = '+ ' + fcfa(fee) + ' frais de service';
+    };
+    sel.addEventListener('change', upd); upd();
+  });
+
   // Localisation : remplit l'adresse (modifiable à la main)
   $$('[data-geo]').forEach(function (btn) {
     btn.addEventListener('click', function () {

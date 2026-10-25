@@ -38,7 +38,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         $past = $date === date('Y-m-d') && $t['depart_time'] <= date('H:i');
         $sold = (int) val("SELECT COUNT(*) FROM bookings WHERE universe = 'cars' AND item_id = ? AND service_date = ? AND status IN ('BLOQUE','VALIDE')", [$t['id'], $date]);
         $left = max(0, (int) $t['seats_total'] - $sold); ?>
-        <form class="trip <?= $past ? 'past' : '' ?>" method="post" action="/reserver">
+        <form data-trip-price="<?= (int) $t['price'] ?>" data-trip-fee="<?= (int) $fee ?>" class="trip <?= $past ? 'past' : '' ?>" method="post" action="/reserver">
           <?= csrf_field() ?>
           <input type="hidden" name="universe" value="cars"><input type="hidden" name="trip" value="<?= (int) $t['id'] ?>"><input type="hidden" name="date" value="<?= e($date) ?>">
           <div class="trip-co"><span class="co-logo"><?= e(mb_substr($t['company'], 0, 4)) ?></span><div><b><?= e($t['company']) ?></b><small><?= e($t['class']) ?></small></div></div>
@@ -46,8 +46,9 @@ view('layout/header', compact('title', 'desc', 'active'));
           <div class="trip-line"><span></span><small><?= e($t['duration']) ?></small></div>
           <div class="trip-time"><b><?= e($t['to_city']) ?></b><small><?= $left ?> places</small></div>
           <div class="trip-buy">
-            <div class="big-price"><?= fcfa($t['price']) ?></div>
-            <small>+ <?= fcfa($fee) ?> frais de service</small>
+            <div class="big-price"><?= fcfa($t['price']) ?><em class="per-pers" data-per hidden> / personne</em></div>
+            <small data-fee-line>+ <?= fcfa($fee) ?> frais de service</small>
+            <small class="trip-total" data-total hidden></small>
             <div class="trip-actions">
               <select name="passengers" aria-label="Passagers"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>" <?= $i === $passengers ? 'selected' : '' ?>><?= $i ?> pers.</option><?php endfor; ?></select>
               <button class="btn btn-primary" <?= ($past || $left < $passengers) ? 'disabled' : '' ?>><?= $past ? 'Parti' : ($left < $passengers ? 'Pas assez de places' : 'Prendre mon ticket') ?></button>
