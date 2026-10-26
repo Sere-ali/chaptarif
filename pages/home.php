@@ -254,7 +254,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   <div class="container split">
     <div class="reveal">
       <span class="eyebrow">Option de protection</span>
-      <h2>🛡️ <span class="grad">Garantie Dommages</span></h2>
+      <h2>🛡️ La <span class="grad">Garantie Dommage</span></h2>
       <p class="lead-sm">En cas de dommage lié à la prestation, vous pouvez déposer une réclamation auprès de ChapTarif.</p>
       <p>Chaque situation est examinée selon les conditions de la garantie.</p>
       <ul class="checks">
