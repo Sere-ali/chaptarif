@@ -269,14 +269,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   </div>
 </section>
 
-<section class="section stats-band">
-  <div class="container stats">
-    <div class="stat reveal"><b data-count="<?= $counts['providers'] ?>">0</b><span>prestataires vérifiés</span></div>
-    <div class="stat reveal"><b data-count="<?= count($zones) ?>">0</b><span>quartiers couverts à Abidjan</span></div>
-    <div class="stat reveal"><b data-count="<?= $counts['trips'] ?>">0</b><span>départs de cars quotidiens</span></div>
-    <div class="stat reveal"><b>100%</b><span>des paiements sous séquestre</span></div>
-  </div>
-</section>
 
 <section class="section">
   <div class="container split split-rev">
