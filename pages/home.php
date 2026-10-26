@@ -48,10 +48,43 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   <div class="container m-hero-in">
     <h1 class="m-title">Que souhaitez-vous<br>aujourd’hui&nbsp;?</h1>
     <p class="m-sub">Tarifs transparents&nbsp;• Paiement sous séquestre</p>
-    <form class="m-search" action="#m-cats" onsubmit="return false">
+    <?php
+      $kw = ['cars' => 'bus billet billets voyage interurbain gare utb ticket', 'covoiturage' => 'covoiturage covoit trajet voiture partagee partager place', 'location_car' => 'car minibus groupe evenement louer un car', 'location_vehicule' => 'voiture vehicule 4x4 suv location louer auto', 'chauffeur' => 'chauffeur conducteur louer un chauffeur', 'location_camion' => 'camion demenagement demenager fret transport charge', 'immobilier' => 'logement appartement studio villa maison chambre salon louer immobilier', 'menage' => 'menage nettoyage aide menagere femme de menage', 'pressing' => 'pressing linge lessive repassage laver blanchisserie', 'coiffeuse' => 'coiffure coiffeuse tresse tresses tissage perruque cheveux nattes', 'maquilleuse' => 'maquillage maquilleuse mariage evenement', 'onglerie' => 'ongle ongles manucure vernis faux ongles gel'];
+      $sidx = [];
+      foreach (universes() as $uk2 => $ux) {
+          if (empty($ux['url'])) continue;
+          $sidx[] = ['t' => $ux['emoji'] . ' ' . $ux['name'], 'u' => $ux['url'], 'k' => ($ux['name'] . ' ' . ($ux['short'] ?? '') . ' ' . ($ux['sub'] ?? '') . ' ' . ($kw[$uk2] ?? ''))];
+      }
+      $sidx[] = ['t' => '💬 Chat service client', 'u' => '/chat', 'k' => 'chat aide contact service client support whatsapp'];
+      $sidx[] = ['t' => '🧾 Mes réservations', 'u' => '/compte', 'k' => 'reservation reservations commande billet compte profil'];
+    ?>
+    <form class="m-search" action="#" data-search='<?= e(json_encode($sidx, JSON_UNESCAPED_UNICODE)) ?>' autocomplete="off" style="position:relative">
       <span class="m-search-ico">🔎</span>
-      <input type="search" placeholder="Rechercher un service, car, logement…" onfocus="document.getElementById('m-cats').scrollIntoView({behavior:'smooth'})">
+      <input type="search" name="q" placeholder="Rechercher un service, car, logement…" aria-label="Rechercher">
+      <ul class="m-sugg" hidden></ul>
     </form>
+    <script>
+    (function () {
+      var f = document.querySelector('[data-search]'); if (!f) return;
+      var idx = JSON.parse(f.getAttribute('data-search')), inp = f.querySelector('input'), ul = f.querySelector('.m-sugg');
+      var norm = function (s) { return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
+      var find = function (q) {
+        q = norm(q).trim(); if (!q) return [];
+        var words = q.split(/\s+/);
+        return idx.map(function (e) { var k = norm(e.t + ' ' + e.k), sc = 0; words.forEach(function (w) { if (k.indexOf(w) > -1) sc += (norm(e.t).indexOf(w) > -1 ? 2 : 1); else sc -= 100; }); return { e: e, s: sc }; })
+          .filter(function (x) { return x.s > 0; }).sort(function (a, b) { return b.s - a.s; }).map(function (x) { return x.e; }).slice(0, 6);
+      };
+      var render = function () {
+        var r = find(inp.value);
+        if (!inp.value.trim()) { ul.hidden = true; return r; }
+        ul.innerHTML = r.length ? r.map(function (e) { var a = document.createElement('a'); a.href = e.u; a.textContent = e.t; return '<li><a href="' + e.u + '">' + a.innerHTML + '</a></li>'; }).join('') : '<li><a href="/chat">Aucun résultat — écrivez-nous via le Chat</a></li>';
+        ul.hidden = false; return r;
+      };
+      inp.addEventListener('input', render);
+      f.addEventListener('submit', function (ev) { ev.preventDefault(); var r = find(inp.value); location.href = r.length ? r[0].u : '/chat'; });
+      document.addEventListener('click', function (ev) { if (!f.contains(ev.target)) ul.hidden = true; });
+    })();
+    </script>
   </div>
   </div>
   <div class="container m-body">
