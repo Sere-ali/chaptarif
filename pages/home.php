@@ -55,6 +55,9 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
           if (empty($ux['url'])) continue;
           $sidx[] = ['t' => $ux['emoji'] . ' ' . $ux['name'], 'u' => $ux['url'], 'k' => ($ux['name'] . ' ' . ($ux['short'] ?? '') . ' ' . ($ux['sub'] ?? '') . ' ' . ($kw[$uk2] ?? ''))];
       }
+      foreach (PROPERTY_TYPES as $pt) {
+          $sidx[] = ['t' => '🏡 ' . $pt, 'u' => '/immobilier?cat=appart&type=' . urlencode($pt), 'k' => $pt . ' appartement logement louer immobilier' . ($pt === 'Studio' ? ' studios' : ' chambres chambre salon')];
+      }
       $sidx[] = ['t' => '💬 Chat service client', 'u' => '/chat', 'k' => 'chat aide contact service client support whatsapp'];
       $sidx[] = ['t' => '🧾 Mes réservations', 'u' => '/compte', 'k' => 'reservation reservations commande billet compte profil'];
     ?>
@@ -80,7 +83,12 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
         ul.innerHTML = r.length ? r.map(function (e) { var a = document.createElement('a'); a.href = e.u; a.textContent = e.t; return '<li><a href="' + e.u + '">' + a.innerHTML + '</a></li>'; }).join('') : '<li><a href="/chat">Aucun résultat — écrivez-nous via le Chat</a></li>';
         ul.hidden = false; return r;
       };
-      inp.addEventListener('input', render);
+      var tm;
+      inp.addEventListener('input', function () {
+        var r = render(); clearTimeout(tm);
+        var q = inp.value.trim();
+        if (q.length >= 4 && r.length) tm = setTimeout(function () { var best = find(inp.value); if (best.length && (best.length === 1 || norm(best[0].t).indexOf(norm(inp.value.trim())) > -1)) location.href = best[0].u; }, 700);
+      });
       f.addEventListener('submit', function (ev) { ev.preventDefault(); var r = find(inp.value); location.href = r.length ? r[0].u : '/chat'; });
       document.addEventListener('click', function (ev) { if (!f.contains(ev.target)) ul.hidden = true; });
     })();
