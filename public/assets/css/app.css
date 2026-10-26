@@ -773,3 +773,5 @@ body.immo-m .d-trust small { font-size: clamp(.68rem, 3vw, .78rem); line-height:
 .d-select span { font-weight: 800; font-size: .88rem; }
 .d-select select { width: 100%; padding: 12px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; font-weight: 700; font-size: .95rem; }
 body.immo-m .d-select { margin-bottom: 8px; }
+.d-item-sel { flex-wrap: nowrap; }
+.d-item-sel select { width: 100%; margin-top: 6px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--c); background: #fff; font-weight: 700; font-size: .9rem; color: var(--ink); }

@@ -64,7 +64,7 @@ $commune = (string) ($_GET['commune'] ?? '');
 $type = (string) ($_GET['type'] ?? '');
 $cat = (string) ($_GET['cat'] ?? '');
 $catMap = [
-    'appart' => ['label' => 'Appartements & Villas', 'desc' => 'Studios, chambres et appartements à louer', 'types' => ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
+    'appart' => ['label' => 'Appartement et Villa', 'desc' => 'Studios, chambres et appartements à louer', 'types' => ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
 ];
 // Écran de sélection façon app, affiché uniquement sur mobile et seulement
 // tant qu'aucun filtre n'est actif (avant que la personne ait choisi une famille de biens).
@@ -81,7 +81,7 @@ if ($type !== '') {
     $sql .= " AND type IN ($ph)";
     array_push($params, ...$catMap[$cat]['types']);
 }
-$chooser = ($type === '' || !in_array($type, PROPERTY_TYPES, true));
+$chooser = false;
 $counts = [];
 foreach (all("SELECT type, COUNT(*) n FROM properties WHERE active = 1 GROUP BY type") as $r) $counts[$r['type']] = (int) $r['n'];
 $props = all($sql . ' ORDER BY certified DESC, price_night', $params);
@@ -155,22 +155,18 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <p class="d-sub">Trouvez le bien immobilier qui vous correspond.</p>
     <div class="d-list">
       <?php foreach ($catMap as $ck => $c): ?>
-        <a class="d-item reveal" href="/immobilier?cat=<?= e($ck) ?>" style="--c:<?= $c['color'] ?>">
+        <div class="d-item d-item-sel" style="--c:<?= $c['color'] ?>">
           <span class="d-item-img"><img src="<?= e(img($c['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
           <span class="d-item-body">
             <b><?= e($c['label']) ?></b>
-            <small><?= e($c['desc']) ?></small>
+            <select aria-label="Recherche appartement" onchange="if(this.value)location.href='/immobilier?cat=appart&amp;type='+encodeURIComponent(this.value)">
+              <option value="">🔎 Recherche appartement…</option>
+              <?php foreach (PROPERTY_TYPES as $t): ?><option value="<?= e($t) ?>"><?= e($t) ?></option><?php endforeach; ?>
+            </select>
           </span>
-          <span class="d-item-btn">Choisir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
-        </a>
+        </div>
       <?php endforeach; ?>
     </div>
-    <label class="fld d-select"><span>🔎 Recherche appartement</span>
-      <select onchange="if(this.value)location.href='/immobilier?cat=appart&amp;type='+encodeURIComponent(this.value)">
-        <option value="">Choisir un type de logement…</option>
-        <?php foreach (PROPERTY_TYPES as $t): ?><option value="<?= e($t) ?>"><?= e($t) ?></option><?php endforeach; ?>
-      </select>
-    </label>
     <div class="d-trust">
       <span class="d-trust-ico">✨</span>
       <span><b>Paiement sécurisé après confirmation :</b><br><small>Votre paiement est bloqué sur ChapTarif et n'est versé au propriétaire qu'après la remise des clés.</small></span>
