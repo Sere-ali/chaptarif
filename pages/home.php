@@ -299,9 +299,9 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <div>
         <span class="eyebrow light">Prestataires & partenaires</span>
         <h2>Développez votre activité avec ChapTarif</h2>
-        <p>Aides ménagères, pressings, coiffeuses, maquilleuses, prothésistes ongulaires, loueurs de car/camion, compagnies de cars, bailleurs : recevez des clients qui ont déjà payé. Paiement garanti après chaque mission.</p>
+        <p>Transports, immobilier, Ménage, pressing, beauté: trouvez de nouveaux clients grâce à ChapTarif.</p>
         <div class="pro-points">
-          <span>✓ Paiement garanti sur Wave / OM</span><span>✓ Inscription gratuite</span><span>✓ Badge « Recommandé » : <?= fcfa(setting('sponsor_price', 5000)) ?>/mois</span>
+          <span>✓ Paiements sécurisés via mobile money</span><span>✓ Inscription gratuite</span><span>✓ Badge « Recommandé » : 9.999 FCFA/mois, en option</span>
         </div>
       </div>
       <a class="btn btn-white btn-lg" href="/devenir-prestataire">Devenir prestataire</a>
