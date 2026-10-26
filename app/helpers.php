@@ -492,3 +492,15 @@ function chat_reply_id(int $userId): ?int
     $id = (int) ($_POST['reply_to'] ?? 0);
     return ($id && one('SELECT id FROM chat_messages WHERE id = ? AND user_id = ?', [$id, $userId])) ? $id : null;
 }
+
+/** Pièces à fournir à l'inscription d'un prestataire, selon son activité. */
+function kyc_docs_required(string $universe): array
+{
+    return match ($universe) {
+        'immobilier' => ['cni'],
+        'covoiturage' => ['cni', 'permis'],
+        'chauffeur' => ['cni', 'permis', 'vehicule'],
+        'menage', 'pressing', 'coiffeuse', 'maquilleuse', 'onglerie' => ['cni', 'casier'],
+        default => ['cni', 'casier'],
+    };
+}

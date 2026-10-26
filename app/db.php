@@ -195,6 +195,8 @@ function db_migrate(): void
         "ALTER TABLE trips ADD COLUMN from_detail TEXT",
         "ALTER TABLE trips ADD COLUMN to_detail TEXT",
         "ALTER TABLE providers ADD COLUMN casier_public_id TEXT",
+        "ALTER TABLE providers ADD COLUMN permis_public_id TEXT",
+        "ALTER TABLE providers ADD COLUMN vehicule_public_id TEXT",
         "ALTER TABLE provider_services ADD COLUMN price INTEGER",
         "ALTER TABLE provider_services ADD COLUMN unit TEXT",
         "ALTER TABLE provider_services ADD COLUMN photo_url TEXT",

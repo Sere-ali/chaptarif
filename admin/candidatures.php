@@ -46,6 +46,9 @@ view('admin/header', compact('page', 'nav'));
       <?php else: ?>
         <span class="badge badge-gray">CNI non fournie</span>
       <?php endif; ?>
+      <?php foreach (['permis_public_id' => '🚦 Voir le permis', 'vehicule_public_id' => '📑 Voir les papiers du véhicule'] as $dcol => $dlab): if (!empty($p[$dcol])): ?>
+        <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p[$dcol])) ?>"><?= $dlab ?></a>
+      <?php endif; endforeach; ?>
       <?php if (!empty($p['casier_public_id'])): ?>
         <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['casier_public_id'])) ?>">📄 Voir le casier</a>
       <?php else: ?>

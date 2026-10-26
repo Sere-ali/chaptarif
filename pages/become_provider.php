@@ -14,6 +14,18 @@ if (is_post()) {
     if (strlen($pw) < 8) $errors[] = 'Choisissez un mot de passe d\'au moins 8 caractères.';
     elseif ($pw !== (string) ($_POST['password2'] ?? '')) $errors[] = 'Les deux mots de passe ne sont pas identiques.';
     if (too_many_attempts('apply:' . client_ip(), 5, 60)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
+    $need = isset($U[$uk]) ? kyc_docs_required($uk) : [];
+    $docLabels = ['cni' => 'Carte d\'identité', 'permis' => 'Permis de conduire', 'vehicule' => 'Papiers du véhicule (assurance)', 'casier' => 'Casier judiciaire'];
+    foreach ($need as $nk) if (empty($_FILES[$nk]['name'])) $errors[] = $docLabels[$nk] . ' : document obligatoire.';
+    $permis = $vehicule = null;
+    foreach (['permis' => &$permis, 'vehicule' => &$vehicule] as $dk => &$ref) {
+        if (!$errors && !empty($_FILES[$dk]['name'])) {
+            $r = cld_upload($_FILES[$dk], 'chaptarif/kyc', 'authenticated');
+            if ($r['ok']) $ref = $r['public_id'] . '.' . $r['format'];
+            else $errors[] = $docLabels[$dk] . ' : ' . $r['error'];
+        }
+    }
+    unset($ref);
     $cni = null;
     if (!$errors && !empty($_FILES['cni']['name'])) {
         $r = cld_upload($_FILES['cni'], 'chaptarif/kyc', 'authenticated');
@@ -35,13 +47,13 @@ if (is_post()) {
         'universe' => $uk, 'name' => $name, 'phone' => $phone, 'email' => mb_substr((string) ($_POST['email'] ?? ''), 0, 120),
         'commune' => in_array($_POST['commune'] ?? '', communes(), true) ? $_POST['commune'] : null,
         'bio' => mb_substr(trim((string) ($_POST['bio'] ?? '')), 0, 400), 'vehicle' => mb_substr((string) ($_POST['vehicle'] ?? ''), 0, 80),
-        'kyc_status' => 'pending', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
+        'kyc_status' => 'pending', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'permis_public_id' => $permis, 'vehicule_public_id' => $vehicule, 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
         'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
     ]);
     // Compte d'accès : jamais écrasé si le numéro a déjà un compte.
     if (!one('SELECT id FROM users WHERE phone = ?', [$phone])) {
         insert('users', ['role' => 'client', 'name' => $name, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
-        flash('success', 'Candidature envoyée ! Connectez-vous juste à côté avec votre numéro et votre mot de passe pour présenter vos services. Notre équipe vérifie votre dossier (CNI + casier judiciaire) et vous appelle sous 30 minutes.');
+        flash('success', 'Candidature envoyée ! Connectez-vous juste à côté avec votre numéro et votre mot de passe pour présenter vos services. Notre équipe vérifie votre dossier (pièces demandées) et vous appelle sous 30 minutes.');
     } else {
         flash('success', 'Candidature envoyée ! Ce numéro a déjà un compte : connectez-vous (code ou mot de passe existant) pour accéder à votre espace. Notre équipe vérifie votre dossier sous 30 minutes.');
     }
@@ -102,8 +114,10 @@ view('layout/header', compact('title', 'desc', 'active'));
         <label class="fld"><span>🔑 Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
         <label class="fld"><span>Confirmer</span><input type="password" name="password2" minlength="8" required autocomplete="new-password"></label>
       </div>
-      <label class="fld file"><span>🪪 Pièce d'identité (CNI, recto) — JPG/PNG/PDF</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
-      <label class="fld file"><span>📄 Casier judiciaire (bulletin n°3) — JPG/PNG/PDF</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="cni"><span>🪪 Carte d'identité (CNI, recto) — JPG/PNG/PDF</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="permis" hidden><span>🚦 Permis de conduire — JPG/PNG/PDF</span><input type="file" name="permis" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="vehicule" hidden><span>📑 Papiers du véhicule (assurance) — JPG/PNG/PDF</span><input type="file" name="vehicule" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="casier" hidden><span>📄 Casier judiciaire (bulletin n°3) — JPG/PNG/PDF</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
       <p class="fine">Vos documents sont stockés de façon privée et consultés uniquement par l'équipe de vérification.</p>
       <button class="btn btn-primary btn-block btn-lg">Envoyer ma candidature</button>
       <script>
@@ -116,6 +130,13 @@ view('layout/header', compact('title', 'desc', 'active'));
           fld.hidden = !isTransport;
           fld.querySelector('input').required = !!isTransport;
         };
+        var rules = <?= json_encode(array_combine(array_keys($U), array_map('kyc_docs_required', array_keys($U)))) ?>;
+        var docs = document.querySelectorAll('[data-doc]');
+        var updDocs = function () {
+          var need = rules[sel.value] || ['cni'];
+          docs.forEach(function (l) { var on = need.indexOf(l.dataset.doc) > -1; l.hidden = !on; l.querySelector('input').required = on; });
+        };
+        sel.addEventListener('change', updDocs); updDocs();
         sel.addEventListener('change', upd); upd();
       })();
       </script>
