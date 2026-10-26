@@ -253,15 +253,18 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
 <section class="section" id="garantie-dommage">
   <div class="container split">
     <div class="reveal">
-      <span class="eyebrow">Option protection</span>
-      <h2>🛡️ La <span class="grad">Garantie Dommage</span></h2>
-      <p class="lead-sm">Une assurance interne ChapTarif, en option payante, sur Ménage & Aide et Pressing & Linge. Service mal fait, vêtement brûlé, objet endommagé : vous êtes couvert.</p>
+      <span class="eyebrow">Option de protection</span>
+      <h2>🛡️ <span class="grad">Garantie Dommages</span></h2>
+      <p class="lead-sm">En cas de dommage lié à la prestation, vous pouvez déposer une réclamation auprès de ChapTarif.</p>
+      <p>Chaque situation est examinée selon les conditions de la garantie.</p>
       <ul class="checks">
-        <li>Indemnisation ou nouvelle prestation gratuite en cas de problème</li>
-        <li>À cocher au moment de la réservation, pour quelques % du prix</li>
-        <li>Réclamation traitée par l'équipe ChapTarif, comme un litige classique</li>
+        <li><b>Option facultative à 6,72 %</b><br>Le montant est calculé sur le prix de la prestation et affiché avant la confirmation de votre réservation.</li>
+        <li><b>Pour le ménage et le pressing</b><br>Dommages matériels ou vêtements endommagés pendant la prestation, sous réserve des conditions applicables.</li>
+        <li><b>Réclamation examinée par ChapTarif</b><br>Vous fournissez les informations et justificatifs nécessaires.</li>
       </ul>
-      <a class="btn btn-primary btn-lg" href="/garantie-dommage">Voir comment ça marche</a>
+      <p>Une éventuelle prise en charge dépend de l’examen du dossier et des limites prévues.</p>
+      <p>Les exclusions, plafonds et modalités de réclamation sont consultables dans les conditions de la Garantie Dommages.</p>
+      <a class="btn btn-primary btn-lg" href="/garantie-dommage">Voir les conditions de la garantie</a>
     </div>
     <div class="compare-card reveal">
       <img src="<?= e(img('univers-menage', 'w_640,h_480,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
