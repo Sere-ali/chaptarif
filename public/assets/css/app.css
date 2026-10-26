@@ -769,3 +769,7 @@ body.immo-m .d-trust small { font-size: clamp(.68rem, 3vw, .78rem); line-height:
 @media (max-height: 600px) { body.immo-m .d-trust { display: none; } }
 @media (max-height: 640px) { body.immo-m .d-trust small, body.immo-m .d-sub { display: none; } body.immo-m .d-trust { padding: 8px 12px; } }
 @media (min-width: 641px) { body.immo-m .d-home { height: calc(100dvh - 90px); } body.immo-m .d-hero { max-height: 30vh; width: min(760px, calc(100% - 32px)); margin-left: auto; margin-right: auto; flex: none; height: 30vh; } }
+.d-select { margin: 0 0 12px; flex: none; }
+.d-select span { font-weight: 800; font-size: .88rem; }
+.d-select select { width: 100%; padding: 12px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; font-weight: 700; font-size: .95rem; }
+body.immo-m .d-select { margin-bottom: 8px; }

@@ -64,7 +64,7 @@ $commune = (string) ($_GET['commune'] ?? '');
 $type = (string) ($_GET['type'] ?? '');
 $cat = (string) ($_GET['cat'] ?? '');
 $catMap = [
-    'appart' => ['label' => 'Appartements & Studios', 'desc' => 'Studios, chambres et appartements à louer', 'types' => ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
+    'appart' => ['label' => 'Appartements & Villas', 'desc' => 'Studios, chambres et appartements à louer', 'types' => ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
 ];
 // Écran de sélection façon app, affiché uniquement sur mobile et seulement
 // tant qu'aucun filtre n'est actif (avant que la personne ait choisi une famille de biens).
@@ -165,6 +165,12 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         </a>
       <?php endforeach; ?>
     </div>
+    <label class="fld d-select"><span>🔎 Recherche appartement</span>
+      <select onchange="if(this.value)location.href='/immobilier?cat=appart&amp;type='+encodeURIComponent(this.value)">
+        <option value="">Choisir un type de logement…</option>
+        <?php foreach (PROPERTY_TYPES as $t): ?><option value="<?= e($t) ?>"><?= e($t) ?></option><?php endforeach; ?>
+      </select>
+    </label>
     <div class="d-trust">
       <span class="d-trust-ico">✨</span>
       <span><b>Paiement sécurisé après confirmation :</b><br><small>Votre paiement est bloqué sur ChapTarif et n'est versé au propriétaire qu'après la remise des clés.</small></span>
