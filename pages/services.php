@@ -18,7 +18,7 @@ $title = $copy['title'];
 $desc = $copy['desc'];
 $active = $uk;
 $isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'location_camion'], true);
-$noPrice = $uk === 'menage';
+$noPrice = in_array($uk, ['menage', 'coiffeuse', 'maquilleuse', 'onglerie'], true);
 $autoProv = in_array($uk, ['pressing', 'menage', 'coiffeuse', 'maquilleuse', 'onglerie'], true);
 $hasGarantie = in_array($uk, ['menage', 'pressing'], true);
 $garantiePct = (float) setting('garantie_dommage_pct', 5);
