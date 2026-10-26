@@ -15,7 +15,7 @@ if (is_post()) {
     elseif ($pw !== (string) ($_POST['password2'] ?? '')) $errors[] = 'Les deux mots de passe ne sont pas identiques.';
     if (too_many_attempts('apply:' . client_ip(), 5, 60)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
     $need = isset($U[$uk]) ? kyc_docs_required($uk) : [];
-    $docLabels = ['cni' => 'Carte d\'identité', 'permis' => 'Permis de conduire', 'vehicule' => 'Papiers du véhicule (assurance)', 'casier' => 'Casier judiciaire'];
+    $docLabels = ['cni' => 'Carte d\'identité', 'permis' => 'Permis de conduire', 'vehicule' => 'Papiers du véhicule et assurance', 'casier' => 'Casier judiciaire'];
     foreach ($need as $nk) if (empty($_FILES[$nk]['name'])) $errors[] = $docLabels[$nk] . ' : document obligatoire.';
     $permis = $vehicule = null;
     foreach (['permis' => &$permis, 'vehicule' => &$vehicule] as $dk => &$ref) {
@@ -116,7 +116,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       </div>
       <label class="fld file" data-doc="cni"><span>🪪 Carte d'identité (CNI, recto) — JPG/PNG/PDF</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
       <label class="fld file" data-doc="permis" hidden><span>🚦 Permis de conduire — JPG/PNG/PDF</span><input type="file" name="permis" accept="image/*,application/pdf"></label>
-      <label class="fld file" data-doc="vehicule" hidden><span>📑 Papiers du véhicule (assurance) — JPG/PNG/PDF</span><input type="file" name="vehicule" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="vehicule" hidden><span>📑 Papiers du véhicule et assurance — JPG/PNG/PDF</span><input type="file" name="vehicule" accept="image/*,application/pdf"></label>
       <label class="fld file" data-doc="casier" hidden><span>📄 Casier judiciaire (bulletin n°3) — JPG/PNG/PDF</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
       <p class="fine">Vos documents sont stockés de façon privée et consultés uniquement par l'équipe de vérification.</p>
       <button class="btn btn-primary btn-block btn-lg">Envoyer ma candidature</button>
@@ -133,7 +133,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         var rules = <?= json_encode(array_combine(array_keys($U), array_map('kyc_docs_required', array_keys($U)))) ?>;
         var docs = document.querySelectorAll('[data-doc]');
         var updDocs = function () {
-          var need = rules[sel.value] || ['cni'];
+          var need = rules[sel.value] || [];
           docs.forEach(function (l) { var on = need.indexOf(l.dataset.doc) > -1; l.hidden = !on; l.querySelector('input').required = on; });
         };
         sel.addEventListener('change', updDocs); updDocs();

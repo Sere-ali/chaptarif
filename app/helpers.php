@@ -499,7 +499,8 @@ function kyc_docs_required(string $universe): array
     return match ($universe) {
         'immobilier' => ['cni'],
         'covoiturage' => ['cni', 'permis'],
-        'chauffeur' => ['cni', 'permis', 'vehicule'],
+        'chauffeur', 'location_car', 'location_vehicule', 'location_camion' => ['cni', 'permis', 'vehicule'],
+        'cars' => [],
         'menage', 'pressing', 'coiffeuse', 'maquilleuse', 'onglerie' => ['cni', 'casier'],
         default => ['cni', 'casier'],
     };
