@@ -1,8 +1,15 @@
 # ChapTarif — image de production (Render)
 FROM php:8.3-apache
 
+# Correctifs de sécurité d'octobre 2026 (PHP2Shell : PHP >= 8.3.36 ; certificats eMudhra) :
+# la build échoue si l'image de base PHP n'est pas à jour, ce qui garde l'ancienne version en ligne.
+RUN php -r 'exit(version_compare(PHP_VERSION, "8.3.36", ">=") ? 0 : 1);' \
+ || (echo "PHP $(php -r 'echo PHP_VERSION;') trop ancien : image de base non à jour" && exit 1)
+
 RUN apt-get update \
- && apt-get install -y --no-install-recommends libpq-dev \
+ && apt-get -y upgrade \
+ && apt-get install -y --no-install-recommends libpq-dev ca-certificates \
+ && update-ca-certificates \
  && docker-php-ext-install pdo_pgsql pgsql opcache \
  && a2enmod rewrite headers expires deflate \
  && rm -rf /var/lib/apt/lists/*
