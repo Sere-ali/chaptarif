@@ -238,7 +238,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     <div class="sec-head light">
       <span class="eyebrow">Tiers de confiance</span>
       <h2>Votre argent est protégé <span class="grad-light">jusqu'au bout</span></h2>
-      <p>ChapTarif garde les fonds sous séquestre. Le prestataire n'est payé qu'une fois le travail confirmé.</p>
+      <p>Vos règlements sont conservés sur un compte sécurisé. Le prestataire perçoit son versement uniquement après validation de la bonne exécution par vos soins.</p>
     </div>
     <ol class="steps">
       <li class="reveal"><span class="step-n">1</span><h4>Vous réservez</h4><p>Choisissez votre prestataire ou formule, prix affiché à l'avance.</p></li>
