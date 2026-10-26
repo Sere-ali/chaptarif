@@ -241,11 +241,11 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <p>Vos règlements sont conservés sur un compte sécurisé. Le prestataire perçoit son versement uniquement après validation de la bonne exécution par vos soins.</p>
     </div>
     <ol class="steps">
-      <li class="reveal"><span class="step-n">1</span><h4>Vous réservez</h4><p>Choisissez votre prestataire ou formule, prix affiché à l'avance.</p></li>
-      <li class="reveal"><span class="step-n">2</span><h4>Vous payez</h4><p>Wave, Orange Money, MTN ou Moov. Les fonds sont <b>bloqués</b>.</p></li>
-      <li class="reveal"><span class="step-n">3</span><h4>Le service est rendu</h4><p>Ménage fait, colis livré, clés remises : le prestataire intervient.</p></li>
-      <li class="reveal"><span class="step-n">4</span><h4>Vous validez</h4><p>« Confirmer la fin du travail » ou code remis au prestataire.</p></li>
-      <li class="reveal"><span class="step-n">5</span><h4>Paiement libéré</h4><p>Le prestataire est payé automatiquement. Un souci&nbsp;? Ouvrez un litige.</p></li>
+      <li class="reveal"><span class="step-n">1</span><h4>Vous réservez</h4><p>Sélectionnez votre prestation ou formule au tarif transparent et fixé à l'avance.</p></li>
+      <li class="reveal"><span class="step-n">2</span><h4>Vous payez</h4><p>Réglez via Wave, Orange Money, MTN ou Moov. Vos règlements sont conservés sur un compte sécurisé.</p></li>
+      <li class="reveal"><span class="step-n">3</span><h4>Le service est rendu</h4><p>Le prestataire effectue la mission commandée</p></li>
+      <li class="reveal"><span class="step-n">4</span><h4>Vous validez</h4><p>Confirmez la bonne fin de la mission directement depuis l'application ou transmettez votre code de validation au prestataire.</p></li>
+      <li class="reveal"><span class="step-n">5</span><h4>Paiement libéré</h4><p>Le règlement est automatiquement versé au prestataire. En cas de réclamation, vous pouvez déclarer un litige pour geler les fonds.</p></li>
     </ol>
   </div>
 </section>
