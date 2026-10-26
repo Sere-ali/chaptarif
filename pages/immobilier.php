@@ -65,13 +65,13 @@ $type = (string) ($_GET['type'] ?? '');
 $cat = (string) ($_GET['cat'] ?? '');
 $catMap = [
     'appart' => ['label' => 'Appartements & Studios', 'desc' => 'Studios, chambres et appartements à louer', 'types' => ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'], 'img' => 'univers-immobilier', 'color' => '#2E7D5B'],
-    'villa'  => ['label' => 'Villas', 'desc' => 'Maisons individuelles, avec plus d\'espace', 'types' => ['Villa'], 'img' => 'univers-immobilier', 'color' => '#1F5C8C'],
 ];
 // Écran de sélection façon app, affiché uniquement sur mobile et seulement
 // tant qu'aucun filtre n'est actif (avant que la personne ait choisi une famille de biens).
 $bodyClass = ($cat === '' && $type === '' && $commune === '') ? 'immo-m' : '';
-$sql = 'SELECT * FROM properties WHERE active = 1';
-$params = [];
+$tph = implode(',', array_fill(0, count(PROPERTY_TYPES), '?'));
+$sql = "SELECT * FROM properties WHERE active = 1 AND type IN ($tph)";
+$params = PROPERTY_TYPES;
 if ($commune !== '') { $sql .= ' AND commune = ?'; $params[] = $commune; }
 if ($type !== '') {
     $sql .= ' AND type = ?';
@@ -81,6 +81,9 @@ if ($type !== '') {
     $sql .= " AND type IN ($ph)";
     array_push($params, ...$catMap[$cat]['types']);
 }
+$chooser = ($type === '' || !in_array($type, PROPERTY_TYPES, true));
+$counts = [];
+foreach (all("SELECT type, COUNT(*) n FROM properties WHERE active = 1 GROUP BY type") as $r) $counts[$r['type']] = (int) $r['n'];
 $props = all($sql . ' ORDER BY certified DESC, price_night', $params);
 $ci = valid_future_date($_GET['checkin'] ?? null, 365) ? $_GET['checkin'] : '';
 view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
@@ -94,10 +97,22 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 </section>
 <section class="section-tight">
   <div class="container">
+    <?php if ($chooser): ?>
+      <h2 class="h3">Recherche appartement</h2>
+      <p class="muted">Choisissez le type de logement :</p>
+      <div class="d-list" style="max-width:760px">
+        <?php foreach (PROPERTY_TYPES as $t): ?>
+          <a class="d-item" href="/immobilier?<?= http_build_query(['cat' => 'appart', 'type' => $t]) ?>" style="--c:#2E7D5B">
+            <span class="d-item-body"><b><?= e($t) ?></b><small><?= ($counts[$t] ?? 0) ? (int) $counts[$t] . ' logement' . ($counts[$t] > 1 ? 's' : '') . ' disponible' . ($counts[$t] > 1 ? 's' : '') : 'Bientôt disponible' ?></small></span>
+            <span class="d-item-btn">Voir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
+          </a>
+        <?php endforeach; ?>
+      </div>
+    <?php else: ?>
     <div class="filter-chips mb">
-      <a class="fchip <?= $type === '' ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $commune])) ?>">Tous les types</a>
+      <a class="fchip" href="/immobilier?cat=appart">← Tous les types</a>
       <?php foreach (PROPERTY_TYPES as $t): ?>
-        <a class="fchip <?= $type === $t ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $commune, 'type' => $t])) ?>"><?= e($t) ?></a>
+        <a class="fchip <?= $type === $t ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['cat' => 'appart', 'commune' => $commune, 'type' => $t])) ?>"><?= e($t) ?></a>
       <?php endforeach; ?>
     </div>
     <div class="filter-chips mb">
@@ -120,6 +135,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         </a>
       <?php endforeach; ?>
     </div>
+    <?php endif; ?>
   </div>
 </section>
 
