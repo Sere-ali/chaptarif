@@ -50,13 +50,14 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     <p class="m-sub">Tarifs transparents&nbsp;• Paiement sous séquestre</p>
     <?php
       $kw = ['cars' => 'bus billet billets voyage interurbain gare utb ticket', 'covoiturage' => 'covoiturage covoit trajet voiture partagee partager place', 'location_car' => 'car minibus groupe evenement louer un car', 'location_vehicule' => 'voiture vehicule 4x4 suv location louer auto', 'chauffeur' => 'chauffeur conducteur louer un chauffeur', 'location_camion' => 'camion demenagement demenager fret transport charge', 'immobilier' => 'logement appartement studio villa maison chambre salon louer immobilier', 'menage' => 'menage nettoyage aide menagere femme de menage', 'pressing' => 'pressing linge lessive repassage laver blanchisserie', 'coiffeuse' => 'coiffure coiffeuse tresse tresses tissage perruque cheveux nattes', 'maquilleuse' => 'maquillage maquilleuse mariage evenement', 'onglerie' => 'ongle ongles manucure vernis faux ongles gel'];
+      $alias = ['cars' => 'car cars bus autocar billet billets voyage', 'covoiturage' => 'covoiturage covoit trajet', 'location_car' => 'minibus louer un car location car location de car', 'location_vehicule' => 'voiture voitures vehicule vehicules 4x4 suv auto location voiture', 'chauffeur' => 'chauffeur chauffeurs', 'location_camion' => 'camion camions demenagement fret', 'immobilier' => 'immobilier logement logements appartement appartements maison maisons villa villas', 'menage' => 'menage menagere nettoyage', 'pressing' => 'pressing linge lessive repassage', 'coiffeuse' => 'coiffure coiffeuse tresse tresses tissage perruque', 'maquilleuse' => 'maquillage maquilleuse', 'onglerie' => 'ongle ongles manucure vernis'];
       $sidx = [];
       foreach (universes() as $uk2 => $ux) {
           if (empty($ux['url'])) continue;
-          $sidx[] = ['t' => $ux['emoji'] . ' ' . $ux['name'], 'u' => $ux['url'], 'k' => ($ux['name'] . ' ' . ($ux['short'] ?? '') . ' ' . ($ux['sub'] ?? '') . ' ' . ($kw[$uk2] ?? ''))];
+          $sidx[] = ['t' => $ux['emoji'] . ' ' . $ux['name'], 'u' => $ux['url'], 'a' => $alias[$uk2] ?? '', 'k' => ($ux['name'] . ' ' . ($ux['short'] ?? '') . ' ' . ($ux['sub'] ?? '') . ' ' . ($kw[$uk2] ?? ''))];
       }
       foreach (PROPERTY_TYPES as $pt) {
-          $sidx[] = ['t' => '🏡 ' . $pt, 'u' => '/immobilier?cat=appart&type=' . urlencode($pt), 'k' => $pt . ' appartement logement louer immobilier' . ($pt === 'Studio' ? ' studios' : ' chambres chambre salon')];
+          $sidx[] = ['t' => '🏡 ' . $pt, 'u' => '/immobilier?cat=appart&type=' . urlencode($pt), 'a' => ($pt === 'Studio' ? 'studio studios' : mb_strtolower($pt) . ' ' . str_replace('chambre ', 'chambres ', mb_strtolower($pt))), 'k' => $pt . ' appartement logement louer immobilier' . ($pt === 'Studio' ? ' studios' : ' chambres chambre salon')];
       }
       $sidx[] = ['t' => '💬 Chat service client', 'u' => '/chat', 'k' => 'chat aide contact service client support whatsapp'];
       $sidx[] = ['t' => '🧾 Mes réservations', 'u' => '/compte', 'k' => 'reservation reservations commande billet compte profil'];
@@ -83,13 +84,20 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
         ul.innerHTML = r.length ? r.map(function (e) { var a = document.createElement('a'); a.href = e.u; a.textContent = e.t; return '<li><a href="' + e.u + '">' + a.innerHTML + '</a></li>'; }).join('') : '<li><a href="/chat">Aucun résultat — écrivez-nous via le Chat</a></li>';
         ul.hidden = false; return r;
       };
+      var exact = function (q) {
+        q = norm(q).trim(); if (!q) return null;
+        for (var i = 0; i < idx.length; i++) { if (!idx[i].a) continue; if (idx[i].a.split(' ').indexOf(q) > -1 || norm(idx[i].a).indexOf(q) > -1 && q.length > 3 && q === norm(idx[i].a).split(' ').slice(0, 1)[0]) return idx[i]; }
+        for (var j = 0; j < idx.length; j++) { var al = norm(idx[j].a || ''); if (al && (' ' + al + ' ').indexOf(' ' + q + ' ') > -1) return idx[j]; }
+        return null;
+      };
       var tm;
       inp.addEventListener('input', function () {
         var r = render(); clearTimeout(tm);
-        var q = inp.value.trim();
+        var q = inp.value.trim(), ex = exact(q);
+        if (ex) { tm = setTimeout(function () { location.href = ex.u; }, 350); return; }
         if (q.length >= 4 && r.length) tm = setTimeout(function () { var best = find(inp.value); if (best.length && (best.length === 1 || norm(best[0].t).indexOf(norm(inp.value.trim())) > -1)) location.href = best[0].u; }, 700);
       });
-      f.addEventListener('submit', function (ev) { ev.preventDefault(); var r = find(inp.value); location.href = r.length ? r[0].u : '/chat'; });
+      f.addEventListener('submit', function (ev) { ev.preventDefault(); var ex = exact(inp.value), r = find(inp.value); location.href = ex ? ex.u : (r.length ? r[0].u : '/chat'); });
       document.addEventListener('click', function (ev) { if (!f.contains(ev.target)) ul.hidden = true; });
     })();
     </script>
