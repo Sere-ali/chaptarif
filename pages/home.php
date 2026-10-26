@@ -116,7 +116,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     </div>
     <div class="m-trust reveal">
       <span class="m-trust-ico">🛡️</span>
-      <div><b>Séquestre Sécurisé</b><small>Payez en ligne, l'argent est bloqué jusqu'à votre validation.</small></div>
+      <div><b>SÉQUESTRE SÉCURISÉ</b><small>Payez en ligne, vos fonds sont conservés jusqu'à votre validation de la prestation.</small></div>
       <div class="m-trust-chips"><span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange</span><span class="chip chip-mtn">MTN</span></div>
     </div>
   </div>
