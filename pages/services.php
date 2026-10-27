@@ -18,7 +18,7 @@ $title = $copy['title'];
 $desc = $copy['desc'];
 $active = $uk;
 $isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'location_camion'], true);
-$noPrice = in_array($uk, ['menage', 'pressing', 'coiffeuse', 'maquilleuse', 'onglerie'], true);
+$noPrice = false;
 $autoProv = in_array($uk, ['pressing', 'menage', 'coiffeuse', 'maquilleuse', 'onglerie'], true);
 $hasGarantie = in_array($uk, ['menage', 'pressing'], true);
 $garantiePct = $uk === 'menage' ? (float) setting('garantie_menage_pct', 10) : (float) setting('garantie_dommage_pct', 6.72);
@@ -54,6 +54,27 @@ view('layout/header', compact('title', 'desc', 'active'));
   <div class="container <?= $isRental ? 'narrow-2' : 'two-col wide-left' ?>">
     <div>
       <?php if (!$isRental): ?>
+      <?php if ($autoProv):
+        $ads = all("SELECT ps.*, p.name AS pname, p.commune AS pcommune, p.rating AS prating, p.missions AS pmissions FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe = ? AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' AND ps.price IS NOT NULL AND ps.price > 0 ORDER BY CASE WHEN p.sponsored_until >= ? THEN 0 ELSE 1 END, p.rating DESC, ps.price", [$uk, $today]);
+        $selAd = (int) ($_GET['listing'] ?? 0); ?>
+      <h2 class="h3">1. Choisissez votre prestation</h2>
+      <p class="muted">Chaque prestataire fixe son propre tarif. Choisissez l'annonce qui vous convient.</p>
+      <?php if (!$ads): ?>
+        <div class="empty"><div class="empty-ico">🗒️</div><p>Aucune annonce publiée pour le moment. Revenez bientôt ou écrivez-nous via le Chat.</p></div>
+      <?php endif; ?>
+      <div class="offer-grid">
+        <?php foreach ($ads as $ad): ?>
+          <label class="offer" style="--c:<?= $x['color'] ?>">
+            <input type="radio" name="listing" value="<?= (int) $ad['id'] ?>" data-price="<?= (int) $ad['price'] ?>" data-unit="<?= e((string) $ad['unit']) ?>" data-title="<?= e($ad['title']) ?>" <?= $selAd === (int) $ad['id'] ? 'checked' : '' ?> required>
+            <b><?= e($ad['title']) ?></b>
+            <small>par <?= e($ad['pname']) ?> · 📍 <?= e($ad['pcommune']) ?><?= (float) $ad['prating'] > 0 ? ' · ★ ' . number_format((float) $ad['prating'], 1, ',', '') : '' ?></small>
+            <?php $ll = listing_lines($uk, $ad['attrs'] ?? null); if ($ll): ?><small><?= e(implode(' · ', array_map(fn($l) => $l[0] . ' : ' . $l[1], array_slice($ll, 0, 3)))) ?></small><?php endif; ?>
+            <?php if ($ad['description']): ?><small><?= e(mb_strimwidth((string) $ad['description'], 0, 110, '…')) ?></small><?php endif; ?>
+            <span class="offer-price"><?= fcfa($ad['price']) ?><?= $ad['unit'] ? '<em>/ ' . e($ad['unit']) . '</em>' : '' ?></span>
+          </label>
+        <?php endforeach; ?>
+      </div>
+      <?php else: ?>
       <h2 class="h3">1. Choisissez votre formule</h2>
       <?php if (!$offers): ?>
         <div class="empty"><div class="empty-ico">🗒️</div><p>Aucune formule publiée pour le moment. Revenez bientôt.</p></div>
@@ -70,6 +91,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         <?php endforeach; ?>
       </div>
 
+      <?php endif; ?>
       <?php if (!$autoProv): ?>
       <div class="h-row">
         <h2 class="h3">2. Choisissez <?= e($copy['step2']) ?></h2>

@@ -102,14 +102,24 @@ function build_quote(string $universe, array $in): array
         case 'maquilleuse':
         case 'onglerie': {
             $prov = one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) ($in['provider'] ?? 0), $universe]);
+            $offer = null; $isListing = false;
+            // Prix fixé par le prestataire : le client choisit une annonce validée.
+            if (!empty($in['listing'])) {
+                $ad = one("SELECT ps.* FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE ps.id = ? AND p.universe = ? AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' AND ps.price IS NOT NULL AND ps.price > 0", [(int) $in['listing'], $universe]);
+                if ($ad) {
+                    $prov = one('SELECT * FROM providers WHERE id = ?', [(int) $ad['provider_id']]);
+                    $offer = ['id' => (int) $ad['id'], 'title' => $ad['title'], 'price' => (int) $ad['price'], 'unit' => (string) ($ad['unit'] ?? '')];
+                    $isListing = true;
+                }
+            }
             if (!$prov) $prov = best_provider($universe);
-            $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
+            if (!$offer) $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
             $zone = zone((int) ($in['zone'] ?? 0));
             $addr0 = trim((string) ($in['address'] ?? ''));
             $lat0 = $in['lat'] ?? null; $lng0 = $in['lng'] ?? null;
             $gps0 = (is_numeric($lat0) && is_numeric($lng0) && abs((float) $lat0) <= 90 && abs((float) $lng0) <= 180) ? round((float) $lat0, 5) . ', ' . round((float) $lng0, 5) : '';
             if (!$prov) return $fail('Ce service ouvre bientôt. Écrivez-nous via l\'onglet Chat.');
-            if (!$offer) return $fail('Choisissez une formule.');
+            if (!$offer) return $fail('Choisissez une prestation.');
             if (!$zone && $addr0 === '' && $gps0 === '') return $fail('Indiquez votre lieu (activez la localisation ou saisissez votre adresse).');
             if (!valid_future_date($in['date'] ?? null, 60)) return $fail('Choisissez une date valide.');
             $time = preg_match('/^\d{2}:\d{2}$/', $in['time'] ?? '') ? $in['time'] : '09:00';
@@ -117,7 +127,7 @@ function build_quote(string $universe, array $in): array
             $amount = (int) $offer['price'] * $qty;
             $q += ['title' => $offer['title'] . ($qty > 1 ? " × $qty" : '') . ' · ' . $prov['name'], 'amount' => $amount, 'service_date' => $in['date']];
             $q['provider_id'] = (int) $prov['id'];
-            $q['item_type'] = 'offer';
+            $q['item_type'] = $isListing ? 'listing' : 'offer';
             $q['item_id'] = (int) $offer['id'];
             $q['details'] = ['offer' => $offer['title'], 'qty' => $qty, 'zone' => $zone['name'] ?? '', 'gps' => $gps0, 'time' => $time, 'address' => mb_substr((string) ($in['address'] ?? ''), 0, 200), 'provider' => $prov['name']];
             $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', trim(($zone['name'] ?? '') . ($addr0 !== '' ? ($zone ? ' · ' : '') . mb_substr($addr0, 0, 200) : '') . ($gps0 !== '' && $addr0 === '' && !$zone ? 'Position partagée' : ''))]];

@@ -94,7 +94,7 @@
   var sf = $('[data-service-form]');
   if (sf && $('[data-sum-total]', sf)) {
     var upd = function () {
-      var o = $('input[name=offer]:checked', sf), p = $('input[name=provider]:checked', sf), qty = $('[data-qty]', sf);
+      var o = $('input[name=offer]:checked, input[name=listing]:checked', sf), p = $('input[name=provider]:checked', sf), qty = $('[data-qty]', sf);
       var perPiece = o && o.dataset.unit === 'pièce';
       if (qty) perPiece ? qty.removeAttribute('hidden') : qty.setAttribute('hidden', '');
       var n = perPiece ? Math.max(1, parseInt(sf.elements.qty.value, 10) || 1) : 1;
