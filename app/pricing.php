@@ -122,13 +122,18 @@ function build_quote(string $universe, array $in): array
             $q['details'] = ['offer' => $offer['title'], 'qty' => $qty, 'zone' => $zone['name'] ?? '', 'gps' => $gps0, 'time' => $time, 'address' => mb_substr((string) ($in['address'] ?? ''), 0, 200), 'provider' => $prov['name']];
             $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', trim(($zone['name'] ?? '') . ($addr0 !== '' ? ($zone ? ' · ' : '') . mb_substr($addr0, 0, 200) : '') . ($gps0 !== '' && $addr0 === '' && !$zone ? 'Position partagée' : ''))]];
             // Garantie Dommage (option payante, disponible pour les services à domicile/matériel)
-            if (in_array($universe, ['menage', 'pressing'], true) && !empty($in['garantie'])) {
-                $pct = (float) setting('garantie_dommage_pct', 5);
-                $fee = round50($amount * $pct / 100);
-                $q['service_fee'] += $fee;
-                $q['details']['garantie_dommage'] = true;
-                $q['details']['garantie_dommage_montant'] = $fee;
-                $q['summary'][] = ['🛡️ Garantie Dommage', fcfa($fee)];
+            $q['garantie_fee'] = 0;
+            if (in_array($universe, ['menage', 'pressing'], true)) {
+                // Frais de service ChapTarif (réglage admin, 0 par défaut), distincts de la garantie.
+                $q['service_fee'] += (int) setting('home_service_fee', 0);
+                if (!empty($in['garantie'])) {
+                    $pct = $universe === 'menage' ? (float) setting('garantie_menage_pct', 10) : (float) setting('garantie_dommage_pct', 6.72);
+                    $fee = round50($amount * $pct / 100);
+                    $q['garantie_fee'] = $fee;
+                    $q['service_fee'] += $fee;
+                    $q['details']['garantie_dommage'] = true;
+                    $q['details']['garantie_dommage_montant'] = $fee;
+                }
             }
             break;
         }

@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 16;
+const SCHEMA_VERSION = 17;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'];
 
 function db(): PDO
@@ -270,6 +270,11 @@ function db_migrate(): void
     if ($v > 0 && $v < 16) {
         q("DELETE FROM settings WHERE key = 'sponsor_price'");
         q("INSERT INTO settings (key, value) VALUES ('sponsor_price', '9999')");
+    }
+
+    // v17 : garantie ménage 10 % ; frais de service ménage/pressing séparés (0 par défaut).
+    foreach (['garantie_menage_pct' => '10', 'home_service_fee' => '0'] as $sk => $sv) {
+        if (val('SELECT 1 FROM settings WHERE key = ?', [$sk]) === null) q('INSERT INTO settings (key, value) VALUES (?, ?)', [$sk, $sv]);
     }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");

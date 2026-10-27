@@ -21,7 +21,7 @@ $isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'lo
 $noPrice = in_array($uk, ['menage', 'pressing', 'coiffeuse', 'maquilleuse', 'onglerie'], true);
 $autoProv = in_array($uk, ['pressing', 'menage', 'coiffeuse', 'maquilleuse', 'onglerie'], true);
 $hasGarantie = in_array($uk, ['menage', 'pressing'], true);
-$garantiePct = (float) setting('garantie_dommage_pct', 5);
+$garantiePct = $uk === 'menage' ? (float) setting('garantie_menage_pct', 10) : (float) setting('garantie_dommage_pct', 6.72);
 $commune = (string) ($_GET['commune'] ?? '');
 $today = date('Y-m-d');
 $params = [$uk, $today];

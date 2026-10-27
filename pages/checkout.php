@@ -88,7 +88,9 @@ view('layout/header', compact('title', 'active'));
           <?php endforeach; ?>
           <hr>
           <div class="sum-row"><span>Prestation</span><b><?= fcfa($q['amount']) ?></b></div>
-          <?php if ($q['service_fee']): ?><div class="sum-row"><span>Frais de service</span><b><?= fcfa($q['service_fee']) ?></b></div><?php endif; ?>
+          <?php $gar = (int) ($q['garantie_fee'] ?? 0); $fraisOnly = (int) $q['service_fee'] - $gar; ?>
+          <?php if ($gar): ?><div class="sum-row"><span>🛡️ Garantie dommage</span><b><?= fcfa($gar) ?></b></div><?php endif; ?>
+          <?php if ($fraisOnly > 0 || isset($q['garantie_fee'])): ?><div class="sum-row"><span>Frais de service</span><b><?= $fraisOnly > 0 ? fcfa($fraisOnly) : 'Offerts' ?></b></div><?php endif; ?>
           <div class="sum-row total"><span>Total à payer</span><b><?= fcfa($q['total']) ?></b></div>
           <div class="escrow-note">🔒 <b>Paiement protégé.</b> Les fonds restent bloqués chez ChapTarif et ne sont versés qu'après la bonne exécution du service.</div>
         </div>

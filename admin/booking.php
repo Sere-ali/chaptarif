@@ -82,7 +82,9 @@ view('admin/header', compact('page', 'nav'));
     <div class="panel">
       <h2 class="h4">Montants</h2>
       <div class="sum-row"><span>Prestation</span><b><?= fcfa($b['amount']) ?></b></div>
-      <div class="sum-row"><span>Frais de service</span><b><?= fcfa($b['service_fee']) ?></b></div>
+      <?php $gm = (int) (json_decode((string) ($b['details'] ?? ''), true)['garantie_dommage_montant'] ?? 0); ?>
+      <?php if ($gm): ?><div class="sum-row"><span>🛡️ Garantie dommage</span><b><?= fcfa($gm) ?></b></div><?php endif; ?>
+      <div class="sum-row"><span>Frais de service</span><b><?= fcfa((int) $b['service_fee'] - $gm) ?></b></div>
       <div class="sum-row total"><span>Payé par le client</span><b><?= fcfa($b['total']) ?></b></div>
       <hr>
       <div class="sum-row"><span>Commission ChapTarif</span><b><?= fcfa((int) $b['commission'] + (int) $b['service_fee']) ?></b></div>
