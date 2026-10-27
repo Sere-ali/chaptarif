@@ -24,7 +24,7 @@ $U = nav_entries();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/app.css?v=29">
+<link rel="stylesheet" href="/assets/css/app.css?v=30">
 <link rel="stylesheet" href="/assets/css/polish.css?v=6">
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -41,7 +41,7 @@ $U = nav_entries();
     </a>
     <div class="top-actions">
       <a class="btn btn-ghost btn-sm" href="/espace-prestataire#annonces"> Mes annonces</a>
-      <a class="btn btn-ghost btn-sm" href="/espace-prestataire#profil"> Mon profil</a>
+      <a class="btn btn-ghost btn-sm" href="/espace-prestataire?vue=profil"> Mon profil</a>
       <a class="btn btn-ghost btn-sm" href="/chat?pro=1"> Chat</a>
       <form method="post" action="/deconnexion" style="display:inline"><?= csrf_field() ?><button class="btn btn-soft btn-sm">Se déconnecter</button></form>
     </div>

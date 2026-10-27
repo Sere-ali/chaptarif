@@ -30,6 +30,7 @@ if (is_post() && $mine) {
         update('providers', $pid, $data);
         audit('provider.self_update', 'provider#' . $pid);
         flash('success', 'Profil enregistré.');
+        redirect('/espace-prestataire?vue=profil');
     } elseif ($act === 'svc_save') {
         $sid = (int) ($_POST['service_id'] ?? 0);
         $old = $sid ? one('SELECT * FROM provider_services WHERE id = ? AND provider_id = ?', [$sid, $pid]) : null;
@@ -72,6 +73,7 @@ if (is_post() && $mine) {
 $title = 'Mon espace prestataire';
 $active = 'pro';
 $editId = (int) ($_GET['edit'] ?? 0);
+$vue = (string) ($_GET['vue'] ?? '');
 $providerMode = true;
 view('layout/header', compact('title', 'active', 'providerMode'));
 ?>
@@ -109,6 +111,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <div class="alert alert-warn"> <b>Dossier en vérification.</b> Préparez vos annonces dès maintenant : elles seront publiées après la validation de votre dossier.</div>
       <?php endif; ?>
 
+      <?php if ($vue !== 'profil'): ?>
       <div class="ps-kpis">
         <div><b><?= $nOn ?></b><small>Annonces en ligne</small></div>
         <div><b><?= $nPend ?></b><small>En attente de validation</small></div>
@@ -170,7 +173,11 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <?php foreach ($recent as $b): ?><div class="prov-mini"><div><b><?= e($b['title']) ?></b><small><?= e($b['ref']) ?> · <?= fmt_date($b['created_at']) ?></small></div><?= status_badge($b['status']) ?></div><?php endforeach; ?>
       <?php endif; ?>
 
-      <h3 class="h4 mt" id="profil"> Mon profil</h3>
+      <?php endif; ?>
+
+      <?php if ($vue === 'profil'): ?>
+      <p><a class="btn btn-ghost btn-sm" href="/espace-prestataire#p<?= (int) $p['id'] ?>">← Retour à mes annonces</a></p>
+      <h3 class="h4 mt" id="profil">Mon profil</h3>
       <form method="post" enctype="multipart/form-data">
         <?= csrf_field() ?><input type="hidden" name="provider_id" value="<?= (int) $p['id'] ?>"><input type="hidden" name="action" value="profile">
         <label class="fld"><span>Nom / Entreprise</span><input name="name" required maxlength="80" value="<?= e($p['name']) ?>"></label>
@@ -181,6 +188,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <button class="btn btn-soft">Enregistrer mon profil</button>
       </form>
       <p class="fine">Pour votre sécurité, le numéro de paiement et les commissions sont gérés par l'équipe ChapTarif. Pour les modifier, <a href="/contact">contactez-nous</a>.</p>
+      <?php endif; ?>
     </div>
     <?php endforeach; ?>
   </div>
