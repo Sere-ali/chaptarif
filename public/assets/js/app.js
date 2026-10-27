@@ -120,7 +120,9 @@
           garRow.removeAttribute('hidden');
         } else garRow.setAttribute('hidden', '');
       }
-      $('[data-sum-total]', sf).textContent = o ? fcfa(amount + garFee) : '—';
+      var feePct = parseFloat(sf.dataset.feePct || '0'), svcFee = (o && feePct) ? Math.ceil((amount * feePct / 100) / 50) * 50 : 0, sfe = $('[data-sum-fee]', sf);
+      if (sfe) sfe.textContent = o ? fcfa(svcFee) : '—';
+      $('[data-sum-total]', sf).textContent = o ? fcfa(amount + garFee + svcFee) : '—';
     };
     sf.addEventListener('change', upd); sf.addEventListener('input', upd); upd();
   }

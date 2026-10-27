@@ -9,7 +9,7 @@ $groups = [
         'commission_maquilleuse' => 'Maquilleuse à domicile', 'commission_onglerie' => 'Onglerie à domicile',
     ],
     'Frais & abonnements (F CFA)' => ['cars_service_fee' => 'Frais de service par billet de car', 'sponsor_price' => 'Abonnement « Recommandé » / mois'],
-    'Garantie Dommage (option payante)' => ['garantie_menage_pct' => 'Garantie ménage, en % du prix de la prestation', 'garantie_dommage_pct' => 'Garantie pressing, en % du prix de la prestation', 'home_service_fee' => 'Frais de service ménage / pressing (F CFA)'],
+    'Garantie Dommage (option payante)' => ['garantie_dommage_pct' => 'Garantie ménage et pressing, en % du prix de la prestation', 'service_fee_menage_pct' => 'Frais de service ménage, en % du prix de la prestation'],
     'Support client' => ['support_phone' => 'Téléphone', 'support_email' => 'E-mail'],
     'Paiement manuel · numéros de réception Mobile Money' => [
         'pay_wave_number' => 'Numéro Wave', 'pay_orange_number' => 'Numéro Orange Money',

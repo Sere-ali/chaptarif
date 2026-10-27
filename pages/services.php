@@ -21,7 +21,7 @@ $isRental = in_array($uk, ['location_vehicule', 'location_car', 'chauffeur', 'lo
 $noPrice = false;
 $autoProv = in_array($uk, ['pressing', 'menage', 'coiffeuse', 'maquilleuse', 'onglerie'], true);
 $hasGarantie = in_array($uk, ['menage', 'pressing'], true);
-$garantiePct = $uk === 'menage' ? (float) setting('garantie_menage_pct', 10) : (float) setting('garantie_dommage_pct', 6.72);
+$garantiePct = (float) setting('garantie_dommage_pct', 6.72);
 $commune = (string) ($_GET['commune'] ?? '');
 $today = date('Y-m-d');
 $params = [$uk, $today];
@@ -48,7 +48,7 @@ view('layout/header', compact('title', 'desc', 'active'));
   </div>
 </section>
 
-<form class="section-tight" method="post" action="/reserver" data-service-form data-universe="<?= e($uk) ?>" data-garantie-pct="<?= e((string) $garantiePct) ?>">
+<form class="section-tight" method="post" action="/reserver" data-service-form data-universe="<?= e($uk) ?>" data-garantie-pct="<?= e((string) $garantiePct) ?>" data-fee-pct="<?= $uk === 'menage' ? e((string) setting('service_fee_menage_pct', 10)) : '0' ?>">
   <?= csrf_field() ?>
   <input type="hidden" name="universe" value="<?= e($uk) ?>">
   <div class="container <?= $isRental ? 'narrow-2' : 'two-col wide-left' ?>">
@@ -204,6 +204,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <div><span>Formule</span><b data-sum-offer>—</b></div>
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
           <?php if ($hasGarantie): ?><div data-sum-garantie-row hidden><span>🛡️ Garantie Dommage</span><b data-sum-garantie>—</b></div><?php endif; ?>
+          <?php if ($uk === 'menage'): ?><div><span>Frais de service</span><b data-sum-fee>—</b></div><?php endif; ?>
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>
         <?php else: ?>

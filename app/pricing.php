@@ -134,10 +134,10 @@ function build_quote(string $universe, array $in): array
             // Garantie Dommage (option payante, disponible pour les services à domicile/matériel)
             $q['garantie_fee'] = 0;
             if (in_array($universe, ['menage', 'pressing'], true)) {
-                // Frais de service ChapTarif (réglage admin, 0 par défaut), distincts de la garantie.
-                $q['service_fee'] += (int) setting('home_service_fee', 0);
+                // Frais de service ChapTarif (ménage : % de la prestation, réglable), distincts de la garantie.
+                if ($universe === 'menage') $q['service_fee'] += round50($amount * (float) setting('service_fee_menage_pct', 10) / 100);
                 if (!empty($in['garantie'])) {
-                    $pct = $universe === 'menage' ? (float) setting('garantie_menage_pct', 10) : (float) setting('garantie_dommage_pct', 6.72);
+                    $pct = (float) setting('garantie_dommage_pct', 6.72);
                     $fee = round50($amount * $pct / 100);
                     $q['garantie_fee'] = $fee;
                     $q['service_fee'] += $fee;
