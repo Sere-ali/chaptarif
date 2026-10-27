@@ -34,23 +34,23 @@ view('admin/header', compact('page', 'nav'));
       </div>
       <span style="margin-left:auto"><?= kyc_badge($p['kyc_status']) ?></span>
     </div>
-    <div class="sum-row"><span>📞 Téléphone</span><b><?= e(fmt_phone($p['phone'])) ?></b></div>
-    <?php if ($p['email']): ?><div class="sum-row"><span>✉️ E-mail</span><b><?= e($p['email']) ?></b></div><?php endif; ?>
-    <?php if ($p['commune']): ?><div class="sum-row"><span>📍 Commune</span><b><?= e($p['commune']) ?></b></div><?php endif; ?>
-    <?php if ($p['vehicle']): ?><div class="sum-row"><span>🚐 Véhicule</span><b><?= e($p['vehicle']) ?></b></div><?php endif; ?>
-    <div class="sum-row"><span>💳 Versement</span><b><?= e($p['payout_method']) ?> · <?= e(fmt_phone($p['payout_number'])) ?></b></div>
+    <div class="sum-row"><span> Téléphone</span><b><?= e(fmt_phone($p['phone'])) ?></b></div>
+    <?php if ($p['email']): ?><div class="sum-row"><span> E-mail</span><b><?= e($p['email']) ?></b></div><?php endif; ?>
+    <?php if ($p['commune']): ?><div class="sum-row"><span> Commune</span><b><?= e($p['commune']) ?></b></div><?php endif; ?>
+    <?php if ($p['vehicle']): ?><div class="sum-row"><span> Véhicule</span><b><?= e($p['vehicle']) ?></b></div><?php endif; ?>
+    <div class="sum-row"><span> Versement</span><b><?= e($p['payout_method']) ?> · <?= e(fmt_phone($p['payout_number'])) ?></b></div>
     <?php if ($p['bio']): ?><p class="muted"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
     <div class="row2 mt">
       <?php if (!empty($p['cni_public_id'])): ?>
-        <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['cni_public_id'])) ?>">🪪 Voir la CNI</a>
+        <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['cni_public_id'])) ?>"> Voir la CNI</a>
       <?php else: ?>
         <span class="badge badge-gray">CNI non fournie</span>
       <?php endif; ?>
-      <?php foreach (['permis_public_id' => '🚦 Voir le permis', 'vehicule_public_id' => '📑 Voir les papiers du véhicule'] as $dcol => $dlab): if (!empty($p[$dcol])): ?>
+      <?php foreach (['permis_public_id' => ' Voir le permis', 'vehicule_public_id' => ' Voir les papiers du véhicule'] as $dcol => $dlab): if (!empty($p[$dcol])): ?>
         <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p[$dcol])) ?>"><?= $dlab ?></a>
       <?php endif; endforeach; ?>
       <?php if (!empty($p['casier_public_id'])): ?>
-        <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['casier_public_id'])) ?>">📄 Voir le casier</a>
+        <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['casier_public_id'])) ?>"> Voir le casier</a>
       <?php else: ?>
         <span class="badge badge-gray">Casier non fourni</span>
       <?php endif; ?>

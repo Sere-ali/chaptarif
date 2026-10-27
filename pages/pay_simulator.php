@@ -31,7 +31,7 @@ view('layout/header', compact('title'));
       <button name="action" value="confirm" class="btn btn-primary btn-block btn-lg">✓ Valider le paiement</button>
       <button name="action" value="cancel" class="btn btn-ghost btn-block">Annuler</button>
     </form>
-    <p class="fine">🧪 Environnement de test : ce simulateur remplace l'écran de la passerelle Mobile Money. Aucun argent n'est débité.</p>
+    <p class="fine"> Environnement de test : ce simulateur remplace l'écran de la passerelle Mobile Money. Aucun argent n'est débité.</p>
   </div>
 </section>
 <?php view('layout/footer');

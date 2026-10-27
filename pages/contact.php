@@ -26,9 +26,9 @@ view('layout/header', compact('title'));
       <h1 class="h2">Parlons-en</h1>
       <p class="muted">Une question, une réclamation, un partenariat ? Notre équipe basée à Abidjan vous répond 7j/7.</p>
       <div class="features features-col">
-        <div><span>📞</span><b><?= e(setting('support_phone')) ?></b><small>Appel ou WhatsApp, 7h – 22h</small></div>
-        <div><span>✉️</span><b><?= e(setting('support_email')) ?></b><small>Réponse sous 24h</small></div>
-        <div><span>⚠️</span><b>Un problème sur une réservation ?</b><small>Ouvrez une réclamation depuis <a href="/compte">Mes réservations</a> : le paiement est gelé immédiatement.</small></div>
+        <div><span></span><b><?= e(setting('support_phone')) ?></b><small>Appel ou WhatsApp, 7h – 22h</small></div>
+        <div><span></span><b><?= e(setting('support_email')) ?></b><small>Réponse sous 24h</small></div>
+        <div><span></span><b>Un problème sur une réservation ?</b><small>Ouvrez une réclamation depuis <a href="/compte">Mes réservations</a> : le paiement est gelé immédiatement.</small></div>
       </div>
     </div>
     <form class="card form-card" method="post"><?= csrf_field() ?>

@@ -19,7 +19,7 @@ view('layout/header', compact('title'));
       </div>
       <div class="tk-route">
         <div><small>Départ</small><b><?= e($d['from'] ?? '') ?></b><span><?= e($d['time'] ?? '') ?></span></div>
-        <div class="tk-bus">🚌<i></i><small><?= e($d['duration'] ?? '') ?></small></div>
+        <div class="tk-bus"><i></i><small><?= e($d['duration'] ?? '') ?></small></div>
         <div class="right"><small>Arrivée</small><b><?= e($d['to'] ?? '') ?></b><span><?= fmt_date($b['service_date']) ?></span></div>
       </div>
       <div class="tk-grid">
@@ -36,7 +36,7 @@ view('layout/header', compact('title'));
         <small class="muted">Présentez ce QR code au contrôleur. Code de secours : <b class="mono"><?= e(ticket_sig($b['ref'])) ?></b></small>
       </div>
     </div>
-    <div class="center mt"><button class="btn btn-soft" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button> <a class="btn btn-ghost" href="/compte">Mes réservations</a></div>
+    <div class="center mt"><button class="btn btn-soft" onclick="window.print()"> Imprimer / Enregistrer en PDF</button> <a class="btn btn-ghost" href="/compte">Mes réservations</a></div>
   </div>
 </section>
 <?php view('layout/footer', compact('qr', 'scripts'));

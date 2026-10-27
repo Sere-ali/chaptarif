@@ -73,10 +73,10 @@ view('layout/header', compact('title', 'desc', 'active'));
     <div>
       <h2 class="h3">Pourquoi nous rejoindre ?</h2>
       <div class="features features-col">
-        <div><span>💰</span><b>Paiement garanti</b><small>Le client paie à la réservation. Vous êtes payé sur Wave / Orange Money dès la validation.</small></div>
-        <div><span>📈</span><b>Plus de clients</b><small>Visibilité dans votre commune auprès de milliers d'Abidjanais.</small></div>
-        <div><span>⭐</span><b>Badge « Recommandé »</b><small>Apparaissez en tête de liste pour <?= fcfa(setting('sponsor_price', 5000)) ?> / mois (optionnel).</small></div>
-        <div><span>🤝</span><b>Commission claire</b><small><?= (int) setting('commission_menage', 15) ?> % sur les services à domicile. Inscription gratuite.</small></div>
+        <div><span></span><b>Paiement garanti</b><small>Le client paie à la réservation. Vous êtes payé sur Wave / Orange Money dès la validation.</small></div>
+        <div><span></span><b>Plus de clients</b><small>Visibilité dans votre commune auprès de milliers d'Abidjanais.</small></div>
+        <div><span></span><b>Badge « Recommandé »</b><small>Apparaissez en tête de liste pour <?= fcfa(setting('sponsor_price', 5000)) ?> / mois (optionnel).</small></div>
+        <div><span></span><b>Commission claire</b><small><?= (int) setting('commission_menage', 15) ?> % sur les services à domicile. Inscription gratuite.</small></div>
       </div>
       <div class="card mt">
         <h3 class="h4">Exemple sur un ménage à 5 000 F</h3>
@@ -88,9 +88,9 @@ view('layout/header', compact('title', 'desc', 'active'));
     <div>
     <form class="card form-card" id="connexion" method="post" action="/connexion" style="margin-bottom:18px">
       <?= csrf_field() ?><input type="hidden" name="step" value="pwd"><input type="hidden" name="back" value="prestataire"><input type="hidden" name="next" value="/espace-prestataire">
-      <h2 class="h3">🔑 Déjà prestataire ? Connectez-vous</h2>
+      <h2 class="h3"> Déjà prestataire ? Connectez-vous</h2>
       <p class="muted">Accédez à votre espace pour créer vos services et vos annonces.</p>
-      <label class="fld"><span>Téléphone</span><div class="tel"><span>🇨🇮 +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
+      <label class="fld"><span>Téléphone</span><div class="tel"><span> +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
       <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
       <button class="btn btn-primary btn-block">Me connecter</button>
     </form>
@@ -111,13 +111,13 @@ view('layout/header', compact('title', 'desc', 'active'));
         <label class="fld"><span>Numéro de paiement</span><input name="payout_number" inputmode="tel" placeholder="Si différent"></label>
       </div>
       <div class="row2">
-        <label class="fld"><span>🔑 Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
+        <label class="fld"><span> Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
         <label class="fld"><span>Confirmer</span><input type="password" name="password2" minlength="8" required autocomplete="new-password"></label>
       </div>
-      <label class="fld file" data-doc="cni"><span>🪪 Carte d'identité (CNI, recto) — JPG/PNG/PDF</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
-      <label class="fld file" data-doc="permis" hidden><span>🚦 Permis de conduire — JPG/PNG/PDF</span><input type="file" name="permis" accept="image/*,application/pdf"></label>
-      <label class="fld file" data-doc="vehicule" hidden><span>📑 Papiers du véhicule et assurance — JPG/PNG/PDF</span><input type="file" name="vehicule" accept="image/*,application/pdf"></label>
-      <label class="fld file" data-doc="casier" hidden><span>📄 Casier judiciaire (bulletin n°3) — JPG/PNG/PDF</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="cni"><span> Carte d'identité (CNI, recto) — JPG/PNG/PDF</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="permis" hidden><span> Permis de conduire — JPG/PNG/PDF</span><input type="file" name="permis" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="vehicule" hidden><span> Papiers du véhicule et assurance — JPG/PNG/PDF</span><input type="file" name="vehicule" accept="image/*,application/pdf"></label>
+      <label class="fld file" data-doc="casier" hidden><span> Casier judiciaire (bulletin n°3) — JPG/PNG/PDF</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
       <p class="fine">Vos documents sont stockés de façon privée et consultés uniquement par l'équipe de vérification.</p>
       <button class="btn btn-primary btn-block btn-lg">Envoyer ma candidature</button>
       <script>

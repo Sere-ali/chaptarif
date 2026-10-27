@@ -17,13 +17,13 @@ view('layout/header', compact('title', 'desc', 'active'));
     <div class="card ps-head" style="padding:20px">
       <?= avatar($p, 'lg') ?>
       <div style="flex:1"><h1 class="h2" style="margin:0"><?= e($p['name']) ?></h1>
-        <small class="muted">📍 <?= e($p['commune']) ?> · <?= stars((float) $p['rating']) ?> · <?= (int) $p['missions'] ?> missions</small>
+        <small class="muted"> <?= e($p['commune']) ?> · <?= stars((float) $p['rating']) ?> · <?= (int) $p['missions'] ?> missions</small>
         <div style="margin-top:6px"><?= kyc_badge($p['kyc_status']) ?><?php if (is_sponsored($p)): ?> <span class="badge badge-gold">★ Recommandé</span><?php endif; ?></div></div>
       <a class="btn btn-primary" href="<?= e($book) ?>">Réserver</a>
     </div>
     <?php if ($p['bio']): ?><p class="mt"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
     <h2 class="h3 mt">Ses annonces</h2>
-    <?php if (!$ads): ?><div class="empty"><div class="empty-ico">🗒️</div><p>Ce prestataire n'a pas encore publié d'annonce.</p></div><?php endif; ?>
+    <?php if (!$ads): ?><div class="empty"><div class="empty-ico"></div><p>Ce prestataire n'a pas encore publié d'annonce.</p></div><?php endif; ?>
     <div class="ps-grid">
       <?php foreach ($ads as $a): ?>
         <article class="ps-card">

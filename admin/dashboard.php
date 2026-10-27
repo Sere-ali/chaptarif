@@ -39,12 +39,12 @@ view('admin/header', compact('page', 'nav'));
 ?>
 <?php if ((int) $me['must_change_password']): ?><div class="warn-box">Vous utilisez un mot de passe provisoire. <a href="/admin/mot-de-passe">Changez-le maintenant</a>.</div><?php endif; ?>
 <div class="kpis">
-  <div class="kpi hl"><span class="kpi-ico">💰</span><small>Revenus ChapTarif</small><b><?= fcfa($revenue) ?></b><em>Commissions + frais + abonnements</em></div>
-  <div class="kpi"><span class="kpi-ico">📈</span><small>Volume d'affaires</small><b><?= fcfa($gmv) ?></b><em><?= $nbPaid ?> réservations payées</em></div>
-  <div class="kpi"><span class="kpi-ico">🔒</span><small>Fonds sous séquestre</small><b><?= fcfa($escrow) ?></b><em>En attente de validation</em></div>
-  <div class="kpi"><span class="kpi-ico">⚠️</span><small>Litiges ouverts</small><b><?= $disputes ?></b><em><a href="/admin/litiges">Traiter les litiges →</a></em></div>
+  <div class="kpi hl"><span class="kpi-ico"></span><small>Revenus ChapTarif</small><b><?= fcfa($revenue) ?></b><em>Commissions + frais + abonnements</em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Volume d'affaires</small><b><?= fcfa($gmv) ?></b><em><?= $nbPaid ?> réservations payées</em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Fonds sous séquestre</small><b><?= fcfa($escrow) ?></b><em>En attente de validation</em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Litiges ouverts</small><b><?= $disputes ?></b><em><a href="/admin/litiges">Traiter les litiges →</a></em></div>
 </div>
-<?php if ($toPay): ?><div class="warn-box">💸 <?= fcfa($toPay) ?> de reversements / remboursements à effectuer. <a href="/admin/finances?status=A_VIRER">Voir la file</a></div><?php endif; ?>
+<?php if ($toPay): ?><div class="warn-box"> <?= fcfa($toPay) ?> de reversements / remboursements à effectuer. <a href="/admin/finances?status=A_VIRER">Voir la file</a></div><?php endif; ?>
 <div class="grid2">
   <div class="panel"><div class="panel-h"><h2>Activité des 14 derniers jours</h2><span class="muted small"><?= $clients ?> clients inscrits</span></div><div style="height:280px"><canvas id="chart"></canvas></div></div>
   <div class="panel"><div class="panel-h"><h2>Volume par univers</h2></div>
@@ -68,13 +68,13 @@ view('admin/header', compact('page', 'nav'));
   <div class="panel"><div class="panel-h"><h2>KYC à vérifier</h2><a class="btn btn-soft btn-sm" href="/admin/candidatures">Tout voir</a></div>
     <?php foreach ($kyc as $p): ?>
       <div class="prov-mini"><?= avatar($p) ?><div><b><?= e($p['name']) ?></b><small><?= e(universe($p['universe'])['name']) ?> · <?= e($p['commune']) ?> · <?= fmt_date($p['created_at']) ?><?= $p['source'] === 'candidature' ? ' · candidature web' : '' ?></small></div><a class="btn btn-ghost btn-xs" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Examiner</a></div>
-    <?php endforeach; if (!$kyc): ?><p class="muted">Aucun dossier en attente. 🎉</p><?php endif; ?>
+    <?php endforeach; if (!$kyc): ?><p class="muted">Aucun dossier en attente. </p><?php endif; ?>
   </div>
 </div>
 <div class="panel">
-  <div class="panel-h"><h2>📌 Mes tâches</h2><a class="btn btn-soft btn-sm" href="/admin/taches">Tout voir</a></div>
+  <div class="panel-h"><h2> Mes tâches</h2><a class="btn btn-soft btn-sm" href="/admin/taches">Tout voir</a></div>
   <?php $today = date('Y-m-d'); foreach ($myTasks as $t): $c = task_category($t['category']); $late = $t['due_date'] && $t['due_date'] < $today; ?>
     <div class="prov-mini"><span class="uni-dot" style="--c:<?= $c['color'] ?>"><i></i><?= $c['emoji'] ?></span><div><b><?= e($t['title']) ?></b><small><?= e($c['short'] ?? $c['name']) ?> · <?= task_priority_badge($t['priority']) ?> <?= $t['due_date'] ? '· Échéance ' . fmt_date($t['due_date']) : '' ?><?= $late ? ' · <span class="badge badge-red">En retard</span>' : '' ?></small></div><?= task_status_badge($t['status']) ?></div>
-  <?php endforeach; if (!$myTasks): ?><p class="muted">Aucune tâche en attente pour vous. 🎉</p><?php endif; ?>
+  <?php endforeach; if (!$myTasks): ?><p class="muted">Aucune tâche en attente pour vous. </p><?php endif; ?>
 </div>
 <?php view('admin/footer', compact('scripts'));

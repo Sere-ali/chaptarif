@@ -42,7 +42,7 @@ if (is_post()) {
       <label class="fld"><span>Mot de passe</span><input type="password" name="password" required autocomplete="current-password"></label>
       <button class="btn btn-primary btn-block btn-lg">Se connecter</button>
     </form>
-    <p class="fine center">🔒 Connexions journalisées · blocage après 5 échecs</p>
+    <p class="fine center"> Connexions journalisées · blocage après 5 échecs</p>
   </div>
 </div>
 <script src="/assets/js/pw-eye.js?v=1"></script>

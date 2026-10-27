@@ -101,7 +101,7 @@ view('layout/header', compact('title'));
         <?= csrf_field() ?>
         <input type="hidden" name="step" value="send"><input type="hidden" name="next" value="<?= e($next) ?>">
         <label class="fld"><span>Nom et prénom (facultatif)</span><input name="name" maxlength="80" autocomplete="name"></label>
-        <label class="fld"><span>Téléphone</span><div class="tel"><span>🇨🇮 +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required autofocus></div></label>
+        <label class="fld"><span>Téléphone</span><div class="tel"><span> +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required autofocus></div></label>
         <button class="btn btn-primary btn-block btn-lg">Recevoir mon code</button>
       </form>
     <?php else: ?>

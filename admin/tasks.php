@@ -114,10 +114,10 @@ view('admin/header', compact('page', 'nav'));
 ?>
 <?php if ($isSuper): ?>
 <div class="kpis">
-  <div class="kpi"><span class="kpi-ico">📌</span><small>Tâches ouvertes</small><b><?= $openTotal ?></b><em>Toutes équipes confondues</em></div>
-  <div class="kpi"><span class="kpi-ico">⏰</span><small>En retard</small><b><?= $lateTotal ?></b><em>Échéance dépassée</em></div>
-  <div class="kpi"><span class="kpi-ico">👤</span><small>Vos tâches</small><b><?= $myOpen ?></b><em>Assignées à vous-même</em></div>
-  <div class="kpi"><span class="kpi-ico">🧑‍💼</span><small>Administrateurs</small><b><?= count($admins) ?></b><em><a href="/admin/administrateurs">Gérer l'équipe →</a></em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Tâches ouvertes</small><b><?= $openTotal ?></b><em>Toutes équipes confondues</em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>En retard</small><b><?= $lateTotal ?></b><em>Échéance dépassée</em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Vos tâches</small><b><?= $myOpen ?></b><em>Assignées à vous-même</em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Administrateurs</small><b><?= count($admins) ?></b><em><a href="/admin/administrateurs">Gérer l'équipe →</a></em></div>
 </div>
 <div class="panel">
   <div class="panel-h"><h2>Attribuer une nouvelle tâche</h2></div>
@@ -171,14 +171,14 @@ view('admin/header', compact('page', 'nav'));
         <td><b><?= e($t['title']) ?></b>
           <?php if ($t['description']): ?><small><?= e(mb_strimwidth($t['description'], 0, 90, '…')) ?></small><?php endif; ?>
           <?php if ($t['booking_ref']): $bk = one('SELECT id FROM bookings WHERE ref = ?', [$t['booking_ref']]); ?>
-            <small><?= $bk ? '<a href="/admin/reservation?id=' . (int) $bk['id'] . '">🧾 ' . e($t['booking_ref']) . '</a>' : '🧾 ' . e($t['booking_ref']) ?></small>
+            <small><?= $bk ? '<a href="/admin/reservation?id=' . (int) $bk['id'] . '"> ' . e($t['booking_ref']) . '</a>' : ' ' . e($t['booking_ref']) ?></small>
           <?php endif; ?>
           <small class="muted">Créée par <?= e($t['b_name'] ?: $t['b_email'] ?: '—') ?> le <?= fmt_date($t['created_at']) ?></small>
         </td>
         <td><span class="uni-dot" style="--c:<?= $c['color'] ?>"><i></i><?= $c['emoji'] ?> <?= e($c['short'] ?? $c['name']) ?></span></td>
         <td><?= e($t['a_name'] ?: $t['a_email'] ?: '—') ?></td>
         <td><?= task_priority_badge($t['priority']) ?></td>
-        <td><?= $t['due_date'] ? fmt_date($t['due_date']) : '—' ?><?php if ($late): ?><br><span class="badge badge-red">⏰ En retard</span><?php endif; ?></td>
+        <td><?= $t['due_date'] ? fmt_date($t['due_date']) : '—' ?><?php if ($late): ?><br><span class="badge badge-red"> En retard</span><?php endif; ?></td>
         <td><?= task_status_badge($t['status']) ?></td>
         <td><div class="acts">
           <?php if ($isSuper || (int) $t['assigned_to'] === (int) $me['id']): ?>
@@ -198,11 +198,11 @@ view('admin/header', compact('page', 'nav'));
               <button class="btn btn-primary btn-xs mt">Valider</button>
             </form>
           </details>
-          <form method="post" data-confirm="Supprimer définitivement la tâche « <?= e($t['title']) ?> » ?"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int) $t['id'] ?>"><button class="btn btn-ghost btn-xs">🗑️</button></form>
+          <form method="post" data-confirm="Supprimer définitivement la tâche « <?= e($t['title']) ?> » ?"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int) $t['id'] ?>"><button class="btn btn-ghost btn-xs"></button></form>
           <?php endif; ?>
         </div></td>
       </tr>
-    <?php endforeach; if (!$rows): ?><tr><td colspan="7" class="muted"><?= $isSuper ? 'Aucune tâche pour le moment.' : 'Aucune tâche ne vous est attribuée pour le moment. 🎉' ?></td></tr><?php endif; ?>
+    <?php endforeach; if (!$rows): ?><tr><td colspan="7" class="muted"><?= $isSuper ? 'Aucune tâche pour le moment.' : 'Aucune tâche ne vous est attribuée pour le moment. ' ?></td></tr><?php endif; ?>
     </tbody>
   </table></div>
 </div>

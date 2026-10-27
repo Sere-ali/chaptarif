@@ -10,31 +10,31 @@ $chatUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user
 $myOpenTasks = $me ? (int) val("SELECT COUNT(*) FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule')", [$me['id']]) : 0;
 $items = [
     ['Pilotage', null],
-    ['dashboard', '/admin', '📊', 'Tableau de bord', 0],
-    ['tasks', '/admin/taches', '📌', 'Mes tâches', $myOpenTasks],
-    ['candidatures', '/admin/candidatures', '📋', 'Candidatures prestataires', $pendingCandidatures],
-    ['bookings', '/admin/reservations', '🧾', 'Réservations', 0],
-    ['disputes', '/admin/litiges', '⚠️', 'Litiges', $disputes],
-    ['finances', '/admin/finances', '💰', 'Finances & séquestre', 0],
-    ['control', '/admin/controle', '🎫', 'Contrôle billets', 0],
+    ['dashboard', '/admin', '', 'Tableau de bord', 0],
+    ['tasks', '/admin/taches', '', 'Mes tâches', $myOpenTasks],
+    ['candidatures', '/admin/candidatures', '', 'Candidatures prestataires', $pendingCandidatures],
+    ['bookings', '/admin/reservations', '', 'Réservations', 0],
+    ['disputes', '/admin/litiges', '', 'Litiges', $disputes],
+    ['finances', '/admin/finances', '', 'Finances & séquestre', 0],
+    ['control', '/admin/controle', '', 'Contrôle billets', 0],
     ['Catalogue', null],
-    ['listings', '/admin/annonces', '📣', 'Annonces prestataires', $pendingListings],
-    ['providers', '/admin/prestataires', '🧑‍🔧', 'Prestataires & KYC', $pendingKyc],
-    ['offers', '/admin/offres', '🏷️', 'Formules & tarifs', 0],
-    ['trips', '/admin/cars', '🚌', 'Départs cars', 0],
-    ['covoiturage', '/admin/covoiturage', '🚙', 'Trajets covoiturage', 0],
-    ['properties', '/admin/immobilier', '🏠', 'Immobilier', 0],
-    ['zones', '/admin/zones', '📍', 'Zones & quartiers', 0],
+    ['listings', '/admin/annonces', '', 'Annonces prestataires', $pendingListings],
+    ['providers', '/admin/prestataires', '', 'Prestataires & KYC', $pendingKyc],
+    ['offers', '/admin/offres', '', 'Formules & tarifs', 0],
+    ['trips', '/admin/cars', '', 'Départs cars', 0],
+    ['covoiturage', '/admin/covoiturage', '', 'Trajets covoiturage', 0],
+    ['properties', '/admin/immobilier', '', 'Immobilier', 0],
+    ['zones', '/admin/zones', '', 'Zones & quartiers', 0],
     ['Relation client', null],
-    ['clients', '/admin/clients', '👥', 'Clients', 0],
-    ['chat', '/admin/chat', '💬', 'Chat service client', $chatUnread],
-    ['messages', '/admin/messages', '✉️', 'Messages', $unread],
+    ['clients', '/admin/clients', '', 'Clients', 0],
+    ['chat', '/admin/chat', '', 'Chat service client', $chatUnread],
+    ['messages', '/admin/messages', '', 'Messages', $unread],
 ];
 if (is_super($me)) {
     $items[] = ['Super admin', null];
-    $items[] = ['admins', '/admin/administrateurs', '🛡️', 'Admins', 0];
-    $items[] = ['settings', '/admin/parametres', '⚙️', 'Paramètres', 0];
-    $items[] = ['audit', '/admin/journal', '📜', "Journal d'audit", 0];
+    $items[] = ['admins', '/admin/administrateurs', '', 'Admins', 0];
+    $items[] = ['settings', '/admin/parametres', '', 'Paramètres', 0];
+    $items[] = ['audit', '/admin/journal', '', "Journal d'audit", 0];
 }
 ?><!doctype html>
 <html lang="fr">
@@ -53,13 +53,13 @@ if (is_super($me)) {
 <div class="main">
   <header class="adm-top">
     <a class="brand" href="/admin"><img src="/assets/img/logo.svg" width="34" alt=""><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></a>
-    <span class="role-tag <?= is_super($me) ? 'super' : '' ?>"><?= is_super($me) ? '🛡️ Super Admin' : '👤 Administrateur' ?></span>
+    <span class="role-tag <?= is_super($me) ? 'super' : '' ?>"><?= is_super($me) ? ' Super Admin' : ' Administrateur' ?></span>
     <div class="adm-user">
       <?php if (payment_mode() === 'simulation'): ?><span class="badge badge-amber" title="PAYMENT_MODE=simulation">Paiements : test</span><?php endif; ?>
-      <a class="adm-site" href="/" target="_blank">↗ Voir le site</a>
+      <a class="adm-site" href="/" target="_blank"> Voir le site</a>
       <div class="adm-me"><b><?= e($me['name'] ?: $me['email']) ?></b><small><?= e($me['email']) ?></small></div>
       <details class="adm-menu"><summary><span class="avatar avatar-txt" style="--h:<?= crc32((string) $me['email']) % 360 ?>"><?= e(initials($me['name'] ?: $me['email'])) ?></span></summary>
-        <div><a href="/admin/mot-de-passe">🔑 Changer mon mot de passe</a>
+        <div><a href="/admin/mot-de-passe"> Changer mon mot de passe</a>
         <form method="post" action="/admin/logout"><?= csrf_field() ?><button>⎋ Se déconnecter</button></form></div>
       </details>
     </div>

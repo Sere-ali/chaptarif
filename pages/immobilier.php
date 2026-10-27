@@ -21,7 +21,7 @@ if ($adId) {
         <div class="two-col wide-left">
           <div>
             <h1 class="h2"><?= e($ad['title']) ?></h1>
-            <p class="muted">par <a href="/profil-prestataire?id=<?= (int) $ad['pid'] ?>"><?= e($ad['pname']) ?></a> · 📍 <?= e($ad['pcommune']) ?></p>
+            <p class="muted">par <a href="/profil-prestataire?id=<?= (int) $ad['pid'] ?>"><?= e($ad['pname']) ?></a> ·  <?= e($ad['pcommune']) ?></p>
             <?php if ($ll): ?><ul class="ps-attrs" style="display:block"><?php foreach ($ll as [$lk, $lv]): ?><li><b><?= e($lk) ?> :</b> <?= e($lv) ?></li><?php endforeach; ?></ul><?php endif; ?>
             <?php if ($ad['description']): ?><p><?= nl2br(e((string) $ad['description'])) ?></p><?php endif; ?>
           </div>
@@ -30,7 +30,7 @@ if ($adId) {
               <?= csrf_field() ?>
               <input type="hidden" name="universe" value="immobilier"><input type="hidden" name="listing" value="<?= (int) $ad['id'] ?>">
               <div class="big-price"><?= fcfa($ad['price']) ?><em>/ mois</em></div>
-              <label class="fld"><span>📅 Date d'entrée souhaitée</span><input type="date" name="movein" required min="<?= date('Y-m-d', strtotime('+1 day')) ?>" max="<?= date('Y-m-d', strtotime('+180 days')) ?>" value="<?= date('Y-m-d', strtotime('+7 days')) ?>"></label>
+              <label class="fld"><span> Date d'entrée souhaitée</span><input type="date" name="movein" required min="<?= date('Y-m-d', strtotime('+1 day')) ?>" max="<?= date('Y-m-d', strtotime('+180 days')) ?>" value="<?= date('Y-m-d', strtotime('+7 days')) ?>"></label>
               <?php if ($taken): ?>
                 <p class="alert alert-warn">Ce logement est déjà réservé.</p>
               <?php else: ?>
@@ -69,12 +69,12 @@ if ($id) {
           <div>
             <div class="prop-tags"><span class="badge badge-purple"><?= e($p['type']) ?></span><?php if ($p['certified']): ?><span class="badge badge-green">Bailleur certifié ChapTarif ✓</span><?php endif; ?></div>
             <h1 class="h2"><?= e($p['title']) ?></h1>
-            <p class="muted">📍 <?= e($p['quartier']) ?>, <?= e($p['commune']) ?> · 👥 jusqu'à <?= (int) $p['capacity'] ?> voyageurs</p>
+            <p class="muted"> <?= e($p['quartier']) ?>, <?= e($p['commune']) ?> ·  jusqu'à <?= (int) $p['capacity'] ?> voyageurs</p>
             <p><?= nl2br(e($p['description'])) ?></p>
             <h3 class="h4">Équipements</h3>
             <div class="amen"><?php foreach (array_filter(array_map('trim', explode(',', (string) $p['amenities']))) as $a): ?><span>✓ <?= e($a) ?></span><?php endforeach; ?></div>
             <div class="guard">
-              <h4>🛡️ Fin des faux démarcheurs</h4>
+              <h4> Fin des faux démarcheurs</h4>
               <ul><li>Le bailleur a fourni son titre foncier ou mandat certifié.</li><li>Le logement a été inspecté physiquement par notre équipe.</li><li>Votre paiement n'est versé au bailleur qu'après la remise des clés en main propre.</li></ul>
             </div>
           </div>
@@ -91,7 +91,7 @@ if ($id) {
               <label class="fld"><span>Voyageurs</span><select name="guests"><?php for ($i = 1; $i <= (int) $p['capacity']; $i++): ?><option><?= $i ?></option><?php endfor; ?></select></label>
               <div class="total-box"><div><span data-nights>—</span><b data-immo-total>—</b></div></div>
               <button class="btn btn-primary btn-block btn-lg">Réserver mes dates</button>
-              <p class="fine">🔒 L'argent est bloqué et versé uniquement à l'arrivée / remise des clés.</p>
+              <p class="fine"> L'argent est bloqué et versé uniquement à l'arrivée / remise des clés.</p>
             </form>
           </aside>
         </div>
@@ -167,13 +167,13 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <a class="fchip <?= $commune === $c ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $c, 'type' => $type])) ?>"><?= e($c) ?></a>
       <?php endforeach; ?>
     </div>
-    <?php if (!$props): ?><div class="empty"><div class="empty-ico">🏠</div><p>Aucun logement disponible dans cette commune.</p></div><?php endif; ?>
+    <?php if (!$props): ?><div class="empty"><div class="empty-ico"></div><p>Aucun logement disponible dans cette commune.</p></div><?php endif; ?>
     <div class="prop-grid">
       <?php foreach ($props as $p): $imgs = json_decode((string) $p['images'], true) ?: []; ?>
         <a class="prop reveal" href="/immobilier?id=<?= (int) $p['id'] ?><?= $ci ? '&checkin=' . e($ci) : '' ?>">
           <div class="prop-img"><img src="<?= e(cld($imgs[0] ?? img('univers-immobilier'), 'w_700,h_480,c_fill,q_auto,f_auto')) ?>" alt="<?= e($p['title']) ?>" loading="lazy" width="700" height="480"><?php if ($p['certified']): ?><span class="cert">✓ Certifié</span><?php endif; ?></div>
           <div class="prop-body">
-            <small class="muted">📍 <?= e($p['quartier']) ?>, <?= e($p['commune']) ?></small>
+            <small class="muted"> <?= e($p['quartier']) ?>, <?= e($p['commune']) ?></small>
             <h3><?= e($p['title']) ?></h3>
             <p class="muted"><?= e(implode(' • ', array_slice(array_map('trim', explode(',', (string) $p['amenities'])), 0, 3))) ?></p>
             <div class="prop-foot"><span class="big-price"><?= fcfa($p['price_night']) ?><em>/ nuit</em></span><span class="btn btn-soft btn-sm">Voir</span></div>
@@ -207,7 +207,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
           <span class="d-item-body">
             <b><?= e($c['label']) ?></b>
             <select aria-label="Recherche appartement" onchange="if(this.value)location.href='/immobilier?cat=appart&amp;type='+encodeURIComponent(this.value)">
-              <option value="">🔎 Recherche appartement…</option>
+              <option value=""> Recherche appartement…</option>
               <?php foreach (PROPERTY_TYPES as $t): ?><option value="<?= e($t) ?>"><?= e($t) ?></option><?php endforeach; ?>
             </select>
           </span>
@@ -216,7 +216,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     </div>
     <?php $adsUniverse = 'immobilier'; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
     <div class="d-trust">
-      <span class="d-trust-ico">✨</span>
+      <span class="d-trust-ico"></span>
       <span><b>Paiement sécurisé après confirmation :</b><br><small>Votre paiement est bloqué sur ChapTarif et n'est versé au propriétaire qu'après la remise des clés.</small></span>
     </div>
   </div>

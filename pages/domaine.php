@@ -50,7 +50,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
   <div class="container">
     <h2 class="d-h2"><?= e($d['select_h2'] ?? 'Sélectionnez votre besoin') ?></h2>
     <p class="d-sub"><?= e($d['select_sub'] ?? 'Trouvez le meilleur tarif, en quelques clics.') ?></p>
-    <label class="fld d-select"><span>🔎 Recherche</span>
+    <label class="fld d-select"><span> Recherche</span>
       <select onchange="if(this.value)location.href=this.value">
         <option value="">Choisir un service…</option>
         <?php foreach ($subs as $x): ?><option value="<?= e($x['url']) ?>"><?= e($x['emoji'] . ' ' . $x['name']) ?></option><?php endforeach; ?>
@@ -58,7 +58,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     </label>
     <?php $adsUniverse = $d['keys']; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
     <div class="d-trust">
-      <span class="d-trust-ico">✨</span>
+      <span class="d-trust-ico"></span>
       <span><b><?= e($d['trust_title'] ?? 'Paiement sécurisé après confirmation :') ?></b><br><small><?= e($d['trust_text'] ?? 'Votre paiement est bloqué sur ChapTarif et n\'est versé au prestataire qu\'après la réalisation du service.') ?></small></span>
     </div>
   </div>

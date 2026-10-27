@@ -27,12 +27,12 @@ view('layout/header', compact('title', 'desc', 'active'));
       <label class="fld"><span>Départ</span><select name="from" onchange="this.form.submit()"><?php foreach ($fromCities as $c): ?><option <?= $c === $from ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
       <label class="fld"><span>Destination</span><select name="to"><?php foreach ($toCities as $c): ?><option <?= $c === $to ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
       <label class="fld"><span>Date</span><input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
-      <label class="fld"><span>👥 Nombre de passagers</span><select name="passengers"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>" <?= $i === $passengers ? 'selected' : '' ?>><?= $i ?> passager<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
+      <label class="fld"><span> Nombre de passagers</span><select name="passengers"><?php for ($i = 1; $i <= 5; $i++): ?><option value="<?= $i ?>" <?= $i === $passengers ? 'selected' : '' ?>><?= $i ?> passager<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
       <button class="btn btn-primary btn-lg">Rechercher</button>
     </form>
 
-    <div class="h-row"><h2 class="h3">🚌 <?= e($from) ?> → <?= e($to) ?> · <?= fmt_date($date) ?></h2><span class="muted"><?= count($trips) ?> départ(s)</span></div>
-    <?php if (!$trips): ?><div class="empty"><div class="empty-ico">🚌</div><p>Aucun départ sur cette ligne.</p></div><?php endif; ?>
+    <div class="h-row"><h2 class="h3"> <?= e($from) ?> → <?= e($to) ?> · <?= fmt_date($date) ?></h2><span class="muted"><?= count($trips) ?> départ(s)</span></div>
+    <?php if (!$trips): ?><div class="empty"><div class="empty-ico"></div><p>Aucun départ sur cette ligne.</p></div><?php endif; ?>
     <div class="trip-list">
       <?php foreach ($trips as $t):
         $past = $date === date('Y-m-d') && $t['depart_time'] <= date('H:i');
@@ -59,9 +59,9 @@ view('layout/header', compact('title', 'desc', 'active'));
     </div>
 
     <div class="info-strip">
-      <div><span>🎫</span><b>E-billet QR crypté</b><small>Siège attribué, infalsifiable</small></div>
-      <div><span>💬</span><b>SMS de secours</b><small>Référence envoyée par SMS</small></div>
-      <div><span>✅</span><b>Contrôle en gare</b><small>Scan par le contrôleur ChapTarif</small></div>
+      <div><span></span><b>E-billet QR crypté</b><small>Siège attribué, infalsifiable</small></div>
+      <div><span></span><b>SMS de secours</b><small>Référence envoyée par SMS</small></div>
+      <div><span></span><b>Contrôle en gare</b><small>Scan par le contrôleur ChapTarif</small></div>
     </div>
   </div>
 </section>

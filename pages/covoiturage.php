@@ -29,19 +29,19 @@ view('layout/header', compact('title', 'desc', 'active'));
 <section class="section-tight">
   <div class="container">
     <form class="card search-bar" method="get" action="/covoiturage">
-      <label class="fld"><span>📍 Départ — ville ou point de départ</span><input name="from" value="<?= e($from) ?>" list="cv-from" maxlength="80" placeholder="Ex. Abidjan, Cocody Angré" autocomplete="off">
-        <button type="button" class="fine linkbtn" data-geo="from" style="margin-top:4px;background:none;border:0;color:var(--green);font-weight:700;cursor:pointer;text-align:left;padding:0">📡 Activer ma localisation</button><small class="fine" data-geo-msg hidden></small></label>
-      <label class="fld"><span>🏁 Arrivée — ville ou point d'arrivée</span><input name="to" value="<?= e($to) ?>" list="cv-to" maxlength="80" placeholder="Ex. Gagnoa, Yamoussoukro" autocomplete="off"></label>
+      <label class="fld"><span> Départ — ville ou point de départ</span><input name="from" value="<?= e($from) ?>" list="cv-from" maxlength="80" placeholder="Ex. Abidjan, Cocody Angré" autocomplete="off">
+        <button type="button" class="fine linkbtn" data-geo="from" style="margin-top:4px;background:none;border:0;color:var(--green);font-weight:700;cursor:pointer;text-align:left;padding:0"> Activer ma localisation</button><small class="fine" data-geo-msg hidden></small></label>
+      <label class="fld"><span> Arrivée — ville ou point d'arrivée</span><input name="to" value="<?= e($to) ?>" list="cv-to" maxlength="80" placeholder="Ex. Gagnoa, Yamoussoukro" autocomplete="off"></label>
       <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
       <datalist id="cv-from"><?php foreach ($fromCities as $c): ?><option value="<?= e($c) ?>"><?php endforeach; ?></datalist>
       <datalist id="cv-to"><?php foreach ($toCities as $c): ?><option value="<?= e($c) ?>"><?php endforeach; ?></datalist>
-      <label class="fld"><span>📅 Date du trajet</span><input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
-      <label class="fld"><span>💺 Nombre de places recherchées</span><select name="seats"><?php for ($i = 1; $i <= 4; $i++): ?><option value="<?= $i ?>" <?= $i === $seats ? 'selected' : '' ?>><?= $i ?> place<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
+      <label class="fld"><span> Date du trajet</span><input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
+      <label class="fld"><span> Nombre de places recherchées</span><select name="seats"><?php for ($i = 1; $i <= 4; $i++): ?><option value="<?= $i ?>" <?= $i === $seats ? 'selected' : '' ?>><?= $i ?> place<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?></select></label>
       <button class="btn btn-primary btn-lg">Rechercher</button>
     </form>
 
-    <?php if ($searched): ?><div class="h-row"><h2 class="h3">🚙 <?= e($from ?: 'Partout') ?> → <?= e($to ?: 'Partout') ?> · <?= fmt_date($date) ?></h2><span class="muted"><?= count($trips) ?> trajet(s)</span></div><?php endif; ?>
-    <?php if (!$trips): ?><div class="empty"><div class="empty-ico">🔎</div><p><?= $searched ? 'Aucun trajet pour cette recherche pour le moment.' : 'Aucun trajet de covoiturage publié pour le moment.' ?></p><a class="btn btn-soft" href="/chat">💬 Nous écrire, nous cherchons pour vous</a></div><?php endif; ?>
+    <?php if ($searched): ?><div class="h-row"><h2 class="h3"> <?= e($from ?: 'Partout') ?> → <?= e($to ?: 'Partout') ?> · <?= fmt_date($date) ?></h2><span class="muted"><?= count($trips) ?> trajet(s)</span></div><?php endif; ?>
+    <?php if (!$trips): ?><div class="empty"><div class="empty-ico"></div><p><?= $searched ? 'Aucun trajet pour cette recherche pour le moment.' : 'Aucun trajet de covoiturage publié pour le moment.' ?></p><a class="btn btn-soft" href="/chat"> Nous écrire, nous cherchons pour vous</a></div><?php endif; ?>
     <div class="trip-list">
       <?php foreach ($trips as $t):
         $past = $date === date('Y-m-d') && $t['depart_time'] <= date('H:i');
@@ -71,9 +71,9 @@ view('layout/header', compact('title', 'desc', 'active'));
     </div>
 
     <div class="info-strip">
-      <div><span>🛡️</span><b>Chauffeurs vérifiés</b><small>Profil et pièce d'identité contrôlés</small></div>
-      <div><span>🔒</span><b>Paiement sécurisé</b><small>Argent bloqué jusqu'à l'arrivée</small></div>
-      <div><span>🎫</span><b>E-billet QR</b><small>Référence envoyée par SMS</small></div>
+      <div><span></span><b>Chauffeurs vérifiés</b><small>Profil et pièce d'identité contrôlés</small></div>
+      <div><span></span><b>Paiement sécurisé</b><small>Argent bloqué jusqu'à l'arrivée</small></div>
+      <div><span></span><b>E-billet QR</b><small>Référence envoyée par SMS</small></div>
     </div>
     <?php $adsUniverse = 'covoiturage'; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
   </div>

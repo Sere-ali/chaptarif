@@ -113,33 +113,33 @@ function audit(string $action, string $target = '', $details = ''): void
 function universes(): array
 {
     return [
-        // 🚌 Transports
-        'cars' => ['name' => 'Cars Voyage', 'short' => 'Cars', 'emoji' => '🚌', 'sub' => 'Lignes CI (UTB…)', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/cars', 'group' => 'Transports',
+        //  Transports
+        'cars' => ['name' => 'Cars Voyage', 'short' => 'Cars', 'emoji' => '', 'sub' => 'Lignes CI (UTB…)', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/cars', 'group' => 'Transports',
             'pitch' => 'Billets interurbains en 3 clics, E-billet QR code, zéro file en gare.'],
-        'location_car' => ['name' => 'Louer un car', 'short' => 'Car', 'emoji' => '🚐', 'sub' => 'Groupes & Événements', 'color' => '#3A6EA5', 'bg' => '#EEF4FA', 'img' => 'univers-car-bus', 'url' => '/location-car', 'group' => 'Transports',
+        'location_car' => ['name' => 'Louer un car', 'short' => 'Car', 'emoji' => '', 'sub' => 'Groupes & Événements', 'color' => '#3A6EA5', 'bg' => '#EEF4FA', 'img' => 'univers-car-bus', 'url' => '/location-car', 'group' => 'Transports',
             'pitch' => 'Réservez un car ou un minibus avec chauffeur expérimenté pour vos événements'],
-        'location_vehicule' => ['name' => 'Location de véhicule', 'short' => 'Véhicule', 'emoji' => '🚗', 'sub' => 'Voitures, 4x4 & minibus', 'color' => '#2F7FBF', 'bg' => '#EAF3FB', 'img' => 'univers-vehicule-4x4', 'url' => '/location-vehicule', 'group' => 'Transports',
+        'location_vehicule' => ['name' => 'Location de véhicule', 'short' => 'Véhicule', 'emoji' => '', 'sub' => 'Voitures, 4x4 & minibus', 'color' => '#2F7FBF', 'bg' => '#EAF3FB', 'img' => 'univers-vehicule-4x4', 'url' => '/location-vehicule', 'group' => 'Transports',
             'pitch' => 'Louez votre véhicule en toute tranquillité'],
-        'chauffeur' => ['name' => 'Louer un chauffeur', 'short' => 'Chauffeur', 'emoji' => '🚘', 'sub' => 'Chauffeur privé à la demande', 'color' => '#35557A', 'bg' => '#ECF1F7', 'img' => 'univers-chauffeur', 'url' => '/chauffeur', 'group' => 'Transports',
+        'chauffeur' => ['name' => 'Louer un chauffeur', 'short' => 'Chauffeur', 'emoji' => '', 'sub' => 'Chauffeur privé à la demande', 'color' => '#35557A', 'bg' => '#ECF1F7', 'img' => 'univers-chauffeur', 'url' => '/chauffeur', 'group' => 'Transports',
             'pitch' => 'Déplacez-vous en toute sérénité avec un chauffeur'],
-        'location_camion' => ['name' => 'Location de gros camion', 'short' => 'Camion', 'emoji' => '🚚', 'sub' => 'Fret & Déménagement', 'color' => '#8A5A2B', 'bg' => '#FBF2E9', 'img' => 'univers-location-camion', 'url' => '/location-camion', 'group' => 'Transports',
+        'location_camion' => ['name' => 'Location de gros camion', 'short' => 'Camion', 'emoji' => '', 'sub' => 'Fret & Déménagement', 'color' => '#8A5A2B', 'bg' => '#FBF2E9', 'img' => 'univers-location-camion', 'url' => '/location-camion', 'group' => 'Transports',
             'pitch' => 'Un camion et son chauffeur pour vos déménagements, ramassage de gravier, meubles ou marchandises.'],
-        'covoiturage' => ['name' => 'Covoiturage', 'short' => 'Covoit.', 'emoji' => '🚙', 'sub' => 'Trajets économiques partagés', 'color' => '#0E9F8E', 'bg' => '#E9FAF6', 'img' => 'univers-covoiturage', 'url' => '/covoiturage', 'group' => 'Transports',
+        'covoiturage' => ['name' => 'Covoiturage', 'short' => 'Covoit.', 'emoji' => '', 'sub' => 'Trajets économiques partagés', 'color' => '#0E9F8E', 'bg' => '#E9FAF6', 'img' => 'univers-covoiturage', 'url' => '/covoiturage', 'group' => 'Transports',
             'pitch' => 'Voyagez à prix réduit, en toute sécurité, et partagez votre trajet avec des personnes qui vont dans la même direction que vous.'],
-        // 🏡 Immobilier (Location)
-        'immobilier' => ['name' => 'Immobilier', 'short' => 'Immobilier', 'emoji' => '🏡', 'sub' => 'Studios, villas & appartements', 'color' => '#C98512', 'bg' => '#FFF7E8', 'img' => 'univers-immobilier', 'url' => '/immobilier', 'group' => 'Immobilier',
+        //  Immobilier (Location)
+        'immobilier' => ['name' => 'Immobilier', 'short' => 'Immobilier', 'emoji' => '', 'sub' => 'Studios, villas & appartements', 'color' => '#C98512', 'bg' => '#FFF7E8', 'img' => 'univers-immobilier', 'url' => '/immobilier', 'group' => 'Immobilier',
             'pitch' => 'Appartements, villas & studios à louer, inspectés, contrats et dépôts de garantie 100% sécurisés.'],
-        // 🧹 Service à la personne
-        'menage' => ['name' => 'Ménage ou aide à domicile', 'short' => 'Ménage', 'emoji' => '🧹', 'sub' => 'Femmes de ménage pro', 'color' => '#C2407F', 'bg' => '#FCEFF5', 'img' => 'univers-menage', 'url' => '/menage', 'group' => 'Service à la personne',
+        //  Service à la personne
+        'menage' => ['name' => 'Ménage ou aide à domicile', 'short' => 'Ménage', 'emoji' => '', 'sub' => 'Femmes de ménage pro', 'color' => '#C2407F', 'bg' => '#FCEFF5', 'img' => 'univers-menage', 'url' => '/menage', 'group' => 'Service à la personne',
             'pitch' => 'Aides ménagères aux profils CNI vérifiés, tarif fixe à la séance.'],
-        'pressing' => ['name' => 'Pressing & repassage', 'short' => 'Pressing', 'emoji' => '👔', 'sub' => 'Collecte & Livraison', 'color' => '#2F6FB0', 'bg' => '#EEF5FC', 'img' => 'univers-pressing', 'url' => '/pressing', 'group' => 'Service à la personne',
+        'pressing' => ['name' => 'Pressing & repassage', 'short' => 'Pressing', 'emoji' => '', 'sub' => 'Collecte & Livraison', 'color' => '#2F6FB0', 'bg' => '#EEF5FC', 'img' => 'univers-pressing', 'url' => '/pressing', 'group' => 'Service à la personne',
             'pitch' => 'Collecte à domicile, lavage pro et retour sous 24 à 48h.'],
-        // 💄 Beauté à domicile
-        'coiffeuse' => ['name' => 'Coiffeuse à domicile', 'short' => 'Coiffure', 'emoji' => '💇‍♀️', 'sub' => 'Tresses & soins sans déplacement', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/coiffeuse', 'group' => 'Beauté',
+        //  Beauté à domicile
+        'coiffeuse' => ['name' => 'Coiffeuse à domicile', 'short' => 'Coiffure', 'emoji' => '', 'sub' => 'Tresses & soins sans déplacement', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/coiffeuse', 'group' => 'Beauté',
             'pitch' => 'Coiffeuses vérifiées à domicile : tresses, soins et coiffures, sans vous déplacer.'],
-        'maquilleuse' => ['name' => 'Maquilleuse à domicile', 'short' => 'Maquillage', 'emoji' => '💄', 'sub' => 'Cérémonies & Événements', 'color' => '#D6336C', 'bg' => '#FDEEF3', 'img' => 'univers-maquilleuse', 'url' => '/maquilleuse', 'group' => 'Beauté',
+        'maquilleuse' => ['name' => 'Maquilleuse à domicile', 'short' => 'Maquillage', 'emoji' => '', 'sub' => 'Cérémonies & Événements', 'color' => '#D6336C', 'bg' => '#FDEEF3', 'img' => 'univers-maquilleuse', 'url' => '/maquilleuse', 'group' => 'Beauté',
             'pitch' => 'Maquillage professionnel à domicile pour vos mariages, cérémonies et événements.'],
-        'onglerie' => ['name' => 'Onglerie à domicile', 'short' => 'Onglerie', 'emoji' => '💅', 'sub' => 'Pose capsules & Vernis', 'color' => '#AD1457', 'bg' => '#FCE8EF', 'img' => 'univers-onglerie', 'url' => '/onglerie', 'group' => 'Beauté',
+        'onglerie' => ['name' => 'Onglerie à domicile', 'short' => 'Onglerie', 'emoji' => '', 'sub' => 'Pose capsules & Vernis', 'color' => '#AD1457', 'bg' => '#FCE8EF', 'img' => 'univers-onglerie', 'url' => '/onglerie', 'group' => 'Beauté',
             'pitch' => 'Pose de capsules, vernis semi-permanent et soins des ongles à domicile.'],
     ];
 }
@@ -155,19 +155,19 @@ function universe(string $key): array
 function domaines(): array
 {
     return [
-        'transport' => ['name' => 'Transport', 'short' => 'Transports', 'emoji' => '🚌', 'sub' => 'Cars, location & chauffeur', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/transport', 'group' => 'Transports',
+        'transport' => ['name' => 'Transport', 'short' => 'Transports', 'emoji' => '', 'sub' => 'Cars, location & chauffeur', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/transport', 'group' => 'Transports',
             'pitch' => 'Cars interurbains, covoiturage, location de car ou de camion : comparez et réservez en un clic.',
             'tagline' => 'Voyagez simplement !',
             'select_h2' => 'Sélectionnez votre besoin', 'select_sub' => 'Trouvez le meilleur tarif, en quelques clics.',
             'trust_title' => 'Paiement sécurisé après confirmation :', 'trust_text' => 'Votre paiement est bloqué sur ChapTarif et n\'est versé au prestataire qu\'après la réalisation du service.',
             'keys' => ['cars', 'covoiturage', 'location_car', 'location_vehicule', 'chauffeur', 'location_camion']],
-        'beaute' => ['name' => 'Beauté à domicile', 'short' => 'Beauté', 'title_m' => 'Beauté à Domicile', 'emoji' => '💄', 'sub' => 'Coiffure & maquillage', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/beaute', 'group' => 'Beauté',
+        'beaute' => ['name' => 'Beauté à domicile', 'short' => 'Beauté', 'title_m' => 'Beauté à Domicile', 'emoji' => '', 'sub' => 'Coiffure & maquillage', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/beaute', 'group' => 'Beauté',
             'pitch' => 'Coiffeuse, maquilleuse et prothésiste ongulaire à domicile, prestataires vérifiés.',
             'tagline' => 'La beauté vient à vous !',
             'select_h2' => 'Sélectionnez votre prestation', 'select_sub' => 'La prestataire se déplace directement à votre adresse.',
             'trust_title' => 'Paiement débloqué après prestation :', 'trust_text' => 'Vous validez sur votre téléphone une fois votre coiffure, maquillage ou manucure terminée.',
             'keys' => ['coiffeuse', 'maquilleuse', 'onglerie']],
-        'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'title_m' => 'Service à la personne', 'emoji' => '🧹', 'sub' => 'Ménage & pressing', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/service-a-la-personne', 'group' => 'Service à la personne',
+        'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'title_m' => 'Service à la personne', 'emoji' => '', 'sub' => 'Ménage & pressing', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/service-a-la-personne', 'group' => 'Service à la personne',
             'pitch' => 'Ménage à domicile et pressing & repassage de linge, prestataires vérifiés, tarif fixe.',
             'tagline' => 'Un intérieur propre, un quotidien plus serein !',
             'select_h2' => 'Sélectionnez votre besoin', 'select_sub' => 'Trouvez le prestataire idéal, en quelques clics.',
@@ -212,7 +212,7 @@ function nav_entries(): array
 function task_categories(): array
 {
     return array_merge(
-        ['general' => ['name' => 'Général / Autre', 'short' => 'Général', 'emoji' => '🗂️', 'color' => '#5A6778']],
+        ['general' => ['name' => 'Général / Autre', 'short' => 'Général', 'emoji' => '', 'color' => '#5A6778']],
         nav_entries()
     );
 }
@@ -375,7 +375,7 @@ function not_found(): never
     http_response_code(404);
     $title = 'Page introuvable';
     view('layout/header', compact('title'));
-    echo '<section class="container section center"><div class="empty"><div class="empty-ico">🧭</div><h1>Page introuvable</h1><p>Cette page n\'existe pas ou a été déplacée.</p><a class="btn btn-primary" href="/">Retour à l\'accueil</a></div></section>';
+    echo '<section class="container section center"><div class="empty"><div class="empty-ico"></div><h1>Page introuvable</h1><p>Cette page n\'existe pas ou a été déplacée.</p><a class="btn btn-primary" href="/">Retour à l\'accueil</a></div></section>';
     view('layout/footer');
     exit;
 }
@@ -455,7 +455,7 @@ function chat_decorate(array $rows, bool $admin, string $otherName): array
         $r['quote'] = null;
         if (!empty($r['reply_to']) && isset($quoted[(int) $r['reply_to']])) {
             $q = $quoted[(int) $r['reply_to']];
-            $txt = $q['body'] !== '' ? mb_substr($q['body'], 0, 120) : match ($q['att_type']) { 'image' => '📷 Photo', 'audio' => '🎤 Message vocal', default => '📎 ' . ($q['att_name'] ?: 'Fichier') };
+            $txt = $q['body'] !== '' ? mb_substr($q['body'], 0, 120) : match ($q['att_type']) { 'image' => ' Photo', 'audio' => ' Message vocal', default => ' ' . ($q['att_name'] ?: 'Fichier') };
             $r['quote'] = ['who' => $q['sender'] === $mineSender ? 'Vous' : $otherName, 'text' => $txt, 'id' => (int) $q['id']];
         }
     }
@@ -472,12 +472,12 @@ function chat_msg_html(array $m): string
         $h .= match ($m['att_type']) {
             'image' => '<a href="' . $u . '" target="_blank" rel="noopener"><img class="wa-img" src="' . e(cld($m['att_url'], 'w_480,q_auto,f_auto')) . '" alt="Photo" loading="lazy"></a>',
             'audio' => '<audio controls preload="none" src="' . $u . '"></audio>',
-            default => '<a class="wa-file" href="' . $u . '" target="_blank" rel="noopener">📎 ' . e($m['att_name'] ?: 'Fichier') . '</a>',
+            default => '<a class="wa-file" href="' . $u . '" target="_blank" rel="noopener"> ' . e($m['att_name'] ?: 'Fichier') . '</a>',
         };
     }
     if ($m['body'] !== '') $h .= '<span class="wa-txt">' . nl2br(e($m['body'])) . '</span>';
     $h .= '<span class="wa-meta">' . e(substr($m['created_at'], 11, 5)) . ($m['mine'] ? ' <i class="wa-tick' . ($m['read'] ? ' read' : '') . '">✓✓</i>' : '') . '</span>';
-    return $h . '<button type="button" class="wa-reply" aria-label="Répondre" title="Répondre">↩</button></div>';
+    return $h . '<button type="button" class="wa-reply" aria-label="Répondre" title="Répondre"></button></div>';
 }
 
 function chat_json(array $r): array
@@ -514,13 +514,13 @@ function kyc_docs_required(string $universe): array
 function listing_schema(string $universe): array
 {
     $yn = ['Oui', 'Non'];
-    $zones = ['zones', '📍 Zones / quartiers desservis', 'text', 'Ex. Cocody, Marcory, Plateau'];
+    $zones = ['zones', ' Zones / quartiers desservis', 'text', 'Ex. Cocody, Marcory, Plateau'];
     $S = [
         'immobilier' => [
             'title_ph' => 'Ex. Appartement 2 chambres salon — Cocody Angré', 'price_label' => 'Loyer mensuel (F CFA)', 'units' => ['mois'],
             'fields' => [
                 'type' => ['Type de logement', 'select', ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'], true],
-                'quartier' => ['📍 Quartier', 'text', 'Ex. Angré 8e tranche', true],
+                'quartier' => [' Quartier', 'text', 'Ex. Angré 8e tranche', true],
                 'chambres' => ['Nombre de chambres', 'number', '2'],
                 'sdb' => ['Salles de bain / douches', 'number', '1'],
                 'surface' => ['Superficie (m²)', 'number', '60'],
@@ -620,7 +620,7 @@ function listing_schema(string $universe): array
                 'chauffeur' => ['Chauffeur inclus', 'yesno', $yn],
                 'carburant' => ['Carburant inclus', 'yesno', $yn],
                 'usage' => ['Utilisations acceptées', 'multi', ['Mariage', 'Excursion / voyage', 'Sortie scolaire', 'Événement d\'entreprise', 'Transfert aéroport']],
-                $zones[0] => ['📍 Destinations / zones couvertes', 'text', 'Ex. Abidjan et intérieur du pays'],
+                $zones[0] => [' Destinations / zones couvertes', 'text', 'Ex. Abidjan et intérieur du pays'],
             ],
         ],
         'location_vehicule' => [
@@ -659,7 +659,7 @@ function listing_schema(string $universe): array
                 'chauffeur' => ['Chauffeur inclus', 'yesno', $yn],
                 'manutention' => ['Manutention (porteurs)', 'yesno', $yn],
                 'carburant' => ['Carburant inclus', 'yesno', $yn],
-                $zones[0] => ['📍 Zones couvertes', 'text', 'Ex. Abidjan et intérieur du pays'],
+                $zones[0] => [' Zones couvertes', 'text', 'Ex. Abidjan et intérieur du pays'],
             ],
         ],
     ];

@@ -1,6 +1,6 @@
 </main>
 <?php if (!empty($providerMode)): ?>
-<footer class="footer ps-foot"><div class="container footer-bottom"><span>© <?= date('Y') ?> ChapTarif · Espace prestataire</span><span>Besoin d'aide ? <a href="/chat?pro=1">💬 Chat avec l'équipe</a></span></div></footer>
+<footer class="footer ps-foot"><div class="container footer-bottom"><span>© <?= date('Y') ?> ChapTarif · Espace prestataire</span><span>Besoin d'aide ? <a href="/chat?pro=1"> Chat avec l'équipe</a></span></div></footer>
 <?php else: ?>
 <footer class="footer">
   <div class="container footer-grid">
@@ -18,7 +18,7 @@
     <div>
       <h4>ChapTarif</h4>
       <a href="/comment-ca-marche">Comment ça marche</a>
-      <a href="/garantie-dommage">🛡️ Garantie Dommage</a>
+      <a href="/garantie-dommage"> Garantie Dommage</a>
       <a href="/devenir-prestataire">Devenir prestataire</a>
       <a href="/prestataire/valider">Valider une mission (prestataires)</a>
       <a href="/contact">Contact & réclamations</a>
@@ -26,15 +26,15 @@
     </div>
     <div>
       <h4>Nous joindre</h4>
-      <a href="tel:<?= e(preg_replace('/\s+/', '', (string) setting('support_phone'))) ?>">📞 <?= e(setting('support_phone')) ?></a>
-      <a href="mailto:<?= e(setting('support_email')) ?>">✉️ <?= e(setting('support_email')) ?></a>
-      <span class="muted-light">📍 Abidjan, Côte d'Ivoire</span>
-      <span class="muted-light">🕗 7j/7 · 7h – 22h</span>
+      <a href="tel:<?= e(preg_replace('/\s+/', '', (string) setting('support_phone'))) ?>"> <?= e(setting('support_phone')) ?></a>
+      <a href="mailto:<?= e(setting('support_email')) ?>"> <?= e(setting('support_email')) ?></a>
+      <span class="muted-light"> Abidjan, Côte d'Ivoire</span>
+      <span class="muted-light"> 7j/7 · 7h – 22h</span>
     </div>
   </div>
   <div class="container footer-bottom">
     <span>© <?= date('Y') ?> ChapTarif · Tous droits réservés</span>
-    <span>🔒 Paiements sécurisés sous séquestre</span>
+    <span> Paiements sécurisés sous séquestre</span>
   </div>
 </footer>
 
@@ -48,7 +48,8 @@
 </nav>
 
 <?php endif; ?>
-<script src="/assets/js/app.js?v=17" defer></script>
+<script src="/assets/js/app.js?v=18" defer></script>
+<script>document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll("[class*=ico],[class*=emoji],.fi,.step-ico,.sum-ico").forEach(function(e){if(!e.children.length&&!e.textContent.trim()&&e.tagName!=="IMG"&&e.tagName!=="svg")e.style.display="none";});});</script>
 <script src="/assets/js/polish.js?v=1" defer></script>
 <?php if (!empty($leaflet)): ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>

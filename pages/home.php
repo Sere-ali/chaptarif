@@ -42,8 +42,8 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <img src="/assets/img/logo.svg" alt="" width="34" height="34">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
-    <span class="m-loc">📍 Abidjan</span>
-    <a class="m-bell" href="/compte" aria-label="Mon compte & notifications">🔔</a>
+    <span class="m-loc"> Abidjan</span>
+    <a class="m-bell" href="/compte" aria-label="Mon compte & notifications"></a>
   </div>
   <div class="container m-hero-in">
     <h1 class="m-title">Que souhaitez-vous<br>aujourd’hui&nbsp;?</h1>
@@ -57,13 +57,13 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
           $sidx[] = ['t' => $ux['emoji'] . ' ' . $ux['name'], 'u' => $ux['url'], 'a' => $alias[$uk2] ?? '', 'k' => ($ux['name'] . ' ' . ($ux['short'] ?? '') . ' ' . ($ux['sub'] ?? '') . ' ' . ($kw[$uk2] ?? ''))];
       }
       foreach (PROPERTY_TYPES as $pt) {
-          $sidx[] = ['t' => '🏡 ' . $pt, 'u' => '/immobilier?cat=appart&type=' . urlencode($pt), 'a' => ($pt === 'Studio' ? 'studio studios' : mb_strtolower($pt) . ' ' . str_replace('chambre ', 'chambres ', mb_strtolower($pt))), 'k' => $pt . ' appartement logement louer immobilier' . ($pt === 'Studio' ? ' studios' : ' chambres chambre salon')];
+          $sidx[] = ['t' => ' ' . $pt, 'u' => '/immobilier?cat=appart&type=' . urlencode($pt), 'a' => ($pt === 'Studio' ? 'studio studios' : mb_strtolower($pt) . ' ' . str_replace('chambre ', 'chambres ', mb_strtolower($pt))), 'k' => $pt . ' appartement logement louer immobilier' . ($pt === 'Studio' ? ' studios' : ' chambres chambre salon')];
       }
-      $sidx[] = ['t' => '💬 Chat service client', 'u' => '/chat', 'k' => 'chat aide contact service client support whatsapp'];
-      $sidx[] = ['t' => '🧾 Mes réservations', 'u' => '/compte', 'k' => 'reservation reservations commande billet compte profil'];
+      $sidx[] = ['t' => ' Chat service client', 'u' => '/chat', 'k' => 'chat aide contact service client support whatsapp'];
+      $sidx[] = ['t' => ' Mes réservations', 'u' => '/compte', 'k' => 'reservation reservations commande billet compte profil'];
     ?>
     <form class="m-search" action="#" data-search='<?= e(json_encode($sidx, JSON_UNESCAPED_UNICODE)) ?>' autocomplete="off" style="position:relative">
-      <span class="m-search-ico">🔎</span>
+      <span class="m-search-ico"></span>
       <input type="search" name="q" placeholder="Rechercher un service, car, logement…" aria-label="Rechercher">
       <ul class="m-sugg" hidden></ul>
     </form>
@@ -115,7 +115,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <?php endforeach; ?>
     </div>
     <div class="m-trust reveal">
-      <span class="m-trust-ico">🛡️</span>
+      <span class="m-trust-ico"></span>
       <div><b>SÉQUESTRE SÉCURISÉ</b><small>Payez en ligne, vos fonds sont conservés jusqu'à votre validation de la prestation.</small></div>
       <div class="m-trust-chips"><span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange</span><span class="chip chip-mtn">MTN</span></div>
     </div>
@@ -125,7 +125,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   <div class="hero-bg" style="--hero:url('<?= e(img('hero-abidjan', 'w_1800,h_1000,c_fill,q_auto,f_auto')) ?>')"></div>
   <div class="container hero-grid">
     <div class="hero-copy reveal">
-      <span class="pill"><span class="bolt">⚡</span> Le comparateur n°1 en Côte d'Ivoire</span>
+      <span class="pill"><span class="bolt"></span> Le comparateur n°1 en Côte d'Ivoire</span>
       <h1>Où &amp; que souhaitez-vous <span class="grad">aujourd'hui&nbsp;?</span></h1>
       <p class="lead">Comparez les prix, réservez en 3 clics et payez en toute sécurité. Votre argent reste <strong>bloqué</strong> jusqu'à ce que le service soit bien rendu.</p>
 
@@ -137,54 +137,54 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
         </div>
         <form class="quick-pane on" data-pane="cars" action="/cars" method="get">
           <input type="hidden" name="from" value="Abidjan">
-          <label class="fld"><span>🚌 Abidjan →</span><select name="to"><?php foreach ($cities as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
-          <label class="fld"><span>📅 Date</span><input type="date" name="date" value="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d') ?>"></label>
+          <label class="fld"><span> Abidjan →</span><select name="to"><?php foreach ($cities as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Date</span><input type="date" name="date" value="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d') ?>"></label>
           <button class="btn btn-primary btn-lg">Voir les départs</button>
         </form>
         <form class="quick-pane" data-pane="location_car" action="/location-car" method="get">
-          <label class="fld"><span>📍 Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <button class="btn btn-primary btn-lg">Voir les loueurs de car</button>
         </form>
         <form class="quick-pane" data-pane="location_camion" action="/location-camion" method="get">
-          <label class="fld"><span>📍 Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <button class="btn btn-primary btn-lg">Voir les loueurs de camion</button>
         </form>
         <form class="quick-pane" data-pane="covoiturage" action="/covoiturage" method="get">
           <input type="hidden" name="from" value="Abidjan">
-          <label class="fld"><span>🚙 Abidjan →</span><select name="to"><?php foreach ($covCities as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Abidjan →</span><select name="to"><?php foreach ($covCities as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <button class="btn btn-primary btn-lg">Voir les trajets</button>
         </form>
         <form class="quick-pane" data-pane="immobilier" action="/immobilier" method="get">
-          <label class="fld"><span>🏙️ Commune</span><select name="commune"><option value="">Toutes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
-          <label class="fld"><span>📅 Arrivée</span><input type="date" name="checkin" min="<?= date('Y-m-d') ?>"></label>
+          <label class="fld"><span> Commune</span><select name="commune"><option value="">Toutes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Arrivée</span><input type="date" name="checkin" min="<?= date('Y-m-d') ?>"></label>
           <button class="btn btn-primary btn-lg">Trouver un logement</button>
         </form>
         <form class="quick-pane" data-pane="menage" action="/menage" method="get">
-          <label class="fld"><span>📍 Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <button class="btn btn-primary btn-lg">Voir les aides ménagères</button>
         </form>
         <form class="quick-pane" data-pane="pressing" action="/pressing" method="get">
-          <label class="fld"><span>📍 Collecte à</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Collecte à</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <button class="btn btn-primary btn-lg">Voir les pressings</button>
         </form>
         <form class="quick-pane" data-pane="coiffeuse" action="/coiffeuse" method="get">
-          <label class="fld"><span>📍 Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <button class="btn btn-primary btn-lg">Voir les coiffeuses</button>
         </form>
         <form class="quick-pane" data-pane="maquilleuse" action="/maquilleuse" method="get">
-          <label class="fld"><span>📍 Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <button class="btn btn-primary btn-lg">Voir les maquilleuses</button>
         </form>
         <form class="quick-pane" data-pane="onglerie" action="/onglerie" method="get">
-          <label class="fld"><span>📍 Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Votre commune</span><select name="commune"><option value="">Toutes les communes</option><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <button class="btn btn-primary btn-lg">Voir les onglerie</button>
         </form>
       </div>
 
       <ul class="trust">
-        <li><span>🛡️</span> Prestataires CNI vérifiés</li>
-        <li><span>🔒</span> Paiement sous séquestre</li>
-        <li><span>⚡</span> Réservation en 3 clics</li>
+        <li><span></span> Prestataires CNI vérifiés</li>
+        <li><span></span> Paiement sous séquestre</li>
+        <li><span></span> Réservation en 3 clics</li>
       </ul>
     </div>
 
@@ -192,19 +192,19 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <div class="phone">
         <div class="phone-notch"></div>
         <div class="phone-screen">
-          <div class="ps-head"><img src="/assets/img/logo.svg" width="26" alt=""> <b>ChapTarif</b> <span class="ps-loc">📍 Abidjan</span></div>
+          <div class="ps-head"><img src="/assets/img/logo.svg" width="26" alt=""> <b>ChapTarif</b> <span class="ps-loc"> Abidjan</span></div>
           <div class="ps-label">Offres populaires du moment</div>
           <?php foreach ($popular as $po): ?>
             <div class="ps-row"><span><?= e($po['label']) ?><small><?= e($po['sub']) ?></small></span><b><?= $po['price'] ? 'Dès ' . fcfa($po['price']) : '—' ?></b></div>
           <?php endforeach; ?>
-          <div class="ps-row best"><span>⭐ Location de maisons<small>Villas & appartements certifiés</small></span><b><?= $immoFrom ? 'Dès ' . fcfa($immoFrom) : 'Tarifs réels' ?></b></div>
+          <div class="ps-row best"><span> Location de maisons<small>Villas & appartements certifiés</small></span><b><?= $immoFrom ? 'Dès ' . fcfa($immoFrom) : 'Tarifs réels' ?></b></div>
           <div class="ps-btn">Réserver via Wave</div>
           <div class="ps-foot">✓ Tarifs affichés à l'avance · Paiement sécurisé</div>
         </div>
       </div>
-      <div class="float f1"><span class="fi">🔒</span><div><b>5 000 F bloqués</b><small>Versés après votre validation</small></div></div>
-      <div class="float f2"><span class="fi">🎫</span><div><b>E-billet UTB</b><small>Siège 14 · QR code</small></div></div>
-      <div class="float f3"><span class="fi">✅</span><div><b>Awa K. · CNI vérifiée</b><small>★ 4,9 · Cocody Angré</small></div></div>
+      <div class="float f1"><span class="fi"></span><div><b>5 000 F bloqués</b><small>Versés après votre validation</small></div></div>
+      <div class="float f2"><span class="fi"></span><div><b>E-billet UTB</b><small>Siège 14 · QR code</small></div></div>
+      <div class="float f3"><span class="fi"></span><div><b>Awa K. · CNI vérifiée</b><small>★ 4,9 · Cocody Angré</small></div></div>
     </div>
   </div>
 </section>
@@ -229,7 +229,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
         </a>
       <?php endforeach; ?>
     </div>
-    <div class="paybar reveal">🔒 <strong>Paiement In-App sécurisé :</strong> <span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange Money</span><span class="chip chip-mtn">MTN MoMo</span><span class="chip chip-moov">Moov</span></div>
+    <div class="paybar reveal"> <strong>Paiement In-App sécurisé :</strong> <span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange Money</span><span class="chip chip-mtn">MTN MoMo</span><span class="chip chip-moov">Moov</span></div>
   </div>
 </section>
 
@@ -254,7 +254,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   <div class="container split">
     <div class="reveal">
       <span class="eyebrow">Option de protection</span>
-      <h2>🛡️ La <span class="grad">Garantie Dommage</span></h2>
+      <h2> La <span class="grad">Garantie Dommage</span></h2>
       <p class="lead-sm">En cas de dommage lié à la prestation, vous pouvez déposer une réclamation auprès de ChapTarif.</p>
       <p>Chaque situation est examinée selon les conditions de la garantie.</p>
       <ul class="checks">
@@ -277,17 +277,17 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   <div class="container split split-rev">
     <div class="app-visual reveal">
       <img src="<?= e(img('app-user', 'w_900,h_700,c_fill,g_face,q_auto,f_auto')) ?>" alt="Cliente utilisant ChapTarif sur son téléphone" loading="lazy" width="900" height="700">
-      <div class="float f4"><span class="fi">📲</span><div><b>Code reçu par SMS</b><small>Connexion sans mot de passe</small></div></div>
+      <div class="float f4"><span class="fi"></span><div><b>Code reçu par SMS</b><small>Connexion sans mot de passe</small></div></div>
     </div>
     <div class="reveal">
       <span class="eyebrow">Pensé pour Abidjan</span>
       <h2>Léger, rapide, <span class="grad">même en 3G</span></h2>
       <p class="lead-sm">Pas de compte à créer pour comparer. Votre numéro de téléphone suffit au moment de payer : un code SMS et c'est parti.</p>
       <div class="features">
-        <div><span>📶</span><b>Ultra léger</b><small>Chargement rapide sur réseau mobile</small></div>
-        <div><span>📱</span><b>Installable</b><small>Ajoutez ChapTarif à votre écran d'accueil</small></div>
-        <div><span>🎫</span><b>E-billets QR</b><small>Montrez votre téléphone à l'embarquement</small></div>
-        <div><span>💬</span><b>Support local</b><small>Une équipe à Abidjan 7j/7</small></div>
+        <div><span></span><b>Ultra léger</b><small>Chargement rapide sur réseau mobile</small></div>
+        <div><span></span><b>Installable</b><small>Ajoutez ChapTarif à votre écran d'accueil</small></div>
+        <div><span></span><b>E-billets QR</b><small>Montrez votre téléphone à l'embarquement</small></div>
+        <div><span></span><b>Support local</b><small>Une équipe à Abidjan 7j/7</small></div>
       </div>
     </div>
   </div>

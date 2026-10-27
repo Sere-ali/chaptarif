@@ -45,14 +45,14 @@ view('admin/header', compact('page', 'nav'));
   <label class="fld"><span>Au</span><input type="date" name="to" value="<?= e($to) ?>"></label>
   <label class="fld"><span>Type</span><select name="type"><option value="">Tous</option><?php foreach (array_keys($colors) as $k): ?><option <?= $type === $k ? 'selected' : '' ?>><?= $k ?></option><?php endforeach; ?></select></label>
   <button class="btn btn-primary">Appliquer</button>
-  <a class="btn btn-ghost" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 1]))) ?>">⬇ Grand livre CSV</a>
+  <a class="btn btn-ghost" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 1]))) ?>"> Grand livre CSV</a>
   <a class="btn btn-soft" href="?status=A_VIRER">File des virements à faire</a>
 </form>
 <div class="kpis">
-  <div class="kpi"><span class="kpi-ico">⬇️</span><small>Encaissé (période)</small><b><?= fcfa($in) ?></b><em>Paiements clients</em></div>
-  <div class="kpi hl"><span class="kpi-ico">💰</span><small>Revenus ChapTarif</small><b><?= fcfa($com + $abo) ?></b><em>Commissions <?= fcfa($com) ?> · Abonnements <?= fcfa($abo) ?></em></div>
-  <div class="kpi"><span class="kpi-ico">⬆️</span><small>Reversé aux prestataires</small><b><?= fcfa($pay) ?></b><em>Remboursements : <?= fcfa($ref) ?></em></div>
-  <div class="kpi"><span class="kpi-ico">🔒</span><small>Solde séquestre actuel</small><b><?= fcfa($escrow) ?></b><em>Fonds clients bloqués</em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Encaissé (période)</small><b><?= fcfa($in) ?></b><em>Paiements clients</em></div>
+  <div class="kpi hl"><span class="kpi-ico"></span><small>Revenus ChapTarif</small><b><?= fcfa($com + $abo) ?></b><em>Commissions <?= fcfa($com) ?> · Abonnements <?= fcfa($abo) ?></em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Reversé aux prestataires</small><b><?= fcfa($pay) ?></b><em>Remboursements : <?= fcfa($ref) ?></em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Solde séquestre actuel</small><b><?= fcfa($escrow) ?></b><em>Fonds clients bloqués</em></div>
 </div>
 <div class="panel">
   <div class="panel-h"><h2><?= $status ? 'Virements en attente' : 'Grand livre' ?></h2><span class="muted small"><?= $total ?> mouvement(s)</span></div>

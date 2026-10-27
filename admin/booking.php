@@ -60,13 +60,13 @@ view('admin/header', compact('page', 'nav'));
         <?php foreach ($d as $k => $v): if ($v === '' || $v === null || in_array($k, ['garantie_dommage', 'garantie_dommage_montant'], true)) continue; ?>
           <dt><?= e($labels[$k] ?? $k) ?></dt><dd><?= e(is_array($v) ? implode(', ', $v) : $v) ?></dd>
         <?php endforeach; ?>
-        <?php if (!empty($d['garantie_dommage'])): ?><dt>🛡️ Garantie Dommage</dt><dd><span class="badge badge-amber">Souscrite · <?= fcfa($d['garantie_dommage_montant'] ?? 0) ?></span></dd><?php endif; ?>
+        <?php if (!empty($d['garantie_dommage'])): ?><dt> Garantie Dommage</dt><dd><span class="badge badge-amber">Souscrite · <?= fcfa($d['garantie_dommage_montant'] ?? 0) ?></span></dd><?php endif; ?>
         <?php if ($b['seat_no']): ?><dt>Siège</dt><dd>N° <?= (int) $b['seat_no'] ?></dd><?php endif; ?>
         <dt>Créée le</dt><dd><?= fmt_date($b['created_at'], true) ?></dd>
         <dt>Payée le</dt><dd><?= fmt_date($b['paid_at'], true) ?></dd>
         <dt>Clôturée le</dt><dd><?= fmt_date($b['validated_at'], true) ?></dd>
       </dl>
-      <?php if ($b['dispute_reason']): ?><div class="alert alert-error mt"><b>Réclamation du client :</b> « <?= e($b['dispute_reason']) ?> »<?php if (!empty($d['garantie_dommage'])): ?><br><span class="badge badge-amber mt">🛡️ Garantie Dommage souscrite (<?= fcfa($d['garantie_dommage_montant'] ?? 0) ?>) : indemnisation ou nouvelle prestation possible</span><?php endif; ?></div><?php endif; ?>
+      <?php if ($b['dispute_reason']): ?><div class="alert alert-error mt"><b>Réclamation du client :</b> « <?= e($b['dispute_reason']) ?> »<?php if (!empty($d['garantie_dommage'])): ?><br><span class="badge badge-amber mt"> Garantie Dommage souscrite (<?= fcfa($d['garantie_dommage_montant'] ?? 0) ?>) : indemnisation ou nouvelle prestation possible</span><?php endif; ?></div><?php endif; ?>
     </div>
     <div class="panel">
       <div class="panel-h"><h2>Mouvements financiers</h2></div>
@@ -83,7 +83,7 @@ view('admin/header', compact('page', 'nav'));
       <h2 class="h4">Montants</h2>
       <div class="sum-row"><span>Prestation</span><b><?= fcfa($b['amount']) ?></b></div>
       <?php $gm = (int) (json_decode((string) ($b['details'] ?? ''), true)['garantie_dommage_montant'] ?? 0); ?>
-      <?php if ($gm): ?><div class="sum-row"><span>🛡️ Garantie dommage</span><b><?= fcfa($gm) ?></b></div><?php endif; ?>
+      <?php if ($gm): ?><div class="sum-row"><span> Garantie dommage</span><b><?= fcfa($gm) ?></b></div><?php endif; ?>
       <div class="sum-row"><span>Frais de service</span><b><?= fcfa((int) $b['service_fee'] - $gm) ?></b></div>
       <div class="sum-row total"><span>Payé par le client</span><b><?= fcfa($b['total']) ?></b></div>
       <hr>
@@ -105,10 +105,10 @@ view('admin/header', compact('page', 'nav'));
         <div class="bk-actions">
           <?php if (in_array($b['status'], ['BLOQUE', 'EN_LITIGE'], true)): ?>
             <button class="btn btn-primary btn-sm" name="action" value="release" onclick="return confirm('Débloquer les fonds et payer le prestataire ?')">✓ Débloquer & payer le prestataire</button>
-            <button class="btn btn-danger btn-sm" name="action" value="refund" onclick="return confirm('Rembourser intégralement le client ?')">↩ Rembourser le client</button>
+            <button class="btn btn-danger btn-sm" name="action" value="refund" onclick="return confirm('Rembourser intégralement le client ?')"> Rembourser le client</button>
           <?php endif; ?>
           <?php if ($b['status'] === 'EN_ATTENTE_PAIEMENT'): ?>
-            <?php if ($b['payment_ref'] === 'EN_ATTENTE_VALIDATION'): ?><div class="alert alert-warn small" style="margin:0 0 8px">🕐 Le client indique avoir envoyé le paiement. Vérifiez la réception sur votre compte <?= e(payment_methods()[$b['payment_method']][0] ?? 'Mobile Money') ?> avant de valider.</div><?php endif; ?>
+            <?php if ($b['payment_ref'] === 'EN_ATTENTE_VALIDATION'): ?><div class="alert alert-warn small" style="margin:0 0 8px"> Le client indique avoir envoyé le paiement. Vérifiez la réception sur votre compte <?= e(payment_methods()[$b['payment_method']][0] ?? 'Mobile Money') ?> avant de valider.</div><?php endif; ?>
             <?php if (payment_mode() === 'simulation' || is_super($me)): ?><button class="btn btn-soft btn-sm" name="action" value="mark_paid" onclick="return confirm('Confirmer que le paiement de ' + <?= json_encode(fcfa($b['total'])) ?> + ' a bien été reçu sur votre compte Mobile Money ?')">✓ Confirmer la réception du paiement</button><?php endif; ?>
             <button class="btn btn-ghost btn-sm" name="action" value="cancel">Annuler</button>
           <?php endif; ?>

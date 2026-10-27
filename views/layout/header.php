@@ -24,7 +24,7 @@ $U = nav_entries();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/app.css?v=28">
+<link rel="stylesheet" href="/assets/css/app.css?v=29">
 <link rel="stylesheet" href="/assets/css/polish.css?v=6">
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -40,9 +40,9 @@ $U = nav_entries();
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span><span class="ps-tag">Espace prestataire</span>
     </a>
     <div class="top-actions">
-      <a class="btn btn-ghost btn-sm" href="/espace-prestataire#annonces">📣 Mes annonces</a>
-      <a class="btn btn-ghost btn-sm" href="/espace-prestataire#profil">👤 Mon profil</a>
-      <a class="btn btn-ghost btn-sm" href="/chat?pro=1">💬 Chat</a>
+      <a class="btn btn-ghost btn-sm" href="/espace-prestataire#annonces"> Mes annonces</a>
+      <a class="btn btn-ghost btn-sm" href="/espace-prestataire#profil"> Mon profil</a>
+      <a class="btn btn-ghost btn-sm" href="/chat?pro=1"> Chat</a>
       <form method="post" action="/deconnexion" style="display:inline"><?= csrf_field() ?><button class="btn btn-soft btn-sm">Se déconnecter</button></form>
     </div>
   </div>
@@ -54,7 +54,7 @@ $U = nav_entries();
       <img src="/assets/img/logo.svg" alt="" width="40" height="40">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
-    <button class="btn btn-ghost btn-sm install-btn" id="installBtn" type="button" hidden>⬇️ Télécharger</button>
+    <button class="btn btn-ghost btn-sm install-btn" id="installBtn" type="button" hidden> Télécharger</button>
     <nav class="nav" aria-label="Navigation principale">
       <div class="nav-drop">
         <button class="nav-link" aria-haspopup="true" aria-expanded="false">Services <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>
@@ -70,7 +70,7 @@ $U = nav_entries();
         </div>
       </div>
       <a class="nav-link <?= $active === 'how' ? 'on' : '' ?>" href="/comment-ca-marche">Comment ça marche</a>
-      <a class="nav-link <?= $active === 'garantie' ? 'on' : '' ?>" href="/garantie-dommage">🛡️ Garantie Dommage</a>
+      <a class="nav-link <?= $active === 'garantie' ? 'on' : '' ?>" href="/garantie-dommage"> Garantie Dommage</a>
       <a class="nav-link <?= $active === 'pro' ? 'on' : '' ?>" href="/devenir-prestataire">Devenir prestataire</a>
     </nav>
     <div class="top-actions">
@@ -93,9 +93,9 @@ $U = nav_entries();
     <?php endforeach; ?>
     <hr>
     <a href="/comment-ca-marche">Comment ça marche</a>
-    <a href="/garantie-dommage">🛡️ Garantie Dommage</a>
+    <a href="/garantie-dommage"> Garantie Dommage</a>
     <a href="/devenir-prestataire">Devenir prestataire</a>
-    <a href="/espace-prestataire">🧑‍🔧 Mon espace prestataire</a>
+    <a href="/espace-prestataire"> Mon espace prestataire</a>
     <a href="/prestataire/valider">Valider une mission</a>
     <a href="/contact">Contact & aide</a>
   </div>

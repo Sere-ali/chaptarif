@@ -154,7 +154,7 @@
         var lat = p.coords.latitude.toFixed(5), lng = p.coords.longitude.toFixed(5);
         $('[data-geo-lat]', f).value = lat; $('[data-geo-lng]', f).value = lng;
         input.value = 'Ma position actuelle';
-        say('✅ Position enregistrée. Vous pouvez modifier l\'adresse ci-dessus.');
+        say('Position enregistrée. Vous pouvez modifier l\'adresse ci-dessus.');
         btn.disabled = false;
         fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=fr&zoom=18&lat=' + lat + '&lon=' + lng)
           .then(function (r) { return r.json(); })
@@ -204,7 +204,7 @@
         L.polyline(pts, { color: '#2E7D5B', weight: 5, opacity: .85, dashArray: '10 8' }).addTo(map);
         map.fitBounds([a, b], { padding: [60, 60] });
         if (mapEl.dataset.moto) {
-          var moto = L.marker(a, { icon: L.divIcon({ className: '', html: '<div class="moto-ico">🛵</div>', iconSize: [26, 26], iconAnchor: [13, 13] }) }).addTo(map);
+          var moto = L.marker(a, { icon: L.divIcon({ className: '', html: '<div class="moto-ico">•</div>', iconSize: [26, 26], iconAnchor: [13, 13] }) }).addTo(map);
           var k = 0; setInterval(function () { k = (k + 1) % pts.length; moto.setLatLng(pts[k]); }, 300);
         }
       }

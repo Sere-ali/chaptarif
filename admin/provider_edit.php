@@ -110,10 +110,10 @@ view('admin/header', compact('page', 'nav'));
       <label class="check" style="align-self:end"><input type="checkbox" name="active" <?= (int) $p['active'] ? 'checked' : '' ?>> Visible sur le site</label>
     </div>
     <div class="row2">
-      <label class="fld file"><span>📷 Photo de profil (Cloudinary)</span><input type="file" name="photo" accept="image/*"></label>
-      <label class="fld file"><span>🪪 Pièce d'identité (privée)</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
+      <label class="fld file"><span> Photo de profil (Cloudinary)</span><input type="file" name="photo" accept="image/*"></label>
+      <label class="fld file"><span> Pièce d'identité (privée)</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
     </div>
-    <label class="fld file"><span>📄 Casier judiciaire (privé)</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
+    <label class="fld file"><span> Casier judiciaire (privé)</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
     <button class="btn btn-primary">Enregistrer</button>
   </form>
   <div>
@@ -151,10 +151,10 @@ view('admin/header', compact('page', 'nav'));
     <?php endif; ?>
     <?php if ($id): ?>
     <form method="post" class="mt"><?= csrf_field() ?>
-      <label class="fld"><span>🔑 Définir / réinitialiser son mot de passe d'accès</span><input type="text" name="new_password" minlength="8" placeholder="8 caractères minimum" autocomplete="off"></label>
+      <label class="fld"><span> Définir / réinitialiser son mot de passe d'accès</span><input type="text" name="new_password" minlength="8" placeholder="8 caractères minimum" autocomplete="off"></label>
       <button class="btn btn-soft btn-sm" name="action" value="set_password">Enregistrer le mot de passe</button>
     </form>
-    <form method="post" data-confirm="Supprimer définitivement ce prestataire ?"><?= csrf_field() ?><button class="btn btn-ghost btn-sm" name="action" value="delete">🗑 Supprimer</button></form>
+    <form method="post" data-confirm="Supprimer définitivement ce prestataire ?"><?= csrf_field() ?><button class="btn btn-ghost btn-sm" name="action" value="delete"> Supprimer</button></form>
     <?php endif; ?>
   </div>
 </div>

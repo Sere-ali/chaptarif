@@ -77,7 +77,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
 ?>
 <section class="section-tight ps">
   <div class="container" style="max-width:900px">
-    <h1 class="h2">🧑‍🔧 Mon espace prestataire</h1>
+    <h1 class="h2"> Mon espace prestataire</h1>
     <p class="muted">C'est ici que vous créez vos services et vos offres. Ils apparaissent sur le site pour les clients après validation par l'équipe ChapTarif.</p>
 
     <?php if (!$mine): ?>
@@ -87,7 +87,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
     <?php endif; ?>
 
     <?php foreach ($mine as $p):
-        $x = $U[$p['universe']] ?? ['name' => $p['universe'], 'emoji' => '🧑‍🔧'];
+        $x = $U[$p['universe']] ?? ['name' => $p['universe'], 'emoji' => ''];
         $live = $p['kyc_status'] === 'verified' && (int) $p['active'] === 1;
         $svcs = all('SELECT * FROM provider_services WHERE provider_id = ? ORDER BY sort, id', [$p['id']]);
         $nOn = count(array_filter($svcs, fn($s) => $s['status'] === 'approved' && $s['active']));
@@ -99,14 +99,14 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         $pub = '/' . str_replace('_', '-', $p['universe']);
     ?>
     <div class="card mt" id="p<?= (int) $p['id'] ?>">
-      <div class="ps-head"><?= avatar($p, 'lg') ?><div><h2 class="h3" style="margin:0"><?= e($p['name']) ?></h2><small class="muted"><?= $x['emoji'] ?> <?= e($x['name']) ?> · 📍 <?= e($p['commune']) ?> · <?= e(fmt_phone($p['phone'])) ?></small></div></div>
+      <div class="ps-head"><?= avatar($p, 'lg') ?><div><h2 class="h3" style="margin:0"><?= e($p['name']) ?></h2><small class="muted"><?= $x['emoji'] ?> <?= e($x['name']) ?> ·  <?= e($p['commune']) ?> · <?= e(fmt_phone($p['phone'])) ?></small></div></div>
 
       <?php if ($live): ?>
-        <div class="alert alert-success">✅ Votre profil est <b>validé et en ligne</b>. <a href="/profil-prestataire?id=<?= (int) $p['id'] ?>">Voir ma page publique →</a></div>
+        <div class="alert alert-success"> Votre profil est <b>validé et en ligne</b>. <a href="/profil-prestataire?id=<?= (int) $p['id'] ?>">Voir ma page publique →</a></div>
       <?php elseif ($p['kyc_status'] === 'rejected'): ?>
         <div class="alert alert-error">Votre dossier n'a pas été retenu. Contactez-nous via la page <a href="/contact">Contact</a>.</div>
       <?php else: ?>
-        <div class="alert alert-warn">⏳ <b>Dossier en vérification.</b> Préparez vos annonces dès maintenant : elles seront publiées après la validation de votre dossier.</div>
+        <div class="alert alert-warn"> <b>Dossier en vérification.</b> Préparez vos annonces dès maintenant : elles seront publiées après la validation de votre dossier.</div>
       <?php endif; ?>
 
       <div class="ps-kpis">
@@ -116,11 +116,11 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <div><b><?= (float) $p['rating'] > 0 ? number_format((float) $p['rating'], 1, ',', '') . ' ★' : '—' ?></b><small>Note clients</small></div>
       </div>
 
-      <h3 class="h4 mt" id="annonces">📣 Mes annonces</h3>
+      <h3 class="h4 mt" id="annonces"> Mes annonces</h3>
       <?php if ($nRej): ?><div class="alert alert-error"><?= $nRej ?> annonce(s) refusée(s) : lisez le motif, corrigez puis renvoyez.</div><?php endif; ?>
       <?php $sch = listing_schema($p['universe']); foreach ($svcs as $s): ?>
         <div class="ps-ad <?= $s['active'] ? '' : 'off' ?>">
-          <?php if ($s['photo_url']): ?><img src="<?= e(cld($s['photo_url'], 'w_240,h_180,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy"><?php else: ?><div class="ps-noimg">📷</div><?php endif; ?>
+          <?php if ($s['photo_url']): ?><img src="<?= e(cld($s['photo_url'], 'w_240,h_180,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy"><?php else: ?><div class="ps-noimg"></div><?php endif; ?>
           <div class="ps-ad-body">
             <div class="ps-ad-top"><b><?= e($s['title']) ?></b>
               <?php if ($s['status'] === 'approved'): ?><span class="badge badge-green">En ligne</span>
@@ -139,7 +139,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         </div>
       <?php endforeach; if (!$svcs): ?><p class="muted">Aucune annonce pour l'instant. Créez la première ci-dessous : titre clair, une bonne photo et un prix, c'est ce qui donne envie de réserver.</p><?php endif; ?>
 
-      <h3 class="h4 mt" id="form<?= (int) $p['id'] ?>"><?= $edit ? '✏️ Modifier l\'annonce' : '➕ Nouvelle annonce' ?></h3>
+      <h3 class="h4 mt" id="form<?= (int) $p['id'] ?>"><?= $edit ? ' Modifier l\'annonce' : ' Nouvelle annonce' ?></h3>
       <form method="post" enctype="multipart/form-data" class="ps-form">
         <?= csrf_field() ?><input type="hidden" name="provider_id" value="<?= (int) $p['id'] ?>"><input type="hidden" name="action" value="svc_save"><input type="hidden" name="service_id" value="<?= $edit ? (int) $edit['id'] : 0 ?>">
         <label class="fld"><span>Titre de l'annonce</span><input name="title" required maxlength="80" placeholder="<?= e($sch['title_ph']) ?>" value="<?= e($edit['title'] ?? '') ?>"></label>
@@ -159,25 +159,25 @@ view('layout/header', compact('title', 'active', 'providerMode'));
           <?php endif; ?>
         <?php endforeach; ?>
         <label class="fld"><span>Description (ce qui est inclus, durée, matériel…)</span><textarea name="description" rows="4" maxlength="600"><?= e($edit['description'] ?? '') ?></textarea></label>
-        <label class="fld file"><span>📷 Photo de l'annonce (JPG, PNG, WEBP)<?= !empty($edit['photo_url']) ? ' — laissez vide pour garder l\'actuelle' : '' ?></span><input type="file" name="photo" accept="image/*"></label>
+        <label class="fld file"><span> Photo de l'annonce (JPG, PNG, WEBP)<?= !empty($edit['photo_url']) ? ' — laissez vide pour garder l\'actuelle' : '' ?></span><input type="file" name="photo" accept="image/*"></label>
         <p class="fine">Chaque nouvelle annonce ou modification est relue par l'équipe avant d'apparaître sur le site. Le prix est indicatif : le tarif final est confirmé à la réservation.</p>
         <button class="btn btn-primary"><?= $edit ? 'Enregistrer et renvoyer pour validation' : 'Envoyer pour validation' ?></button>
         <?php if ($edit): ?><a class="btn btn-ghost" href="/espace-prestataire#p<?= (int) $p['id'] ?>">Annuler</a><?php endif; ?>
       </form>
 
       <?php if ($recent): ?>
-        <h3 class="h4 mt">🧾 Mes dernières réservations</h3>
+        <h3 class="h4 mt"> Mes dernières réservations</h3>
         <?php foreach ($recent as $b): ?><div class="prov-mini"><div><b><?= e($b['title']) ?></b><small><?= e($b['ref']) ?> · <?= fmt_date($b['created_at']) ?></small></div><?= status_badge($b['status']) ?></div><?php endforeach; ?>
       <?php endif; ?>
 
-      <h3 class="h4 mt" id="profil">👤 Mon profil</h3>
+      <h3 class="h4 mt" id="profil"> Mon profil</h3>
       <form method="post" enctype="multipart/form-data">
         <?= csrf_field() ?><input type="hidden" name="provider_id" value="<?= (int) $p['id'] ?>"><input type="hidden" name="action" value="profile">
         <label class="fld"><span>Nom / Entreprise</span><input name="name" required maxlength="80" value="<?= e($p['name']) ?>"></label>
         <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option <?= $p['commune'] === $c ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
         <label class="fld"><span>Présentation (400 caractères)</span><textarea name="bio" rows="3" maxlength="400" placeholder="Expérience, spécialités, horaires…"><?= e($p['bio']) ?></textarea></label>
         <?php if ($isTransport): ?><label class="fld"><span>Véhicule</span><input name="vehicle" maxlength="80" value="<?= e($p['vehicle']) ?>"></label><?php endif; ?>
-        <label class="fld file"><span>📷 Ma photo / logo (JPG, PNG, WEBP)</span><input type="file" name="photo" accept="image/*"></label>
+        <label class="fld file"><span> Ma photo / logo (JPG, PNG, WEBP)</span><input type="file" name="photo" accept="image/*"></label>
         <button class="btn btn-soft">Enregistrer mon profil</button>
       </form>
       <p class="fine">Pour votre sécurité, le numéro de paiement et les commissions sont gérés par l'équipe ChapTarif. Pour les modifier, <a href="/contact">contactez-nous</a>.</p>

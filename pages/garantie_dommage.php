@@ -5,7 +5,7 @@ $pct = (float) setting('garantie_dommage_pct', 5);
 view('layout/header', compact('title', 'active'));
 ?>
 <section class="page-hero" style="--c:#B45309;--hero:url('<?= e(img('hero-abidjan', 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
-  <div class="container"><nav class="crumbs"><a href="/">Accueil</a> › Garantie Dommage</nav><h1>🛡️ La Garantie Dommage</h1><p>Une assurance interne ChapTarif, en option, pour les services à domicile : service à la personne (ménage, aide à domicile) et pressing.</p></div>
+  <div class="container"><nav class="crumbs"><a href="/">Accueil</a> › Garantie Dommage</nav><h1> La Garantie Dommage</h1><p>Une assurance interne ChapTarif, en option, pour les services à domicile : service à la personne (ménage, aide à domicile) et pressing.</p></div>
 </section>
 <section class="section">
   <div class="container narrow">
@@ -13,7 +13,7 @@ view('layout/header', compact('title', 'active'));
 
     <h2 class="h4">Comment ça marche&nbsp;?</h2>
     <div class="how">
-      <div class="how-step"><span>1</span><div><h3>Vous cochez l'option au moment de la réservation</h3><p>Sur les formulaires Ménage & Aide et Pressing & Linge, cochez « 🛡️ Garantie Dommage » avant de payer. Son coût (+<?= e((string) $pct) ?>%) s'ajoute au total, affiché avant paiement.</p></div></div>
+      <div class="how-step"><span>1</span><div><h3>Vous cochez l'option au moment de la réservation</h3><p>Sur les formulaires Ménage & Aide et Pressing & Linge, cochez «  Garantie Dommage » avant de payer. Son coût (+<?= e((string) $pct) ?>%) s'ajoute au total, affiché avant paiement.</p></div></div>
       <div class="how-step"><span>2</span><div><h3>Le service est réalisé</h3><p>Le prestataire intervient normalement. La garantie ne change rien à son travail : elle vous protège en cas de problème.</p></div></div>
       <div class="how-step"><span>3</span><div><h3>Un souci&nbsp;? Ouvrez une réclamation</h3><p>Depuis « Mes réservations », signalez le problème (ménage mal fait, vêtement brûlé au repassage, objet cassé…). Le paiement du prestataire est gelé pendant l'examen.</p></div></div>
       <div class="how-step"><span>4</span><div><h3>ChapTarif tranche</h3><p>Notre équipe étudie votre réclamation et, si la garantie a été souscrite, décide soit de vous <b>indemniser</b>, soit de vous proposer <b>une nouvelle prestation gratuite</b>.</p></div></div>

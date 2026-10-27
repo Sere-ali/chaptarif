@@ -334,7 +334,7 @@ body.immo-m .page-hero, body.immo-m .section-tight { display: none; }
 .features-col { grid-template-columns: 1fr; }
 
 .pro-cta { background: var(--grad); border-radius: 28px; padding: 48px; color: #fff; display: flex; gap: 32px; align-items: center; justify-content: space-between; position: relative; overflow: hidden; }
-.pro-cta::before { content: "⚡"; position: absolute; right: 220px; top: -40px; font-size: 220px; opacity: .08; }
+.pro-cta::before { content: ""; position: absolute; right: 220px; top: -40px; font-size: 220px; opacity: .08; }
 .pro-cta h2 { color: #fff; }
 .pro-cta p { opacity: .92; max-width: 640px; }
 .pro-points { display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 700; font-size: .92rem; }
@@ -659,8 +659,7 @@ html.force-mobile .stats { grid-template-columns: 1fr 1fr !important; }
   .brand img { width: 34px; height: 34px; }
   .top-actions .btn-ghost { display: none; }
   .top-actions .btn-soft { padding: 8px 10px; font-size: .78rem; }
-  .install-btn { padding: 6px 9px; font-size: 0; }
-  .install-btn::before { content: '⬇️'; font-size: 1rem; }
+  .install-btn { padding: 6px 12px; font-size: .78rem; }
   .hero { padding: 36px 0 60px; }
   .lead { font-size: 1.02rem; }
   .uni-grid, .prop-grid, .features, .info-strip, .row2 { grid-template-columns: 1fr; }

@@ -36,10 +36,10 @@ view('admin/header', compact('page', 'nav'));
       <p><?= nl2br(e((string) $a['description'])) ?></p>
       <?php if ($a['reject_reason']): ?><p class="muted">Motif de refus : <?= e($a['reject_reason']) ?></p><?php endif; ?>
       <form method="post" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $a['id'] ?>">
-        <?php if ($a['status'] !== 'approved'): ?><button class="btn btn-primary btn-sm" name="action" value="approve">✅ Approuver</button><?php endif; ?>
+        <?php if ($a['status'] !== 'approved'): ?><button class="btn btn-primary btn-sm" name="action" value="approve"> Approuver</button><?php endif; ?>
         <?php if ($a['status'] !== 'rejected'): ?><input name="reason" placeholder="Motif si refus (ex. photo floue)" maxlength="200" style="flex:1;min-width:180px"><button class="btn btn-ghost btn-sm" name="action" value="reject">Refuser</button><?php endif; ?>
       </form>
     </div>
   </div>
-<?php endforeach; if (!$rows): ?><p class="muted">Rien dans cette liste. 🎉</p><?php endif; ?>
+<?php endforeach; if (!$rows): ?><p class="muted">Rien dans cette liste. </p><?php endif; ?>
 <?php view('admin/footer');

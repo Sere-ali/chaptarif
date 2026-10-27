@@ -152,11 +152,11 @@ $pwFields = function (bool $required, bool $showForce) {
       <tbody>
       <?php foreach ($rows as $u): $self = (int) $u['id'] === (int) $me['id']; ?>
         <tr><td><b><?= e($u['name']) ?></b><?= $self ? ' <span class="badge badge-blue">Vous</span>' : '' ?><small><?= e($u['email']) ?></small></td>
-        <td><?= $u['role'] === 'super_admin' ? '<span class="badge badge-gold">🛡️ Super Admin</span>' : '<span class="badge badge-blue">Admin</span>' ?></td>
+        <td><?= $u['role'] === 'super_admin' ? '<span class="badge badge-gold"> Super Admin</span>' : '<span class="badge badge-blue">Admin</span>' ?></td>
         <td><?= fmt_date($u['last_login_at'], true) ?></td>
         <td><?= (int) $u['active'] ? '<span class="badge badge-green">Actif</span>' : '<span class="badge badge-gray">Désactivé</span>' ?></td>
         <td><div class="acts">
-          <a class="btn btn-primary btn-xs" href="/admin/administrateurs?id=<?= (int) $u['id'] ?>">✏️ Modifier</a>
+          <a class="btn btn-primary btn-xs" href="/admin/administrateurs?id=<?= (int) $u['id'] ?>"> Modifier</a>
           <?php if (!$self): ?>
           <form method="post" data-confirm="<?= (int) $u['active'] ? 'Désactiver' : 'Réactiver' ?> le compte de <?= e($u['email']) ?> ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $u['id'] ?>"><button class="btn btn-ghost btn-xs" name="action" value="toggle"><?= (int) $u['active'] ? 'Désactiver' : 'Réactiver' ?></button></form>
           <?php endif; ?>
