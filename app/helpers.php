@@ -639,7 +639,7 @@ function listing_schema(string $universe): array
             ],
         ],
         'chauffeur' => [
-            'title_ph' => 'Ex. Chauffeur privé expérimenté, disponible 7j/7', 'price_label' => 'Tarif (F CFA)', 'units' => ['jour', 'heure'],
+            'title_ph' => 'Ex. Chauffeur privé expérimenté, disponible 7j/7', 'price_label' => 'Tarif par jour (F CFA)', 'units' => ['jour'],
             'fields' => [
                 'experience' => ['Années d\'expérience', 'number', '8', true],
                 'boite' => ['Boîte maîtrisée', 'select', ['Manuelle', 'Automatique', 'Les deux']],

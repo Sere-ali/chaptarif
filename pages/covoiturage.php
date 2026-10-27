@@ -75,6 +75,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       <div><span>🔒</span><b>Paiement sécurisé</b><small>Argent bloqué jusqu'à l'arrivée</small></div>
       <div><span>🎫</span><b>E-billet QR</b><small>Référence envoyée par SMS</small></div>
     </div>
+    <?php $adsUniverse = 'covoiturage'; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
   </div>
 </section>
 <?php view('layout/footer', compact('active'));

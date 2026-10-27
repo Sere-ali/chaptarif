@@ -135,6 +135,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         </a>
       <?php endforeach; ?>
     </div>
+    <?php $adsUniverse = 'immobilier'; $adsType = $type; include __DIR__ . '/../views/provider_ads.php'; ?>
     <?php endif; ?>
   </div>
 </section>

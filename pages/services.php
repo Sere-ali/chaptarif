@@ -53,8 +53,8 @@ view('layout/header', compact('title', 'desc', 'active'));
   <input type="hidden" name="universe" value="<?= e($uk) ?>">
   <div class="container <?= $isRental ? 'narrow-2' : 'two-col wide-left' ?>">
     <div>
-      <?php if (!$isRental): ?>
-      <?php if ($autoProv):
+      <?php if (true): ?>
+      <?php if ($autoProv || $isRental):
         $ads = all("SELECT ps.*, p.name AS pname, p.commune AS pcommune, p.rating AS prating, p.missions AS pmissions FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe = ? AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' AND ps.price IS NOT NULL AND ps.price > 0 ORDER BY CASE WHEN p.sponsored_until >= ? THEN 0 ELSE 1 END, p.rating DESC, ps.price", [$uk, $today]);
         $selAd = (int) ($_GET['listing'] ?? 0); ?>
       <h2 class="h3">1. Choisissez votre prestation</h2>
@@ -92,7 +92,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       </div>
 
       <?php endif; ?>
-      <?php if (!$autoProv): ?>
+      <?php if (!$autoProv && !$isRental): ?>
       <div class="h-row">
         <h2 class="h3">2. Choisissez <?= e($copy['step2']) ?></h2>
         <div class="filter-chips">

@@ -151,11 +151,22 @@ function build_quote(string $universe, array $in): array
         case 'location_car':
         case 'chauffeur':
         case 'location_camion': {
-            // Plus de choix manuel du loueur / de la formule : ChapTarif attribue automatiquement.
-            $prov = !empty($in['provider'])
+            // Le client choisit l'annonce d'un prestataire (prix fixé par lui) ; à défaut, attribution automatique.
+            $prov = null; $offer = null; $isListing = false;
+            if (!empty($in['listing'])) {
+                $ad = one("SELECT ps.* FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE ps.id = ? AND p.universe = ? AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' AND ps.price IS NOT NULL AND ps.price > 0", [(int) $in['listing'], $universe]);
+                if ($ad) {
+                    $prov = one('SELECT * FROM providers WHERE id = ?', [(int) $ad['provider_id']]);
+                    $offer = ['id' => (int) $ad['id'], 'title' => $ad['title'], 'price' => (int) $ad['price'], 'unit' => (string) ($ad['unit'] ?? '')];
+                    $isListing = true;
+                } else {
+                    return $fail('Cette annonce n\'est plus disponible. Choisissez-en une autre.');
+                }
+            }
+            if (!$prov) $prov = !empty($in['provider'])
                 ? one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) $in['provider'], $universe])
                 : best_provider($universe);
-            $offer = !empty($in['offer'])
+            if (!$offer) $offer = !empty($in['offer'])
                 ? one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) $in['offer'], $universe])
                 : auto_offer($universe, $in);
             if (!$prov || !$offer) return $fail('Ce service ouvre bientôt dans votre zone. Écrivez-nous via l\'onglet Chat : nous vous trouvons un loueur.');
@@ -251,7 +262,7 @@ function build_quote(string $universe, array $in): array
             $amount = (int) $offer['price'] * $mult;
             $q += ['title' => $offer['title'] . ($mult > 1 ? " × $mult j" : '') . ' · ' . $prov['name'], 'amount' => $amount, 'service_date' => $date];
             $q['provider_id'] = (int) $prov['id'];
-            $q['item_type'] = 'offer';
+            $q['item_type'] = $isListing ? 'listing' : 'offer';
             $q['item_id'] = (int) $offer['id'];
             $q['details'] = ['offer' => $offer['title'], 'provider' => $prov['name']] + $d;
             $q['summary'] = $s;
