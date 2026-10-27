@@ -50,18 +50,13 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
   <div class="container">
     <h2 class="d-h2"><?= e($d['select_h2'] ?? 'Sélectionnez votre besoin') ?></h2>
     <p class="d-sub"><?= e($d['select_sub'] ?? 'Trouvez le meilleur tarif, en quelques clics.') ?></p>
-    <div class="d-list">
-      <?php foreach ($subs as $x): ?>
-        <a class="d-item reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
-          <span class="d-item-img"><img src="<?= e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
-          <span class="d-item-body">
-            <b><?= e($x['name']) ?></b>
-            <small><?= e($x['pitch']) ?></small>
-          </span>
-          <span class="d-item-btn">Choisir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
-        </a>
-      <?php endforeach; ?>
-    </div>
+    <label class="fld d-select"><span>🔎 Recherche</span>
+      <select onchange="if(this.value)location.href=this.value">
+        <option value="">Choisir un service…</option>
+        <?php foreach ($subs as $x): ?><option value="<?= e($x['url']) ?>"><?= e($x['emoji'] . ' ' . $x['name']) ?></option><?php endforeach; ?>
+      </select>
+    </label>
+    <?php $adsUniverse = $d['keys']; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
     <div class="d-trust">
       <span class="d-trust-ico">✨</span>
       <span><b><?= e($d['trust_title'] ?? 'Paiement sécurisé après confirmation :') ?></b><br><small><?= e($d['trust_text'] ?? 'Votre paiement est bloqué sur ChapTarif et n\'est versé au prestataire qu\'après la réalisation du service.') ?></small></span>
