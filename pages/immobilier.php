@@ -2,6 +2,50 @@
 $active = 'immobilier';
 $x = universe('immobilier');
 $id = (int) ($_GET['id'] ?? 0);
+$adId = (int) ($_GET['ad'] ?? 0);
+
+// Fiche d'un logement proposé par un bailleur (annonce validée, loyer fixé par lui).
+if ($adId) {
+    $ad = one("SELECT ps.*, p.name AS pname, p.commune AS pcommune, p.id AS pid FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE ps.id = ? AND p.universe = 'immobilier' AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved'", [$adId]);
+    if (!$ad) not_found();
+    $title = $ad['title'];
+    $desc = mb_substr((string) $ad['description'], 0, 150);
+    $ll = listing_lines('immobilier', $ad['attrs'] ?? null);
+    $taken = (int) val("SELECT COUNT(*) FROM bookings WHERE universe = 'immobilier' AND item_type = 'listing' AND item_id = ? AND status IN ('BLOQUE','VALIDE','EN_LITIGE')", [$adId]);
+    view('layout/header', compact('title', 'desc', 'active'));
+    ?>
+    <section class="section-tight">
+      <div class="container" style="max-width:860px">
+        <nav class="crumbs dark"><a href="/">Accueil</a> › <a href="/immobilier">Immobilier</a> › <?= e($ad['title']) ?></nav>
+        <?php if ($ad['photo_url']): ?><img src="<?= e(cld($ad['photo_url'], 'w_1200,h_700,c_fill,q_auto,f_auto')) ?>" alt="<?= e($ad['title']) ?>" style="width:100%;border-radius:18px;margin-bottom:14px"><?php endif; ?>
+        <div class="two-col wide-left">
+          <div>
+            <h1 class="h2"><?= e($ad['title']) ?></h1>
+            <p class="muted">par <a href="/profil-prestataire?id=<?= (int) $ad['pid'] ?>"><?= e($ad['pname']) ?></a> · 📍 <?= e($ad['pcommune']) ?></p>
+            <?php if ($ll): ?><ul class="ps-attrs" style="display:block"><?php foreach ($ll as [$lk, $lv]): ?><li><b><?= e($lk) ?> :</b> <?= e($lv) ?></li><?php endforeach; ?></ul><?php endif; ?>
+            <?php if ($ad['description']): ?><p><?= nl2br(e((string) $ad['description'])) ?></p><?php endif; ?>
+          </div>
+          <aside class="sticky">
+            <form class="card form-card" method="post" action="/reserver">
+              <?= csrf_field() ?>
+              <input type="hidden" name="universe" value="immobilier"><input type="hidden" name="listing" value="<?= (int) $ad['id'] ?>">
+              <div class="big-price"><?= fcfa($ad['price']) ?><em>/ mois</em></div>
+              <label class="fld"><span>📅 Date d'entrée souhaitée</span><input type="date" name="movein" required min="<?= date('Y-m-d', strtotime('+1 day')) ?>" max="<?= date('Y-m-d', strtotime('+180 days')) ?>" value="<?= date('Y-m-d', strtotime('+7 days')) ?>"></label>
+              <?php if ($taken): ?>
+                <p class="alert alert-warn">Ce logement est déjà réservé.</p>
+              <?php else: ?>
+                <button class="btn btn-primary btn-block btn-lg">Réserver ce logement</button>
+              <?php endif; ?>
+              <p class="fine">Vous réglez le 1er mois de loyer. Votre paiement est bloqué sur ChapTarif et n'est versé au bailleur qu'après la remise des clés.</p>
+            </form>
+          </aside>
+        </div>
+      </div>
+    </section>
+    <?php
+    view('layout/footer', compact('active'));
+    return;
+}
 
 if ($id) {
     $p = one('SELECT * FROM properties WHERE id = ? AND active = 1', [$id]);

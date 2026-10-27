@@ -307,6 +307,22 @@ function build_quote(string $universe, array $in): array
             break;
         }
         case 'immobilier': {
+            // Logement proposé par un bailleur (annonce validée, loyer mensuel fixé par lui) : réservation du 1er mois.
+            if (!empty($in['listing'])) {
+                $ad = one("SELECT ps.*, p.name AS pname, p.commune AS pcommune FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE ps.id = ? AND p.universe = 'immobilier' AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' AND ps.price IS NOT NULL AND ps.price > 0", [(int) $in['listing']]);
+                if (!$ad) return $fail('Ce logement n\'est plus disponible.');
+                $mi = (string) ($in['movein'] ?? '');
+                if (!valid_future_date($mi, 180)) return $fail('Choisissez une date d\'entrée dans le logement valide (dans les 6 mois).');
+                if (val("SELECT COUNT(*) FROM bookings WHERE universe = 'immobilier' AND item_type = 'listing' AND item_id = ? AND status IN ('BLOQUE','VALIDE','EN_LITIGE')", [(int) $ad['id']])) return $fail('Ce logement est déjà réservé.');
+                $att = json_decode((string) $ad['attrs'], true) ?: [];
+                $q += ['title' => $ad['title'] . ' · 1er loyer', 'amount' => (int) $ad['price'], 'service_date' => $mi];
+                $q['provider_id'] = (int) $ad['provider_id'];
+                $q['item_type'] = 'listing';
+                $q['item_id'] = (int) $ad['id'];
+                $q['details'] = ['property' => $ad['title'], 'provider' => $ad['pname'], 'movein' => $mi, 'commune' => $ad['pcommune'], 'quartier' => $att['quartier'] ?? '', 'type' => $att['type'] ?? ''];
+                $q['summary'] = [['Logement', $ad['title']], ['Bailleur', $ad['pname']], ['Entrée dans les lieux', fmt_date($mi)], ['Loyer mensuel', fcfa((int) $ad['price'])], ['Montant réglé', '1er mois de loyer']];
+                break;
+            }
             $p = one('SELECT * FROM properties WHERE id = ? AND active = 1', [(int) ($in['property'] ?? 0)]);
             if (!$p) return $fail('Logement introuvable.');
             $ci = $in['checkin'] ?? '';
