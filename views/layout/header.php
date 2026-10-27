@@ -24,7 +24,7 @@ $U = nav_entries();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/app.css?v=27">
+<link rel="stylesheet" href="/assets/css/app.css?v=28">
 <link rel="stylesheet" href="/assets/css/polish.css?v=6">
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -103,7 +103,7 @@ $U = nav_entries();
 <?php endif; ?>
 <main id="main">
 <?php
-$__bt = (empty($providerMode) && !in_array($bodyClass ?? '', ['domaine-m', 'immo-m', 'home-m'], true))
+$__bt = (empty($providerMode) && !in_array(explode(' ', (string) ($bodyClass ?? ''))[0], ['domaine-m', 'immo-m', 'home-m'], true))
     ? back_target((string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH)) : null;
 if ($__bt): ?>
 <div class="container back-bar"><a class="back-btn" href="<?= $__bt[0] === 'history' ? '/' : e($__bt[0]) ?>"<?= $__bt[0] === 'history' ? ' onclick="if(history.length>1){history.back();return false;}"' : '' ?>><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> Retour<?= $__bt[0] === 'history' ? '' : ' · ' . e($__bt[1]) ?></a></div>

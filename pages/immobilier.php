@@ -69,6 +69,8 @@ $catMap = [
 // Écran de sélection façon app, affiché uniquement sur mobile et seulement
 // tant qu'aucun filtre n'est actif (avant que la personne ait choisi une famille de biens).
 $bodyClass = ($cat === '' && $type === '' && $commune === '') ? 'immo-m' : '';
+$nAds = (int) val("SELECT COUNT(*) FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe = 'immobilier' AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved'");
+if ($bodyClass && $nAds) $bodyClass .= ' immo-ads';
 $tph = implode(',', array_fill(0, count(PROPERTY_TYPES), '?'));
 $sql = "SELECT * FROM properties WHERE active = 1 AND type IN ($tph)";
 $params = PROPERTY_TYPES;
@@ -140,7 +142,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
   </div>
 </section>
 
-<?php if ($bodyClass === 'immo-m'): ?>
+<?php if (str_contains($bodyClass, 'immo-m')): ?>
 <!-- Écran de sélection mobile façon application -->
 <section class="d-home">
   <div class="container d-top">
@@ -168,6 +170,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         </div>
       <?php endforeach; ?>
     </div>
+    <?php $adsUniverse = 'immobilier'; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
     <div class="d-trust">
       <span class="d-trust-ico">✨</span>
       <span><b>Paiement sécurisé après confirmation :</b><br><small>Votre paiement est bloqué sur ChapTarif et n'est versé au propriétaire qu'après la remise des clés.</small></span>

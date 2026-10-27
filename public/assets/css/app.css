@@ -782,3 +782,11 @@ body.immo-m .d-select { margin-bottom: 8px; }
 .ps-multi { border: 0; padding: 0; margin: 0 0 12px; min-width: 0; }
 .ps-multi legend { font-weight: 700; font-size: .88rem; margin-bottom: 6px; padding: 0; }
 .ps-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 12px; }
+/* Immobilier : quand il y a des annonces, l'écran peut défiler */
+body.immo-m.immo-ads { overflow: auto; height: auto; }
+body.immo-m.immo-ads .d-home { height: auto; min-height: calc(100dvh - 74px); overflow: visible; }
+body.immo-m.immo-ads .d-hero { flex: none; height: 28vh; min-height: 120px; }
+body.immo-m.immo-ads .d-home > .container:not(.d-top) { display: block; }
+body.immo-m.immo-ads .d-trust { display: flex; }
+body.immo-m.immo-ads .d-sub { display: block; }
+body.immo-m.immo-ads .d-home { padding-bottom: 90px; }
