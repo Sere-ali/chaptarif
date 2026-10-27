@@ -29,6 +29,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         <article class="ps-card">
           <?php if ($a['photo_url']): ?><img src="<?= e(cld($a['photo_url'], 'w_600,h_400,c_fill,q_auto,f_auto')) ?>" alt="<?= e($a['title']) ?>" loading="lazy"><?php endif; ?>
           <div class="ps-card-b"><h3 class="h4"><?= e($a['title']) ?></h3>
+            <?php $ll = listing_lines($p['universe'], $a['attrs'] ?? null); if ($ll): ?><ul class="ps-attrs"><?php foreach ($ll as [$lk, $lv]): ?><li><b><?= e($lk) ?> :</b> <?= e($lv) ?></li><?php endforeach; ?></ul><?php endif; ?>
             <?php if ($a['price']): ?><div class="ps-price"><?= fcfa($a['price']) ?><?= $a['unit'] ? ' / ' . e($a['unit']) : '' ?></div><?php endif; ?>
             <p><?= nl2br(e((string) $a['description'])) ?></p></div>
         </article>

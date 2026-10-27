@@ -38,7 +38,10 @@ if (is_post() && $mine) {
         $d = mb_substr(trim((string) ($_POST['description'] ?? '')), 0, 600);
         $priceRaw = preg_replace('/\D/', '', (string) ($_POST['price'] ?? ''));
         $price = $priceRaw === '' ? null : min((int) $priceRaw, 10000000);
-        $unit = in_array($_POST['unit'] ?? '', $units, true) ? $_POST['unit'] : null;
+        $schema = listing_schema((string) val('SELECT universe FROM providers WHERE id = ?', [$pid]));
+        $unit = in_array($_POST['unit'] ?? '', $schema['units'], true) ? $_POST['unit'] : null;
+        [$attrs, $attrErr] = listing_collect((string) val('SELECT universe FROM providers WHERE id = ?', [$pid]), (array) ($_POST['a'] ?? []));
+        if ($attrErr) { flash('error', $attrErr); redirect($back); }
         if (mb_strlen($t) < 3) { flash('error', 'Donnez un titre à votre annonce (3 caractères minimum).'); redirect($back); }
         if (!$old && (int) val('SELECT COUNT(*) FROM provider_services WHERE provider_id = ?', [$pid]) >= PS_MAX_LISTINGS) { flash('error', 'Maximum ' . PS_MAX_LISTINGS . ' annonces par profil.'); redirect($back); }
         $photo = $old['photo_url'] ?? null;
@@ -47,7 +50,7 @@ if (is_post() && $mine) {
             if (!$r['ok'] || ($r['format'] ?? '') === 'pdf') { flash('error', 'Photo : ' . ($r['ok'] ? 'format image requis (JPG, PNG, WEBP).' : $r['error'])); redirect($back); }
             $photo = $r['url'];
         }
-        $row = ['title' => $t, 'description' => $d, 'price' => $price, 'unit' => $unit, 'photo_url' => $photo, 'status' => 'pending', 'reject_reason' => null, 'updated_at' => now()];
+        $row = ['title' => $t, 'description' => $d, 'price' => $price, 'unit' => $unit, 'photo_url' => $photo, 'attrs' => $attrs ? json_encode($attrs, JSON_UNESCAPED_UNICODE) : null, 'status' => 'pending', 'reject_reason' => null, 'updated_at' => now()];
         if ($old) { update('provider_services', $sid, $row); audit('provider.listing_edit', 'provider#' . $pid, $t); }
         else {
             $row += ['provider_id' => $pid, 'active' => 1, 'sort' => (int) val('SELECT COALESCE(MAX(sort),0)+1 FROM provider_services WHERE provider_id = ?', [$pid]), 'created_at' => now()];
@@ -115,7 +118,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
 
       <h3 class="h4 mt" id="annonces">📣 Mes annonces</h3>
       <?php if ($nRej): ?><div class="alert alert-error"><?= $nRej ?> annonce(s) refusée(s) : lisez le motif, corrigez puis renvoyez.</div><?php endif; ?>
-      <?php foreach ($svcs as $s): ?>
+      <?php $sch = listing_schema($p['universe']); foreach ($svcs as $s): ?>
         <div class="ps-ad <?= $s['active'] ? '' : 'off' ?>">
           <?php if ($s['photo_url']): ?><img src="<?= e(cld($s['photo_url'], 'w_240,h_180,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy"><?php else: ?><div class="ps-noimg">📷</div><?php endif; ?>
           <div class="ps-ad-body">
@@ -125,6 +128,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
               <?php else: ?><span class="badge badge-amber">En attente</span><?php endif; ?>
               <?php if (!$s['active']): ?><span class="badge badge-gray">Masquée</span><?php endif; ?></div>
             <?php if ($s['price']): ?><div class="ps-price"><?= fcfa($s['price']) ?><?= $s['unit'] ? ' / ' . e($s['unit']) : '' ?></div><?php endif; ?>
+            <?php $ll = listing_lines($p['universe'], $s['attrs'] ?? null); if ($ll): ?><ul class="ps-attrs"><?php foreach (array_slice($ll, 0, 5) as [$lk, $lv]): ?><li><b><?= e($lk) ?> :</b> <?= e($lv) ?></li><?php endforeach; ?></ul><?php endif; ?>
             <p><?= e(mb_strimwidth((string) $s['description'], 0, 140, '…')) ?></p>
             <?php if ($s['status'] === 'rejected' && $s['reject_reason']): ?><p class="ps-reason">Motif : <?= e($s['reject_reason']) ?></p><?php endif; ?>
             <form method="post" class="ps-actions"><?= csrf_field() ?><input type="hidden" name="provider_id" value="<?= (int) $p['id'] ?>"><input type="hidden" name="service_id" value="<?= (int) $s['id'] ?>">
@@ -138,11 +142,22 @@ view('layout/header', compact('title', 'active', 'providerMode'));
       <h3 class="h4 mt" id="form<?= (int) $p['id'] ?>"><?= $edit ? '✏️ Modifier l\'annonce' : '➕ Nouvelle annonce' ?></h3>
       <form method="post" enctype="multipart/form-data" class="ps-form">
         <?= csrf_field() ?><input type="hidden" name="provider_id" value="<?= (int) $p['id'] ?>"><input type="hidden" name="action" value="svc_save"><input type="hidden" name="service_id" value="<?= $edit ? (int) $edit['id'] : 0 ?>">
-        <label class="fld"><span>Titre de l'annonce</span><input name="title" required maxlength="80" placeholder="Ex. Ménage complet 3 pièces" value="<?= e($edit['title'] ?? '') ?>"></label>
+        <label class="fld"><span>Titre de l'annonce</span><input name="title" required maxlength="80" placeholder="<?= e($sch['title_ph']) ?>" value="<?= e($edit['title'] ?? '') ?>"></label>
         <div class="row2">
-          <label class="fld"><span>Prix indicatif (F CFA)</span><input name="price" inputmode="numeric" placeholder="Ex. 15000" value="<?= e((string) ($edit['price'] ?? '')) ?>"></label>
-          <label class="fld"><span>Par</span><select name="unit"><option value="">—</option><?php foreach ($units as $u): ?><option <?= ($edit['unit'] ?? '') === $u ? 'selected' : '' ?>><?= e($u) ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span><?= e($sch['price_label']) ?></span><input name="price" inputmode="numeric" placeholder="Ex. 15000" value="<?= e((string) ($edit['price'] ?? '')) ?>"></label>
+          <label class="fld"><span>Par</span><select name="unit"><option value="">—</option><?php foreach ($sch['units'] as $u): ?><option <?= ($edit['unit'] ?? '') === $u ? 'selected' : '' ?>><?= e($u) ?></option><?php endforeach; ?></select></label>
         </div>
+        <?php $curA = json_decode((string) ($edit['attrs'] ?? ''), true) ?: []; foreach ($sch['fields'] as $fk => $f): [$fl, $ft] = $f; $fv = $curA[$fk] ?? ''; $req = !empty($f[3]); ?>
+          <?php if ($ft === 'multi'): ?>
+            <fieldset class="fld ps-multi"><legend><?= e($fl) ?></legend><div class="ps-checks"><?php foreach ($f[2] as $o): ?><label class="check"><input type="checkbox" name="a[<?= e($fk) ?>][]" value="<?= e($o) ?>" <?= in_array($o, (array) $fv, true) ? 'checked' : '' ?>> <?= e($o) ?></label><?php endforeach; ?></div></fieldset>
+          <?php elseif ($ft === 'select' || $ft === 'yesno'): ?>
+            <label class="fld"><span><?= e($fl) ?></span><select name="a[<?= e($fk) ?>]" <?= $req ? 'required' : '' ?>><option value="">Choisir…</option><?php foreach ($f[2] as $o): ?><option <?= (string) $fv === (string) $o ? 'selected' : '' ?>><?= e($o) ?></option><?php endforeach; ?></select></label>
+          <?php elseif ($ft === 'date'): ?>
+            <label class="fld"><span><?= e($fl) ?></span><input type="date" name="a[<?= e($fk) ?>]" value="<?= e((string) $fv) ?>"></label>
+          <?php else: ?>
+            <label class="fld"><span><?= e($fl) ?></span><input name="a[<?= e($fk) ?>]" <?= $ft === 'number' ? 'inputmode="numeric"' : 'maxlength="120"' ?> placeholder="<?= e((string) ($f[2] ?? '')) ?>" value="<?= e((string) $fv) ?>" <?= $req ? 'required' : '' ?>></label>
+          <?php endif; ?>
+        <?php endforeach; ?>
         <label class="fld"><span>Description (ce qui est inclus, durée, matériel…)</span><textarea name="description" rows="4" maxlength="600"><?= e($edit['description'] ?? '') ?></textarea></label>
         <label class="fld file"><span>📷 Photo de l'annonce (JPG, PNG, WEBP)<?= !empty($edit['photo_url']) ? ' — laissez vide pour garder l\'actuelle' : '' ?></span><input type="file" name="photo" accept="image/*"></label>
         <p class="fine">Chaque nouvelle annonce ou modification est relue par l'équipe avant d'apparaître sur le site. Le prix est indicatif : le tarif final est confirmé à la réservation.</p>

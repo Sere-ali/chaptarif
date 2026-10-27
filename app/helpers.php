@@ -505,3 +505,209 @@ function kyc_docs_required(string $universe): array
         default => ['cni', 'casier'],
     };
 }
+
+/**
+ * Champs d'une annonce prestataire selon l'activité.
+ * Retourne ['title_ph' => ..., 'price_label' => ..., 'units' => [...], 'fields' => [clé => [label, type, options|placeholder, required]]]
+ * Types : text, number, select, multi (cases à cocher), yesno, date, textarea.
+ */
+function listing_schema(string $universe): array
+{
+    $yn = ['Oui', 'Non'];
+    $zones = ['zones', '📍 Zones / quartiers desservis', 'text', 'Ex. Cocody, Marcory, Plateau'];
+    $S = [
+        'immobilier' => [
+            'title_ph' => 'Ex. Appartement 2 chambres salon — Cocody Angré', 'price_label' => 'Loyer mensuel (F CFA)', 'units' => ['mois'],
+            'fields' => [
+                'type' => ['Type de logement', 'select', ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'], true],
+                'quartier' => ['📍 Quartier', 'text', 'Ex. Angré 8e tranche', true],
+                'chambres' => ['Nombre de chambres', 'number', '2'],
+                'sdb' => ['Salles de bain / douches', 'number', '1'],
+                'surface' => ['Superficie (m²)', 'number', '60'],
+                'etage' => ['Étage', 'text', 'Ex. 3e étage / rez-de-chaussée'],
+                'caution' => ['Caution (nombre de mois)', 'number', '2'],
+                'avance' => ['Avance sur loyer (nombre de mois)', 'number', '2'],
+                'dispo' => ['Disponible à partir du', 'date'],
+                'equip' => ['Équipements & atouts', 'multi', ['Climatisation', 'Compteur électrique individuel', 'Compteur d\'eau (SODECI)', 'Parking', 'Gardien / sécurité 24/7', 'Clôture / portail', 'Groupe électrogène', 'Cuisine équipée', 'Balcon / terrasse', 'Internet / fibre']],
+            ],
+        ],
+        'pressing' => [
+            'title_ph' => 'Ex. Pressing costumes & chemises avec collecte', 'price_label' => 'Prix (F CFA)', 'units' => ['pièce', 'kg', 'forfait'],
+            'fields' => [
+                'linge' => ['Linge pris en charge', 'multi', ['Chemises', 'Costumes', 'Robes', 'Pagnes / tenues traditionnelles', 'Grand boubou / Bazin', 'Draps & housses', 'Couettes / couvertures', 'Rideaux', 'Tapis']],
+                'prestation' => ['Prestations', 'multi', ['Lavage', 'Repassage', 'Nettoyage à sec', 'Détachage', 'Amidonnage']],
+                'delai' => ['Délai de retour', 'select', ['24 h', '48 h', '72 h', '1 semaine']],
+                'collecte' => ['Collecte à domicile', 'yesno', $yn],
+                'livraison' => ['Livraison à domicile', 'yesno', $yn],
+                $zones[0] => array_slice($zones, 1),
+            ],
+        ],
+        'menage' => [
+            'title_ph' => 'Ex. Ménage complet 3 pièces', 'price_label' => 'Prix (F CFA)', 'units' => ['séance', 'heure', 'jour', 'forfait'],
+            'fields' => [
+                'prestation' => ['Type de prestation', 'select', ['Ménage standard', 'Ménage grand logement', 'Repassage', 'Nettoyage des vitres', 'Nettoyage après travaux', 'Aide à domicile (garde, courses…)'], true],
+                'pieces' => ['Nombre de pièces maximum', 'number', '3'],
+                'duree' => ['Durée de la séance (heures)', 'number', '4'],
+                'produits' => ['Produits & matériel fournis', 'yesno', $yn],
+                'repassage' => ['Repassage inclus', 'yesno', $yn],
+                'jours' => ['Jours de disponibilité', 'multi', ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']],
+                $zones[0] => array_slice($zones, 1),
+            ],
+        ],
+        'coiffeuse' => [
+            'title_ph' => 'Ex. Tissage ou pose de perruque à domicile', 'price_label' => 'Tarif (F CFA)', 'units' => ['séance', 'forfait'],
+            'fields' => [
+                'prestation' => ['Type de coiffure', 'select', ['Tissage', 'Pose de perruque', 'Nattes / tresses', 'Chignon', 'Knotless / Boho braids', 'Twists / Vanilles', 'Wash and Go', 'Soins capillaires', 'Autre'], true],
+                'duree' => ['Durée estimée (heures)', 'number', '3'],
+                'meches' => ['Mèches / produits fournis', 'yesno', $yn],
+                'domicile' => ['Se déplace à domicile', 'yesno', $yn],
+                'experience' => ['Années d\'expérience', 'number', '5'],
+                $zones[0] => array_slice($zones, 1),
+            ],
+        ],
+        'maquilleuse' => [
+            'title_ph' => 'Ex. Maquillage mariée à domicile', 'price_label' => 'Tarif (F CFA)', 'units' => ['séance', 'forfait'],
+            'fields' => [
+                'prestation' => ['Type de maquillage', 'select', ['Maquillage de jour', 'Maquillage soirée / événement', 'Maquillage mariage', 'Maquillage artistique', 'Cours de maquillage'], true],
+                'duree' => ['Durée estimée (heures)', 'number', '1'],
+                'produits' => ['Produits fournis', 'yesno', $yn],
+                'domicile' => ['Se déplace à domicile', 'yesno', $yn],
+                'experience' => ['Années d\'expérience', 'number', '5'],
+                $zones[0] => array_slice($zones, 1),
+            ],
+        ],
+        'onglerie' => [
+            'title_ph' => 'Ex. Pose de gel et nail art', 'price_label' => 'Tarif (F CFA)', 'units' => ['séance', 'forfait'],
+            'fields' => [
+                'prestation' => ['Type de prestation', 'select', ['Manucure / beauté des ongles', 'Vernis classique', 'Vernis semi-permanent', 'Pose de capsules', 'Gel / acrygel', 'Remplissage', 'Nail art', 'Dépose'], true],
+                'duree' => ['Durée estimée (heures)', 'number', '2'],
+                'produits' => ['Produits & matériel fournis', 'yesno', $yn],
+                'domicile' => ['Se déplace à domicile', 'yesno', $yn],
+                'experience' => ['Années d\'expérience', 'number', '3'],
+                $zones[0] => array_slice($zones, 1),
+            ],
+        ],
+        'cars' => [
+            'title_ph' => 'Ex. Abidjan → Yamoussoukro, départ 07h', 'price_label' => 'Prix par place (F CFA)', 'units' => ['personne'],
+            'fields' => [
+                'compagnie' => ['Compagnie', 'text', 'Ex. UTB', true],
+                'depart' => ['Ville de départ', 'text', 'Ex. Abidjan', true],
+                'arrivee' => ['Ville d\'arrivée', 'text', 'Ex. Bouaké', true],
+                'horaire' => ['Heure de départ', 'text', 'Ex. 07:00'],
+                'classe' => ['Classe', 'select', ['Standard', 'VIP', 'Climatisé']],
+                'places' => ['Nombre de places', 'number', '55'],
+                'bagages' => ['Bagages inclus', 'yesno', $yn],
+            ],
+        ],
+        'covoiturage' => [
+            'title_ph' => 'Ex. Abidjan → Grand-Bassam, tous les matins', 'price_label' => 'Prix par personne (F CFA)', 'units' => ['personne'],
+            'fields' => [
+                'depart' => ['Lieu de départ', 'text', 'Ex. Cocody Riviera', true],
+                'arrivee' => ['Lieu d\'arrivée', 'text', 'Ex. Plateau', true],
+                'horaire' => ['Date / heure de départ', 'text', 'Ex. Tous les jours à 07:30'],
+                'places' => ['Places disponibles (4 maximum)', 'select', ['1', '2', '3', '4'], true],
+                'voiture' => ['Voiture (marque, modèle)', 'text', 'Ex. Toyota Corolla'],
+                'clim' => ['Climatisation', 'yesno', $yn],
+                'bagages' => ['Bagages acceptés', 'yesno', $yn],
+            ],
+        ],
+        'location_car' => [
+            'title_ph' => 'Ex. Minibus 18 places climatisé avec chauffeur', 'price_label' => 'Tarif (F CFA)', 'units' => ['jour', 'trajet'],
+            'fields' => [
+                'type' => ['Type', 'select', ['Minibus', 'Car 30 places', 'Car 50+ places', 'Car VIP'], true],
+                'places' => ['Nombre de places', 'number', '18', true],
+                'clim' => ['Climatisation', 'yesno', $yn],
+                'chauffeur' => ['Chauffeur inclus', 'yesno', $yn],
+                'carburant' => ['Carburant inclus', 'yesno', $yn],
+                'usage' => ['Utilisations acceptées', 'multi', ['Mariage', 'Excursion / voyage', 'Sortie scolaire', 'Événement d\'entreprise', 'Transfert aéroport']],
+                $zones[0] => ['📍 Destinations / zones couvertes', 'text', 'Ex. Abidjan et intérieur du pays'],
+            ],
+        ],
+        'location_vehicule' => [
+            'title_ph' => 'Ex. Toyota Prado 4x4 — location à la journée', 'price_label' => 'Tarif par jour (F CFA)', 'units' => ['jour'],
+            'fields' => [
+                'modele' => ['Marque & modèle', 'text', 'Ex. Toyota Prado', true],
+                'categorie' => ['Catégorie', 'select', ['Citadine', 'Berline', 'SUV', '4x4', 'Minibus'], true],
+                'annee' => ['Année', 'number', '2020'],
+                'boite' => ['Boîte de vitesses', 'select', ['Manuelle', 'Automatique']],
+                'carburant' => ['Carburant', 'select', ['Essence', 'Diesel', 'Hybride']],
+                'places' => ['Nombre de places', 'number', '5'],
+                'clim' => ['Climatisation', 'yesno', $yn],
+                'chauffeur' => ['Chauffeur disponible en option', 'yesno', $yn],
+                'caution' => ['Caution demandée (F CFA)', 'number', '100000'],
+                'km' => ['Kilométrage', 'select', ['Illimité', 'Limité (selon contrat)']],
+            ],
+        ],
+        'chauffeur' => [
+            'title_ph' => 'Ex. Chauffeur privé expérimenté, disponible 7j/7', 'price_label' => 'Tarif (F CFA)', 'units' => ['jour', 'heure'],
+            'fields' => [
+                'experience' => ['Années d\'expérience', 'number', '8', true],
+                'boite' => ['Boîte maîtrisée', 'select', ['Manuelle', 'Automatique', 'Les deux']],
+                'permis' => ['Catégorie de permis', 'text', 'Ex. B'],
+                'langues' => ['Langues parlées', 'multi', ['Français', 'Anglais', 'Dioula', 'Baoulé', 'Bété', 'Autre']],
+                'vehicule' => ['Avec son propre véhicule', 'yesno', $yn],
+                'dispo' => ['Disponibilité', 'multi', ['Jour', 'Nuit', 'Week-end', 'Semaine', 'Mois']],
+                $zones[0] => array_slice($zones, 1),
+            ],
+        ],
+        'location_camion' => [
+            'title_ph' => 'Ex. Camion plateau 10 tonnes avec manutention', 'price_label' => 'Tarif (F CFA)', 'units' => ['jour', 'trajet'],
+            'fields' => [
+                'type' => ['Type de camion', 'select', ['Fourgon', 'Plateau', 'Benne', 'Frigorifique', 'Porte-char / semi-remorque'], true],
+                'tonnage' => ['Tonnage (tonnes)', 'number', '10', true],
+                'volume' => ['Volume (m³)', 'number', '30'],
+                'chauffeur' => ['Chauffeur inclus', 'yesno', $yn],
+                'manutention' => ['Manutention (porteurs)', 'yesno', $yn],
+                'carburant' => ['Carburant inclus', 'yesno', $yn],
+                $zones[0] => ['📍 Zones couvertes', 'text', 'Ex. Abidjan et intérieur du pays'],
+            ],
+        ],
+    ];
+    return $S[$universe] ?? ['title_ph' => 'Ex. Mon service', 'price_label' => 'Prix indicatif (F CFA)', 'units' => ['séance', 'heure', 'jour', 'pièce', 'forfait', 'nuit', 'trajet', 'personne'], 'fields' => []];
+}
+
+/** Nettoie les valeurs envoyées pour une annonce selon le schéma de l'activité. Retourne [attrs, erreur|null]. */
+function listing_collect(string $universe, array $post): array
+{
+    $out = [];
+    foreach (listing_schema($universe)['fields'] as $k => $f) {
+        [$label, $type] = [$f[0], $f[1]];
+        $raw = $post[$k] ?? null;
+        $req = !empty($f[3]);
+        if ($type === 'multi') {
+            $vals = array_values(array_intersect((array) $raw, $f[2]));
+            if ($vals) $out[$k] = $vals;
+            continue;
+        }
+        $v = is_array($raw) ? '' : trim((string) $raw);
+        if ($type === 'select' || $type === 'yesno') {
+            $opts = $f[2];
+            if ($v !== '' && !in_array($v, $opts, true)) $v = '';
+        } elseif ($type === 'number') {
+            $v = preg_replace('/\D/', '', $v);
+            $v = $v === '' ? '' : (string) min((int) $v, 100000000);
+        } elseif ($type === 'date') {
+            $v = preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) ? $v : '';
+        } else {
+            $v = mb_substr($v, 0, 120);
+        }
+        if ($v === '' && $req) return [[], $label . ' : champ obligatoire.'];
+        if ($v !== '') $out[$k] = $v;
+    }
+    if ($universe === 'covoiturage' && (int) ($out['places'] ?? 0) > 4) return [[], 'Covoiturage : 4 places maximum.'];
+    return [$out, null];
+}
+
+/** Lignes « Libellé : valeur » d'une annonce, pour l'affichage. */
+function listing_lines(string $universe, ?string $json): array
+{
+    $a = json_decode((string) $json, true) ?: [];
+    $lines = [];
+    foreach (listing_schema($universe)['fields'] as $k => $f) {
+        if (!isset($a[$k]) || $a[$k] === '' || $a[$k] === []) continue;
+        $v = is_array($a[$k]) ? implode(', ', $a[$k]) : $a[$k];
+        if ($f[1] === 'date') $v = date('d/m/Y', strtotime($v));
+        $lines[] = [preg_replace('/^[^\p{L}\p{N}]+/u', '', $f[0]), $v];
+    }
+    return $lines;
+}
