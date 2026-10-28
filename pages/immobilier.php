@@ -215,10 +215,6 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
       <?php endforeach; ?>
     </div>
     <?php $adsUniverse = 'immobilier'; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
-    <div class="d-trust">
-      <span class="d-trust-ico"></span>
-      <span><b>Paiement sécurisé après confirmation :</b><br><small>Votre paiement est bloqué sur ChapTarif et n'est versé au propriétaire qu'après la remise des clés.</small></span>
-    </div>
   </div>
 </section>
 <?php endif; ?>

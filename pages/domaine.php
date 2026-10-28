@@ -57,10 +57,6 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
       </select>
     </label>
     <?php $adsUniverse = $d['keys']; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
-    <div class="d-trust">
-      <span class="d-trust-ico"></span>
-      <span><b><?= e($d['trust_title'] ?? 'Paiement sécurisé après confirmation :') ?></b><br><small><?= e($d['trust_text'] ?? 'Votre paiement est bloqué sur ChapTarif et n\'est versé au prestataire qu\'après la réalisation du service.') ?></small></span>
-    </div>
   </div>
 </section>
 
