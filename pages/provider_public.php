@@ -19,7 +19,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       <div style="flex:1"><h1 class="h2" style="margin:0"><?= e($p['name']) ?></h1>
         <small class="muted"> <?= e($p['commune']) ?> · <?= stars((float) $p['rating']) ?> · <?= (int) $p['missions'] ?> missions</small>
         <div style="margin-top:6px"><?= kyc_badge($p['kyc_status']) ?><?php if (is_sponsored($p)): ?> <span class="badge badge-gold">★ Recommandé</span><?php endif; ?></div></div>
-      <a class="btn btn-primary" href="<?= e($book) ?>">Réserver</a>
+      <a class="btn btn-primary" href="<?= e($book) ?>"><?= $p['universe'] === 'immobilier' ? 'Demande de visite' : 'Réserver' ?></a>
     </div>
     <?php if ($p['bio']): ?><p class="mt"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
     <h2 class="h3 mt">Ses annonces</h2>
@@ -32,12 +32,12 @@ view('layout/header', compact('title', 'desc', 'active'));
             <?php $ll = listing_lines($p['universe'], $a['attrs'] ?? null); if ($ll): ?><ul class="ps-attrs"><?php foreach ($ll as [$lk, $lv]): ?><li><b><?= e($lk) ?> :</b> <?= e($lv) ?></li><?php endforeach; ?></ul><?php endif; ?>
             <?php if ($a['price']): ?><div class="ps-price"><?= fcfa($a['price']) ?><?= $a['unit'] ? ' / ' . e($a['unit']) : '' ?></div><?php endif; ?>
             <p><?= nl2br(e((string) $a['description'])) ?></p>
-            <?php if ($p['universe'] !== 'covoiturage' && $a['price']): ?><a class="btn btn-primary btn-sm" href="<?= e($p['universe'] === 'immobilier' ? '/immobilier?ad=' . (int) $a['id'] : '/' . str_replace('_', '-', $p['universe']) . '?listing=' . (int) $a['id']) ?>">Réserver</a><?php endif; ?></div>
+            <?php if ($p['universe'] !== 'covoiturage' && $a['price']): ?><a class="btn btn-primary btn-sm" href="<?= e($p['universe'] === 'immobilier' ? '/immobilier?ad=' . (int) $a['id'] : '/' . str_replace('_', '-', $p['universe']) . '?listing=' . (int) $a['id']) ?>"><?= $p['universe'] === 'immobilier' ? 'Demande de visite' : 'Réserver' ?></a><?php endif; ?></div>
         </article>
       <?php endforeach; ?>
     </div>
     <p class="fine">Prix indicatifs : le tarif final est confirmé à la réservation. Paiement sécurisé, bloqué jusqu'à la fin du service.</p>
-    <a class="btn btn-primary btn-lg mt" href="<?= e($book) ?>">Réserver ce prestataire</a>
+    <a class="btn btn-primary btn-lg mt" href="<?= e($book) ?>"><?= $p['universe'] === 'immobilier' ? 'Demande de visite' : 'Réserver ce prestataire' ?></a>
   </div>
 </section>
 <?php view('layout/footer', compact('active'));

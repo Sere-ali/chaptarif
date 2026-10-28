@@ -8,6 +8,19 @@ $adId = (int) ($_GET['ad'] ?? 0);
 if ($adId) {
     $ad = one("SELECT ps.*, p.name AS pname, p.commune AS pcommune, p.id AS pid FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE ps.id = ? AND p.universe = 'immobilier' AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved'", [$adId]);
     if (!$ad) not_found();
+    if (is_post()) {
+        csrf_check();
+        $me = require_client('/immobilier?ad=' . $adId);
+        $vd = (string) ($_POST['visit_date'] ?? '');
+        $vt = (string) ($_POST['visit_time'] ?? '');
+        if (!valid_future_date($vd, 60) || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $vt)) {
+            flash('error', 'Choisissez une date et une heure de visite valides.');
+        } else {
+            insert('visit_requests', ['service_id' => $adId, 'provider_id' => (int) $ad['pid'], 'user_id' => (int) $me['id'], 'visit_date' => $vd, 'visit_time' => $vt, 'message' => mb_substr(trim((string) ($_POST['message'] ?? '')), 0, 500), 'status' => 'nouvelle', 'created_at' => date('Y-m-d H:i:s')]);
+            flash('success', 'Demande de visite envoyée. Le bailleur vous contactera pour confirmer.');
+        }
+        redirect('/immobilier?ad=' . $adId);
+    }
     $title = $ad['title'];
     $desc = mb_substr((string) $ad['description'], 0, 150);
     $ll = listing_lines('immobilier', $ad['attrs'] ?? null);
@@ -26,17 +39,14 @@ if ($adId) {
             <?php if ($ad['description']): ?><p><?= nl2br(e((string) $ad['description'])) ?></p><?php endif; ?>
           </div>
           <aside class="sticky">
-            <form class="card form-card" method="post" action="/reserver">
+            <form class="card form-card" method="post" action="/immobilier?ad=<?= (int) $ad['id'] ?>">
               <?= csrf_field() ?>
-              <input type="hidden" name="universe" value="immobilier"><input type="hidden" name="listing" value="<?= (int) $ad['id'] ?>">
               <div class="big-price"><?= fcfa($ad['price']) ?><em>/ mois</em></div>
-              <label class="fld"><span> Date d'entrée souhaitée</span><input type="date" name="movein" required min="<?= date('Y-m-d', strtotime('+1 day')) ?>" max="<?= date('Y-m-d', strtotime('+180 days')) ?>" value="<?= date('Y-m-d', strtotime('+7 days')) ?>"></label>
-              <?php if ($taken): ?>
-                <p class="alert alert-warn">Ce logement est déjà réservé.</p>
-              <?php else: ?>
-                <button class="btn btn-primary btn-block btn-lg">Réserver ce logement</button>
-              <?php endif; ?>
-              <p class="fine">Vous réglez le 1er mois de loyer. Votre paiement est bloqué sur ChapTarif et n'est versé au bailleur qu'après la remise des clés.</p>
+              <label class="fld"><span>Date de visite</span><input type="date" name="visit_date" required min="<?= date('Y-m-d', strtotime('+1 day')) ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>"></label>
+              <label class="fld"><span>Heure de visite</span><input type="time" name="visit_time" required value="10:00"></label>
+              <label class="fld"><span>Message (facultatif)</span><textarea name="message" rows="2" maxlength="500"></textarea></label>
+              <button class="btn btn-primary btn-block btn-lg">Demande de visite</button>
+              <p class="fine">Aucun paiement à cette étape. Le bailleur confirme le créneau avec vous.</p>
             </form>
           </aside>
         </div>

@@ -119,6 +119,13 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <div><b><?= (float) $p['rating'] > 0 ? number_format((float) $p['rating'], 1, ',', '') . ' ★' : '—' ?></b><small>Note clients</small></div>
       </div>
 
+      <?php if ($p['universe'] === 'immobilier'):
+        $visits = all("SELECT v.*, u.name AS uname, u.phone AS uphone, ps.title AS stitle FROM visit_requests v JOIN users u ON u.id = v.user_id JOIN provider_services ps ON ps.id = v.service_id WHERE v.provider_id = ? ORDER BY v.id DESC LIMIT 30", [$p['id']]); ?>
+      <h3 class="h4 mt" id="visites">Demandes de visite</h3>
+      <?php if (!$visits): ?><p class="muted">Aucune demande pour le moment.</p><?php else: foreach ($visits as $v): ?>
+        <div class="ps-ad"><b><?= e($v['stitle']) ?></b><br><?= e(date('d/m/Y', strtotime($v['visit_date']))) ?> à <?= e($v['visit_time']) ?> · <?= e($v['uname']) ?> · <a href="tel:<?= e($v['uphone']) ?>"><?= e(fmt_phone($v['uphone'])) ?></a><?php if ($v['message']): ?><br><small class="muted"><?= e($v['message']) ?></small><?php endif; ?></div>
+      <?php endforeach; endif; endif; ?>
+
       <h3 class="h4 mt" id="annonces"> Mes annonces</h3>
       <?php if ($nRej): ?><div class="alert alert-error"><?= $nRej ?> annonce(s) refusée(s) : lisez le motif, corrigez puis renvoyez.</div><?php endif; ?>
       <?php $sch = listing_schema($p['universe']); foreach ($svcs as $s): ?>

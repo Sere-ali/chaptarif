@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 19;
+const SCHEMA_VERSION = 20;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'];
 
 function db(): PDO
@@ -179,6 +179,11 @@ function db_migrate(): void
             id $PK, user_id INTEGER NOT NULL, sender TEXT NOT NULL, admin_id INTEGER, body TEXT NOT NULL,
             read_by_user INTEGER NOT NULL DEFAULT 0, read_by_admin INTEGER NOT NULL DEFAULT 0, created_at TEXT)",
         "CREATE INDEX IF NOT EXISTS idx_chat_user ON chat_messages(user_id, id)",
+        "CREATE TABLE IF NOT EXISTS visit_requests (
+            id $PK, service_id INTEGER NOT NULL, provider_id INTEGER NOT NULL, user_id INTEGER NOT NULL,
+            visit_date TEXT NOT NULL, visit_time TEXT NOT NULL, message TEXT,
+            status TEXT NOT NULL DEFAULT 'nouvelle', created_at TEXT)",
+        "CREATE INDEX IF NOT EXISTS idx_visit_provider ON visit_requests(provider_id, id)",
         "CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id)",
         "CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)",
         "CREATE INDEX IF NOT EXISTS idx_providers_univ ON providers(universe)",
