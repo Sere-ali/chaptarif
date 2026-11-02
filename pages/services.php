@@ -58,10 +58,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
       <?php if ($autoProv || $isRental):
         $ads = all("SELECT ps.*, p.name AS pname, p.commune AS pcommune, p.rating AS prating, p.missions AS pmissions FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe = ? AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' AND ps.price IS NOT NULL AND ps.price > 0 ORDER BY CASE WHEN p.sponsored_until >= ? THEN 0 ELSE 1 END, p.rating DESC, ps.price", [$uk, $today]);
         $selAd = (int) ($_GET['listing'] ?? 0); ?>
-      <?php if ($ads): ?>
-      <h2 class="h3">1. Choisissez votre prestation</h2>
-      <p class="muted">Chaque prestataire fixe son propre tarif. Choisissez l'annonce qui vous convient.</p>
-      <?php endif; ?>
+      <?php $ads = array_values(array_filter($ads, fn($a) => $selAd && (int) $a['id'] === $selAd)); // plus de choix : seule l'annonce d'où vient le client est conservée ?>
       <div class="offer-grid">
         <?php foreach ($ads as $ad): ?>
           <label class="offer" style="--c:<?= $x['color'] ?>">
@@ -182,7 +179,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </div>
         <?php endif; ?>
         <?php else: ?>
-        <h2 class="h3"><?= ($autoProv && $ads) ? '2' : (($autoProv) ? '1' : '3') ?>. Date & lieu</h2>
+        <h2 class="h3"><?= $autoProv ? '1' : '3' ?>. Date & lieu</h2>
         <div class="row2">
           <label class="fld"><span> <?= e($copy['date_label']) ?></span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
           <label class="fld"><span> Heure</span><select name="time"><?php foreach (['07:00', '08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $h): ?><option <?= $h === '09:00' ? 'selected' : '' ?>><?= $h ?></option><?php endforeach; ?></select></label>
