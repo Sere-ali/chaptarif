@@ -8,7 +8,7 @@ if (!$d) not_found();
 $title = $d['name'] . ' à Abidjan';
 $desc = $d['pitch'];
 $active = $dk;
-$bodyClass = 'domaine-m';
+$bodyClass = 'domaine-m' . ($dk === 'beaute' ? ' theme-beaute' : '');
 $subs = array_map(fn ($k) => universe($k), $d['keys']);
 view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 ?>

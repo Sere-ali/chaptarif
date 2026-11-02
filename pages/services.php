@@ -38,7 +38,8 @@ $selProv = (int) ($_GET['provider'] ?? ($providers[0]['id'] ?? 0));
 $selOffer = (int) ($_GET['offer'] ?? 0);
 if (!$selOffer) foreach ($offers as $o) if ($o['popular']) { $selOffer = (int) $o['id']; break; }
 if (!$selOffer && $offers) $selOffer = (int) $offers[0]['id'];
-view('layout/header', compact('title', 'desc', 'active'));
+$bodyClass = in_array($uk, ['coiffeuse', 'maquilleuse', 'onglerie'], true) ? 'theme-beaute' : '';
+view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 ?>
 <section class="page-hero" style="--c:<?= $x['color'] ?>;--hero:url('<?= e(img($x['img'], 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
   <div class="container">
