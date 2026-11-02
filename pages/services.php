@@ -78,7 +78,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
       <?php else: ?>
       <h2 class="h3">1. Choisissez votre formule</h2>
       <?php if (!$offers): ?>
-        <div class="empty"><div class="empty-ico"></div><p>Aucune formule publiée pour le moment. Revenez bientôt.</p></div>
+        
       <?php endif; ?>
       <div class="offer-grid">
         <?php foreach ($offers as $o): ?>
@@ -104,7 +104,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         </div>
       </div>
       <?php if (!$providers): ?>
-        <div class="empty"><div class="empty-ico"></div><p>Aucun prestataire vérifié dans cette commune pour le moment.</p><a class="btn btn-soft" href="/<?= str_replace('_', '-', $uk) ?>">Voir toutes les communes</a></div>
+        
       <?php endif; ?>
       <div class="prov-list">
         <?php foreach ($providers as $p): ?>

@@ -177,7 +177,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <a class="fchip <?= $commune === $c ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $c, 'type' => $type])) ?>"><?= e($c) ?></a>
       <?php endforeach; ?>
     </div>
-    <?php if (!$props): ?><div class="empty"><div class="empty-ico"></div><p>Aucun logement disponible dans cette commune.</p></div><?php endif; ?>
+    <?php if (!$props): ?><?php endif; ?>
     <div class="prop-grid">
       <?php foreach ($props as $p): $imgs = json_decode((string) $p['images'], true) ?: []; ?>
         <a class="prop reveal" href="/immobilier?id=<?= (int) $p['id'] ?><?= $ci ? '&checkin=' . e($ci) : '' ?>">

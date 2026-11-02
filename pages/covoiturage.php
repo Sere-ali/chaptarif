@@ -41,7 +41,7 @@ view('layout/header', compact('title', 'desc', 'active'));
     </form>
 
     <?php if ($searched): ?><div class="h-row"><h2 class="h3"> <?= e($from ?: 'Partout') ?> → <?= e($to ?: 'Partout') ?> · <?= fmt_date($date) ?></h2><span class="muted"><?= count($trips) ?> trajet(s)</span></div><?php endif; ?>
-    <?php if (!$trips): ?><div class="empty"><div class="empty-ico"></div><p><?= $searched ? 'Aucun trajet pour cette recherche pour le moment.' : 'Aucun trajet de covoiturage publié pour le moment.' ?></p><a class="btn btn-soft" href="/chat"> Nous écrire, nous cherchons pour vous</a></div><?php endif; ?>
+    <?php if (!$trips): ?><?php endif; ?>
     <div class="trip-list">
       <?php foreach ($trips as $t):
         $past = $date === date('Y-m-d') && $t['depart_time'] <= date('H:i');

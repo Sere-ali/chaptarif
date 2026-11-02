@@ -32,7 +32,7 @@ view('layout/header', compact('title', 'desc', 'active'));
     </form>
 
     <div class="h-row"><h2 class="h3"> <?= e($from) ?> → <?= e($to) ?> · <?= fmt_date($date) ?></h2><span class="muted"><?= count($trips) ?> départ(s)</span></div>
-    <?php if (!$trips): ?><div class="empty"><div class="empty-ico"></div><p>Aucun départ sur cette ligne.</p></div><?php endif; ?>
+    <?php if (!$trips): ?><?php endif; ?>
     <div class="trip-list">
       <?php foreach ($trips as $t):
         $past = $date === date('Y-m-d') && $t['depart_time'] <= date('H:i');

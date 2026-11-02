@@ -23,7 +23,7 @@ view('layout/header', compact('title', 'desc', 'active'));
     </div>
     <?php if ($p['bio']): ?><p class="mt"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
     <h2 class="h3 mt">Ses annonces</h2>
-    <?php if (!$ads): ?><div class="empty"><div class="empty-ico"></div><p>Ce prestataire n'a pas encore publié d'annonce.</p></div><?php endif; ?>
+    <?php if (!$ads): ?><?php endif; ?>
     <div class="ps-grid">
       <?php foreach ($ads as $a): ?>
         <article class="ps-card">
