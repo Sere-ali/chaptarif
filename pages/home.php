@@ -64,7 +64,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     ?>
     <form class="m-search" action="#" data-search='<?= e(json_encode($sidx, JSON_UNESCAPED_UNICODE)) ?>' autocomplete="off" style="position:relative">
       <span class="m-search-ico"></span>
-      <input type="search" name="q" placeholder="Rechercher un service, car, logement…" aria-label="Rechercher">
+      <input type="search" name="q" placeholder="Rechercher : studio, pressing, car…" aria-label="Rechercher">
       <ul class="m-sugg" hidden></ul>
     </form>
     <script>

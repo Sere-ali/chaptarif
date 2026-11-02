@@ -796,3 +796,13 @@ body.immo-m.immo-ads .d-home { padding-bottom: 90px; }
   .ps-bar .top-actions .btn-ghost { display: inline-flex; white-space: nowrap; padding: 8px 12px; font-size: .84rem; }
   .ps-bar .top-actions form { margin-left: auto; }
 }
+
+/* Finitions professionnelles */
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+.m-search input, .m-search input::placeholder { text-overflow: ellipsis; }
+.btn { transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.card, .prop { transition: box-shadow .2s ease; }
+img { image-rendering: auto; }
+::selection { background: rgba(46, 125, 91, .25); }
