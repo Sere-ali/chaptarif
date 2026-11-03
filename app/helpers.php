@@ -723,3 +723,42 @@ function maquillage_formules(): array
         'sfx' => 'Effets Spéciaux (SFX) & Artistique (Carnaval, Halloween, shooting thématique etc)',
     ];
 }
+
+
+/** Prestations proposées pour la coiffure et l'onglerie à domicile (groupes => choix). */
+function beaute_prestations(string $uk): array
+{
+    $all = [
+        'coiffeuse' => [
+            'Forfait 1 — Tissage ou perruque' => ['Tissage', 'Pose de perruque'],
+            'Forfait 2 — Nattes, tresses ou chignon' => [
+                'Knotless Braids (tresses sans nœuds)',
+                'Boho Braids / Goddess Braids',
+                'Fulani Braids',
+                'Cornrows artistiques et graphiques (tresses plaquées avec traçage)',
+                'Wash and Go',
+                'Twists / Vanilles sur cheveux naturels',
+                'Puff (chignon bouffant)',
+                'Bantu Knots',
+                'Autres coiffures',
+            ],
+        ],
+        'onglerie' => [
+            'Option 1 — Beauté de l’ongle naturel' => [
+                'Manucure et entretien de l’ongle naturel',
+                'Pose de vernis classique',
+                'Pose de vernis semi-permanent',
+            ],
+            'Option 2 — Pose et stylisme ongulaire' => [
+                'Pose de capsules',
+                'Gel et acrygel',
+                'Gainage de l’ongle naturel',
+                'Remplissage',
+                'Extensions et rallongement',
+                'Nail art et décorations',
+                'Dépose de faux ongles ou de gel',
+            ],
+        ],
+    ];
+    return $all[$uk] ?? [];
+}

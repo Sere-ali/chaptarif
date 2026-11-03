@@ -131,6 +131,13 @@ function build_quote(string $universe, array $in): array
                 $formule = $fl[$fk];
                 $personnes = max(1, min(30, (int) ($in['personnes'] ?? 1)));
             }
+            $presta = '';
+            if (in_array($universe, ['coiffeuse', 'onglerie'], true)) {
+                $pk = (string) ($in['prestation'] ?? '');
+                $flat = array_merge(...array_values(beaute_prestations($universe)));
+                if (!in_array($pk, $flat, true)) return $fail('Choisissez votre prestation.');
+                $presta = $pk;
+            }
             $qty = $offer['unit'] === 'pièce' ? max(1, min(50, (int) ($in['qty'] ?? 1))) : 1;
             $amount = (int) $offer['price'] * $qty;
             $q += ['title' => $offer['title'] . ($qty > 1 ? " × $qty" : '') . ' · ' . $prov['name'], 'amount' => $amount, 'service_date' => $in['date']];
@@ -138,8 +145,10 @@ function build_quote(string $universe, array $in): array
             $q['item_type'] = $isListing ? 'listing' : 'offer';
             $q['item_id'] = (int) $offer['id'];
             $q['details'] = ['offer' => $offer['title'], 'qty' => $qty, 'zone' => $zone['name'] ?? '', 'gps' => $gps0, 'time' => $time, 'address' => mb_substr((string) ($in['address'] ?? ''), 0, 200), 'provider' => $prov['name']];
+            if ($presta !== '') $q['details']['prestation'] = $presta;
             if ($formule !== '') { $q['details']['formule'] = $formule; $q['details']['personnes'] = $personnes; }
             $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', trim(($zone['name'] ?? '') . ($addr0 !== '' ? ($zone ? ' · ' : '') . mb_substr($addr0, 0, 200) : '') . ($gps0 !== '' && $addr0 === '' && !$zone ? 'Position partagée' : ''))]];
+            if ($presta !== '') $q['summary'][] = ['Prestation', $presta];
             if ($formule !== '') { $q['summary'][] = ['Type de maquillage', $formule]; $q['summary'][] = ['Nombre de personnes', (string) $personnes]; }
             // Garantie Dommage (option payante, disponible pour les services à domicile/matériel)
             $q['garantie_fee'] = 0;
