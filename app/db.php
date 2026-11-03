@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 21;
+const SCHEMA_VERSION = 22;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'];
 
 function db(): PDO
@@ -292,6 +292,14 @@ function db_migrate(): void
         q("UPDATE offers SET active = 0 WHERE universe = 'menage'");
         foreach ([['Studio', 5000, 1], ['2 pièces', 7500, 2], ['3 pièces', 10000, 3], ['4 pièces', 12500, 4], ['5 pièces', 15000, 5]] as [$t, $pr, $so]) {
             q("INSERT INTO offers (universe, title, subtitle, price, unit, popular, active, sort) VALUES ('menage', ?, 'Ménage complet', ?, 'forfait', ?, 1, ?)", [$t, $pr, $so === 1 ? 1 : 0, $so]);
+        }
+    }
+
+    // v22 : forfaits pressing (lavés et repassés).
+    if (val("SELECT 1 FROM offers WHERE universe = 'pressing' AND title = 'Essentiel'") === null) {
+        q("UPDATE offers SET active = 0 WHERE universe = 'pressing'");
+        foreach ([['Essentiel', 'Maximum 5 vêtements (lavés et repassés)', 4500, 1], ['Confort', 'Maximum 10 vêtements (lavés et repassés)', 8500, 2], ['Famille', 'Maximum 18 vêtements (lavés et repassés)', 16500, 3]] as [$t, $st, $pr, $so]) {
+            q("INSERT INTO offers (universe, title, subtitle, price, unit, popular, active, sort) VALUES ('pressing', ?, ?, ?, 'forfait', ?, 1, ?)", [$t, $st, $pr, $so === 2 ? 1 : 0, $so]);
         }
     }
 
