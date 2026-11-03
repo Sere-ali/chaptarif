@@ -225,7 +225,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <div class="total-box">
           <div<?= in_array($uk, ['maquilleuse', 'coiffeuse', 'onglerie'], true) ? ' hidden' : '' ?>><span>Formule</span><b data-sum-offer>—</b></div>
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
-          <?php if ($hasGarantie): ?><div data-sum-garantie-row hidden><span> Garantie Dommage</span><b data-sum-garantie>—</b></div><?php endif; ?>
+          <?php if ($hasGarantie): ?><div data-sum-garantie-row hidden><span>Garantie dommage (<?= e(str_replace('.', ',', (string) $garantiePct)) ?>% du montant de la formule)</span><b data-sum-garantie>—</b></div><?php endif; ?>
           <?php if ($uk === 'menage'): ?><div><span>Frais de service</span><b data-sum-fee>—</b></div><?php endif; ?>
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>
