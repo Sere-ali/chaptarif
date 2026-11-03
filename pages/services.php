@@ -217,7 +217,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <?php if ($hasGarantie): ?>
           <label class="check garantie-check">
             <input type="checkbox" name="garantie" value="1" data-garantie>
-             <b>Garantie Dommage</b> (+<?= e((string) $garantiePct) ?>%) : <?= $uk === 'pressing' ? 'Confiez vos vêtements en toute sérénité. Pensez à les protéger !' : "en cas de service mal exécuté ou d'objet endommagé, indemnisation ou nouvelle prestation." ?>
+             <b>Garantie Dommage</b> : <?= $uk === 'pressing' ? 'Confiez vos vêtements en toute sérénité. Pensez à les protéger !' : "en cas de service mal exécuté ou d'objet endommagé, indemnisation ou nouvelle prestation." ?>
           </label>
           <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>
