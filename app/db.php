@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 20;
+const SCHEMA_VERSION = 21;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'];
 
 function db(): PDO
@@ -286,6 +286,14 @@ function db_migrate(): void
     // v19 : garantie inchangée (6,72 %) ; frais de service ménage = 10 % de la prestation.
     q("DELETE FROM settings WHERE key IN ('garantie_menage_pct', 'home_service_fee')");
     if (val("SELECT 1 FROM settings WHERE key = 'service_fee_menage_pct'") === null) q("INSERT INTO settings (key, value) VALUES ('service_fee_menage_pct', '10')");
+
+    // v21 : formules ménage par taille de logement (tarifs fixes).
+    if (val("SELECT 1 FROM offers WHERE universe = 'menage' AND title = 'Studio'") === null) {
+        q("UPDATE offers SET active = 0 WHERE universe = 'menage'");
+        foreach ([['Studio', 5000, 1], ['2 pièces', 7500, 2], ['3 pièces', 10000, 3], ['4 pièces', 12500, 4], ['5 pièces', 15000, 5]] as [$t, $pr, $so]) {
+            q("INSERT INTO offers (universe, title, subtitle, price, unit, popular, active, sort) VALUES ('menage', ?, 'Ménage complet', ?, 'forfait', ?, 1, ?)", [$t, $pr, $so === 1 ? 1 : 0, $so]);
+        }
+    }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");
     q("INSERT INTO settings (key, value) VALUES ('schema_version', ?)", [(string) SCHEMA_VERSION]);

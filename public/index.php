@@ -45,6 +45,7 @@ $routes = [
     '/comment-ca-marche'    => 'pages/how.php',
     '/garantie-dommage'     => 'pages/garantie_dommage.php',
     '/contact'              => 'pages/contact.php',
+    '/devis-menage'         => 'pages/devis_menage.php',
     '/mentions-legales'     => 'pages/legal.php',
     '/sante'                => 'pages/health.php',
 

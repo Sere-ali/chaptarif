@@ -55,7 +55,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
   <div class="container <?= $isRental ? 'narrow-2' : 'two-col wide-left' ?>">
     <div>
       <?php if (true): ?>
-      <?php if ($autoProv || $isRental):
+      <?php if (($autoProv && $uk !== 'menage') || $isRental):
         $ads = all("SELECT ps.*, p.name AS pname, p.commune AS pcommune, p.rating AS prating, p.missions AS pmissions FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe = ? AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' AND ps.price IS NOT NULL AND ps.price > 0 ORDER BY CASE WHEN p.sponsored_until >= ? THEN 0 ELSE 1 END, p.rating DESC, ps.price", [$uk, $today]);
         $selAd = (int) ($_GET['listing'] ?? 0); ?>
       <?php $ads = array_values(array_filter($ads, fn($a) => $selAd && (int) $a['id'] === $selAd)); // plus de choix : seule l'annonce d'où vient le client est conservée ?>
@@ -87,7 +87,17 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
             <?php if (!$noPrice): ?><span class="offer-price"><?= fcfa($o['price']) ?><em>/ <?= e($o['unit']) ?></em></span><?php endif; ?>
           </label>
         <?php endforeach; ?>
+        <?php if ($uk === 'menage'): ?>
+          <a class="offer" href="/devis-menage" style="--c:<?= $x['color'] ?>"><b>6 pièces et plus</b><small>Proposition sur devis</small><span class="offer-price">Sur devis</span></a>
+        <?php endif; ?>
       </div>
+      <?php if ($uk === 'menage'): ?>
+      <h2 class="h3 mt">Formule 2</h2>
+      <div class="offer-grid">
+        <a class="offer" href="/devis-menage?type=chantier" style="--c:<?= $x['color'] ?>"><b>Nettoyage fin de chantier</b><small>Proposition sur devis : cliquez pour remplir le formulaire</small></a>
+        <a class="offer" href="/devis-menage?type=demenagement" style="--c:<?= $x['color'] ?>"><b>Nettoyage déménagement</b><small>Proposition sur devis : cliquez pour remplir le formulaire</small></a>
+      </div>
+      <?php endif; ?>
 
       <?php endif; ?>
       <?php if (!$autoProv && !$isRental): ?>
@@ -198,6 +208,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <option value="">Choisir…</option>
           <?php foreach (beaute_prestations($uk) as $grp => $items): ?><optgroup label="<?= e($grp) ?>"><?php foreach ($items as $it): ?><option value="<?= e($it) ?>"><?= e($it) ?></option><?php endforeach; ?></optgroup><?php endforeach; ?>
         </select></label>
+        <?php elseif ($uk === 'menage'): ?>
         <?php else: ?>
         <label class="fld"><span> Quartier (facultatif)</span><select name="zone"><option value="">Choisir…</option><?= zone_options() ?></select></label>
         <?php endif; ?>
@@ -210,7 +221,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </label>
           <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>
-        <?php if (!$isRental && !$noPrice): ?>
+        <?php if (!$isRental && !$noPrice && $uk !== 'menage'): ?>
         <div class="total-box">
           <div<?= in_array($uk, ['maquilleuse', 'coiffeuse', 'onglerie'], true) ? ' hidden' : '' ?>><span>Formule</span><b data-sum-offer>—</b></div>
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
