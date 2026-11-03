@@ -186,8 +186,16 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         </div>
         <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
         <button type="button" class="btn btn-soft btn-block" data-geo="address" style="margin:0 0 6px"> Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
-        <label class="fld"><span><?= $uk === 'pressing' ? ' Lieu de récupération' : ' Votre lieu' ?> (ou saisissez-le vous-même)</span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
+        <label class="fld"><span><?= $uk === 'maquilleuse' ? 'Saisir mon adresse' : ($uk === 'pressing' ? ' Lieu de récupération' : ' Votre lieu') . ' (ou saisissez-le vous-même)' ?></span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
+        <?php if ($uk === 'maquilleuse'): ?>
+        <label class="fld"><span>Formule</span><select name="formule" required>
+          <option value="">Choisir…</option>
+          <?php foreach (maquillage_formules() as $fk => $fv): ?><option value="<?= e($fk) ?>"><?= e($fv) ?></option><?php endforeach; ?>
+        </select></label>
+        <label class="fld"><span>Nombre de personnes</span><input type="number" name="personnes" min="1" max="30" value="1" required></label>
+        <?php else: ?>
         <label class="fld"><span> Quartier (facultatif)</span><select name="zone"><option value="">Choisir…</option><?= zone_options() ?></select></label>
+        <?php endif; ?>
         <label class="fld qty-fld" data-qty hidden><span> Nombre de pièces</span><input type="number" name="qty" min="1" max="50" value="1"></label>
         <?php endif; ?>
         <?php if ($hasGarantie): ?>
@@ -199,7 +207,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <?php endif; ?>
         <?php if (!$isRental && !$noPrice): ?>
         <div class="total-box">
-          <div><span>Formule</span><b data-sum-offer>—</b></div>
+          <div<?= $uk === 'maquilleuse' ? ' hidden' : '' ?>><span>Formule</span><b data-sum-offer>—</b></div>
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
           <?php if ($hasGarantie): ?><div data-sum-garantie-row hidden><span> Garantie Dommage</span><b data-sum-garantie>—</b></div><?php endif; ?>
           <?php if ($uk === 'menage'): ?><div><span>Frais de service</span><b data-sum-fee>—</b></div><?php endif; ?>

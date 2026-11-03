@@ -711,3 +711,15 @@ function listing_lines(string $universe, ?string $json): array
     }
     return $lines;
 }
+
+
+/** Formules proposées pour le maquillage à domicile. */
+function maquillage_formules(): array
+{
+    return [
+        'mariage' => 'Mariage ou Dot (Mariée, dote, fiançailles)',
+        'evenementiel' => 'Maquillage Événementiel (Anniversaire, soirée, cérémonie, gala etc)',
+        'jour_nude' => 'Maquillage Jour / Nude (Subtil, naturel, mise en beauté etc)',
+        'sfx' => 'Effets Spéciaux (SFX) & Artistique (Carnaval, Halloween, shooting thématique etc)',
+    ];
+}
