@@ -123,8 +123,6 @@ $catMap = [
 // Écran de sélection façon app, affiché uniquement sur mobile et seulement
 // tant qu'aucun filtre n'est actif (avant que la personne ait choisi une famille de biens).
 $bodyClass = ($cat === '' && $type === '' && $commune === '') ? 'immo-m' : '';
-$nAds = (int) val("SELECT COUNT(*) FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe = 'immobilier' AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved'");
-if ($bodyClass && $nAds) $bodyClass .= ' immo-ads';
 $tph = implode(',', array_fill(0, count(PROPERTY_TYPES), '?'));
 $sql = "SELECT * FROM properties WHERE active = 1 AND type IN ($tph)";
 $params = PROPERTY_TYPES;
@@ -191,7 +189,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         </a>
       <?php endforeach; ?>
     </div>
-    <?php $adsUniverse = 'immobilier'; $adsType = $type; include __DIR__ . '/../views/provider_ads.php'; ?>
+    <?php if ($type !== '') { $adsUniverse = 'immobilier'; $adsType = $type; include __DIR__ . '/../views/provider_ads.php'; } ?>
     <?php endif; ?>
   </div>
 </section>
@@ -224,7 +222,6 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         </div>
       <?php endforeach; ?>
     </div>
-    <?php $adsUniverse = 'immobilier'; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>
   </div>
 </section>
 <?php endif; ?>
