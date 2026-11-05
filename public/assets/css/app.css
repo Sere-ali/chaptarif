@@ -1010,3 +1010,8 @@ body.home-m { background: #F3F8FD; }
   .tabbar svg { width: 20px; height: 20px; }
   .tabbar a.on svg { width: 48px; height: 30px; padding: 5px 14px; }
 }
+/* Fiable / Rapide / Sécurisé : petit */
+.m-trio { margin: 6px 4px 10px; }
+.m-trio svg { width: 20px; height: 20px; }
+.m-trio b { font-size: .78rem; font-weight: 700; }
+.m-trio > div { gap: 2px; }
