@@ -848,3 +848,10 @@ footer, .footer { border-top: 3px solid #2E7D5B; }
 input:focus, select:focus, textarea:focus { border-color: #2F8F86; box-shadow: 0 0 0 4px rgba(47, 143, 134, .15); outline: none; }
 @media (prefers-reduced-motion: reduce) { .steps > *, .uni, .m-cat { transition: none; } }
 @media (max-width: 420px) { .install-btn { display: none !important; } .brand { flex: none; } }
+
+/* Recherche appartement (immobilier) */
+.immo-form { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; width: 100%; }
+.immo-form select, .immo-form input[name=commune] { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid #2E7D5B; background: #fff; font-weight: 700; font-size: .9rem; color: var(--ink); }
+.immo-form .btn { padding: 11px 14px; font-size: .92rem; }
+.d-item-sel .immo-form select { margin-top: 0; }
+@media (min-width: 720px) { .container > .immo-form { max-width: 460px; margin-bottom: 18px; } }

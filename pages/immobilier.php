@@ -164,13 +164,8 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <?php endforeach; ?>
       </div>
     <?php else: ?>
-    <div class="filter-chips mb">
-      <a class="fchip" href="/immobilier?cat=appart">← Tous les types</a>
-      <?php foreach (PROPERTY_TYPES as $t): ?>
-        <a class="fchip <?= $type === $t ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['cat' => 'appart', 'commune' => $commune, 'type' => $t])) ?>"><?= e($t) ?></a>
-      <?php endforeach; ?>
-    </div>
-    <?php if ($type !== '') { $adsUniverse = 'immobilier'; $adsType = $type; include __DIR__ . '/../views/provider_ads.php'; } ?>
+    <?php include __DIR__ . '/../views/immo_search.php'; ?>
+    <?php if ($type !== '') { $adsUniverse = 'immobilier'; $adsType = $type; $adsCommune = $commune; include __DIR__ . '/../views/provider_ads.php'; } ?>
     <?php endif; ?>
   </div>
 </section>
@@ -195,10 +190,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
           <span class="d-item-img"><img src="<?= e(img($c['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
           <span class="d-item-body">
             <b><?= e($c['label']) ?></b>
-            <select aria-label="Recherche appartement" onchange="if(this.value)location.href='/immobilier?cat=appart&amp;type='+encodeURIComponent(this.value)">
-              <option value=""> Recherche appartement…</option>
-              <?php foreach (PROPERTY_TYPES as $t): ?><option value="<?= e($t) ?>"><?= e($t) ?></option><?php endforeach; ?>
-            </select>
+            <?php $type = ''; $commune = ''; include __DIR__ . '/../views/immo_search.php'; ?>
           </span>
         </div>
       <?php endforeach; ?>

@@ -1,10 +1,15 @@
 <?php
 // Annonces validées des prestataires (prix fixé par chaque prestataire). Variables : $adsUniverse, $adsType (filtre facultatif sur le type).
 $adsType = $adsType ?? '';
+$adsCommune = trim((string) ($adsCommune ?? ''));
 $adsList = (array) $adsUniverse;
 $ph = implode(',', array_fill(0, count($adsList), '?'));
 $rows = all("SELECT ps.*, p.name AS pname, p.commune AS pcommune, p.id AS pid, p.universe AS puni FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe IN ($ph) AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' ORDER BY ps.id DESC", $adsList);
 if ($adsType !== '') $rows = array_values(array_filter($rows, fn($r) => (json_decode((string) $r['attrs'], true)['type'] ?? '') === $adsType));
+if ($adsCommune !== '') {
+    $needle = mb_strtolower($adsCommune);
+    $rows = array_values(array_filter($rows, fn($r) => str_contains(mb_strtolower((string) $r['pcommune']), $needle) || str_contains(mb_strtolower((string) (json_decode((string) $r['attrs'], true)['quartier'] ?? '')), $needle)));
+}
 if (!$rows) return;
 ?>
 <h2 class="h3 mt">Annonces des <?= $adsUniverse === 'immobilier' ? 'bailleurs' : ($adsUniverse === 'covoiturage' ? 'conducteurs' : 'prestataires') ?></h2>
