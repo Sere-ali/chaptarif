@@ -196,7 +196,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         </div>
         <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
         <button type="button" class="btn btn-soft btn-block" data-geo="address" style="margin:0 0 6px"> Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
-        <label class="fld"><span><?= $uk === 'maquilleuse' ? 'Saisir mon adresse' : (in_array($uk, ['coiffeuse', 'onglerie'], true) ? 'Votre adresse' : ($uk === 'pressing' ? ' Lieu de récupération' : ' Votre lieu') . ' (ou saisissez-le vous-même)') ?></span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
+        <label class="fld"><span><?= $uk === 'menage' ? 'Mon adresse' : ($uk === 'maquilleuse' ? 'Saisir mon adresse' : (in_array($uk, ['coiffeuse', 'onglerie'], true) ? 'Votre adresse' : ($uk === 'pressing' ? ' Lieu de récupération' : ' Votre lieu') . ' (ou saisissez-le vous-même)')) ?></span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
         <?php if ($uk === 'maquilleuse'): ?>
         <label class="fld"><span>Formule</span><select name="formule" required>
           <option value="">Choisir…</option>
