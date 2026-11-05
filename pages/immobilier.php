@@ -191,9 +191,40 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
       <button class="btn btn-primary btn-block btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Rechercher un logement</button>
     </form>
     <div class="il-cards">
-      <a class="il-card" href="/immobilier?cat=appart"><img src="/assets/img/immo-appartement.jpg" alt="" loading="lazy" width="690" height="266"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 21v-4h3v4"/></svg></b>Appartement <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
+      <a class="il-card" href="/immobilier?cat=appart" data-open-sheet><img src="/assets/img/immo-appartement.jpg" alt="" loading="lazy" width="690" height="266"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 21v-4h3v4"/></svg></b>Appartement <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
       <a class="il-card" href="/immobilier?<?= e(http_build_query(['cat' => 'appart', 'type' => 'Villa / Duplex'])) ?>"><img src="<?= e(img('univers-immobilier', 'w_600,h_420,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="600" height="420"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></b>Villa &amp; duplex <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
     </div>
+    <div class="il-sheet" id="ilSheet" hidden>
+      <div class="il-sheet-bg" data-close-sheet></div>
+      <form class="il-sheet-box" method="get" action="/immobilier" role="dialog" aria-modal="true" aria-label="Rechercher un appartement">
+        <input type="hidden" name="cat" value="appart">
+        <input type="hidden" name="commune" value="">
+        <input type="hidden" name="dispo" value="">
+        <div class="il-sheet-head">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 21v-4h3v4"/></svg>
+          <b>Rechercher un appartement</b>
+          <button type="button" class="il-x" data-close-sheet aria-label="Fermer">&times;</button>
+        </div>
+        <?php foreach (array_diff(PROPERTY_TYPES, ['Villa / Duplex']) as $t): ?>
+          <label class="il-opt"><span><?= e($t) ?></span><input type="radio" name="type" value="<?= e($t) ?>" required></label>
+        <?php endforeach; ?>
+        <button class="btn btn-primary btn-block btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Rechercher</button>
+      </form>
+    </div>
+    <script>
+    (function () {
+      var sh = document.getElementById('ilSheet'); if (!sh) return;
+      var main = document.querySelector('.il-search'), box = sh.querySelector('form');
+      document.querySelector('[data-open-sheet]').addEventListener('click', function (e) {
+        e.preventDefault();
+        box.elements.commune.value = main.elements.commune.value;
+        box.elements.dispo.value = main.elements.dispo.value;
+        sh.hidden = false;
+      });
+      sh.addEventListener('click', function (e) { if (e.target.closest('[data-close-sheet]')) sh.hidden = true; });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') sh.hidden = true; });
+    })();
+    </script>
   </div>
 </section>
 <?php endif; ?>

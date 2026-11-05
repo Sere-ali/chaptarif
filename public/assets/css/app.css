@@ -890,3 +890,16 @@ body.immo-m .d-home { height: auto; display: block; overflow: visible; }
 .il-ico { width: 30px; height: 30px; margin-right: 6px; }
 .il-ico svg { width: 17px; height: 17px; }
 .il-card i svg { width: 14px; height: 14px; }
+
+/* Fenêtre « Rechercher un appartement » */
+.il-sheet { position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.il-sheet[hidden] { display: none; }
+.il-sheet-bg { position: absolute; inset: 0; background: rgba(15, 27, 45, .55); }
+.il-sheet-box { position: relative; width: 100%; max-width: 440px; background: #fff; border-radius: 26px; padding: 18px 18px 20px; box-shadow: 0 30px 70px -20px rgba(0, 0, 0, .5); }
+.il-sheet-head { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.il-sheet-head b { flex: 1; font-size: 1.1rem; }
+.il-x { width: 40px; height: 40px; border-radius: 50%; border: 0; background: #EEF1F4; font-size: 1.6rem; line-height: 1; cursor: pointer; color: var(--ink); }
+.il-opt { display: flex; align-items: center; justify-content: space-between; padding: 15px 4px; border-bottom: 1px solid var(--line); font-size: 1.05rem; cursor: pointer; }
+.il-opt input { appearance: none; -webkit-appearance: none; width: 26px; height: 26px; border: 2px solid #8A97A6; border-radius: 50%; margin: 0; flex: none; }
+.il-opt input:checked { border-color: #1E7A3E; background: #1E7A3E; box-shadow: inset 0 0 0 5px #fff; }
+.il-sheet-box .btn { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
