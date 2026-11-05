@@ -3,6 +3,10 @@
 $adsType = $adsType ?? '';
 $adsCommune = trim((string) ($adsCommune ?? ''));
 $adsDispo = (string) ($adsDispo ?? '');
+$adsTypes = (array) ($adsTypes ?? []);
+$adsChambres = (int) ($adsChambres ?? 0);
+$adsPiscine = !empty($adsPiscine);
+$adsJardin = !empty($adsJardin);
 $adsList = (array) $adsUniverse;
 $ph = implode(',', array_fill(0, count($adsList), '?'));
 $rows = all("SELECT ps.*, p.name AS pname, p.commune AS pcommune, p.id AS pid, p.universe AS puni FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe IN ($ph) AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' ORDER BY ps.id DESC", $adsList);
@@ -12,6 +16,10 @@ if ($adsCommune !== '') {
     $rows = array_values(array_filter($rows, fn($r) => str_contains(mb_strtolower((string) $r['pcommune']), $needle) || str_contains(mb_strtolower((string) (json_decode((string) $r['attrs'], true)['quartier'] ?? '')), $needle)));
 }
 if ($adsDispo !== '') $rows = array_values(array_filter($rows, fn($r) => ($d = (json_decode((string) $r['attrs'], true)['dispo'] ?? '')) === '' || $d <= $adsDispo));
+if ($adsTypes) $rows = array_values(array_filter($rows, fn($r) => in_array((json_decode((string) $r['attrs'], true)['type'] ?? ''), $adsTypes, true)));
+if ($adsChambres) $rows = array_values(array_filter($rows, fn($r) => ($n = (int) (json_decode((string) $r['attrs'], true)['chambres'] ?? 0)) && ($adsChambres >= 4 ? $n >= 4 : $n === $adsChambres)));
+if ($adsPiscine) $rows = array_values(array_filter($rows, fn($r) => (json_decode((string) $r['attrs'], true)['piscine'] ?? '') === 'Oui'));
+if ($adsJardin) $rows = array_values(array_filter($rows, fn($r) => (json_decode((string) $r['attrs'], true)['jardin'] ?? '') === 'Oui'));
 if (!$rows) return;
 ?>
 <h2 class="h3 mt">Annonces des <?= $adsUniverse === 'immobilier' ? 'bailleurs' : ($adsUniverse === 'covoiturage' ? 'conducteurs' : 'prestataires') ?></h2>

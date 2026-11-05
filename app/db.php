@@ -4,7 +4,7 @@
  */
 
 const SCHEMA_VERSION = 23;
-const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa / Duplex'];
+const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
 {

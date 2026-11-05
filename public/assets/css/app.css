@@ -903,3 +903,18 @@ body.immo-m .d-home { height: auto; display: block; overflow: visible; }
 .il-opt input { appearance: none; -webkit-appearance: none; width: 26px; height: 26px; border: 2px solid #8A97A6; border-radius: 50%; margin: 0; flex: none; }
 .il-opt input:checked { border-color: #1E7A3E; background: #1E7A3E; box-shadow: inset 0 0 0 5px #fff; }
 .il-sheet-box .btn { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* Fenêtre « Rechercher une maison » */
+.il-villa { padding: 0 0 18px; overflow: hidden; max-height: 94vh; overflow-y: auto; }
+.il-villa > :not(.il-villa-img) { margin-left: 16px; margin-right: 16px; }
+.il-villa .btn { width: calc(100% - 32px); }
+.il-villa-img { width: 100%; height: 150px; object-fit: cover; display: block; margin-bottom: 12px; }
+.il-sheet-head small { display: block; font-weight: 600; color: var(--muted); font-size: .9rem; }
+.il-row { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; margin-top: 8px; border: 1px solid var(--line); border-radius: 14px; background: #F6F8FA; font-weight: 600; }
+.il-row > span { flex: none; }
+.il-row select, .il-row input:not([type=checkbox]) { flex: 1; min-width: 0; text-align: right; border: 0; background: none; font: inherit; color: var(--muted); outline: none; padding: 0; }
+.il-sw input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.il-sw i { flex: none; width: 54px; height: 30px; border-radius: 999px; background: #CBD5DC; position: relative; transition: background .2s; }
+.il-sw i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.il-sw input:checked + i { background: #1E7A3E; }
+.il-sw input:checked + i::after { transform: translateX(24px); }

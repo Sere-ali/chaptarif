@@ -164,8 +164,15 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <?php endforeach; ?>
       </div>
     <?php else: ?>
-    <?php include __DIR__ . '/../views/immo_search.php'; ?>
-    <?php $dispo = valid_future_date($_GET['dispo'] ?? null, 730) ? (string) $_GET['dispo'] : ''; if ($type !== '' || $commune !== '' || $dispo !== '') { $adsUniverse = 'immobilier'; $adsType = $type; $adsCommune = $commune; $adsDispo = $dispo; include __DIR__ . '/../views/provider_ads.php'; } ?>
+    <?php if ($cat === 'maison'): ?><p><a class="btn btn-soft" href="/immobilier">Modifier ma recherche</a></p><?php else: include __DIR__ . '/../views/immo_search.php'; endif; ?>
+    <?php
+      $dispo = valid_future_date($_GET['dispo'] ?? null, 730) ? (string) $_GET['dispo'] : '';
+      $maison = in_array($_GET['maison'] ?? '', ['Villa', 'Duplex'], true) ? (string) $_GET['maison'] : '';
+      if ($cat === 'maison' || $type !== '' || $commune !== '' || $dispo !== '') {
+          $adsUniverse = 'immobilier'; $adsType = $type; $adsCommune = $commune; $adsDispo = $dispo;
+          if ($cat === 'maison') { $adsType = ''; $adsTypes = $maison ? [$maison] : ['Villa', 'Duplex']; $adsChambres = (int) ($_GET['chambres'] ?? 0); $adsPiscine = !empty($_GET['piscine']); $adsJardin = !empty($_GET['jardin']); }
+          include __DIR__ . '/../views/provider_ads.php';
+      } ?>
     <?php endif; ?>
   </div>
 </section>
@@ -191,10 +198,10 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
       <button class="btn btn-primary btn-block btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Rechercher un logement</button>
     </form>
     <div class="il-cards">
-      <a class="il-card" href="/immobilier?cat=appart" data-open-sheet><img src="/assets/img/immo-appartement.jpg" alt="" loading="lazy" width="690" height="266"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 21v-4h3v4"/></svg></b>Appartement <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
-      <a class="il-card" href="/immobilier?<?= e(http_build_query(['cat' => 'appart', 'type' => 'Villa / Duplex'])) ?>"><img src="<?= e(img('univers-immobilier', 'w_600,h_420,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="600" height="420"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></b>Villa &amp; duplex <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
+      <a class="il-card" href="/immobilier?cat=appart" data-open-sheet="a"><img src="/assets/img/immo-appartement.jpg" alt="" loading="lazy" width="690" height="266"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 21v-4h3v4"/></svg></b>Appartement <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
+      <a class="il-card" href="/immobilier?cat=maison" data-open-sheet="v"><img src="<?= e(img('univers-immobilier', 'w_600,h_420,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="600" height="420"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></b>Villa &amp; duplex <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
     </div>
-    <div class="il-sheet" id="ilSheet" hidden>
+    <div class="il-sheet" id="ilSheet" data-sheet="a" hidden>
       <div class="il-sheet-bg" data-close-sheet></div>
       <form class="il-sheet-box" method="get" action="/immobilier" role="dialog" aria-modal="true" aria-label="Rechercher un appartement">
         <input type="hidden" name="cat" value="appart">
@@ -205,24 +212,52 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
           <b>Rechercher un appartement</b>
           <button type="button" class="il-x" data-close-sheet aria-label="Fermer">&times;</button>
         </div>
-        <?php foreach (array_diff(PROPERTY_TYPES, ['Villa / Duplex']) as $t): ?>
+        <?php foreach (array_diff(PROPERTY_TYPES, ['Villa', 'Duplex']) as $t): ?>
           <label class="il-opt"><span><?= e($t) ?></span><input type="radio" name="type" value="<?= e($t) ?>" required></label>
         <?php endforeach; ?>
         <button class="btn btn-primary btn-block btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Rechercher</button>
       </form>
     </div>
+    <div class="il-sheet" data-sheet="v" hidden>
+      <div class="il-sheet-bg" data-close-sheet></div>
+      <form class="il-sheet-box il-villa" method="get" action="/immobilier" role="dialog" aria-modal="true" aria-label="Rechercher une maison">
+        <input type="hidden" name="cat" value="maison">
+        <input type="hidden" name="commune" value="">
+        <input type="hidden" name="dispo" value="">
+        <img class="il-villa-img" src="/assets/img/immo-villa.jpg" alt="" width="900" height="258">
+        <div class="il-sheet-head">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+          <b>Rechercher une maison<small>Villa ou Duplex</small></b>
+          <button type="button" class="il-x" data-close-sheet aria-label="Fermer">&times;</button>
+        </div>
+        <label class="il-row"><span>Type de maison</span><select name="maison"><option value="">Villa ou Duplex</option><option value="Villa">Villa</option><option value="Duplex">Duplex</option></select></label>
+        <label class="il-row"><span>Nombre de chambres</span><select name="chambres"><option value="">1, 2, 3, 4 et +</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 et +</option></select></label>
+        <label class="il-row il-sw"><span>Piscine</span><input type="checkbox" name="piscine" value="1"><i></i></label>
+        <label class="il-row il-sw"><span>Jardin</span><input type="checkbox" name="jardin" value="1"><i></i></label>
+        <label class="il-row"><span>Commune ou quartier</span><input name="vcommune" list="immo-communes-l" placeholder="Commune ou quartier" maxlength="60" autocomplete="off"></label>
+        <label class="il-row"><span>Disponible à partir du</span><input type="date" name="vdispo" min="<?= date('Y-m-d') ?>"></label>
+        <button class="btn btn-primary btn-block btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Rechercher</button>
+      </form>
+    </div>
     <script>
     (function () {
-      var sh = document.getElementById('ilSheet'); if (!sh) return;
-      var main = document.querySelector('.il-search'), box = sh.querySelector('form');
-      document.querySelector('[data-open-sheet]').addEventListener('click', function (e) {
-        e.preventDefault();
-        box.elements.commune.value = main.elements.commune.value;
-        box.elements.dispo.value = main.elements.dispo.value;
-        sh.hidden = false;
+      var main = document.querySelector('.il-search');
+      var sheets = document.querySelectorAll('.il-sheet');
+      Array.prototype.forEach.call(document.querySelectorAll('[data-open-sheet]'), function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var sh = document.querySelector('.il-sheet[data-sheet=' + a.dataset.openSheet + ']'), f = sh.querySelector('form');
+          if (a.dataset.openSheet === 'a') { f.elements.commune.value = main.elements.commune.value; f.elements.dispo.value = main.elements.dispo.value; }
+          else { f.elements.vcommune.value = main.elements.commune.value; f.elements.vdispo.value = main.elements.dispo.value; }
+          sh.hidden = false;
+        });
       });
-      sh.addEventListener('click', function (e) { if (e.target.closest('[data-close-sheet]')) sh.hidden = true; });
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') sh.hidden = true; });
+      Array.prototype.forEach.call(sheets, function (sh) {
+        sh.addEventListener('click', function (e) { if (e.target.closest('[data-close-sheet]')) sh.hidden = true; });
+        var f = sh.querySelector('form');
+        if (f.elements.vcommune) f.addEventListener('submit', function () { f.elements.commune.value = f.elements.vcommune.value; f.elements.dispo.value = f.elements.vdispo.value; f.elements.vcommune.disabled = true; f.elements.vdispo.disabled = true; });
+      });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') Array.prototype.forEach.call(sheets, function (sh) { sh.hidden = true; }); });
     })();
     </script>
   </div>

@@ -519,9 +519,11 @@ function listing_schema(string $universe): array
         'immobilier' => [
             'title_ph' => 'Ex. Appartement 2 chambres salon — Cocody Angré', 'price_label' => 'Loyer mensuel (F CFA)', 'units' => ['mois'],
             'fields' => [
-                'type' => ['Type de logement', 'select', ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa / Duplex'], true],
+                'type' => ['Type de logement', 'select', ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'], true],
                 'quartier' => [' Quartier', 'text', 'Ex. Angré 8e tranche', true],
                 'chambres' => ['Nombre de chambres', 'number', '2'],
+                'piscine' => ['Piscine', 'select', ['Oui', 'Non']],
+                'jardin' => ['Jardin', 'select', ['Oui', 'Non']],
                 'sdb' => ['Salles de bain / douches', 'number', '1'],
                 'surface' => ['Superficie (m²)', 'number', '60'],
                 'etage' => ['Étage', 'text', 'Ex. 3e étage / rez-de-chaussée'],
