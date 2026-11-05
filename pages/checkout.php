@@ -6,7 +6,13 @@ if (is_post()) {
         flash('error', $r['error']);
         redirect($_SERVER['HTTP_REFERER'] ?? (universes()[$uk]['url'] ?? '/'));
     }
-    $_SESSION['checkout'] = ['quote' => $r['quote'], 'input' => array_diff_key($_POST, ['_csrf' => 1])];
+    $_SESSION['checkout'] = ['quote' => $r['quote'], 'input' => array_diff_key($_POST, ['_csrf' => 1, 'code' => 1])];
+    $postedCode = trim((string) ($_POST['code'] ?? ''));
+    if ($postedCode !== '') {
+        $dr = discount_apply($r['quote'], $postedCode);
+        if ($dr['ok']) $_SESSION['checkout']['code'] = $dr['quote']['discount_code'];
+        else flash('error', $dr['error']);
+    }
     redirect('/reserver');
 }
 

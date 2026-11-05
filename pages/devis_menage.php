@@ -70,6 +70,8 @@ view('layout/header', compact('title'));
         <label class="fld"><span>Quartier</span><input name="quartier" maxlength="100"></label>
       </div>
       <label class="fld"><span>Adresse ou indication complémentaire</span><input name="adresse" maxlength="200"></label>
+      <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
+      <button type="button" class="btn btn-soft btn-block" data-geo="adresse" style="margin:-4px 0 6px"> Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
 
       <h2 class="h4 mt">4. À quelle date souhaitez-vous le nettoyage ?</h2>
       <label class="fld"><span>Date souhaitée</span><input type="date" name="date" min="<?= date('Y-m-d') ?>"></label>

@@ -194,9 +194,12 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <label class="fld"><span> <?= e($copy['date_label']) ?></span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
           <label class="fld"><span> Heure</span><select name="time"><?php foreach (['07:00', '08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $h): ?><option <?= $h === '09:00' ? 'selected' : '' ?>><?= $h ?></option><?php endforeach; ?></select></label>
         </div>
+        <label class="fld"><span><?= $uk === 'menage' ? 'Mon adresse' : ($uk === 'maquilleuse' ? 'Saisir mon adresse' : (in_array($uk, ['coiffeuse', 'onglerie'], true) ? 'Votre adresse' : ($uk === 'pressing' ? 'Lieu de récupération (mon adresse)' : ' Votre lieu (ou saisissez-le vous-même)'))) ?></span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
         <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
         <button type="button" class="btn btn-soft btn-block" data-geo="address" style="margin:0 0 6px"> Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
-        <label class="fld"><span><?= $uk === 'menage' ? 'Mon adresse' : ($uk === 'maquilleuse' ? 'Saisir mon adresse' : (in_array($uk, ['coiffeuse', 'onglerie'], true) ? 'Votre adresse' : ($uk === 'pressing' ? 'Lieu de récupération (mon adresse)' : ' Votre lieu (ou saisissez-le vous-même)'))) ?></span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
+        <details class="promo"><summary>Code de réduction</summary>
+          <div class="promo-row"><input name="code" maxlength="30" autocomplete="off" autocapitalize="characters" placeholder="Saisissez votre code"></div>
+        </details>
         <?php if ($uk === 'maquilleuse'): ?>
         <label class="fld"><span>Formule</span><select name="formule" required>
           <option value="">Choisir…</option>
