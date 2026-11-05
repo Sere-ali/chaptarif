@@ -983,3 +983,6 @@ body.home-m { background: #F3F8FD; }
 .m-drawer-links { display: grid; margin-top: 12px; }
 .m-drawer-links a { display: flex; align-items: center; justify-content: space-between; padding: 16px 6px; border-bottom: 1px solid var(--line); font: 600 1.05rem Inter, sans-serif; color: var(--ink); text-decoration: none; }
 .m-drawer-links a::after { content: "›"; color: var(--muted); font-size: 1.4rem; }
+/* Localisation « Abidjan » : version compacte */
+.m-home .m-loc { padding: 6px 10px; gap: 4px; font-size: .78rem; box-shadow: 0 3px 10px rgba(15, 27, 45, .1); }
+.m-home .m-loc svg { width: 14px; height: 14px; }
