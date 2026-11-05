@@ -165,7 +165,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
       </div>
     <?php else: ?>
     <?php include __DIR__ . '/../views/immo_search.php'; ?>
-    <?php if ($type !== '') { $adsUniverse = 'immobilier'; $adsType = $type; $adsCommune = $commune; include __DIR__ . '/../views/provider_ads.php'; } ?>
+    <?php $dispo = valid_future_date($_GET['dispo'] ?? null, 730) ? (string) $_GET['dispo'] : ''; if ($type !== '' || $commune !== '' || $dispo !== '') { $adsUniverse = 'immobilier'; $adsType = $type; $adsCommune = $commune; $adsDispo = $dispo; include __DIR__ . '/../views/provider_ads.php'; } ?>
     <?php endif; ?>
   </div>
 </section>
@@ -178,22 +178,21 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <h1 class="d-top-title">Immobilier</h1>
     <a href="/" class="d-home-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg> Chez vous</a>
   </div>
-  <div class="d-hero" style="--hero:url('<?= e(img($x['img'], 'w_1200,h_700,c_fill,q_auto,f_auto')) ?>')">
-    <span class="d-hero-tag">Trouvez le logement idéal !</span>
-  </div>
-  <div class="container">
-    <h2 class="d-h2">Sélectionnez votre besoin</h2>
-    <p class="d-sub">Trouvez le bien immobilier qui vous correspond.</p>
-    <div class="d-list">
-      <?php foreach ($catMap as $ck => $c): ?>
-        <div class="d-item d-item-sel" style="--c:<?= $c['color'] ?>">
-          <span class="d-item-img"><img src="<?= e(img($c['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
-          <span class="d-item-body">
-            <b><?= e($c['label']) ?></b>
-            <?php $type = ''; $commune = ''; include __DIR__ . '/../views/immo_search.php'; ?>
-          </span>
-        </div>
-      <?php endforeach; ?>
+  <div class="immo-land">
+    <div class="il-hero" style="--hero:url('<?= e(img('univers-immobilier', 'w_1200,h_700,c_fill,q_auto,f_auto')) ?>')">
+      <h2>Trouvez votre logement</h2>
+      <p>Appartements et villas duplex à Abidjan</p>
+    </div>
+    <form class="il-search" method="get" action="/immobilier">
+      <input type="hidden" name="cat" value="appart">
+      <label class="il-fld"><span>Commune ou quartier</span><input name="commune" list="immo-communes-l" placeholder="Commune ou quartier" maxlength="60" autocomplete="off"></label>
+      <datalist id="immo-communes-l"><?php foreach (communes() as $cm): ?><option value="<?= e($cm) ?>"><?php endforeach; ?></datalist>
+      <label class="il-fld"><span>Disponible à partir du</span><input type="date" name="dispo" min="<?= date('Y-m-d') ?>"></label>
+      <button class="btn btn-primary btn-block btn-lg">Rechercher un logement</button>
+    </form>
+    <div class="il-cards">
+      <a class="il-card" href="/immobilier?cat=appart"><img src="<?= e(img('immo-2', 'w_600,h_420,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="600" height="420"><span>Appartement <i>›</i></span></a>
+      <a class="il-card" href="/immobilier?<?= e(http_build_query(['cat' => 'appart', 'type' => 'Villa / Duplex'])) ?>"><img src="<?= e(img('univers-immobilier', 'w_600,h_420,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="600" height="420"><span>Villa &amp; duplex <i>›</i></span></a>
     </div>
   </div>
 </section>
