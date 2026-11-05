@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 22;
+const SCHEMA_VERSION = 23;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon'];
 
 function db(): PDO
@@ -302,6 +302,9 @@ function db_migrate(): void
             q("INSERT INTO offers (universe, title, subtitle, price, unit, popular, active, sort) VALUES ('pressing', ?, ?, ?, 'forfait', ?, 1, ?)", [$t, $st, $pr, $so === 2 ? 1 : 0, $so]);
         }
     }
+
+    // v23 : suppression des résidences meublées (logements à la nuitée).
+    q('UPDATE properties SET active = 0');
 
     q("DELETE FROM settings WHERE key = 'schema_version'");
     q("INSERT INTO settings (key, value) VALUES ('schema_version', ?)", [(string) SCHEMA_VERSION]);

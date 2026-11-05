@@ -58,6 +58,7 @@ if ($adId) {
 }
 
 if ($id) {
+    not_found();
     $p = one('SELECT * FROM properties WHERE id = ? AND active = 1', [$id]);
     if (!$p) not_found();
     $imgs = json_decode((string) $p['images'], true) ?: [];
@@ -167,26 +168,6 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
       <a class="fchip" href="/immobilier?cat=appart">← Tous les types</a>
       <?php foreach (PROPERTY_TYPES as $t): ?>
         <a class="fchip <?= $type === $t ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['cat' => 'appart', 'commune' => $commune, 'type' => $t])) ?>"><?= e($t) ?></a>
-      <?php endforeach; ?>
-    </div>
-    <div class="filter-chips mb">
-      <a class="fchip <?= $commune === '' ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['type' => $type])) ?>">Toutes les communes</a>
-      <?php foreach (array_column(all('SELECT DISTINCT commune FROM properties WHERE active = 1 ORDER BY commune'), 'commune') as $c): ?>
-        <a class="fchip <?= $commune === $c ? 'on' : '' ?>" href="/immobilier?<?= http_build_query(array_filter(['commune' => $c, 'type' => $type])) ?>"><?= e($c) ?></a>
-      <?php endforeach; ?>
-    </div>
-    <?php if (!$props): ?><?php endif; ?>
-    <div class="prop-grid">
-      <?php foreach ($props as $p): $imgs = json_decode((string) $p['images'], true) ?: []; ?>
-        <a class="prop reveal" href="/immobilier?id=<?= (int) $p['id'] ?><?= $ci ? '&checkin=' . e($ci) : '' ?>">
-          <div class="prop-img"><img src="<?= e(cld($imgs[0] ?? img('univers-immobilier'), 'w_700,h_480,c_fill,q_auto,f_auto')) ?>" alt="<?= e($p['title']) ?>" loading="lazy" width="700" height="480"><?php if ($p['certified']): ?><span class="cert">✓ Certifié</span><?php endif; ?></div>
-          <div class="prop-body">
-            <small class="muted"> <?= e($p['quartier']) ?>, <?= e($p['commune']) ?></small>
-            <h3><?= e($p['title']) ?></h3>
-            <p class="muted"><?= e(implode(' • ', array_slice(array_map('trim', explode(',', (string) $p['amenities'])), 0, 3))) ?></p>
-            <div class="prop-foot"><span class="big-price"><?= fcfa($p['price_night']) ?><em>/ nuit</em></span><span class="btn btn-soft btn-sm">Voir</span></div>
-          </div>
-        </a>
       <?php endforeach; ?>
     </div>
     <?php if ($type !== '') { $adsUniverse = 'immobilier'; $adsType = $type; include __DIR__ . '/../views/provider_ads.php'; } ?>
