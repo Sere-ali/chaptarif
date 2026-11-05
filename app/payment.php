@@ -53,10 +53,10 @@ function paydunya_headers(): array
         'PAYDUNYA-TOKEN: ' . env('PAYDUNYA_TOKEN')];
 }
 
-function paydunya_call(string $path, ?array $payload = null): array
+function paydunya_call(string $path, ?array $payload = null, int $timeout = 20): array
 {
     $ch = curl_init(paydunya_base() . $path);
-    $o = [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 20, CURLOPT_HTTPHEADER => paydunya_headers()];
+    $o = [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => $timeout, CURLOPT_HTTPHEADER => paydunya_headers()];
     if ($payload !== null) { $o[CURLOPT_POST] = true; $o[CURLOPT_POSTFIELDS] = json_encode($payload); }
     curl_setopt_array($ch, $o);
     $r = curl_exec($ch);
@@ -97,7 +97,7 @@ function payment_init(array $b, array $user): array
         ]);
         if (($res['response_code'] ?? '') === '00' && !empty($res['response_text']) && !empty($res['token'])) {
             q('UPDATE bookings SET payment_ref = ? WHERE id = ?', [$res['token'], $b['id']]);
-            return ['ok' => true, 'url' => $res['response_text']];
+            return ['ok' => true, 'url' => '/paiement/mobile?ref=' . urlencode($b['ref'])];
         }
         error_log('PayDunya init error: ' . json_encode($res));
         return ['ok' => false, 'error' => 'La passerelle de paiement est indisponible. Réessayez dans un instant.'];

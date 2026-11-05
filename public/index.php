@@ -30,6 +30,7 @@ $routes = [
     '/paiement/simulateur'  => 'pages/pay_simulator.php',
     '/paiement/manuel'      => 'pages/pay_manual.php',
     '/paiement/retour'      => 'pages/pay_return.php',
+    '/paiement/mobile'      => 'pages/pay_mobile.php',
     '/webhook/cinetpay'     => 'pages/webhook_cinetpay.php',
     '/webhook/paydunya'     => 'pages/webhook_paydunya.php',
     '/connexion'            => 'pages/login.php',
