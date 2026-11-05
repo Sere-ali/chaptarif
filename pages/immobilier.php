@@ -179,20 +179,20 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <a href="/" class="d-home-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg> Chez vous</a>
   </div>
   <div class="immo-land">
-    <div class="il-hero" style="--hero:url('<?= e(img('univers-immobilier', 'w_1200,h_700,c_fill,q_auto,f_auto')) ?>')">
+    <div class="il-hero" style="--sky:url('/assets/img/immo-skyline.jpg')">
       <h2>Trouvez votre logement</h2>
       <p>Appartements et villas duplex à Abidjan</p>
     </div>
-    <form class="il-search" method="get" action="/immobilier">
+    <form class="il-search" method="get" action="/immobilier" novalidate>
       <input type="hidden" name="cat" value="appart">
-      <label class="il-fld"><span>Commune ou quartier</span><input name="commune" list="immo-communes-l" placeholder="Commune ou quartier" maxlength="60" autocomplete="off"></label>
+      <label class="il-fld"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><input name="commune" list="immo-communes-l" placeholder="Commune ou quartier" aria-label="Commune ou quartier" maxlength="60" autocomplete="off"></label>
       <datalist id="immo-communes-l"><?php foreach (communes() as $cm): ?><option value="<?= e($cm) ?>"><?php endforeach; ?></datalist>
-      <label class="il-fld"><span>Disponible à partir du</span><input type="date" name="dispo" min="<?= date('Y-m-d') ?>"></label>
-      <button class="btn btn-primary btn-block btn-lg">Rechercher un logement</button>
+      <label class="il-fld"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" name="dispo" required aria-label="Disponible à partir du" min="<?= date('Y-m-d') ?>"><em>Disponible à partir du</em></label>
+      <button class="btn btn-primary btn-block btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Rechercher un logement</button>
     </form>
     <div class="il-cards">
-      <a class="il-card" href="/immobilier?cat=appart"><img src="<?= e(img('immo-2', 'w_600,h_420,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="600" height="420"><span>Appartement <i>›</i></span></a>
-      <a class="il-card" href="/immobilier?<?= e(http_build_query(['cat' => 'appart', 'type' => 'Villa / Duplex'])) ?>"><img src="<?= e(img('univers-immobilier', 'w_600,h_420,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="600" height="420"><span>Villa &amp; duplex <i>›</i></span></a>
+      <a class="il-card" href="/immobilier?cat=appart"><img src="/assets/img/immo-appartement.jpg" alt="" loading="lazy" width="690" height="266"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 21v-4h3v4"/></svg></b>Appartement <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
+      <a class="il-card" href="/immobilier?<?= e(http_build_query(['cat' => 'appart', 'type' => 'Villa / Duplex'])) ?>"><img src="<?= e(img('univers-immobilier', 'w_600,h_420,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="600" height="420"><span><b class="il-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></b>Villa &amp; duplex <i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></i></span></a>
     </div>
   </div>
 </section>
