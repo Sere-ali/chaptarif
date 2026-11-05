@@ -13,7 +13,6 @@ view('layout/header', compact('title', 'desc', 'active'));
 ?>
 <section class="section-tight">
   <div class="container" style="max-width:860px">
-    <nav class="crumbs dark"><a href="/">Accueil</a> › <a href="/<?= e(str_replace('_', '-', $p['universe'])) ?>"><?= e($x['name']) ?></a> › <?= e($p['name']) ?></nav>
     <div class="card ps-head" style="padding:20px">
       <?= avatar($p, 'lg') ?>
       <div style="flex:1"><h1 class="h2" style="margin:0"><?= e($p['name']) ?></h1>
@@ -22,8 +21,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       <a class="btn btn-primary" href="<?= e($book) ?>"><?= $p['universe'] === 'immobilier' ? 'Demande de visite' : 'Réserver' ?></a>
     </div>
     <?php if ($p['bio']): ?><p class="mt"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
-    <h2 class="h3 mt">Ses annonces</h2>
-    <?php if (!$ads): ?><?php endif; ?>
+    <?php if ($ads): ?><h2 class="h3 mt">Ses annonces</h2><?php endif; ?>
     <div class="ps-grid">
       <?php foreach ($ads as $a): ?>
         <article class="ps-card">
@@ -36,8 +34,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         </article>
       <?php endforeach; ?>
     </div>
-    <p class="fine">Prix indicatifs : le tarif final est confirmé à la réservation. Paiement sécurisé, bloqué jusqu'à la fin du service.</p>
-    <a class="btn btn-primary btn-lg mt" href="<?= e($book) ?>"><?= $p['universe'] === 'immobilier' ? 'Demande de visite' : 'Réserver ce prestataire' ?></a>
+    <?php if ($ads): ?><p class="fine">Prix indicatifs : le tarif final est confirmé à la réservation. Paiement sécurisé, bloqué jusqu'à la fin du service.</p><?php endif; ?>
   </div>
 </section>
 <?php view('layout/footer', compact('active'));

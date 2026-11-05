@@ -24,7 +24,7 @@ $U = nav_entries();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/app.css?v=41">
+<link rel="stylesheet" href="/assets/css/app.css?v=42">
 <link rel="stylesheet" href="/assets/css/polish.css?v=7">
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -77,7 +77,7 @@ $U = nav_entries();
       <?php if ($u && is_admin($u)): ?>
         <a class="btn btn-ghost btn-sm" href="/admin">Back-office</a>
       <?php endif; ?>
-      <?php if ($u): ?>
+      <?php if ($u && ($active ?? '') !== 'account'): ?>
         <a class="btn btn-soft btn-sm" href="/compte"><span class="dot-live"></span> Mes réservations</a>
       <?php else: ?>
         <a class="btn btn-primary btn-sm" href="/connexion">Se connecter</a>

@@ -38,7 +38,7 @@ view('layout/header', compact('title', 'active'));
       <div class="paid-banner reveal"><span></span><div><b>Paiement reçu, fonds sécurisés !</b><p>Votre argent est bloqué sur le compte séquestre ChapTarif. Il ne sera versé qu'après votre confirmation. Votre code de validation à remettre au prestataire se trouve ci-dessous, dans le bloc de votre réservation.</p></div></div>
     <?php endif; ?>
     <div class="acc-head">
-      <div><h1 class="h2">Bonjour <?= e($u['name'] ?: '') ?> </h1><p class="muted"><?= e(fmt_phone($u['phone'])) ?></p></div>
+      <div><h1 class="h2">Mes réservations</h1><p class="muted"><?= e($u['name'] ?: '') ?> · <?= e(fmt_phone($u['phone'])) ?></p></div>
       <form method="post" action="/deconnexion"><?= csrf_field() ?><button class="btn btn-ghost btn-sm">Se déconnecter</button></form>
     </div>
 

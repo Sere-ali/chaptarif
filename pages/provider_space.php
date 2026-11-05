@@ -80,7 +80,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
 <section class="section-tight ps">
   <div class="container" style="max-width:900px">
     <h1 class="h2"> Mon espace prestataire</h1>
-    <p class="muted">C'est ici que vous créez vos services et vos offres. Ils apparaissent sur le site pour les clients après validation par l'équipe ChapTarif.</p>
+    <p class="muted">Gérez vos annonces et votre profil. Elles sont publiées après validation par l'équipe.</p>
 
     <?php if (!$mine): ?>
       <div class="card"><h2 class="h3">Vous n'êtes pas encore prestataire</h2>
