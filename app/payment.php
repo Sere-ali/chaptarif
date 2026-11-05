@@ -6,6 +6,9 @@
  *   (Wave, Orange Money, MTN MoMo, Moov), puis un administrateur valide la réception
  *   dans le back-office (bouton « Marquer payé »). Aucune API externe requise.
  * PAYMENT_MODE=simulation → simulateur intégré (tests, démonstrations, aucun argent réel)
+ * PAYMENT_MODE=paydunya   → PayDunya (Wave, Orange Money, MTN MoMo, Moov, cartes)
+ *   Variables : PAYDUNYA_MASTER_KEY, PAYDUNYA_PRIVATE_KEY, PAYDUNYA_TOKEN, APP_URL
+ *   (clés « test_ » → environnement de test PayDunya automatiquement)
  * PAYMENT_MODE=cinetpay   → CinetPay Checkout v2 (Wave, Orange Money, MTN MoMo, Moov)
  *   Variables : CINETPAY_APIKEY, CINETPAY_SITE_ID, APP_URL
  */
@@ -36,6 +39,31 @@ function payment_numbers(): array
     ];
 }
 
+function paydunya_base(): string
+{
+    return str_starts_with((string) env('PAYDUNYA_PRIVATE_KEY'), 'test_')
+        ? 'https://app.paydunya.com/sandbox-api/v1/' : 'https://app.paydunya.com/api/v1/';
+}
+
+function paydunya_headers(): array
+{
+    return ['Content-Type: application/json',
+        'PAYDUNYA-MASTER-KEY: ' . env('PAYDUNYA_MASTER_KEY'),
+        'PAYDUNYA-PRIVATE-KEY: ' . env('PAYDUNYA_PRIVATE_KEY'),
+        'PAYDUNYA-TOKEN: ' . env('PAYDUNYA_TOKEN')];
+}
+
+function paydunya_call(string $path, ?array $payload = null): array
+{
+    $ch = curl_init(paydunya_base() . $path);
+    $o = [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 20, CURLOPT_HTTPHEADER => paydunya_headers()];
+    if ($payload !== null) { $o[CURLOPT_POST] = true; $o[CURLOPT_POSTFIELDS] = json_encode($payload); }
+    curl_setopt_array($ch, $o);
+    $r = curl_exec($ch);
+    curl_close($ch);
+    return json_decode((string) $r, true) ?: [];
+}
+
 /** Démarre un paiement et retourne l'URL vers laquelle rediriger le client. */
 function payment_init(array $b, array $user): array
 {
@@ -58,6 +86,22 @@ function payment_init(array $b, array $user): array
         error_log('CinetPay init error: ' . json_encode($res));
         return ['ok' => false, 'error' => 'La passerelle de paiement est indisponible. Réessayez dans un instant.'];
     }
+    if (payment_mode() === 'paydunya') {
+        $base = APP_URL ?: ((IS_HTTPS ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+        $ret = $base . '/paiement/retour?ref=' . urlencode($b['ref']);
+        $res = paydunya_call('checkout-invoice/create', [
+            'invoice' => ['total_amount' => (int) $b['total'], 'description' => 'ChapTarif ' . $b['ref']],
+            'store' => ['name' => 'ChapTarif', 'website_url' => $base],
+            'custom_data' => ['ref' => $b['ref']],
+            'actions' => ['cancel_url' => $ret, 'return_url' => $ret, 'callback_url' => $base . '/webhook/paydunya'],
+        ]);
+        if (($res['response_code'] ?? '') === '00' && !empty($res['response_text']) && !empty($res['token'])) {
+            q('UPDATE bookings SET payment_ref = ? WHERE id = ?', [$res['token'], $b['id']]);
+            return ['ok' => true, 'url' => $res['response_text']];
+        }
+        error_log('PayDunya init error: ' . json_encode($res));
+        return ['ok' => false, 'error' => 'La passerelle de paiement est indisponible. Réessayez dans un instant.'];
+    }
     if (payment_mode() === 'manuel') {
         return ['ok' => true, 'url' => '/paiement/manuel?ref=' . urlencode($b['ref'])];
     }
@@ -67,6 +111,12 @@ function payment_init(array $b, array $user): array
 /** Vérifie auprès de la passerelle que la transaction est réellement payée. */
 function payment_verify(array $b): bool
 {
+    if (payment_mode() === 'paydunya') {
+        $tok = (string) ($b['payment_ref'] ?? '');
+        if ($tok === '' || $tok === 'EN_ATTENTE_VALIDATION') return false;
+        $res = paydunya_call('checkout-invoice/confirm/' . rawurlencode($tok));
+        return ($res['status'] ?? '') === 'completed' && (int) ($res['invoice']['total_amount'] ?? 0) >= (int) $b['total'];
+    }
     if (payment_mode() !== 'cinetpay') return false;
     $res = http_json('https://api-checkout.cinetpay.com/v2/payment/check', [
         'apikey' => env('CINETPAY_APIKEY'), 'site_id' => env('CINETPAY_SITE_ID'), 'transaction_id' => $b['ref'],

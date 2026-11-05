@@ -31,6 +31,7 @@ $routes = [
     '/paiement/manuel'      => 'pages/pay_manual.php',
     '/paiement/retour'      => 'pages/pay_return.php',
     '/webhook/cinetpay'     => 'pages/webhook_cinetpay.php',
+    '/webhook/paydunya'     => 'pages/webhook_paydunya.php',
     '/connexion'            => 'pages/login.php',
     '/deconnexion'          => 'pages/logout.php',
     '/compte'               => 'pages/account.php',
@@ -86,6 +87,6 @@ if (setting('maintenance') === '1' && !str_starts_with($path, '/admin') && !is_a
     exit;
 }
 
-if ($path !== '/webhook/cinetpay') csrf_check();
+if (!in_array($path, ['/webhook/cinetpay', '/webhook/paydunya'], true)) csrf_check();
 
 require ROOT . '/' . $routes[$path];

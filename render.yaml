@@ -24,6 +24,12 @@ services:
         sync: false
       - key: PAYMENT_MODE
         value: simulation   # passez à "cinetpay" une fois le compte marchand validé
+      - key: PAYDUNYA_MASTER_KEY
+        sync: false
+      - key: PAYDUNYA_PRIVATE_KEY
+        sync: false
+      - key: PAYDUNYA_TOKEN
+        sync: false
       - key: CINETPAY_APIKEY
         sync: false
       - key: CINETPAY_SITE_ID
