@@ -943,7 +943,7 @@ body.home-m { background: #F3F8FD; }
 .m-trio svg { width: 44px; height: 44px; }
 .m-trio b { font: 700 1.35rem Poppins, Inter, sans-serif; color: var(--ink); }
 .m-home .m-search { background: #fff; border: 0; border-radius: 999px; padding: 10px 10px 10px 22px; gap: 14px; box-shadow: 0 10px 28px rgba(15, 27, 45, .1); margin-bottom: 26px; }
-.m-home .m-search input { font-size: .94rem; padding: 10px 0; }
+.m-home .m-search input { font-size: .86rem; padding: 10px 0; }
 .m-home .m-search { gap: 10px; padding-left: 18px; }
 .m-filter { width: 54px; height: 54px; border-radius: 50%; background: #3A7FC1; display: grid; place-items: center; flex: none; text-decoration: none !important; }
 .m-home .m-grid { gap: 18px; }
