@@ -42,12 +42,15 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <img src="/assets/img/logo.svg" alt="" width="34" height="34">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
-    <span class="m-loc"> Abidjan</span>
-    <a class="m-bell" href="/compte" aria-label="Mon compte & notifications"></a>
+    <span class="m-loc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Abidjan<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
   </div>
   <div class="container m-hero-in">
-    <h1 class="m-title">Que souhaitez-vous<br>aujourd’hui&nbsp;?</h1>
-    <p class="m-sub">Tarifs transparents&nbsp;• Paiement sous séquestre</p>
+    <h1 class="sr-only">ChapTarif : réservez vos services en toute sécurité</h1>
+    <div class="m-trio" aria-label="Nos engagements">
+      <div><svg viewBox="0 0 48 48" fill="none" stroke="#0F1B2D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 9 10.5v11.6c0 9.4 6.3 17 15 20.4 8.7-3.4 15-11 15-20.4V10.5z"/><path d="m16.5 24 5.5 5.5 10-11"/></svg><b>Fiable</b></div>
+      <div><svg viewBox="0 0 48 48" fill="none" stroke="#F0A020" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M27 4 11 26h11l-3 18 18-24H26z"/></svg><b>Rapide</b></div>
+      <div><svg viewBox="0 0 48 48" fill="none" stroke="#0F1B2D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="21" width="30" height="22" rx="5"/><path d="M15 21v-6a9 9 0 0 1 18 0v6"/><circle cx="24" cy="31" r="2.6" fill="#0F1B2D"/><path d="M24 33.5V37"/></svg><b>Sécurisé</b></div>
+    </div>
     <?php
       $kw = ['cars' => 'bus billet billets voyage interurbain gare utb ticket', 'covoiturage' => 'covoiturage covoit trajet voiture partagee partager place', 'location_car' => 'car minibus groupe evenement louer un car', 'location_vehicule' => 'voiture vehicule 4x4 suv location louer auto', 'chauffeur' => 'chauffeur conducteur louer un chauffeur', 'location_camion' => 'camion demenagement demenager fret transport charge', 'immobilier' => 'logement appartement studio villa maison chambre salon louer immobilier', 'menage' => 'menage nettoyage aide menagere femme de menage', 'pressing' => 'pressing linge lessive repassage laver blanchisserie', 'coiffeuse' => 'coiffure coiffeuse tresse tresses tissage perruque cheveux nattes', 'maquilleuse' => 'maquillage maquilleuse mariage evenement', 'onglerie' => 'ongle ongles manucure vernis faux ongles gel'];
       $alias = ['cars' => 'car cars bus autocar billet billets voyage', 'covoiturage' => 'covoiturage covoit trajet', 'location_car' => 'minibus louer un car location car location de car', 'location_vehicule' => 'voiture voitures vehicule vehicules 4x4 suv auto location voiture', 'chauffeur' => 'chauffeur chauffeurs', 'location_camion' => 'camion camions demenagement fret', 'immobilier' => 'immobilier logement logements appartement appartements maison maisons villa villas', 'menage' => 'menage menagere nettoyage', 'pressing' => 'pressing linge lessive repassage', 'coiffeuse' => 'coiffure coiffeuse tresse tresses tissage perruque', 'maquilleuse' => 'maquillage maquilleuse', 'onglerie' => 'ongle ongles manucure vernis'];
@@ -63,8 +66,9 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       $sidx[] = ['t' => ' Mes réservations', 'u' => '/compte', 'k' => 'reservation reservations commande billet compte profil'];
     ?>
     <form class="m-search" action="#" data-search='<?= e(json_encode($sidx, JSON_UNESCAPED_UNICODE)) ?>' autocomplete="off" style="position:relative">
-      <span class="m-search-ico"></span>
-      <input type="search" name="q" placeholder="Rechercher : studio, pressing, car…" aria-label="Rechercher">
+      <span class="m-search-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0F1B2D" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></span>
+      <input type="search" name="q" placeholder="Quel service recherchez-vous ?" aria-label="Rechercher un service">
+      <a class="m-filter" href="/#m-cats" aria-label="Voir tous les services"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2.4" fill="#3A7FC1"/><circle cx="15" cy="16" r="2.4" fill="#3A7FC1"/></svg></a>
       <ul class="m-sugg" hidden></ul>
     </form>
     <script>
@@ -105,19 +109,18 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   </div>
   <div class="container m-body">
     <div class="m-grid" id="m-cats">
-      <?php foreach ($N as $k => $x): ?>
-        <a class="m-cat reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
-          <span class="m-cat-ico"><?= $mCatIcon($k, $x['color']) ?></span>
+      <?php
+        $mAcc = ['transport' => ['#2C7BC8', '#E4EFF9', 'home-transport'], 'immobilier' => ['#F0A020', '#FBF1DE', 'home-immo'], 'service-a-la-personne' => ['#6A3FC0', '#EFEAFB', 'home-service'], 'beaute' => ['#E8408A', '#FCE6EF', 'home-beaute']];
+        foreach ($N as $k => $x):
+          $ac = $mAcc[$k] ?? [$x['color'], $x['bg'], null];
+      ?>
+        <a class="m-cat reveal" href="<?= $x['url'] ?>" style="--c:<?= $ac[0] ?>;--t:<?= $ac[1] ?>">
+          <?php if ($ac[2]): ?><span class="m-cat-photo"><img src="/assets/img/<?= $ac[2] ?>.jpg" alt="" loading="lazy" width="390" height="190"></span><?php endif; ?>
+          <span class="m-cat-ico"><?= $mCatIcon($k, $ac[0]) ?></span>
           <b><?= e($x['short']) ?></b>
-          <small><?= e($x['sub']) ?></small>
-          <span class="m-cat-arrow">→</span>
+          <span class="m-cat-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </a>
       <?php endforeach; ?>
-    </div>
-    <div class="m-trust reveal">
-      <span class="m-trust-ico"></span>
-      <div><b>SÉQUESTRE SÉCURISÉ</b><small>Payez en ligne, vos fonds sont conservés jusqu'à votre validation de la prestation.</small></div>
-      <div class="m-trust-chips"><span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange</span><span class="chip chip-mtn">MTN</span></div>
     </div>
   </div>
 </section>
