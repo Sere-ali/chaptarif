@@ -69,7 +69,7 @@ view('layout/header', compact('title', 'active'));
               <?php $i = 0; foreach (payment_methods() as $k => [$label, $color, $hint]): ?>
                 <label class="pm" style="--pm:<?= $color ?>">
                   <input type="radio" name="method" value="<?= $k ?>" <?= $i++ === 0 ? 'checked' : '' ?>>
-                  <span class="pm-logo"><?= e(mb_substr($label, 0, 1)) ?></span>
+                  <?php $lg = pay_logo($k); ?><span class="pm-logo<?= $lg ? ' has-img' : '' ?>"><?= $lg ? '<img src="' . e($lg) . '" alt="' . e($label) . '">' : e(mb_substr($label, 0, 1)) ?></span>
                   <span><b><?= e($label) ?></b><small><?= e($hint) ?></small></span>
                 </label>
               <?php endforeach; ?>

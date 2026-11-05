@@ -58,7 +58,7 @@ view('layout/header', compact('title'));
 ?>
 <section class="section auth-wrap">
   <div class="auth-card card pay-sim" style="--pm:<?= $color ?>">
-    <div class="pm-big"><?= e(mb_substr($label, 0, 1)) ?></div>
+    <?php $lg = pay_logo($method); ?><div class="pm-big<?= $lg ? ' has-img' : '' ?>"><?= $lg ? '<img src="' . e($lg) . '" alt="' . e($label) . '">' : e(mb_substr($label, 0, 1)) ?></div>
     <h1 class="h3"><?= e($label) ?></h1>
     <p class="muted"><?= e($b['title']) ?> · <b><?= fcfa($b['total']) ?></b></p>
 

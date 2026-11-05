@@ -28,6 +28,15 @@ function payment_methods(): array
     ];
 }
 
+/** Logo d'un moyen de paiement : fichier public/assets/img/pay/<clé>.(svg|png|webp|jpg) s'il existe, sinon null. */
+function pay_logo(string $k): ?string
+{
+    foreach (['svg', 'png', 'webp', 'jpg'] as $ext) {
+        if (is_file(ROOT . '/public/assets/img/pay/' . $k . '.' . $ext)) return '/assets/img/pay/' . $k . '.' . $ext;
+    }
+    return null;
+}
+
 /** Numéros de réception (mode manuel), configurables dans Admin › Paramètres. */
 function payment_numbers(): array
 {

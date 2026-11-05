@@ -918,3 +918,6 @@ body.immo-m .d-home { height: auto; display: block; overflow: visible; }
 .il-sw i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .2s; }
 .il-sw input:checked + i { background: #1E7A3E; }
 .il-sw input:checked + i::after { transform: translateX(24px); }
+
+.pm-logo.has-img, .pm-big.has-img { background: #fff; border: 1px solid #E3E8E6; padding: 4px; text-shadow: none; }
+.pm-logo.has-img img, .pm-big.has-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
