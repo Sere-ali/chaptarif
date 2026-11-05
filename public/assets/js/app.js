@@ -217,6 +217,9 @@
     window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
   }
 
+  // Mémorise l'invite d'installation pour le menu de l'accueil
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__deferredInstall = e; });
+
   // Bouton "Télécharger" (installation de l'application) à côté du logo
   var installBtn = document.getElementById('installBtn');
   if (installBtn) {

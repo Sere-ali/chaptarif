@@ -962,3 +962,24 @@ body.home-m { background: #F3F8FD; }
   .tabbar a.on svg { background: #3A7FC1; stroke: #fff; width: 56px; height: 36px; padding: 6px 16px; border-radius: 20px; transform: none; }
   .footer { padding-bottom: 110px; }
 }
+
+/* Menu de l'accueil (trois traits) + installation de l'application */
+.m-brand .brand-txt { font-size: 1.45rem; }
+.m-brand img { width: 42px; height: 42px; }
+.m-home-top { gap: 8px; }
+.m-loc { padding: 10px 12px; gap: 6px; font-size: .95rem; margin-left: auto; }
+.m-burger { width: 48px; height: 48px; flex: none; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 6px 18px rgba(15, 27, 45, .12); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; }
+.m-burger span { display: block; width: 22px; height: 3px; border-radius: 3px; background: #D64545; }
+.m-overlay { position: fixed; inset: 0; background: rgba(15, 27, 45, .45); z-index: 200; opacity: 0; transition: opacity .25s ease; }
+.m-overlay.open { opacity: 1; }
+.m-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(86vw, 340px); background: #fff; z-index: 210; padding: 18px 18px 30px; overflow-y: auto; transform: translateX(100%); transition: transform .28s ease; box-shadow: -18px 0 40px rgba(15, 27, 45, .18); }
+.m-drawer.open { transform: none; }
+.m-drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.m-drawer-x { width: 42px; height: 42px; border: 0; border-radius: 50%; background: var(--soft); color: var(--ink); display: grid; place-items: center; cursor: pointer; }
+.m-drawer-install, .m-install { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: 0; border-radius: 999px; background: var(--green); color: #fff; font: 700 1rem Inter, sans-serif; padding: 14px 18px; cursor: pointer; }
+.m-drawer-install[hidden], .m-install[hidden] { display: none; }
+.m-install { margin: 22px auto 0; width: auto; padding: 13px 24px; box-shadow: 0 10px 24px -10px rgba(46, 125, 91, .6); }
+.m-install-help { background: #E4F5EC; color: var(--ink); border-radius: 14px; padding: 12px 14px; font-size: .9rem; line-height: 1.4; margin: 12px 0 0; }
+.m-drawer-links { display: grid; margin-top: 12px; }
+.m-drawer-links a { display: flex; align-items: center; justify-content: space-between; padding: 16px 6px; border-bottom: 1px solid var(--line); font: 600 1.05rem Inter, sans-serif; color: var(--ink); text-decoration: none; }
+.m-drawer-links a::after { content: "›"; color: var(--muted); font-size: 1.4rem; }

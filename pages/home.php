@@ -43,6 +43,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
     <span class="m-loc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Abidjan<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    <button class="m-burger" type="button" aria-label="Ouvrir le menu" aria-controls="m-drawer" aria-expanded="false" data-drawer-open><span></span><span></span><span></span></button>
   </div>
   <div class="container m-hero-in">
     <h1 class="sr-only">ChapTarif : réservez vos services en toute sécurité</h1>
@@ -122,7 +123,60 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
         </a>
       <?php endforeach; ?>
     </div>
+    <button class="m-install" type="button" data-install hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 8v6M9.5 11.8 12 14.3l2.5-2.5"/></svg>Télécharger l'application</button>
   </div>
+  <div class="m-overlay" data-drawer-close hidden></div>
+  <aside class="m-drawer" id="m-drawer" aria-label="Menu" hidden>
+    <div class="m-drawer-head">
+      <span class="m-brand"><img src="/assets/img/logo.svg" alt="" width="38" height="38"><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></span>
+      <button type="button" class="m-drawer-x" aria-label="Fermer le menu" data-drawer-close><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <button class="m-drawer-install" type="button" data-install hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 8v6M9.5 11.8 12 14.3l2.5-2.5"/></svg>Télécharger l'application</button>
+    <p class="m-install-help" data-install-help hidden></p>
+    <nav class="m-drawer-links">
+      <?php if (current_user()): ?>
+        <a href="/compte">Mes réservations</a>
+      <?php else: ?>
+        <a href="/connexion">Se connecter</a>
+      <?php endif; ?>
+      <a href="/comment-ca-marche">Comment ça marche</a>
+      <a href="/garantie-dommage">Garantie Dommage</a>
+      <a href="/devenir-prestataire">Devenir prestataire</a>
+      <a href="/chat">Chat service client</a>
+      <a href="/contact">Contact &amp; aide</a>
+      <a href="/mentions-legales">Mentions légales</a>
+    </nav>
+  </aside>
+  <script>
+  (function () {
+    var d = document.getElementById('m-drawer'), ov = document.querySelector('.m-overlay'), bu = document.querySelector('[data-drawer-open]');
+    if (!d || !bu) return;
+    var set = function (o) {
+      d.hidden = !o; ov.hidden = !o; bu.setAttribute('aria-expanded', o ? 'true' : 'false');
+      document.body.style.overflow = o ? 'hidden' : '';
+      requestAnimationFrame(function () { d.classList.toggle('open', o); ov.classList.toggle('open', o); });
+    };
+    bu.addEventListener('click', function () { set(true); });
+    [].forEach.call(document.querySelectorAll('[data-drawer-close]'), function (x) { x.addEventListener('click', function () { set(false); }); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+    // Installation de l'application
+    var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    var btns = [].slice.call(document.querySelectorAll('[data-install]')), help = document.querySelector('[data-install-help]');
+    if (!standalone) btns.forEach(function (b) { b.hidden = false; });
+    var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var p = window.__deferredInstall;
+        if (p) { p.prompt(); p.userChoice.finally(function () { window.__deferredInstall = null; }); return; }
+        help.textContent = ios
+          ? 'Sur iPhone : touchez le bouton Partager (carré avec une flèche) en bas de Safari, puis « Sur l\'écran d\'accueil ».'
+          : 'Ouvrez le menu de votre navigateur (⋮ en haut à droite), puis touchez « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ».';
+        help.hidden = false; set(true);
+      });
+    });
+    window.addEventListener('appinstalled', function () { btns.forEach(function (b) { b.hidden = true; }); });
+  })();
+  </script>
 </section>
 <section class="hero">
   <div class="hero-bg" style="--hero:url('<?= e(img('hero-abidjan', 'w_1800,h_1000,c_fill,q_auto,f_auto')) ?>')"></div>
