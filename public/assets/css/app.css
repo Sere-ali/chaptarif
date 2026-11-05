@@ -986,3 +986,27 @@ body.home-m { background: #F3F8FD; }
 /* Localisation « Abidjan » : version compacte */
 .m-home .m-loc { padding: 6px 10px; gap: 4px; font-size: .78rem; box-shadow: 0 3px 10px rgba(15, 27, 45, .1); }
 .m-home .m-loc svg { width: 14px; height: 14px; }
+/* Accueil : tailles réduites (dé-zoom) */
+.m-home-top { padding: 12px 18px 4px; }
+.m-brand img { width: 36px; height: 36px; }
+.m-brand .brand-txt { font-size: 1.25rem; }
+.m-burger { width: 42px; height: 42px; gap: 4px; }
+.m-burger span { width: 19px; height: 2.5px; }
+.m-trio { margin: 10px 4px 14px; }
+.m-trio svg { width: 30px; height: 30px; }
+.m-trio b { font-size: 1rem; }
+.m-trio > div { gap: 4px; }
+.m-home .m-search { padding: 6px 6px 6px 16px; margin-bottom: 18px; gap: 8px; }
+.m-home .m-search .m-search-ico svg { width: 22px; height: 22px; }
+.m-home .m-search input { font-size: .84rem; padding: 8px 0; }
+.m-filter { width: 44px; height: 44px; }
+.m-filter svg { width: 22px; height: 22px; }
+.m-home .m-grid { gap: 12px; max-width: 340px; margin-left: auto; margin-right: auto; }
+.m-home .m-cat b { font-size: clamp(.82rem, 3.4vw, 1rem); }
+.m-install { margin-top: 16px; padding: 11px 20px; font-size: .92rem; }
+@media (max-width: 899px) {
+  .tabbar { padding: 6px 6px; left: 18px; right: 18px; }
+  .tabbar a { font-size: .7rem; }
+  .tabbar svg { width: 20px; height: 20px; }
+  .tabbar a.on svg { width: 48px; height: 30px; padding: 5px 14px; }
+}
