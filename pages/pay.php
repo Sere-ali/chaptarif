@@ -23,7 +23,12 @@ if (!$r['ok']) {
     flash('error', $r['error']);
     redirect('/');
 }
-$b = booking_create($r['quote'], $u, $method);
+$quote = $r['quote'];
+if (!empty($_SESSION['checkout']['code'])) {
+    $dr = discount_apply($quote, (string) $_SESSION['checkout']['code']);
+    if ($dr['ok']) $quote = $dr['quote'];
+}
+$b = booking_create($quote, $u, $method);
 unset($_SESSION['checkout']);
 $init = payment_init($b, $u);
 if (!$init['ok']) {

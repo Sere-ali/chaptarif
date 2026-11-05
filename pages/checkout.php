@@ -25,6 +25,12 @@ if (!$r['ok']) {
 }
 $q = $r['quote'];
 $_SESSION['checkout']['quote'] = $q;
+$codeApplied = '';
+if (!empty($_SESSION['checkout']['code'])) {
+    $dr = discount_apply($q, (string) $_SESSION['checkout']['code']);
+    if ($dr['ok']) { $q = $dr['quote']; $codeApplied = $q['discount_code']; }
+    else { unset($_SESSION['checkout']['code']); flash('error', $dr['error']); }
+}
 $x = universe($q['universe']);
 $u = current_user();
 $title = 'Finaliser ma réservation';
@@ -64,6 +70,15 @@ view('layout/header', compact('title', 'active'));
                 <label class="fld"><span>Passager <?= $i + 1 ?></span><input name="passenger_names[]" maxlength="60" required autocomplete="off" placeholder="Nom et prénom" value="<?= e($pn[$i] ?? ($i === 0 && $np === 1 ? ($u['name'] ?? '') : '')) ?>"></label>
               <?php endfor; ?>
             <?php endif; ?>
+            <div class="promo">
+              <?php if ($codeApplied): ?>
+                <div class="promo-ok"><span>Code <b><?= e($codeApplied) ?></b> appliqué : <b>− <?= fcfa($q['discount']) ?></b></span><button class="btn btn-ghost btn-xs" formaction="/reserver/code" formnovalidate name="action" value="remove">Retirer</button></div>
+              <?php else: ?>
+                <details<?= !empty($_GET['code']) ? ' open' : '' ?>><summary>Code de réduction</summary>
+                  <div class="promo-row"><input name="code" maxlength="30" autocomplete="off" autocapitalize="characters" placeholder="Saisissez votre code"><button class="btn btn-soft" formaction="/reserver/code" formnovalidate name="action" value="apply">Appliquer</button></div>
+                </details>
+              <?php endif; ?>
+            </div>
             <h2 class="h3"> Choisissez votre moyen de paiement</h2>
             <div class="pay-methods">
               <?php $i = 0; foreach (payment_methods() as $k => [$label, $color, $hint]): ?>
@@ -91,6 +106,7 @@ view('layout/header', compact('title', 'active'));
           <?php $gar = (int) ($q['garantie_fee'] ?? 0); $fraisOnly = (int) $q['service_fee'] - $gar; ?>
           <?php if ($gar): ?><div class="sum-row"><span>Garantie dommage (<?= e(str_replace('.', ',', (string) (float) setting('garantie_dommage_pct', 6.72))) ?>% du montant de la formule)</span><b><?= fcfa($gar) ?></b></div><?php endif; ?>
           <?php if ($fraisOnly > 0 || isset($q['garantie_fee'])): ?><div class="sum-row"><span>Frais de service</span><b><?= $fraisOnly > 0 ? fcfa($fraisOnly) : 'Offerts' ?></b></div><?php endif; ?>
+          <?php if (!empty($q['discount'])): ?><div class="sum-row"><span>Code <?= e($q['discount_code']) ?></span><b>− <?= fcfa($q['discount']) ?></b></div><?php endif; ?>
           <div class="sum-row total"><span>Total à payer</span><b><?= fcfa($q['total']) ?></b></div>
           <div class="escrow-note"> <b>Paiement protégé.</b> Les fonds restent bloqués chez ChapTarif et ne sont versés qu'après la bonne exécution du service.</div>
         </div>

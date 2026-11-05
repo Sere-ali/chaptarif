@@ -921,3 +921,9 @@ body.immo-m .d-home { height: auto; display: block; overflow: visible; }
 
 .pm-logo.has-img, .pm-big.has-img { background: #fff; border: 1px solid #E3E8E6; padding: 4px; text-shadow: none; }
 .pm-logo.has-img img, .pm-big.has-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.promo { margin: 4px 0 14px; }
+.promo summary { cursor: pointer; font-weight: 700; color: var(--green, #1D7348); padding: 10px 0; }
+.promo-row { display: flex; gap: 8px; }
+.promo-row input { flex: 1; min-width: 0; text-transform: uppercase; }
+.promo-ok { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #E4F5EC; border-radius: 12px; padding: 10px 14px; }

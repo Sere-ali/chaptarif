@@ -33,6 +33,7 @@ $items = [
 if (is_super($me)) {
     $items[] = ['Super admin', null];
     $items[] = ['admins', '/admin/administrateurs', '', 'Admins', 0];
+    $items[] = ['codes', '/admin/codes', '', 'Codes de réduction', 0];
     $items[] = ['settings', '/admin/parametres', '', 'Paramètres', 0];
     $items[] = ['audit', '/admin/journal', '', "Journal d'audit", 0];
 }

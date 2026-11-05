@@ -20,7 +20,7 @@ function booking_create(array $quote, array $user, string $method): array
             'item_type' => $quote['item_type'], 'item_id' => $quote['item_id'], 'provider_id' => $quote['provider_id'],
             'title' => $quote['title'], 'details' => json_encode($quote['details'], JSON_UNESCAPED_UNICODE),
             'service_date' => $quote['service_date'], 'amount' => $quote['amount'], 'service_fee' => $quote['service_fee'],
-            'total' => $quote['total'], 'commission' => $quote['commission'], 'provider_amount' => $quote['provider_amount'],
+            'total' => $quote['total'], 'discount' => (int) ($quote['discount'] ?? 0), 'discount_code' => $quote['discount_code'] ?? null, 'commission' => $quote['commission'], 'provider_amount' => $quote['provider_amount'],
             'payment_method' => $method, 'status' => 'EN_ATTENTE_PAIEMENT', 'created_at' => now(), 'updated_at' => now(),
         ]);
         return one('SELECT * FROM bookings WHERE id = ?', [$id]);
@@ -45,6 +45,7 @@ function booking_mark_paid(array $b, string $paymentRef): array
         }
         q("UPDATE bookings SET status = 'BLOQUE', paid_at = ?, payment_ref = ?, release_code = ?, seat_no = ?, updated_at = ? WHERE id = ? AND status = 'EN_ATTENTE_PAIEMENT'",
             [now(), $paymentRef, (string) random_int(1000, 9999), $seat, now(), $b['id']]);
+        if (!empty($b['discount_code'])) q('UPDATE discount_codes SET uses = uses + 1 WHERE code = ?', [$b['discount_code']]);
         insert('transactions', [
             'booking_id' => $b['id'], 'provider_id' => $b['provider_id'], 'type' => 'ENCAISSEMENT', 'amount' => $b['total'],
             'method' => $b['payment_method'], 'status' => 'BLOQUE', 'reference' => $paymentRef,
@@ -66,11 +67,11 @@ function booking_release(array $b, string $by = 'client', string $note = ''): bo
     tx(function () use ($b, $by, $note) {
         q("UPDATE bookings SET status = 'VALIDE', validated_at = ?, updated_at = ?, admin_note = COALESCE(admin_note, '') || ? WHERE id = ?",
             [now(), now(), $note ? "\n[" . now() . "] $note" : '', $b['id']]);
-        $rev = (int) $b['commission'] + (int) $b['service_fee'];
+        $rev = (int) $b['commission'] + (int) $b['service_fee'] - (int) ($b['discount'] ?? 0);
         insert('transactions', [
             'booking_id' => $b['id'], 'provider_id' => $b['provider_id'], 'type' => 'COMMISSION', 'amount' => $rev,
             'method' => 'interne', 'status' => 'ACQUIS', 'reference' => $b['ref'],
-            'note' => 'Commission ChapTarif' . ((int) $b['service_fee'] ? ' + frais de service' : ''), 'created_at' => now(),
+            'note' => 'Commission ChapTarif' . ((int) $b['service_fee'] ? ' + frais de service' : '') . ((int) ($b['discount'] ?? 0) ? ' − réduction ' . $b['discount_code'] : ''), 'created_at' => now(),
         ]);
         $prov = $b['provider_id'] ? one('SELECT * FROM providers WHERE id = ?', [$b['provider_id']]) : null;
         $payout = payout_send($prov, (int) $b['provider_amount'], $b['ref']);

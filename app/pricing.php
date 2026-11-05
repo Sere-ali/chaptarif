@@ -372,3 +372,31 @@ function build_quote(string $universe, array $in): array
     $q['created'] = time();
     return ['ok' => true, 'quote' => $q];
 }
+
+
+// ---- Codes de réduction ----------------------------------------------------------
+function discount_find(string $code): ?array
+{
+    $code = strtoupper(preg_replace('/[^A-Za-z0-9_-]/', '', $code));
+    if ($code === '') return null;
+    $d = one('SELECT * FROM discount_codes WHERE code = ? AND active = 1', [$code]);
+    if (!$d) return null;
+    if (!empty($d['expires_at']) && $d['expires_at'] < date('Y-m-d')) return null;
+    if ($d['max_uses'] !== null && $d['max_uses'] !== '' && (int) $d['uses'] >= (int) $d['max_uses']) return null;
+    return $d;
+}
+
+/** Applique un code à un devis. La réduction est prise en charge par ChapTarif : le prestataire garde son montant. */
+function discount_apply(array $q, string $code): array
+{
+    $d = discount_find($code);
+    if (!$d) return ['ok' => false, 'error' => 'Ce code de réduction n\'est pas valide ou a expiré.'];
+    $amount = (int) $q['amount'];
+    $disc = $d['kind'] === 'percent' ? (int) (floor($amount * (int) $d['value'] / 100 / 5) * 5) : min((int) $d['value'], $amount);
+    $disc = max(0, min($disc, (int) $q['total'] - 100));
+    if ($disc <= 0) return ['ok' => false, 'error' => 'Ce code ne s\'applique pas à cette réservation.'];
+    $q['discount'] = $disc;
+    $q['discount_code'] = $d['code'];
+    $q['total'] = (int) $q['total'] - $disc;
+    return ['ok' => true, 'quote' => $q];
+}

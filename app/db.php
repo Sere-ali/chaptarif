@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 23;
+const SCHEMA_VERSION = 24;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -190,11 +190,16 @@ function db_migrate(): void
         "CREATE INDEX IF NOT EXISTS idx_tx_booking ON transactions(booking_id)",
         "CREATE INDEX IF NOT EXISTS idx_tasks_assigned ON tasks(assigned_to)",
         "CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status)",
+        "CREATE TABLE IF NOT EXISTS discount_codes (
+            id $PK, code TEXT NOT NULL UNIQUE, kind TEXT NOT NULL DEFAULT 'percent', value INTEGER NOT NULL,
+            active INTEGER NOT NULL DEFAULT 1, expires_at TEXT, max_uses INTEGER, uses INTEGER NOT NULL DEFAULT 0, created_at TEXT)",
     ];
     foreach ($stmts as $s) db()->exec($s);
 
     // Colonnes ajoutées après la mise en production (idempotent : ignore si déjà présentes).
     foreach ([
+        "ALTER TABLE bookings ADD COLUMN discount INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE bookings ADD COLUMN discount_code TEXT",
         "ALTER TABLE trips ADD COLUMN universe TEXT NOT NULL DEFAULT 'cars'",
         "ALTER TABLE trips ADD COLUMN provider_id INTEGER",
         "ALTER TABLE trips ADD COLUMN from_detail TEXT",
