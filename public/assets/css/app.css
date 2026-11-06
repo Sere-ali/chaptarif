@@ -1015,3 +1015,8 @@ body.home-m { background: #F3F8FD; }
 .m-trio svg { width: 20px; height: 20px; }
 .m-trio b { font-size: .78rem; font-weight: 700; }
 .m-trio > div { gap: 2px; }
+/* Accueil : contenu un peu plus bas, jusqu'à Tiers de confiance */
+@media (max-width: 899px) {
+  .m-home { min-height: calc(100svh - 70px); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 36px; }
+  .m-home .m-grid { margin-top: 10px; }
+}
