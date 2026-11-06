@@ -38,6 +38,12 @@ services:
         sync: false         # ex. https://chaptarif.onrender.com
       - key: OTP_DEMO
         value: "1"          # mettez "0" dès qu'une passerelle SMS est branchée
+      - key: INFOBIP_BASE_URL
+        sync: false         # ex. xxxxx.api.infobip.com
+      - key: INFOBIP_API_KEY
+        sync: false
+      - key: SMS_SENDER
+        value: ChapTarif
       - key: SMS_API_URL
         sync: false
       - key: SMS_API_TOKEN

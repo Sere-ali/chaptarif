@@ -11,8 +11,35 @@ function sms_demo_mode(): bool
     return env('OTP_DEMO', '1') === '1';
 }
 
+function infobip_configured(): bool
+{
+    return env('INFOBIP_API_KEY') && env('INFOBIP_BASE_URL');
+}
+
+/** Envoi via Infobip (variables : INFOBIP_BASE_URL, INFOBIP_API_KEY, SMS_SENDER). */
+function infobip_send(string $to, string $message): bool
+{
+    $base = preg_replace('#^https?://#', '', rtrim((string) env('INFOBIP_BASE_URL'), '/'));
+    $ch = curl_init('https://' . $base . '/sms/2/text/advanced');
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json', 'Authorization: App ' . env('INFOBIP_API_KEY')],
+        CURLOPT_POSTFIELDS => json_encode(['messages' => [[
+            'destinations' => [['to' => ltrim($to, '+')]],
+            'from' => env('SMS_SENDER', 'ChapTarif'),
+            'text' => $message,
+        ]]]),
+    ]);
+    $res = curl_exec($ch);
+    $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($http < 200 || $http >= 300) error_log('[Infobip SMS échec] HTTP ' . $http . ' ' . substr((string) $res, 0, 300));
+    return $http >= 200 && $http < 300;
+}
+
 function sms_send(string $to, string $message): bool
 {
+    if (infobip_configured()) return infobip_send($to, $message);
     $url = env('SMS_API_URL');
     if (!$url) {
         error_log("[SMS non envoyé — aucune passerelle] $to : $message");
