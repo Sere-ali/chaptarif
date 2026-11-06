@@ -1020,3 +1020,7 @@ body.home-m { background: #F3F8FD; }
   .m-home { min-height: calc(100svh - 70px); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 36px; }
   .m-home .m-grid { margin-top: 10px; }
 }
+/* Accueil mobile : le fond clair descend jusqu'à « Tiers de confiance » */
+@media (max-width: 899px) {
+  body.home-m #sequestre { background: linear-gradient(to bottom, #F3F8FD 0, #F3F8FD 60px, #0E1A2B 60px); padding-top: 60px; }
+}
