@@ -1020,7 +1020,13 @@ body.home-m { background: #F3F8FD; }
   .m-home { min-height: calc(100svh - 70px); display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 36px; }
   .m-home .m-grid { margin-top: 10px; }
 }
-/* Accueil mobile : le fond clair descend jusqu'à « Tiers de confiance » */
+/* Accueil mobile : fond bleu clair doux + pastille Tiers de confiance */
 @media (max-width: 899px) {
-  body.home-m #sequestre { background: linear-gradient(to bottom, #F3F8FD 0, #F3F8FD 60px, #0E1A2B 60px); padding-top: 60px; }
+  body.home-m { background: radial-gradient(120% 40% at 100% 0, #D9E8FB 0, transparent 70%), radial-gradient(120% 35% at 0 62%, #E4EFFC 0, transparent 70%), radial-gradient(90% 30% at 100% 100%, #D3E3F8 0, transparent 70%), #F5F9FE; background-attachment: fixed; }
+  body.home-m #sequestre { background: transparent; padding: 0 0 130px; color: #0F1B2D; }
+  body.home-m #sequestre .sec-head { margin: 0 0 22px; position: relative; text-align: center; }
+  body.home-m #sequestre .sec-head::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px solid #3C4A5C; opacity: .55; }
+  body.home-m #sequestre .eyebrow { position: relative; display: inline-block; background: #0F1B2D; color: #3FD08F; font-size: 1.05rem; padding: 12px 26px; border-radius: 999px; letter-spacing: .06em; }
+  body.home-m #sequestre .steps { background: #0E1A2B; color: #E8EEF6; border-radius: 24px; padding: 24px 20px; }
 }
+@media (max-width: 899px) { .m-home { justify-content: space-evenly; min-height: calc(100svh - 170px); padding-bottom: 20px; } }
