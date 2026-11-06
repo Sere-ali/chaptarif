@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 24;
+const SCHEMA_VERSION = 25;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -198,6 +198,7 @@ function db_migrate(): void
 
     // Colonnes ajoutées après la mise en production (idempotent : ignore si déjà présentes).
     foreach ([
+        "ALTER TABLE users ADD COLUMN birthdate TEXT",
         "ALTER TABLE bookings ADD COLUMN discount INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE bookings ADD COLUMN discount_code TEXT",
         "ALTER TABLE trips ADD COLUMN universe TEXT NOT NULL DEFAULT 'cars'",

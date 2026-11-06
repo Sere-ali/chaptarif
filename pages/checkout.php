@@ -55,15 +55,10 @@ view('layout/header', compact('title', 'active'));
       <div>
         <?php if (!$u): ?>
           <div class="card form-card">
-            <h2 class="h3"> Votre numéro de téléphone</h2>
-            <p class="muted">Pas de mot de passe : nous vous envoyons un code par SMS pour sécuriser votre réservation.</p>
-            <form method="post" action="/connexion">
-              <?= csrf_field() ?>
-              <input type="hidden" name="step" value="send"><input type="hidden" name="next" value="/reserver">
-              <label class="fld"><span>Nom et prénom</span><input name="name" maxlength="80" autocomplete="name" placeholder="Ex. Koné Aminata" required></label>
-              <label class="fld"><span>Téléphone</span><div class="tel"><span> +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
-              <button class="btn btn-primary btn-block btn-lg">Recevoir mon code</button>
-            </form>
+            <h2 class="h3">Connectez-vous pour réserver</h2>
+            <p class="muted">Votre compte protège vos réservations et vos paiements. Connectez-vous avec votre numéro et votre mot de passe, ou créez un compte en 1 minute.</p>
+            <a class="btn btn-primary btn-block btn-lg" href="/connexion?next=%2Freserver">Se connecter</a>
+            <a class="btn btn-soft btn-block btn-lg" style="margin-top:10px" href="/connexion?mode=signup&amp;next=%2Freserver">Créer un compte</a>
           </div>
         <?php else: ?>
           <form class="card form-card" method="post" action="/paiement">
