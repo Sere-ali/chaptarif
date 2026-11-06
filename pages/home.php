@@ -321,30 +321,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <p>Les exclusions, plafonds et modalités de réclamation sont consultables dans les conditions de la Garantie Dommages.</p>
       <a class="btn btn-primary btn-lg" href="/garantie-dommage">Voir les conditions de la garantie</a>
     </div>
-    <div class="compare-card reveal">
-      <img src="<?= e(img('univers-menage', 'w_640,h_480,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
-    </div>
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container split split-rev">
-    <div class="app-visual reveal">
-      <img src="<?= e(img('app-user', 'w_900,h_700,c_fill,g_face,q_auto,f_auto')) ?>" alt="Cliente utilisant ChapTarif sur son téléphone" loading="lazy" width="900" height="700">
-      <div class="float f4"><span class="fi"></span><div><b>Code reçu par SMS</b><small>Connexion sans mot de passe</small></div></div>
-    </div>
-    <div class="reveal">
-      <span class="eyebrow">Pensé pour Abidjan</span>
-      <h2>Léger, rapide, <span class="grad">même en 3G</span></h2>
-      <p class="lead-sm">Pas de compte à créer pour comparer. Votre numéro de téléphone suffit au moment de payer : un code SMS et c'est parti.</p>
-      <div class="features">
-        <div><span></span><b>Ultra léger</b><small>Chargement rapide sur réseau mobile</small></div>
-        <div><span></span><b>Installable</b><small>Ajoutez ChapTarif à votre écran d'accueil</small></div>
-        <div><span></span><b>E-billets QR</b><small>Montrez votre téléphone à l'embarquement</small></div>
-        <div><span></span><b>Support local</b><small>Une équipe à Abidjan 7j/7</small></div>
-      </div>
-    </div>
   </div>
 </section>
 
