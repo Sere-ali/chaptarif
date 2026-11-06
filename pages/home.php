@@ -294,8 +294,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   <div class="container">
     <div class="sec-head light">
       <span class="eyebrow">Tiers de confiance</span>
-      <h2>Votre argent est protégé <span class="grad-light">jusqu'au bout</span></h2>
-      <p>Vos règlements sont conservés sur un compte sécurisé. Le prestataire perçoit son versement uniquement après validation de la bonne exécution par vos soins.</p>
     </div>
     <ol class="steps">
       <li class="reveal"><span class="step-n">1</span><h4>Vous réservez</h4><p>Sélectionnez votre prestation ou formule au tarif transparent et fixé à l'avance.</p></li>
