@@ -5,8 +5,6 @@
 <footer class="footer">
   <div class="container footer-grid">
     <div>
-      <a class="brand brand-light" href="/"><img src="/assets/img/logo.svg" alt="" width="36" height="36"><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></a>
-      <p class="muted-light">Le comparateur n°1 des services du quotidien en Côte d'Ivoire. Prix transparents, prestataires vérifiés, paiement protégé sous séquestre.</p>
       <div class="pay-chips">
         <span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange Money</span><span class="chip chip-mtn">MTN MoMo</span><span class="chip chip-moov">Moov</span>
       </div>

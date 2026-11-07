@@ -188,7 +188,6 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
   <div class="immo-land">
     <div class="il-hero" style="--sky:url('/assets/img/immo-skyline.jpg')">
       <h2>Trouvez votre logement</h2>
-      <p>Appartements et villas duplex à Abidjan</p>
     </div>
     <form class="il-search" method="get" action="/immobilier" novalidate>
       <input type="hidden" name="cat" value="appart">
