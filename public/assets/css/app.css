@@ -1322,3 +1322,16 @@ body.immo-m .il-search .il-card i::before { position: absolute; left: 50%; top: 
 .il-villa .il-row input[type=date] { max-width: 118px; font-size: .74rem; padding: 0; }
 .il-villa .il-row { gap: 8px; }
 .il-villa .il-row select { max-width: 40%; font-size: .74rem; text-overflow: ellipsis; text-align: center; }
+/* Immobilier : fenêtre Appartement « Cochez votre recherche » (maquette) */
+.il-sheet[data-sheet=a] .il-sheet-head { border-bottom: 0; align-items: flex-start; }
+.il-sheet[data-sheet=a] .il-sheet-head small { font-weight: 500; font-size: .78rem; }
+.il-tog { display: flex !important; align-items: center; gap: 12px; padding: 8px 12px !important; margin-top: 8px; background: #F6F8FA; border: 1px solid #E6EAEF; border-radius: 16px; cursor: pointer; }
+.il-tog span { flex: 1; font-weight: 600; font-size: .95rem; }
+.il-tico { width: 44px; height: 44px; border-radius: 50%; background: #DDF2E8; display: grid; place-items: center; flex: none; }
+.il-tico svg { width: 26px; height: 26px; }
+.il-tog input { position: absolute; opacity: 0; pointer-events: none; }
+.il-tog i { width: 46px; height: 26px; border-radius: 999px; background: #D5DCE3; position: relative; flex: none; transition: background .2s; }
+.il-tog i::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+.il-tog input:checked + i { background: #148A63; }
+.il-tog input:checked + i::after { transform: translateX(20px); }
+.il-apply { background: linear-gradient(90deg, #148A63, #0F6E58) !important; border-radius: 999px !important; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
