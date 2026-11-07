@@ -193,7 +193,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <h2 class="h3"><?= in_array($uk, ['menage', 'pressing'], true) ? '2' : ($autoProv ? '1' : '3') ?>. Date & lieu</h2>
         <div class="row2">
           <label class="fld"><span> <?= e($copy['date_label']) ?></span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
-          <label class="fld"><span> Heure</span><select name="time"><?php foreach (['07:00', '08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'] as $h): ?><option <?= $h === '09:00' ? 'selected' : '' ?>><?= $h ?></option><?php endforeach; ?></select></label>
+          <label class="fld"><span> Heure</span><select name="time"><?php foreach (array_map(fn($i) => sprintf('%02d:00', $i), range(7, 23)) as $h): ?><option <?= $h === '09:00' ? 'selected' : '' ?>><?= $h ?></option><?php endforeach; ?></select></label>
         </div>
         <label class="fld"><span><?= $uk === 'menage' ? 'Mon adresse' : ($uk === 'maquilleuse' ? 'Saisir mon adresse' : (in_array($uk, ['coiffeuse', 'onglerie'], true) ? 'Votre adresse' : ($uk === 'pressing' ? 'Lieu de récupération (mon adresse)' : ' Votre lieu (ou saisissez-le vous-même)'))) ?></span><input name="address" maxlength="200" required placeholder="Ex. Cocody Angré, immeuble Les Palmiers, 3e étage"></label>
         <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
