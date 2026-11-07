@@ -115,13 +115,13 @@ function universes(): array
     return [
         //  Transports
         'cars' => ['name' => 'Cars Voyage', 'short' => 'Cars', 'emoji' => '', 'sub' => 'Lignes CI (UTB…)', 'color' => '#1F5C8C', 'bg' => '#EEF2F7', 'img' => 'univers-cars', 'url' => '/cars', 'group' => 'Transports',
-            'pitch' => 'Billets interurbains en 3 clics, E-billet QR code, zéro file en gare.'],
+            'pitch' => 'Billets interurbains en 3 clics. E-billet QR code, zéro file en gare.'],
         'location_car' => ['name' => 'Louer un car', 'short' => 'Car', 'emoji' => '', 'sub' => 'Groupes & Événements', 'color' => '#3A6EA5', 'bg' => '#EEF4FA', 'img' => 'univers-car-bus', 'url' => '/location-car', 'group' => 'Transports',
-            'pitch' => 'Réservez un car ou un minibus avec chauffeur expérimenté pour vos événements'],
+            'pitch' => 'Réservez un car ou un minibus avec chauffeur expérimenté pour vos événements.'],
         'location_vehicule' => ['name' => 'Location de véhicule', 'short' => 'Véhicule', 'emoji' => '', 'sub' => 'Voitures, 4x4 & minibus', 'color' => '#2F7FBF', 'bg' => '#EAF3FB', 'img' => 'univers-vehicule-4x4', 'url' => '/location-vehicule', 'group' => 'Transports',
-            'pitch' => 'Louez votre véhicule en toute tranquillité'],
+            'pitch' => 'Louez votre véhicule en toute tranquillité.'],
         'chauffeur' => ['name' => 'Louer un chauffeur', 'short' => 'Chauffeur', 'emoji' => '', 'sub' => 'Chauffeur privé à la demande', 'color' => '#35557A', 'bg' => '#ECF1F7', 'img' => 'univers-chauffeur', 'url' => '/chauffeur', 'group' => 'Transports',
-            'pitch' => 'Déplacez-vous en toute sérénité avec un chauffeur'],
+            'pitch' => 'Déplacez-vous en toute sérénité avec un chauffeur.'],
         'location_camion' => ['name' => 'Location de gros camion', 'short' => 'Camion', 'emoji' => '', 'sub' => 'Fret & Déménagement', 'color' => '#8A5A2B', 'bg' => '#FBF2E9', 'img' => 'univers-location-camion', 'url' => '/location-camion', 'group' => 'Transports',
             'pitch' => 'Un camion et son chauffeur pour vos déménagements, ramassage de gravier, meubles ou marchandises.'],
         'covoiturage' => ['name' => 'Covoiturage', 'short' => 'Covoit.', 'emoji' => '', 'sub' => 'Trajets économiques partagés', 'color' => '#0E9F8E', 'bg' => '#E9FAF6', 'img' => 'univers-covoiturage', 'url' => '/covoiturage', 'group' => 'Transports',

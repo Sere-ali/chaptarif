@@ -8,7 +8,7 @@ if (!$d) not_found();
 $title = $d['name'] . ' à Abidjan';
 $desc = $d['pitch'];
 $active = $dk;
-$bodyClass = 'domaine-m' . ($dk === 'beaute' ? ' theme-beaute' : '');
+$bodyClass = 'domaine-m' . ($dk === 'beaute' ? ' theme-beaute' : '') . ($dk === 'transport' ? ' dom-transport' : '');
 $subs = array_map(fn ($k) => universe($k), $d['keys']);
 view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 ?>
@@ -51,8 +51,8 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <h2 class="d-h2"><?= e($d['select_h2'] ?? 'Sélectionnez votre besoin') ?></h2>
     <p class="d-sub"><?= e($d['select_sub'] ?? 'Trouvez le meilleur tarif, en quelques clics.') ?></p>
     <div class="d-list">
-      <?php foreach ($subs as $x): ?>
-        <a class="d-item reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
+      <?php foreach ($d['keys'] as $sk): $x = universe($sk); ?>
+        <a class="d-item reveal<?= in_array($sk, ['covoiturage', 'chauffeur'], true) ? ' d-alt' : '' ?>" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
           <span class="d-item-img"><img src="<?= e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
           <span class="d-item-body">
             <b><?= e($x['name']) ?></b>
