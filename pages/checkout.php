@@ -117,7 +117,7 @@ view('layout/header', compact('title', 'active'));
               <button class="btn btn-ghost btn-xs" name="action" value="remove">Retirer le code de réduction</button>
             <?php else: ?>
               <label class="fld" style="margin:0"><span>Code de réduction</span>
-                <div class="promo-row"><input name="code" maxlength="30" autocomplete="off" autocapitalize="characters" placeholder="Saisissez votre code"><button class="btn btn-soft" name="action" value="apply">Appliquer</button></div></label>
+                <div class="promo-row"><input name="code" maxlength="30" autocomplete="off" autocapitalize="characters" placeholder="Votre code"><button class="btn btn-soft" name="action" value="apply">Appliquer</button></div></label>
             <?php endif; ?>
           </form>
           <div class="sum-row total"><span>Total à payer</span><b><?= fcfa($q['total']) ?></b></div>
