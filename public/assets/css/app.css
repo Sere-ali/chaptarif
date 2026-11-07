@@ -1201,3 +1201,7 @@ body.theme-beaute [data-universe=maquilleuse] .row2 { display: grid; grid-templa
   .on-txt em { white-space: nowrap; }
   .on-price { font-size: .8rem; }
 }
+@media (max-width: 899px) {
+  [data-universe=coiffeuse] .container { padding-left: 10px; padding-right: 10px; }
+  [data-universe=coiffeuse] aside > .card, [data-universe=coiffeuse] aside .form-card { padding: 16px 12px; }
+}

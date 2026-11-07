@@ -255,15 +255,24 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         })();
         </script>
         <?php elseif ($uk === 'coiffeuse'): ?>
-        <label class="fld"><span>Prestation</span><select name="prestation" required data-co>
-          <option value="">Choisir…</option>
-          <?php foreach (coiffure_options() as $cn => $cp): ?><option value="<?= e($cn) ?>" data-price="<?= (int) $cp ?>"><?= e($cn) ?> — <?= number_format($cp, 0, ',', ' ') ?> FCFA</option><?php endforeach; ?>
-        </select></label>
-        <div class="mq-total"><b>Total estimatif</b><span data-co-total>0 FCFA</span></div>
+        <?php $coDesc = ['Pose de perruque (avec ou sans colle)' => ['Pose de perruque', '(avec ou sans colle)', 'pink', '<path d="M12 3C7.5 3 5.5 6.5 5.5 10.5V20h3v-6.5"/><path d="M12 3c4.5 0 6.5 3.5 6.5 7.5V20h-3v-6.5"/><circle cx="12" cy="11" r="4"/><path d="M8.5 9.5C10 8 14 8 15.5 9.5"/><path d="M8.5 20c.5-2 2-3 3.5-3s3 1 3.5 3"/>'],
+          'Tout mèche (sans les mèches)' => ['Tout mèche', '(sans les mèches)', 'purple', '<rect x="6" y="3" width="12" height="3" rx="1.5"/><path d="M7.5 6c-1 3 1 4 0 7s1 4 0 7M10.5 6c-1 3 1 4 0 7s1 4 0 7M13.5 6c-1 3 1 4 0 7s1 4 0 7M16.5 6c-1 3 1 4 0 7s1 4 0 7"/>']]; ?>
+        <label class="fld" style="margin-bottom:6px"><span>Prestation</span></label>
+        <div class="on-list" data-on>
+          <?php foreach (coiffure_options() as $cn => $cp): [$ct, $cs, $cc, $ci] = $coDesc[$cn]; ?>
+            <label class="on-row on-<?= $cc ?>">
+              <span class="on-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><?= $ci ?></svg></span>
+              <span class="on-txt"><b><?= e($ct) ?></b><small><?= e($cs) ?></small></span>
+              <span class="on-price"><?= number_format($cp, 0, ',', ' ') ?> FCFA</span>
+              <input type="radio" name="prestation" value="<?= e($cn) ?>" data-price="<?= (int) $cp ?>" required>
+            </label>
+          <?php endforeach; ?>
+        </div>
+        <div class="mq-total"><b>Total estimatif</b><span data-on-total>0 FCFA</span></div>
         <script>
-        (function () { var s = document.querySelector('[data-co]'), t = document.querySelector('[data-co-total]'); if (!s) return;
-          function upd() { var o = s.options[s.selectedIndex], v = o && o.dataset.price ? +o.dataset.price : 0; t.textContent = v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }
-          s.addEventListener('change', upd); upd(); })();
+        (function () { var b = document.querySelector('[data-on]'), t = document.querySelector('[data-on-total]'); if (!b) return;
+          b.addEventListener('change', function () { var r = b.querySelector('input:checked'); b.querySelectorAll('.on-row').forEach(function (x) { x.classList.toggle('on', x.contains(r)); });
+            t.textContent = (r ? +r.dataset.price : 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }); })();
         </script>
         <?php elseif ($uk === 'onglerie'): ?>
         <?php $onIco = [
