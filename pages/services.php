@@ -265,6 +265,33 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           function upd() { var o = s.options[s.selectedIndex], v = o && o.dataset.price ? +o.dataset.price : 0; t.textContent = v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }
           s.addEventListener('change', upd); upd(); })();
         </script>
+        <?php elseif ($uk === 'onglerie'): ?>
+        <?php $onIco = [
+          'nails' => '<path d="M6 21v-9a1.5 1.5 0 013 0v9M9 21V9.5a1.5 1.5 0 013 0V21M12 21v-10a1.5 1.5 0 013 0v10M3 21v-6.5a1.5 1.5 0 013 0"/><path d="M18 3l.7 1.8 1.8.7-1.8.7L18 8l-.7-1.8-1.8-.7 1.8-.7L18 3z"/>',
+          'foot' => '<path d="M8 21c-2.5 0-3.5-2-3-4 .6-2.3 2-3.5 2.2-6.5.2-2.5 2-4 3.8-3.4 2 .6 2.3 3 1.6 5.6-.7 2.8.2 4.2-.6 6.3C11.4 20.3 10 21 8 21z"/><circle cx="14" cy="4" r="1.2"/><circle cx="16.5" cy="5.5" r="1"/><circle cx="18" cy="8" r=".9"/><path d="M20 12l.5 1.3 1.3.5-1.3.5L20 15.6l-.5-1.3-1.3-.5 1.3-.5L20 12z"/>',
+        ]; $tagIco = [
+          'trash' => '<path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/>',
+          'minus' => '<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
+          'sparkle' => '<path d="M12 3l1.8 4.8L18 9.5l-4.2 1.8L12 16l-1.8-4.7L6 9.5l4.2-1.7L12 3zM19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z"/>',
+        ]; ?>
+        <h2 class="h3 mt" style="margin-bottom:2px">Beauté des ongles</h2>
+        <p class="muted" style="margin:0 0 10px">Choisissez la prestation souhaitée.</p>
+        <div class="on-list" data-on>
+          <?php foreach (onglerie_options() as $ol => $o): ?>
+            <label class="on-row on-<?= e($o['color']) ?>">
+              <span class="on-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><?= $onIco[$o['icon']] ?></svg></span>
+              <span class="on-txt"><b><?= e($o['title']) ?></b><small><?= e($o['desc']) ?></small><em><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $tagIco[$o['tagIcon']] ?></svg><?= e($o['tag']) ?></em></span>
+              <span class="on-price"><?= number_format($o['price'], 0, ',', ' ') ?> FCFA</span>
+              <input type="radio" name="prestation" value="<?= e($ol) ?>" data-price="<?= (int) $o['price'] ?>" required>
+            </label>
+          <?php endforeach; ?>
+        </div>
+        <div class="mq-total"><b>Total estimatif</b><span data-on-total>0 FCFA</span></div>
+        <script>
+        (function () { var b = document.querySelector('[data-on]'), t = document.querySelector('[data-on-total]'); if (!b) return;
+          b.addEventListener('change', function () { var r = b.querySelector('input:checked'); b.querySelectorAll('.on-row').forEach(function (x) { x.classList.toggle('on', x.contains(r)); });
+            t.textContent = (r ? +r.dataset.price : 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }); })();
+        </script>
         <?php elseif (in_array($uk, ['coiffeuse', 'onglerie'], true)): ?>
         <label class="fld"><span>Prestation</span><select name="prestation" required>
           <option value="">Choisir…</option>
@@ -283,7 +310,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </label>
           <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>
-        <?php if (!$isRental && !$noPrice && !in_array($uk, ['menage', 'maquilleuse', 'coiffeuse'], true)): ?>
+        <?php if (!$isRental && !$noPrice && !in_array($uk, ['menage', 'maquilleuse', 'coiffeuse', 'onglerie'], true)): ?>
         <div class="total-box">
           <div<?= in_array($uk, ['maquilleuse', 'coiffeuse', 'onglerie'], true) ? ' hidden' : '' ?>><span>Formule</span><b data-sum-offer>—</b></div>
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
@@ -291,7 +318,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <?php if ($uk === 'menage'): ?><div><span>Frais de service</span><b data-sum-fee>—</b></div><?php endif; ?>
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>
-        <?php elseif (!in_array($uk, ['maquilleuse', 'coiffeuse'], true)): ?>
+        <?php elseif (!in_array($uk, ['maquilleuse', 'coiffeuse', 'onglerie'], true)): ?>
         <p class="fine">Prix transparents et professionnels qualifiés garantis.</p>
         <?php endif; ?>
         <button class="btn btn-primary btn-block btn-lg"><?= ($isRental || $noPrice) ? 'Voir le prix & réserver' : 'Rechercher un prestataire' ?></button>

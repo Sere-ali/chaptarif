@@ -737,6 +737,17 @@ function coiffure_options(): array
     ];
 }
 
+/** Onglerie à domicile : prestations (libellé => détails, prix en FCFA). */
+function onglerie_options(): array
+{
+    return [
+        'Pose d’ongles — Avec dépose' => ['title' => 'Pose d’ongles', 'desc' => 'Capsules, gel ou acrygel', 'tag' => 'Avec dépose', 'tagIcon' => 'trash', 'price' => 11000, 'color' => 'pink', 'icon' => 'nails'],
+        'Pose d’ongles — Sans dépose' => ['title' => 'Pose d’ongles', 'desc' => 'Capsules, gel ou acrygel', 'tag' => 'Sans dépose', 'tagIcon' => 'minus', 'price' => 10000, 'color' => 'purple', 'icon' => 'nails'],
+        'Pédicure — Avec nettoyage' => ['title' => 'Pédicure', 'desc' => 'Soin des pieds', 'tag' => 'Avec nettoyage', 'tagIcon' => 'sparkle', 'price' => 6000, 'color' => 'green', 'icon' => 'foot'],
+        'Pédicure — Sans nettoyage' => ['title' => 'Pédicure', 'desc' => 'Soin des pieds', 'tag' => 'Sans nettoyage', 'tagIcon' => 'minus', 'price' => 5000, 'color' => 'blue', 'icon' => 'foot'],
+    ];
+}
+
 /** Prestations proposées pour la coiffure et l'onglerie à domicile (groupes => choix). */
 function beaute_prestations(string $uk): array
 {

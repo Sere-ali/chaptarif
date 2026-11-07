@@ -115,11 +115,11 @@ function build_quote(string $universe, array $in): array
             if (!$prov) $prov = best_provider($universe);
             if (!$offer) $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
             // Coiffure : 2 prestations à prix fixe.
-            if ($universe === 'coiffeuse' && !$isListing) {
-                $co = coiffure_options();
+            if (in_array($universe, ['coiffeuse', 'onglerie'], true) && !$isListing) {
+                $co = $universe === 'coiffeuse' ? coiffure_options() : array_map(fn($o) => $o['price'], onglerie_options());
                 $pk0 = (string) ($in['prestation'] ?? '');
-                if (!isset($co[$pk0])) return $fail('Choisissez votre prestation de coiffure.');
-                $offer = one("SELECT * FROM offers WHERE universe = 'coiffeuse' AND active = 1 ORDER BY id LIMIT 1");
+                if (!isset($co[$pk0])) return $fail('Choisissez votre prestation.');
+                $offer = one('SELECT * FROM offers WHERE universe = ? AND active = 1 ORDER BY id LIMIT 1', [$universe]);
                 if ($offer) $offer = ['id' => (int) $offer['id'], 'title' => $pk0, 'price' => $co[$pk0], 'unit' => 'forfait'];
             }
             // Maquillage : formules cochées (2 maximum), prix fixés par ChapTarif.
@@ -156,7 +156,7 @@ function build_quote(string $universe, array $in): array
             $presta = '';
             if (in_array($universe, ['coiffeuse', 'onglerie'], true)) {
                 $pk = (string) ($in['prestation'] ?? '');
-                $flat = $universe === 'coiffeuse' ? array_keys(coiffure_options()) : array_merge(...array_values(beaute_prestations($universe)));
+                $flat = $universe === 'coiffeuse' ? array_keys(coiffure_options()) : array_keys(onglerie_options());
                 if (!in_array($pk, $flat, true)) return $fail('Choisissez votre prestation.');
                 $presta = $pk;
             }
