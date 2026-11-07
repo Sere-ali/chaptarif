@@ -1143,3 +1143,35 @@ body.theme-beaute [data-universe=maquilleuse] .row2 { display: grid; grid-templa
   .mq-price { width: auto; font-size: .8rem; }
 }
 .mq-devis, .mq-devis:hover { text-decoration: none !important; }
+/* Devis maquillage effets spéciaux (maquette) */
+.dv { padding: 18px 16px !important; }
+.dv-head { display: flex; align-items: center; gap: 12px; }
+.dv-back { color: #0F1B2D; flex: none; align-self: flex-start; margin-top: 4px; }
+.dv-head h1 { font-size: 1.35rem; margin: 0; line-height: 1.1; }
+.dv-head p { margin: 2px 0 0; font-weight: 600; font-size: 1rem; }
+.dv-intro { text-align: center; color: #3B4B57; font-size: .84rem; margin: 10px 0 14px; }
+.dv-lab { display: block; font-size: .9rem; margin: 12px 0 6px; }
+.dv-lab i { color: #D81B60; font-style: normal; }
+.dv-lab span { font-weight: 500; }
+.dv-box { border: 1px solid #E3E8EE; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.dv-check { display: flex; align-items: center; gap: 10px; font-size: .84rem; cursor: pointer; }
+.dv-check input { width: 20px; height: 20px; flex: none; accent-color: #D81B60; }
+.dv-check span { color: #3B4B57; }
+.dv-check b { color: #0F1B2D; }
+.dv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
+.dv-row .mq-step { justify-content: space-between; }
+.dv input:not([type=checkbox]):not([type=file]), .dv select, .dv textarea { width: 100%; border: 1px solid #E3E8EE; border-radius: 12px; padding: 11px 12px; font: inherit; font-size: .9rem; background: #fff; }
+.dv .mq-step input { border: 0 !important; width: 40px !important; padding: 0 !important; background: transparent !important; }
+.dv-half { display: block; max-width: 50%; }
+.dv-refs { display: grid; grid-template-columns: 1fr 1.25fr; gap: 10px; align-items: center; }
+.dv-drop { border: 1.5px dashed #9AA7B4; border-radius: 14px; padding: 18px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; font-size: .8rem; color: #3B4B57; cursor: pointer; }
+.dv-info { background: #FDE7EF; border-radius: 12px; padding: 10px; font-size: .76rem; margin: 0; display: flex; gap: 8px; color: #3B4B57; }
+.dv-info svg { color: #D81B60; flex: none; }
+.dv-thumbs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.dv-thumbs img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; }
+.dv-err { color: #C62828; font-weight: 600; }
+.dv-send { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.dv-note { text-align: center; font-size: .78rem; color: #3B4B57; margin: 10px 0 0; }
+.dv-head h1 { font-family: inherit !important; font-weight: 800; letter-spacing: -.01em; }
+.dv-send svg { width: 22px !important; height: 22px !important; flex: none; }
+.dv-row .dv-lab { font-size: .82rem; white-space: nowrap; }
