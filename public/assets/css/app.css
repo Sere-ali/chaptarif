@@ -1216,3 +1216,25 @@ body.theme-beaute [data-universe=maquilleuse] .row2 { display: grid; grid-templa
 .on-green .on-price { color: #1F7A1A; }
 .pr-badge { position: absolute; top: -12px; right: 10px; background: #E5175F; color: #fff; font-weight: 800; font-size: .74rem; padding: 4px 12px; border-radius: 999px; }
 .pr-pop { margin-top: 8px; }
+/* Ménage : formules (maquette) */
+.mn-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.mn-row { position: relative; display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 1.5px solid #9CC2EE; border-radius: 14px; background: #F4F9FF; cursor: pointer; color: inherit; text-decoration: none !important; }
+.mn-row.on { box-shadow: 0 0 0 3px rgba(30,111,217,.25); border-color: #1E6FD9; }
+.mn-ico { width: 44px; height: 44px; flex: none; border-radius: 10px; background: #E1EDFC; color: #1E5BB8; display: grid; place-items: center; border-right: 0; }
+.mn-ico svg { width: 26px; height: 26px; }
+.mn-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; border-left: 1.5px solid #9CC2EE; padding-left: 10px; }
+.mn-txt b { font-size: 1rem; line-height: 1.15; color: #0F1B2D; }
+.mn-txt small { font-size: .78rem; color: #3B4B57; }
+.mn-price { flex: none; background: #DCEBFC; color: #1E5BB8; font-weight: 800; font-size: .86rem; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+.mn-row input, .mn-radio { width: 22px; height: 22px; flex: none; accent-color: #1E6FD9; }
+.mn-radio { border: 2px solid #0F1B2D; border-radius: 50%; }
+.mn-pop { margin-top: 10px; border-color: #2E8B6E; background: #EEF8F3; }
+.mn-pop .mn-ico { background: #DCF1E7; color: #1F6B52; }
+.mn-pop .mn-txt { border-color: #2E8B6E; }
+.mn-pop .mn-price { background: #1F7A5E; color: #fff; }
+.mn-pop input { accent-color: #1F7A5E; }
+.mn-badge { background: #1F7A5E; }
+.mn-price { font-size: .8rem; padding: 6px 10px; }
+.mn-txt small { white-space: nowrap; }
+.mn-row { gap: 8px; padding: 8px; }
+.mn-ico { width: 40px; height: 40px; }

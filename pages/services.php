@@ -72,6 +72,41 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
           </label>
         <?php endforeach; ?>
       </div>
+      <?php elseif ($uk === 'menage'): ?>
+      <?php $hIco = '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>';
+        $rowsDevis = [
+          ['/devis-menage', '6 pièces et plus', '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h8M19 10v4"/><path d="M8 15h4M10 13v4M18 16v5M15.5 18.5h5"/>'],
+        ];
+        $autres = [
+          ['/devis-menage?type=chantier', 'Nettoyage fin de chantier', '<path d="M19 3l-6 9M9.5 12.5l4 2.5-2 6c-2-.5-5.5-2.5-7-5l5-3.5z"/><path d="M5 4l.6 1.6L7.2 6.2l-1.6.6L5 8.4l-.6-1.6L2.8 6.2l1.6-.6L5 4z"/>'],
+          ['/devis-menage?type=demenagement', 'Nettoyage déménagement', '<rect x="2" y="6" width="12" height="10" rx="1"/><path d="M14 9h4l3 3v4h-7"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>'],
+        ]; ?>
+      <div class="mq-head pr-head"><span class="mq-ico mq-ico-lg pr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h11l-1 8H4l-1-8z"/><circle cx="6" cy="8" r="2"/><circle cx="10" cy="6" r="1.5"/><path d="M20 3l-3 12M14.5 15h5l1 5h-7l1-5z"/></svg></span>
+        <div><h2 class="h3" style="margin:0">Ménage à domicile</h2><p class="muted" style="margin:0">Choisissez la formule qui correspond à votre logement.</p></div></div>
+      <div class="mn-list">
+        <?php foreach (menage_formules() as $mk => $mf): ?>
+          <label class="mn-row<?= $mf['popular'] ? ' mn-pop' : '' ?>">
+            <?php if ($mf['popular']): ?><span class="pr-badge mn-badge">★ Populaire</span><?php endif; ?>
+            <span class="mn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?= $hIco ?></svg></span>
+            <span class="mn-txt"><b><?= e($mf['title']) ?></b><small>Ménage complet</small></span>
+            <span class="mn-price"><?= number_format($mf['price'], 0, ',', ' ') ?> FCFA</span>
+            <input type="radio" name="offer" value="<?= e($mk) ?>" data-price="<?= (int) $mf['price'] ?>" data-unit="forfait" data-title="<?= e($mf['title']) ?>" required>
+          </label>
+        <?php endforeach; ?>
+        <?php foreach ($rowsDevis as [$href, $t, $ic]): ?>
+          <a class="mn-row" href="<?= e($href) ?>"><span class="mn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?= $ic ?></svg></span><span class="mn-txt"><b><?= e($t) ?></b><small>Proposition sur devis</small></span><span class="mn-price">Sur devis</span><i class="mn-radio"></i></a>
+        <?php endforeach; ?>
+      </div>
+      <h2 class="h3 mt">Autres prestations</h2>
+      <div class="mn-list">
+        <?php foreach ($autres as [$href, $t, $ic]): ?>
+          <a class="mn-row" href="<?= e($href) ?>"><span class="mn-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?= $ic ?></svg></span><span class="mn-txt"><b><?= e($t) ?></b><small>Proposition sur devis</small></span><span class="mn-price">Sur devis</span><i class="mn-radio"></i></a>
+        <?php endforeach; ?>
+      </div>
+      <script>
+      (function () { var ls = document.querySelector('.mn-list'); if (!ls) return;
+        ls.addEventListener('change', function () { ls.querySelectorAll('label.mn-row').forEach(function (r) { r.classList.toggle('on', r.querySelector('input').checked); }); }); })();
+      </script>
       <?php elseif ($uk === 'pressing'): ?>
       <?php $prIco = [
         'stack' => '<path d="M4 7.5C4 6 5 5 6.5 5h11C19 5 20 6 20 7.5S19 10 17.5 10h-11C5 10 4 9 4 7.5zM4 12.5c0-1.5 1-2.5 2.5-2.5M20 12.5c0 1.5-1 2.5-2.5 2.5h-11C5 15 4 14 4 12.5M4 17.5c0-1.5 1-2.5 2.5-2.5M20 17.5c0 1.5-1 2.5-2.5 2.5h-11C5 20 4 19 4 17.5M20 12.5c0-1.5-1-2.5-2.5-2.5M20 17.5c0-1.5-1-2.5-2.5-2.5"/>',

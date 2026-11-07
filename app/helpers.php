@@ -728,6 +728,18 @@ function maquillage_formules(): array
 }
 
 
+/** Ménage à domicile : formules selon le logement (prix en FCFA). */
+function menage_formules(): array
+{
+    return [
+        'studio' => ['title' => 'Studio', 'price' => 5000, 'popular' => false],
+        '2p' => ['title' => '2 pièces', 'price' => 7500, 'popular' => true],
+        '3p' => ['title' => '3 pièces', 'price' => 10000, 'popular' => false],
+        '4p' => ['title' => '4 pièces', 'price' => 12500, 'popular' => false],
+        '5p' => ['title' => '5 pièces', 'price' => 15000, 'popular' => false],
+    ];
+}
+
 /** Pressing & repassage : forfaits (prix en FCFA). */
 function pressing_forfaits(): array
 {

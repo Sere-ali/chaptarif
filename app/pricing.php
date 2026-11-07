@@ -114,6 +114,13 @@ function build_quote(string $universe, array $in): array
             }
             if (!$prov) $prov = best_provider($universe);
             if (!$offer) $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
+            // Ménage : formules fixées par ChapTarif.
+            if ($universe === 'menage' && !$isListing) {
+                $mf = menage_formules()[(string) ($in['offer'] ?? '')] ?? null;
+                if (!$mf) return $fail('Choisissez votre formule.');
+                $offer = one("SELECT * FROM offers WHERE universe = 'menage' AND active = 1 ORDER BY id LIMIT 1");
+                if ($offer) $offer = ['id' => (int) $offer['id'], 'title' => $mf['title'], 'price' => $mf['price'], 'unit' => 'forfait'];
+            }
             // Pressing : forfaits fixés par ChapTarif.
             if ($universe === 'pressing' && !$isListing) {
                 $pf = pressing_forfaits()[(string) ($in['offer'] ?? '')] ?? null;
