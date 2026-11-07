@@ -51,17 +51,29 @@ view('layout/header', compact('title', 'active'));
       <li class="<?= $u ? 'on' : '' ?>">Paiement</li>
       <li>Confirmation</li>
     </ol>
-    <div class="two-col checkout-cols">
+    <?php $prov = (!empty($q['provider_id']) && !in_array($q['universe'], ['cars', 'covoiturage'], true)) ? one('SELECT * FROM providers WHERE id = ?', [(int) $q['provider_id']]) : null; ?>
+    <?php if ($prov): ?>
+      <div class="card prov-pick" id="provPick">
+        <div class="prov-pick-top">
+          <?= avatar($prov, 'lg') ?>
+          <div><small class="muted">Prestataire disponible</small><b><?= e($prov['name']) ?></b><span><?= e($x['name']) ?><?= !empty($prov['commune']) ? ' · ' . e($prov['commune']) : '' ?></span>
+            <span class="prov-pick-meta"><?= stars((float) $prov['rating']) ?> · <?= (int) $prov['missions'] ?> missions <?= kyc_badge($prov['kyc_status']) ?></span></div>
+        </div>
+        <a class="prov-pick-link" href="/profil-prestataire?id=<?= (int) $prov['id'] ?>">Voir son profil</a>
+        <button type="button" class="btn btn-primary btn-block btn-lg" data-pick>Sélectionner ce prestataire</button>
+      </div>
+    <?php endif; ?>
+    <div class="two-col checkout-cols" data-steps="<?= $prov ? 1 : 0 ?>">
       <div>
         <?php if (!$u): ?>
           <div class="card form-card">
             <h2 class="h3">Connectez-vous pour réserver</h2>
             <p class="muted">Votre compte protège vos réservations et vos paiements. Connectez-vous avec votre numéro et votre mot de passe, ou créez un compte en 1 minute.</p>
-            <a class="btn btn-primary btn-block btn-lg" href="/connexion?next=%2Freserver">Se connecter</a>
-            <a class="btn btn-soft btn-block btn-lg" style="margin-top:10px" href="/connexion?mode=signup&amp;next=%2Freserver">Créer un compte</a>
+            <a class="btn btn-primary btn-block btn-lg" href="/connexion?next=%2Freserver%23sel">Se connecter</a>
+            <a class="btn btn-soft btn-block btn-lg" style="margin-top:10px" href="/connexion?mode=signup&amp;next=%2Freserver%23sel">Créer un compte</a>
           </div>
         <?php else: ?>
-          <form class="card form-card" method="post" action="/paiement">
+          <form class="card form-card" method="post" action="/paiement" id="payForm">
             <?= csrf_field() ?>
             <p class="muted">Connecté en tant que <b><?= e($u['name'] ?: fmt_phone($u['phone'])) ?></b> · <?= e(fmt_phone($u['phone'])) ?></p>
             <?php if (in_array($q['universe'], ['cars', 'covoiturage'], true)): $np = (int) ($q['details']['passengers'] ?? 1); $pn = $q['details']['passenger_names'] ?? []; ?>
@@ -75,14 +87,14 @@ view('layout/header', compact('title', 'active'));
             <div class="pay-methods">
               <?php $i = 0; foreach (payment_methods() as $k => [$label, $color, $hint]): ?>
                 <label class="pm" style="--pm:<?= $color ?>">
-                  <input type="radio" name="method" value="<?= $k ?>" <?= $i++ === 0 ? 'checked' : '' ?>>
+                  <input type="radio" name="method" value="<?= $k ?>" required <?= $i++ === 0 ? 'checked' : '' ?>>
                   <?php $lg = pay_logo($k); ?><span class="pm-logo<?= $lg ? ' has-img' : '' ?>"><?= $lg ? '<img src="' . e($lg) . '" alt="' . e($label) . '">' : e(mb_substr($label, 0, 1)) ?></span>
                   <span><b><?= e($label) ?></b><small><?= e($hint) ?></small></span>
                 </label>
               <?php endforeach; ?>
             </div>
-            <label class="check"><input type="checkbox" required> J'accepte les <a href="/mentions-legales" target="_blank">conditions générales</a> et le paiement sous séquestre.</label>
-            <button class="btn btn-primary btn-block btn-lg">Payer <?= fcfa($q['total']) ?> en toute sécurité</button>
+            <label class="check" data-after-sum><input type="checkbox" required form="payForm"> J'accepte les <a href="/mentions-legales" target="_blank">conditions générales</a> et le paiement sous séquestre.</label>
+            <button class="btn btn-primary btn-block btn-lg" form="payForm" data-after-sum>Payer <?= fcfa($q['total']) ?> en toute sécurité</button>
             <?php if (payment_mode() === 'simulation'): ?><p class="fine">Mode test actif : aucun débit réel ne sera effectué.</p><?php endif; ?>
           </form>
         <?php endif; ?>
@@ -115,4 +127,35 @@ view('layout/header', compact('title', 'active'));
     </div>
   </div>
 </section>
+<script>
+(function () {
+  var w = document.querySelector('.checkout-cols'); if (!w) return;
+  var main = w.firstElementChild, aside = w.querySelector('aside'), pick = document.getElementById('provPick');
+  var form = document.getElementById('payForm'), moved = false;
+  var after = form ? Array.prototype.slice.call(form.querySelectorAll('[data-after-sum]')) : [];
+  function showPay() {
+    main.hidden = false;
+    if (!form) aside.hidden = false;
+    if (pick) { var b = pick.querySelector('[data-pick]'); b.textContent = '✓ Prestataire sélectionné'; b.disabled = true; pick.classList.add('picked'); }
+  }
+  function showSum() {
+    if (!form) return;
+    if (!moved) { form.parentNode.insertBefore(aside, form.nextSibling); var box = document.createElement('div'); box.className = 'after-sum'; after.forEach(function (n) { box.appendChild(n); }); aside.appendChild(box); moved = true; }
+    aside.hidden = false; after.forEach(function (n) { n.hidden = false; });
+  }
+  if (pick) main.hidden = true;
+  if (pick || form) aside.hidden = true;
+  if (form) {
+    after.forEach(function (n) { n.hidden = true; });
+    form.querySelectorAll('input[name=method]').forEach(function (r) {
+      r.checked = false;
+      r.addEventListener('change', function () { showSum(); setTimeout(function () { aside.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); });
+    });
+  }
+  if (pick) pick.querySelector('[data-pick]').addEventListener('click', function () { showPay(); setTimeout(function () { main.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); });
+  if (!pick) showPay();
+  if (location.hash === '#sel' || location.hash === '#pay') showPay();
+  if (location.hash === '#pay') showSum();
+})();
+</script>
 <?php view('layout/footer');

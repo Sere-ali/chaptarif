@@ -10,7 +10,7 @@ if (!empty($_POST['passenger_names']) && is_array($_POST['passenger_names'])) {
 if (($_POST['action'] ?? '') === 'remove') {
     unset($_SESSION['checkout']['code']);
     flash('info', 'Code de réduction retiré.');
-    redirect('/reserver');
+    redirect('/reserver#pay');
 }
 $code = (string) ($_POST['code'] ?? '');
 $r = build_quote($co['quote']['universe'], $_SESSION['checkout']['input']);
@@ -19,7 +19,7 @@ $d = discount_apply($r['quote'], $code);
 if ($d['ok']) {
     $_SESSION['checkout']['code'] = $d['quote']['discount_code'];
     flash('success', 'Code appliqué : vous économisez ' . fcfa($d['quote']['discount']) . '.');
-    redirect('/reserver');
+    redirect('/reserver#pay');
 }
 flash('error', $d['error']);
-redirect('/reserver?code=1');
+redirect('/reserver#pay');

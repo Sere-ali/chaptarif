@@ -1063,3 +1063,17 @@ html.force-mobile .checkout-cols > aside { order: -1; }
 .promo-sum { margin: 10px 0 6px; }
 .promo-sum .promo-row { display: flex; gap: 8px; }
 .promo-sum .promo-row input { flex: 1; min-width: 0; }
+/* Réservation : étape « Sélectionner ce prestataire » */
+.prov-pick { padding: 18px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 12px; }
+.prov-pick-top { display: flex; gap: 14px; align-items: center; }
+.prov-pick-top > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.prov-pick-top b { font-size: 1.15rem; }
+.prov-pick-top span { color: var(--muted, #5B6B7F); font-size: .88rem; }
+.prov-pick-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: .8rem !important; }
+.prov-pick-link { font-weight: 700; font-size: .88rem; }
+.prov-pick.picked { border-color: #2E7D5B; }
+.prov-pick [data-pick]:disabled { opacity: 1; background: #E8F3EE; color: #2E7D5B; box-shadow: none; }
+.checkout-cols + aside, #payForm + aside { margin-top: 18px; }
+.after-sum { margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+.after-sum .check { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; line-height: 1.4; }
+.after-sum .check input { margin-top: 3px; flex: none; }
