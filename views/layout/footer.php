@@ -2,39 +2,7 @@
 <?php if (!empty($providerMode)): ?>
 <footer class="footer ps-foot"><div class="container footer-bottom"><span>© <?= date('Y') ?> ChapTarif · Espace prestataire</span><span>Besoin d'aide ? <a href="/chat?pro=1"> Chat avec l'équipe</a></span></div></footer>
 <?php else: ?>
-<footer class="footer">
-  <div class="container footer-grid">
-    <div>
-      <div class="pay-chips">
-        <span class="chip chip-wave">Wave</span><span class="chip chip-om">Orange Money</span><span class="chip chip-mtn">MTN MoMo</span><span class="chip chip-moov">Moov</span>
-      </div>
-    </div>
-    <div>
-      <h4>Services</h4>
-      <?php foreach (nav_entries() as $x): ?><a href="<?= $x['url'] ?>"><?= e($x['name']) ?></a><?php endforeach; ?>
-    </div>
-    <div>
-      <h4>ChapTarif</h4>
-      <a href="/comment-ca-marche">Comment ça marche</a>
-      <a href="/garantie-dommage"> Garantie Dommage</a>
-      <a href="/devenir-prestataire">Devenir prestataire</a>
-      <a href="/prestataire/valider">Valider une mission (prestataires)</a>
-      <a href="/contact">Contact & réclamations</a>
-      <a href="/mentions-legales">Mentions légales & CGU</a>
-    </div>
-    <div>
-      <h4>Nous joindre</h4>
-      <a href="tel:<?= e(preg_replace('/\s+/', '', (string) setting('support_phone'))) ?>"> <?= e(setting('support_phone')) ?></a>
-      <a href="mailto:<?= e(setting('support_email')) ?>"> <?= e(setting('support_email')) ?></a>
-      <span class="muted-light"> Abidjan, Côte d'Ivoire</span>
-      <span class="muted-light"> 7j/7 · 7h – 22h</span>
-    </div>
-  </div>
-  <div class="container footer-bottom">
-    <span>© <?= date('Y') ?> ChapTarif · Tous droits réservés</span>
-    <span> Paiements sécurisés sous séquestre</span>
-  </div>
-</footer>
+
 
 <?php $__cu = current_user(); $chatBadge = $__cu ? (int) val("SELECT COUNT(*) FROM chat_messages WHERE user_id = ? AND sender = 'admin' AND read_by_user = 0", [$__cu['id']]) : 0; ?>
 <nav class="tabbar" aria-label="Navigation mobile">
