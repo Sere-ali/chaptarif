@@ -1335,3 +1335,8 @@ body.immo-m .il-search .il-card i::before { position: absolute; left: 50%; top: 
 .il-tog input:checked + i { background: #148A63; }
 .il-tog input:checked + i::after { transform: translateX(20px); }
 .il-apply { background: linear-gradient(90deg, #148A63, #0F6E58) !important; border-radius: 999px !important; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+@media (max-width: 899px) {
+  body.dom-transport .d-item-img, body.dom-transport .d-item-img img { width: 62px; height: 56px; }
+  body.dom-transport .d-item-btn { padding: 7px 10px; font-size: .74rem; }
+  body.dom-transport .d-item { gap: 8px; padding: 10px 8px; }
+}

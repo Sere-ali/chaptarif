@@ -53,7 +53,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <div class="d-list">
       <?php foreach ($d['keys'] as $sk): $x = universe($sk); ?>
         <a class="d-item reveal<?= in_array($sk, ['covoiturage', 'chauffeur'], true) ? ' d-alt' : '' ?>" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
-          <span class="d-item-img"><img src="<?= e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
+          <span class="d-item-img"><img src="<?= $dk === 'transport' && is_file(__DIR__ . '/../public/assets/img/tr-' . $sk . '.jpg') ? '/assets/img/tr-' . $sk . '.jpg' : e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
           <span class="d-item-body">
             <b><?= e($x['name']) ?></b>
             <small><?= e($x['pitch']) ?></small>
