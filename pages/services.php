@@ -72,6 +72,30 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
           </label>
         <?php endforeach; ?>
       </div>
+      <?php elseif ($uk === 'pressing'): ?>
+      <?php $prIco = [
+        'stack' => '<path d="M4 7.5C4 6 5 5 6.5 5h11C19 5 20 6 20 7.5S19 10 17.5 10h-11C5 10 4 9 4 7.5zM4 12.5c0-1.5 1-2.5 2.5-2.5M20 12.5c0 1.5-1 2.5-2.5 2.5h-11C5 15 4 14 4 12.5M4 17.5c0-1.5 1-2.5 2.5-2.5M20 17.5c0 1.5-1 2.5-2.5 2.5h-11C5 20 4 19 4 17.5M20 12.5c0-1.5-1-2.5-2.5-2.5M20 17.5c0-1.5-1-2.5-2.5-2.5"/>',
+        'shirt' => '<path d="M8 4l4 3 4-3M8 4L5 6v3h14V6l-3-2M12 7v3"/><path d="M4 12.5C4 11 5 10 6.5 10h11c1.5 0 2.5 1 2.5 2.5S19 15 17.5 15h-11C5 15 4 14 4 12.5zM4 17.5c0-1.5 1-2.5 2.5-2.5M20 17.5c0 1.5-1 2.5-2.5 2.5h-11C5 20 4 19 4 17.5M20 17.5c0-1.5-1-2.5-2.5-2.5"/>',
+        'basket' => '<path d="M6 8c0-1.5 1-2.5 2.5-2.5h7C17 5.5 18 6.5 18 8M5 8h14"/><path d="M3 11h18l-2 9H5l-2-9zM9 14l.5 3M12 14v3M15 14l-.5 3"/>',
+      ]; ?>
+      <div class="mq-head pr-head"><span class="mq-ico mq-ico-lg pr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="4.5"/><circle cx="12" cy="13" r="2"/><path d="M7 6h.01M9.5 6h.01M15 6h2"/></svg></span>
+        <div><h2 class="h3" style="margin:0">Pressing &amp; repassage</h2><p class="muted" style="margin:0">Collecte à domicile, lavage pro et retour sous 24 à 48h.</p></div></div>
+      <h2 class="h3">Choisissez votre forfait</h2>
+      <div class="on-list pr-list">
+        <?php foreach (pressing_forfaits() as $pk => $pf): ?>
+          <label class="on-row on-<?= $pf['color'] ?><?= $pf['popular'] ? ' pr-pop' : '' ?>">
+            <?php if ($pf['popular']): ?><span class="pr-badge">★ Populaire</span><?php endif; ?>
+            <span class="on-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><?= $prIco[$pf['icon']] ?></svg></span>
+            <span class="on-txt"><b><?= e($pf['title']) ?></b><small><?= e($pf['sub']) ?></small></span>
+            <span class="on-price"><?= number_format($pf['price'], 0, ',', ' ') ?> FCFA</span>
+            <input type="radio" name="offer" value="<?= e($pk) ?>" data-price="<?= (int) $pf['price'] ?>" data-unit="forfait" data-title="<?= e($pf['title']) ?>" required>
+          </label>
+        <?php endforeach; ?>
+      </div>
+      <script>
+      (function () { var l = document.querySelector('.pr-list'); if (!l) return;
+        l.addEventListener('change', function () { l.querySelectorAll('.on-row').forEach(function (r) { r.classList.toggle('on', r.querySelector('input').checked); }); }); })();
+      </script>
       <?php else: ?>
       <h2 class="h3">1. Choisissez votre <?= $uk === 'pressing' ? 'forfait' : 'formule' ?></h2>
       <?php if (!$offers): ?>

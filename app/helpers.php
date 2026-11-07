@@ -728,6 +728,16 @@ function maquillage_formules(): array
 }
 
 
+/** Pressing & repassage : forfaits (prix en FCFA). */
+function pressing_forfaits(): array
+{
+    return [
+        'essentiel' => ['title' => 'Essentiel', 'sub' => 'Maximum 5 vêtements (lavés et repassés)', 'price' => 4500, 'color' => 'green', 'icon' => 'stack', 'popular' => false],
+        'confort' => ['title' => 'Confort', 'sub' => 'Maximum 10 vêtements (lavés et repassés)', 'price' => 8500, 'color' => 'pink', 'icon' => 'shirt', 'popular' => true],
+        'famille' => ['title' => 'Famille', 'sub' => 'Maximum 18 vêtements (lavés et repassés)', 'price' => 16500, 'color' => 'blue', 'icon' => 'basket', 'popular' => false],
+    ];
+}
+
 /** Coiffure à domicile : prestations proposées et prix (FCFA). */
 function coiffure_options(): array
 {

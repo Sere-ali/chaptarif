@@ -1206,3 +1206,13 @@ body.theme-beaute [data-universe=maquilleuse] .row2 { display: grid; grid-templa
   [data-universe=coiffeuse] aside > .card, [data-universe=coiffeuse] aside .form-card { padding: 16px 12px; }
 }
 .on-row.off { opacity: .45; }
+/* Pressing : forfaits (maquette) */
+.pr-ico { background: #E6F0FB; color: #0F1B2D; }
+.pr-list { margin-top: 10px; }
+.pr-list .on-row { position: relative; padding: 14px 10px; }
+.pr-list .on-txt b { font-size: 1.15rem; }
+.pr-list .on-txt small { font-size: .8rem; }
+.on-row.on-green { --c: #3BA62E; }
+.on-green .on-price { color: #1F7A1A; }
+.pr-badge { position: absolute; top: -12px; right: 10px; background: #E5175F; color: #fff; font-weight: 800; font-size: .74rem; padding: 4px 12px; border-radius: 999px; }
+.pr-pop { margin-top: 8px; }

@@ -114,6 +114,13 @@ function build_quote(string $universe, array $in): array
             }
             if (!$prov) $prov = best_provider($universe);
             if (!$offer) $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
+            // Pressing : forfaits fixés par ChapTarif.
+            if ($universe === 'pressing' && !$isListing) {
+                $pf = pressing_forfaits()[(string) ($in['offer'] ?? '')] ?? null;
+                if (!$pf) return $fail('Choisissez votre forfait.');
+                $offer = one("SELECT * FROM offers WHERE universe = 'pressing' AND active = 1 ORDER BY id LIMIT 1");
+                if ($offer) $offer = ['id' => (int) $offer['id'], 'title' => 'Forfait ' . $pf['title'] . ' — ' . preg_replace('/^Maximum (\d+) vêtements.*/u', '$1 vêtements max', $pf['sub']), 'price' => $pf['price'], 'unit' => 'forfait'];
+            }
             // Coiffure : 2 prestations à prix fixe.
             // Onglerie : 1 ou 2 prestations cochées, prix additionnés.
             $onKeys = [];
