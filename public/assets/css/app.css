@@ -1103,3 +1103,43 @@ html.force-mobile .checkout-cols > aside { order: -1; }
 .il-hero { background: #fff !important; }
 .il-hero::before { display: none; }
 @media (max-width: 899px) { body.immo-m:not(.immo-ads) .il-hero { height: auto; padding: 22px 20px 70px; } }
+/* Maquillage : formules à cocher (maquette maquilleuses) */
+.mq-head { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; }
+.mq-ico { width: 44px; height: 44px; flex: none; border-radius: 12px; background: #FDE7EF; color: #D81B60; display: grid; place-items: center; }
+.mq-ico svg { width: 24px; height: 24px; }
+.mq-ico-lg { width: 54px; height: 54px; border-radius: 14px; }
+.mq-ico-lg svg { width: 30px; height: 30px; }
+.mq-h small { font-size: .78rem; font-weight: 500; color: #5B6B7F; }
+.mq-list { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 16px; }
+.mq-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid #F3D5E0; border-radius: 14px; background: #fff; cursor: pointer; }
+.mq-row.on { border-color: #D81B60; background: #FFF5F9; }
+.mq-row.off { opacity: .5; }
+.mq-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mq-txt b { font-size: .86rem; line-height: 1.2; }
+.mq-txt small { font-size: .72rem; color: #5B6B7F; line-height: 1.25; }
+.mq-price { flex: none; border-left: 1px solid #F3D5E0; padding-left: 8px; color: #D81B60; font-weight: 800; font-size: .82rem; text-align: left; width: 82px; line-height: 1.2; }
+.mq-price em { display: block; font-style: normal; font-weight: 500; color: #3B4B57; font-size: .72rem; }
+.mq-row input[type=checkbox] { width: 20px; height: 20px; flex: none; accent-color: #D81B60; }
+.mq-devis { flex: none; display: inline-flex; align-items: center; gap: 4px; background: #D81B60; color: #fff !important; font-weight: 700; font-size: .72rem; line-height: 1.15; padding: 7px 10px; border-radius: 999px; max-width: 120px; text-align: center; text-decoration: none; }
+.mq-pers { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 6px 0 14px; }
+.mq-step { display: flex; align-items: center; background: #FDE7EF; border-radius: 999px; padding: 4px; }
+.mq-step button { width: 36px; height: 36px; border: 0; background: transparent; color: #D81B60; font-size: 1.4rem; font-weight: 700; cursor: pointer; }
+.mq-step input { width: 40px; text-align: center; border: 0; background: transparent; font-weight: 800; font-size: 1.05rem; padding: 0; }
+.mq-total { display: flex; align-items: center; justify-content: space-between; background: #FFF0F5; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; }
+.mq-total b { font-size: 1.05rem; }
+.mq-total span { background: #D81B60; color: #fff; font-weight: 800; padding: 8px 16px; border-radius: 999px; }
+[data-mq-msg] { color: #C62828; font-weight: 600; }
+body.theme-beaute [data-universe=maquilleuse] .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+[data-universe=maquilleuse] [data-geo] { background: #FDE7EF; color: #D81B60; }
+.mq-price { width: 92px; }
+.mq-price { white-space: nowrap; }
+.mq-txt b { font-size: .84rem; }
+@media (max-width: 899px) {
+  [data-universe=maquilleuse] .container { padding-left: 10px; padding-right: 10px; }
+  [data-universe=maquilleuse] aside > .card, [data-universe=maquilleuse] aside .form-card { padding: 16px 12px; }
+  .mq-row { gap: 8px; padding: 7px 8px; }
+  .mq-ico { width: 36px; height: 36px; border-radius: 10px; }
+  .mq-ico svg { width: 20px; height: 20px; }
+  .mq-price { width: auto; font-size: .8rem; }
+}
+.mq-devis, .mq-devis:hover { text-decoration: none !important; }

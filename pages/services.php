@@ -189,6 +189,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </div>
         <?php endif; ?>
         <?php else: ?>
+        <?php if ($uk === 'maquilleuse'): ?><div class="mq-head"><span class="mq-ico mq-ico-lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5a3 3 0 014.2 4.2l-6.4 6.4-4.2-4.2 6.4-6.4zM8.1 9.9l-4.6 9.4a.8.8 0 001.1 1.1l9.4-4.6"/></svg></span><div><h2 class="h3" style="margin:0">Réserver un maquillage</h2><p class="muted" style="margin:0">Renseignez les informations de votre prestation.</p></div></div><?php endif; ?>
         <h2 class="h3"><?= in_array($uk, ['menage', 'pressing'], true) ? '2' : ($autoProv ? '1' : '3') ?>. Date & lieu</h2>
         <div class="row2">
           <label class="fld"><span> <?= e($copy['date_label']) ?></span><input type="date" name="date" required min="<?= $today ?>" max="<?= date('Y-m-d', strtotime('+60 days')) ?>" value="<?= date('Y-m-d', strtotime('+1 day')) ?>"></label>
@@ -198,11 +199,61 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
         <button type="button" class="btn btn-soft btn-block" data-geo="address" style="margin:0 0 6px"> Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
         <?php if ($uk === 'maquilleuse'): ?>
-        <label class="fld"><span>Formule</span><select name="formule" required>
-          <option value="">Choisir…</option>
-          <?php foreach (maquillage_formules() as $fk => $fv): ?><option value="<?= e($fk) ?>"><?= e($fv) ?></option><?php endforeach; ?>
-        </select></label>
-        <label class="fld"><span>Nombre de personnes</span><input type="number" name="personnes" min="1" max="30" value="1" required></label>
+        <?php $mqIco = [
+          'crown' => '<path d="M3 8l4 4 5-7 5 7 4-4-2 11H5L3 8z"/>',
+          'group' => '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><circle cx="4.5" cy="9" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5M14 15.5c3 0 7 1.5 7 4.5M1 20c0-2.5 1.5-4 4-4.5"/>',
+          'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+          'glass' => '<path d="M6 3h12l-6 9-6-9zM12 12v8M8 21h8"/>',
+          'sparkle' => '<path d="M12 3l1.8 4.8L18 9.5l-4.2 1.8L12 16l-1.8-4.7L6 9.5l4.2-1.7L12 3zM19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2zM5 15l.6 1.5L7 17l-1.4.6L5 19l-.6-1.4L3 17l1.4-.5L5 15z"/>',
+        ]; ?>
+        <h2 class="h3 mt mq-h">2. Choisissez votre formule <small>(2 choix maximum)</small></h2>
+        <div class="mq-list" data-mq>
+          <?php foreach (maquillage_formules() as $fk => $f): ?>
+            <?php if (!empty($f['devis'])): ?>
+              <div class="mq-row">
+                <span class="mq-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?= $mqIco[$f['icon']] ?></svg></span>
+                <span class="mq-txt"><b><?= e($f['title']) ?></b><small><?= e($f['desc']) ?></small></span>
+                <a class="mq-devis" href="/devis-maquillage">Cliquer pour un devis <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
+              </div>
+            <?php else: ?>
+              <label class="mq-row">
+                <span class="mq-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?= $mqIco[$f['icon']] ?></svg></span>
+                <span class="mq-txt"><b><?= e($f['title']) ?></b><small><?= e($f['desc']) ?></small></span>
+                <span class="mq-price"><?= number_format($f['price'], 0, ',', ' ') ?> FCFA<?= $f['per_person'] ? '<em>/ personne</em>' : '' ?></span>
+                <input type="checkbox" name="formules[]" value="<?= e($fk) ?>" data-price="<?= (int) $f['price'] ?>" data-pp="<?= $f['per_person'] ? 1 : 0 ?>">
+              </label>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        </div>
+        <div class="mq-pers">
+          <b>Nombre de personnes</b>
+          <div class="mq-step"><button type="button" data-mq-minus aria-label="Moins">−</button><input name="personnes" value="0" inputmode="numeric" readonly data-mq-n><button type="button" data-mq-plus aria-label="Plus">+</button></div>
+        </div>
+        <div class="mq-total"><b>Total estimatif</b><span data-mq-total>0 FCFA</span></div>
+        <p class="fine" data-mq-msg hidden></p>
+        <script>
+        (function () {
+          var box = document.querySelector('[data-mq]'); if (!box) return;
+          var cbs = box.querySelectorAll('input[type=checkbox]'), n = document.querySelector('[data-mq-n]'), tot = document.querySelector('[data-mq-total]'), msg = document.querySelector('[data-mq-msg]');
+          function fmt(v) { return v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }
+          function calc() {
+            var p = parseInt(n.value, 10) || 0, t = 0, on = 0;
+            cbs.forEach(function (c) { if (c.checked) { on++; t += c.dataset.pp === '1' ? (+c.dataset.price) * p : +c.dataset.price; } });
+            cbs.forEach(function (c) { c.disabled = !c.checked && on >= 2; c.closest('.mq-row').classList.toggle('on', c.checked); c.closest('.mq-row').classList.toggle('off', c.disabled); });
+            tot.textContent = fmt(t);
+          }
+          cbs.forEach(function (c) { c.addEventListener('change', calc); });
+          document.querySelector('[data-mq-minus]').addEventListener('click', function () { n.value = Math.max(0, (parseInt(n.value, 10) || 0) - 1); calc(); });
+          document.querySelector('[data-mq-plus]').addEventListener('click', function () { n.value = Math.min(30, (parseInt(n.value, 10) || 0) + 1); calc(); });
+          box.closest('form').addEventListener('submit', function (e) {
+            var on = [].filter.call(cbs, function (c) { return c.checked; }), p = parseInt(n.value, 10) || 0, err = '';
+            if (!on.length) err = 'Cochez au moins une formule.';
+            else if (on.some(function (c) { return c.dataset.pp === '1'; }) && p < 1) err = 'Indiquez le nombre de personnes pour « Invitées, famille et cortège ».';
+            if (err) { e.preventDefault(); msg.textContent = err; msg.hidden = false; msg.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+          });
+          calc();
+        })();
+        </script>
         <?php elseif (in_array($uk, ['coiffeuse', 'onglerie'], true)): ?>
         <label class="fld"><span>Prestation</span><select name="prestation" required>
           <option value="">Choisir…</option>
@@ -221,7 +272,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </label>
           <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>
-        <?php if (!$isRental && !$noPrice && $uk !== 'menage'): ?>
+        <?php if (!$isRental && !$noPrice && !in_array($uk, ['menage', 'maquilleuse'], true)): ?>
         <div class="total-box">
           <div<?= in_array($uk, ['maquilleuse', 'coiffeuse', 'onglerie'], true) ? ' hidden' : '' ?>><span>Formule</span><b data-sum-offer>—</b></div>
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
@@ -229,7 +280,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <?php if ($uk === 'menage'): ?><div><span>Frais de service</span><b data-sum-fee>—</b></div><?php endif; ?>
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>
-        <?php else: ?>
+        <?php elseif ($uk !== 'maquilleuse'): ?>
         <p class="fine">Prix transparents et professionnels qualifiés garantis.</p>
         <?php endif; ?>
         <button class="btn btn-primary btn-block btn-lg"><?= ($isRental || $noPrice) ? 'Voir le prix & réserver' : 'Rechercher un prestataire' ?></button>

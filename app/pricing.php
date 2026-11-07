@@ -114,6 +114,26 @@ function build_quote(string $universe, array $in): array
             }
             if (!$prov) $prov = best_provider($universe);
             if (!$offer) $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
+            // Maquillage : formules cochées (2 maximum), prix fixés par ChapTarif.
+            $mqAmount = null; $mqLabel = '';
+            if ($universe === 'maquilleuse' && !$isListing) {
+                $fl = maquillage_formules();
+                $keys = array_values(array_unique(array_filter((array) ($in['formules'] ?? []), fn($k) => is_string($k) && isset($fl[$k]) && empty($fl[$k]['devis']))));
+                if (!$keys) return $fail('Cochez au moins une formule de maquillage.');
+                if (count($keys) > 2) return $fail('Vous pouvez choisir 2 formules maximum.');
+                $personnes = max(0, min(30, (int) ($in['personnes'] ?? 0)));
+                $mqAmount = 0; $parts = [];
+                foreach ($keys as $k) {
+                    $f = $fl[$k];
+                    if ($f['per_person']) {
+                        if ($personnes < 1) return $fail('Indiquez le nombre de personnes pour « ' . $f['title'] . ' ».');
+                        $mqAmount += $f['price'] * $personnes; $parts[] = $f['title'] . ' × ' . $personnes;
+                    } else { $mqAmount += $f['price']; $parts[] = $f['title']; }
+                }
+                $mqLabel = implode(' + ', $parts);
+                $offer = one("SELECT * FROM offers WHERE universe = 'maquilleuse' AND active = 1 ORDER BY id LIMIT 1");
+                if ($offer) $offer = ['id' => (int) $offer['id'], 'title' => $mqLabel, 'price' => $mqAmount, 'unit' => 'forfait'];
+            }
             $zone = zone((int) ($in['zone'] ?? 0));
             $addr0 = trim((string) ($in['address'] ?? ''));
             $lat0 = $in['lat'] ?? null; $lng0 = $in['lng'] ?? null;
@@ -124,13 +144,7 @@ function build_quote(string $universe, array $in): array
             if (!valid_future_date($in['date'] ?? null, 60)) return $fail('Choisissez une date valide.');
             $time = preg_match('/^\d{2}:\d{2}$/', $in['time'] ?? '') ? $in['time'] : '09:00';
             $formule = ''; $personnes = 0;
-            if ($universe === 'maquilleuse') {
-                $fl = maquillage_formules();
-                $fk = (string) ($in['formule'] ?? '');
-                if (!isset($fl[$fk])) return $fail('Choisissez votre formule de maquillage.');
-                $formule = $fl[$fk];
-                $personnes = max(1, min(30, (int) ($in['personnes'] ?? 1)));
-            }
+            if ($mqAmount !== null) { $formule = $mqLabel; $personnes = max(0, min(30, (int) ($in['personnes'] ?? 0))); }
             $presta = '';
             if (in_array($universe, ['coiffeuse', 'onglerie'], true)) {
                 $pk = (string) ($in['prestation'] ?? '');
@@ -149,7 +163,7 @@ function build_quote(string $universe, array $in): array
             if ($formule !== '') { $q['details']['formule'] = $formule; $q['details']['personnes'] = $personnes; }
             $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', trim(($zone['name'] ?? '') . ($addr0 !== '' ? ($zone ? ' · ' : '') . mb_substr($addr0, 0, 200) : '') . ($gps0 !== '' && $addr0 === '' && !$zone ? 'Position partagée' : ''))]];
             if ($presta !== '') $q['summary'][] = ['Prestation', $presta];
-            if ($formule !== '') { $q['summary'][] = ['Type de maquillage', $formule]; $q['summary'][] = ['Nombre de personnes', (string) $personnes]; }
+            if ($formule !== '' && $personnes > 0) $q['summary'][] = ['Nombre de personnes', (string) $personnes];
             // Garantie Dommage (option payante, disponible pour les services à domicile/matériel)
             $q['garantie_fee'] = 0;
             if (in_array($universe, ['menage', 'pressing'], true)) {

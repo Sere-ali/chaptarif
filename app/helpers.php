@@ -715,14 +715,15 @@ function listing_lines(string $universe, ?string $json): array
 }
 
 
-/** Formules proposées pour le maquillage à domicile. */
+/** Formules proposées pour le maquillage à domicile (prix en FCFA ; per_person = prix par personne ; devis = sur devis). */
 function maquillage_formules(): array
 {
     return [
-        'mariage' => 'Mariage ou Dot (Mariée, dote, fiançailles)',
-        'evenementiel' => 'Maquillage Événementiel (Anniversaire, soirée, cérémonie, gala etc)',
-        'jour_nude' => 'Maquillage Jour / Nude (Subtil, naturel, mise en beauté etc)',
-        'sfx' => 'Effets Spéciaux (SFX) & Artistique (Carnaval, Halloween, shooting thématique etc)',
+        'mariee' => ['title' => 'Maquillage de la mariée', 'desc' => 'Pour la mariée – prestation individuelle.', 'price' => 25000, 'per_person' => false, 'icon' => 'crown'],
+        'invitees' => ['title' => 'Invitées, famille et cortège', 'desc' => 'Pour les proches et le cortège.', 'price' => 10000, 'per_person' => true, 'icon' => 'group'],
+        'jour_nude' => ['title' => 'Maquillage Jour / Nude', 'desc' => 'Maquillage naturel et discret.', 'price' => 7000, 'per_person' => false, 'icon' => 'sun'],
+        'evenementiel' => ['title' => 'Maquillage Événementiel', 'desc' => 'Soirée, festival, anniversaire, etc.', 'price' => 10000, 'per_person' => false, 'icon' => 'glass'],
+        'sfx' => ['title' => 'Effets spéciaux / Artistique', 'desc' => 'Maquillage créatif (shooting, scène, etc.).', 'price' => 0, 'per_person' => false, 'icon' => 'sparkle', 'devis' => true],
     ];
 }
 

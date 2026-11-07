@@ -50,6 +50,7 @@ $routes = [
     '/garantie-dommage'     => 'pages/garantie_dommage.php',
     '/contact'              => 'pages/contact.php',
     '/devis-menage'         => 'pages/devis_menage.php',
+    '/devis-maquillage'     => 'pages/devis_maquillage.php',
     '/mentions-legales'     => 'pages/legal.php',
     '/sante'                => 'pages/health.php',
 
