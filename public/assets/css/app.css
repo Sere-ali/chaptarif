@@ -1359,3 +1359,20 @@ body.immo-m .il-search .il-card i::before { position: absolute; left: 50%; top: 
   body.dom-sap .d-item.d-alt .d-item-btn { background: #148A63; }
 }
 @media (max-width: 899px) { body.dom-sap .d-top-title { font-size: 1.05rem; white-space: nowrap; } }
+/* Beauté (mobile) : variante rose de la maquette */
+@media (max-width: 899px) {
+  body.dom-bea .d-home-link { background: #FDE3EE; color: #D81B60; }
+  body.dom-bea .d-h2 { border-left-color: #E5175F; }
+  body.dom-bea .d-item, body.dom-bea .d-item.d-alt { background: #FFF6FA; border-color: #F6D3E2; }
+  body.dom-bea .d-item-img { border-right-color: #F0B9D0; }
+  body.dom-bea .d-item.d-alt .d-item-img { border-right-color: #6A1FB0; }
+  body.dom-bea .d-item-btn { background: linear-gradient(90deg, #E5175F, #C2185B); }
+  body.dom-bea .d-item.d-alt .d-item-btn { background: linear-gradient(90deg, #7B2CC4, #5B1A9C); }
+  body.dom-bea .d-top-title { display: flex; align-items: center; gap: 6px; justify-content: center; }
+}
+@media (max-width: 899px) {
+  body.dom-bea .d-top-title, body.dom-bea .d-h2 { font-family: inherit !important; font-style: normal !important; color: #0F1B2D !important; font-weight: 800; letter-spacing: -.01em; }
+  body.dom-bea .d-sub { color: #3B4B57 !important; }
+  body.dom-bea .d-item-img, body.dom-bea .d-item-img img { border-top: 0 !important; border-bottom: 0 !important; border-left: 0 !important; box-shadow: none !important; outline: 0 !important; background: none !important; }
+  body.dom-bea .d-item-img img { border: 0 !important; }
+}

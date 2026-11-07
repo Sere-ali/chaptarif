@@ -136,11 +136,11 @@ function universes(): array
             'pitch' => 'Collecte à domicile, lavage pro et retour sous 24 à 48h.'],
         //  Beauté à domicile
         'coiffeuse' => ['name' => 'Coiffeuse à domicile', 'short' => 'Coiffure', 'emoji' => '', 'sub' => 'Tresses & soins sans déplacement', 'color' => '#C2185B', 'bg' => '#FCE9F1', 'img' => 'univers-coiffeuse', 'url' => '/coiffeuse', 'group' => 'Beauté',
-            'pitch' => 'Coiffeuses vérifiées à domicile : tresses, soins et coiffures, sans vous déplacer.'],
+            'pitch' => 'Tresses, soins et coiffures réalisés chez vous.'],
         'maquilleuse' => ['name' => 'Maquilleuse à domicile', 'short' => 'Maquillage', 'emoji' => '', 'sub' => 'Cérémonies & Événements', 'color' => '#D6336C', 'bg' => '#FDEEF3', 'img' => 'univers-maquilleuse', 'url' => '/maquilleuse', 'group' => 'Beauté',
-            'pitch' => 'Maquillage professionnel à domicile pour vos mariages, cérémonies et événements.'],
+            'pitch' => 'Maquillage professionnel pour vos mariages, cérémonies et événements.'],
         'onglerie' => ['name' => 'Onglerie à domicile', 'short' => 'Onglerie', 'emoji' => '', 'sub' => 'Pose capsules & Vernis', 'color' => '#AD1457', 'bg' => '#FCE8EF', 'img' => 'univers-onglerie', 'url' => '/onglerie', 'group' => 'Beauté',
-            'pitch' => 'Pose de capsules, vernis semi-permanent et soins des ongles à domicile.'],
+            'pitch' => 'Pose de capsules, vernis semi-permanent et soins des ongles.'],
     ];
 }
 
