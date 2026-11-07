@@ -728,6 +728,15 @@ function maquillage_formules(): array
 }
 
 
+/** Coiffure à domicile : prestations proposées et prix (FCFA). */
+function coiffure_options(): array
+{
+    return [
+        'Pose de perruque (avec ou sans colle)' => 8000,
+        'Tout mèche (sans les mèches)' => 10000,
+    ];
+}
+
 /** Prestations proposées pour la coiffure et l'onglerie à domicile (groupes => choix). */
 function beaute_prestations(string $uk): array
 {

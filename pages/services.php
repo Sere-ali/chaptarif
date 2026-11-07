@@ -226,7 +226,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <?php endforeach; ?>
         </div>
         <div class="mq-pers">
-          <b>Nombre de personnes</b>
+          <b>Nombre de personnes <small>(Hors mariée)</small></b>
           <div class="mq-step"><button type="button" data-mq-minus aria-label="Moins">−</button><input name="personnes" value="0" inputmode="numeric" readonly data-mq-n><button type="button" data-mq-plus aria-label="Plus">+</button></div>
         </div>
         <div class="mq-total"><b>Total estimatif</b><span data-mq-total>0 FCFA</span></div>
@@ -254,6 +254,17 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           calc();
         })();
         </script>
+        <?php elseif ($uk === 'coiffeuse'): ?>
+        <label class="fld"><span>Prestation</span><select name="prestation" required data-co>
+          <option value="">Choisir…</option>
+          <?php foreach (coiffure_options() as $cn => $cp): ?><option value="<?= e($cn) ?>" data-price="<?= (int) $cp ?>"><?= e($cn) ?> — <?= number_format($cp, 0, ',', ' ') ?> FCFA</option><?php endforeach; ?>
+        </select></label>
+        <div class="mq-total"><b>Total estimatif</b><span data-co-total>0 FCFA</span></div>
+        <script>
+        (function () { var s = document.querySelector('[data-co]'), t = document.querySelector('[data-co-total]'); if (!s) return;
+          function upd() { var o = s.options[s.selectedIndex], v = o && o.dataset.price ? +o.dataset.price : 0; t.textContent = v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }
+          s.addEventListener('change', upd); upd(); })();
+        </script>
         <?php elseif (in_array($uk, ['coiffeuse', 'onglerie'], true)): ?>
         <label class="fld"><span>Prestation</span><select name="prestation" required>
           <option value="">Choisir…</option>
@@ -272,7 +283,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           </label>
           <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>
-        <?php if (!$isRental && !$noPrice && !in_array($uk, ['menage', 'maquilleuse'], true)): ?>
+        <?php if (!$isRental && !$noPrice && !in_array($uk, ['menage', 'maquilleuse', 'coiffeuse'], true)): ?>
         <div class="total-box">
           <div<?= in_array($uk, ['maquilleuse', 'coiffeuse', 'onglerie'], true) ? ' hidden' : '' ?>><span>Formule</span><b data-sum-offer>—</b></div>
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
@@ -280,7 +291,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <?php if ($uk === 'menage'): ?><div><span>Frais de service</span><b data-sum-fee>—</b></div><?php endif; ?>
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>
-        <?php elseif ($uk !== 'maquilleuse'): ?>
+        <?php elseif (!in_array($uk, ['maquilleuse', 'coiffeuse'], true)): ?>
         <p class="fine">Prix transparents et professionnels qualifiés garantis.</p>
         <?php endif; ?>
         <button class="btn btn-primary btn-block btn-lg"><?= ($isRental || $noPrice) ? 'Voir le prix & réserver' : 'Rechercher un prestataire' ?></button>

@@ -1175,3 +1175,4 @@ body.theme-beaute [data-universe=maquilleuse] .row2 { display: grid; grid-templa
 .dv-head h1 { font-family: inherit !important; font-weight: 800; letter-spacing: -.01em; }
 .dv-send svg { width: 22px !important; height: 22px !important; flex: none; }
 .dv-row .dv-lab { font-size: .82rem; white-space: nowrap; }
+.mq-pers b small { font-weight: 500; font-size: .78rem; color: #5B6B7F; }
