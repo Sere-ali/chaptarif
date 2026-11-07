@@ -1030,3 +1030,6 @@ body.home-m { background: #F3F8FD; }
   body.home-m #sequestre .steps { background: #0E1A2B; color: #E8EEF6; border-radius: 24px; padding: 24px 20px; }
 }
 @media (max-width: 899px) { .m-home { justify-content: space-evenly; min-height: calc(100svh - 170px); padding-bottom: 20px; } }
+/* Paiement : le récapitulatif s'affiche avant le choix du moyen de paiement */
+@media (max-width: 899px) { .checkout-cols > aside { order: -1; } }
+html.force-mobile .checkout-cols > aside { order: -1; }
