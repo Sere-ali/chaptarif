@@ -232,7 +232,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <?php else: ?>
         <p class="fine">Prix transparents et professionnels qualifiés garantis.</p>
         <?php endif; ?>
-        <button class="btn btn-primary btn-block btn-lg"><?= ($isRental || $noPrice) ? 'Voir le prix & réserver' : 'Réserver & payer' ?></button>
+        <button class="btn btn-primary btn-block btn-lg"><?= ($isRental || $noPrice) ? 'Voir le prix & réserver' : 'Rechercher un prestataire' ?></button>
         <p class="fine"> Paiement bloqué et sécurisé jusqu'à la fin de la prestation.</p>
       </div>
     </aside>
