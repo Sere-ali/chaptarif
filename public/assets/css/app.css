@@ -1259,3 +1259,46 @@ body.theme-beaute [data-universe=maquilleuse] .row2 { display: grid; grid-templa
   body.dom-transport .d-item-body small { font-size: .76rem; }
   body.dom-transport .container { padding-left: 12px; padding-right: 12px; }
 }
+/* Immobilier (maquette v2) : bannière bleue, champs en carte, cartes Appartement / Villa colorées */
+.il-banner { position: relative; display: flex; align-items: stretch; border-radius: 22px; overflow: hidden; background: linear-gradient(110deg, #0D4FA8 0%, #1677C9 48%, #22B5C8 100%); color: #fff; min-height: 150px; margin-bottom: 12px; }
+.il-banner > div { position: relative; z-index: 1; flex: 1; padding: 18px 0 18px 18px; display: flex; flex-direction: column; justify-content: center; }
+.il-banner h2 { color: #fff; font-size: 1.45rem; line-height: 1.08; margin: 0 0 6px; font-weight: 800; letter-spacing: -.02em; }
+.il-banner p { margin: 0; font-size: .84rem; font-weight: 600; color: #CFEAFF; line-height: 1.3; }
+.il-banner img { width: 48%; object-fit: cover; object-position: left center; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%); mask-image: linear-gradient(90deg, transparent 0, #000 22%); }
+body.immo-m .il-search { background: transparent !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; border: 0 !important; display: flex; flex-direction: column; gap: 12px; }
+.il-fields { background: #fff; border-radius: 20px; padding: 12px; box-shadow: 0 10px 30px -22px rgba(15, 27, 45, .5); display: flex; flex-direction: column; gap: 8px; }
+.il-fields .il-fld { margin: 0; position: relative; }
+.il-fields .il-fld::after { content: ""; position: absolute; right: 16px; top: 50%; width: 8px; height: 8px; border-right: 2px solid #5B6B7F; border-top: 2px solid #5B6B7F; transform: translateY(-50%) rotate(45deg); pointer-events: none; }
+body.immo-m .il-search .il-cards { gap: 12px; margin: 0; }
+body.immo-m .il-search .il-card { aspect-ratio: auto; height: 150px; border-radius: 18px; border: 3px solid #7CC0F2; box-shadow: 0 10px 24px -16px rgba(22, 119, 201, .7); }
+body.immo-m .il-search .il-card + .il-card { border-color: #7EDDB8; box-shadow: 0 10px 24px -16px rgba(20, 138, 99, .7); }
+body.immo-m .il-search .il-card span { left: 6px; right: 6px; bottom: 6px; font-size: .8rem; padding: 6px; border-radius: 999px; background: #fff; }
+body.immo-m .il-search .il-card i { display: grid !important; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #1677C9; color: #fff; font-size: 0; flex: none; }
+body.immo-m .il-search .il-card + .il-card i { background: #148A63; }
+body.immo-m .il-search .il-card i::before { content: ""; width: 6px; height: 6px; border-right: 2px solid #fff; border-top: 2px solid #fff; transform: translateX(-1px) rotate(45deg); }
+body.immo-m .il-search .il-card .il-ico { background: #E3F0FC; }
+body.immo-m .il-search > .btn-primary { background: linear-gradient(90deg, #13936A, #0F7A5C); border-radius: 999px; }
+body.immo-m .d-home-link { background: #E3F5EE; color: #148A63; border-radius: 999px; padding: 6px 12px; font-weight: 700; }
+@media (max-width: 899px) {
+  body.immo-m:not(.immo-ads) .il-hero { display: none; }
+  body.immo-m:not(.immo-ads) .immo-land { padding-left: 12px; padding-right: 12px; }
+}
+.il-banner { flex: none !important; height: 140px; min-height: 0; }
+.il-banner img { object-position: 30% center; width: 50%; }
+.il-banner h2 { font-size: 1.3rem; }
+.il-banner p { font-size: .76rem; }
+.il-fields .il-fld:has(input[type=date])::after { display: none; }
+body.immo-m .il-search .il-card span { font-size: .74rem; gap: 4px; }
+body.immo-m .il-search .il-card .il-ico { width: 26px; height: 26px; margin-right: 2px; }
+body.immo-m .il-search .il-card i { width: 20px; height: 20px; margin-left: auto; }
+body.immo-m .il-search .il-card { height: 140px; }
+.il-banner img { width: 56%; object-position: 62% 75%; }
+body.immo-m .il-search .il-card span { font-size: .7rem; padding: 5px; left: 5px; right: 5px; }
+body.immo-m .il-search .il-card .il-ico { width: 22px; height: 22px; }
+body.immo-m .il-search .il-card .il-ico svg { width: 14px; height: 14px; }
+body.immo-m .il-search .il-card i { width: 18px; height: 18px; }
+.il-banner img { position: absolute; right: 0; top: 0; height: 100%; width: 58%; object-position: 55% 70%; }
+.il-banner > div { padding-right: 44%; }
+.il-banner h2 { font-size: 1.22rem; }
+body.immo-m .il-search .il-card i { color: transparent !important; overflow: hidden; text-indent: -99px; position: relative; }
+body.immo-m .il-search .il-card i::before { position: absolute; left: 50%; top: 50%; margin: -3px 0 0 -4px; text-indent: 0; }
