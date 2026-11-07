@@ -1088,3 +1088,9 @@ html.force-mobile .checkout-cols > aside { order: -1; }
   body.immo-m:not(.immo-ads) .il-search { flex: none; }
   body.immo-m:not(.immo-ads) .il-search .il-card { aspect-ratio: 1 / .95; }
 }
+/* Immobilier : page de résultats */
+.res-top { display: flex; align-items: center; gap: 10px; margin: 4px 0 10px; }
+.res-top h1 { flex: 1; margin: 0; }
+.res-edit { font-weight: 800; font-size: .85rem; color: #2E7D5B; }
+.res-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.res-chips span { background: #E8F3EE; color: #1E5E43; font-weight: 700; font-size: .8rem; padding: 5px 11px; border-radius: 999px; }

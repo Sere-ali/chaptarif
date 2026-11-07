@@ -143,13 +143,6 @@ $props = all($sql . ' ORDER BY certified DESC, price_night', $params);
 $ci = valid_future_date($_GET['checkin'] ?? null, 365) ? $_GET['checkin'] : '';
 view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 ?>
-<section class="page-hero" style="--c:<?= $x['color'] ?>;--hero:url('<?= e(img($x['img'], 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
-  <div class="container">
-    <nav class="crumbs"><a href="/">Accueil</a> › Immobilier</nav>
-    <h1><?= $x['emoji'] ?> Logements à louer vérifiés</h1>
-    <p>Photos réelles, inspections physiques et caution protégée sous séquestre.</p>
-  </div>
-</section>
 <section class="section-tight">
   <div class="container">
     <?php if ($chooser): ?>
@@ -164,11 +157,23 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <?php endforeach; ?>
       </div>
     <?php else: ?>
-    <?php if ($cat === 'maison'): ?><p><a class="btn btn-soft" href="/immobilier">Modifier ma recherche</a></p><?php else: include __DIR__ . '/../views/immo_search.php'; endif; ?>
     <?php
       $dispo = valid_future_date($_GET['dispo'] ?? null, 730) ? (string) $_GET['dispo'] : '';
       $maison = in_array($_GET['maison'] ?? '', ['Villa', 'Duplex'], true) ? (string) $_GET['maison'] : '';
-      if ($cat === 'maison' || $type !== '' || $commune !== '' || $dispo !== '') {
+      $chips = [];
+      if ($cat === 'maison') { $chips[] = $maison ?: 'Villa ou Duplex'; if ((int) ($_GET['chambres'] ?? 0)) $chips[] = (int) $_GET['chambres'] . ((int) $_GET['chambres'] >= 4 ? '+' : '') . ' chambre' . ((int) $_GET['chambres'] > 1 ? 's' : ''); if (!empty($_GET['piscine'])) $chips[] = 'Piscine'; if (!empty($_GET['jardin'])) $chips[] = 'Jardin'; }
+      else $chips[] = $type !== '' ? $type : 'Appartement';
+      if ($commune !== '') $chips[] = $commune;
+      if ($dispo !== '') $chips[] = 'Dès le ' . fmt_date($dispo);
+    ?>
+    <div class="res-top">
+      <h1 class="h3">Logements disponibles</h1>
+      <a href="/immobilier" class="res-edit">Modifier</a>
+    </div>
+    <div class="res-chips"><?php foreach ($chips as $c): ?><span><?= e($c) ?></span><?php endforeach; ?></div>
+    <?php
+      {
+          $adsTitle = ''; $adsEmptyMsg = 'Aucun logement disponible pour cette sélection pour le moment. Essayez une autre commune ou un autre type de logement.';
           $adsUniverse = 'immobilier'; $adsType = $type; $adsCommune = $commune; $adsDispo = $dispo;
           if ($cat === 'maison') { $adsType = ''; $adsTypes = $maison ? [$maison] : ['Villa', 'Duplex']; $adsChambres = (int) ($_GET['chambres'] ?? 0); $adsPiscine = !empty($_GET['piscine']); $adsJardin = !empty($_GET['jardin']); }
           include __DIR__ . '/../views/provider_ads.php';

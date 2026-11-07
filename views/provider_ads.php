@@ -20,9 +20,9 @@ if ($adsTypes) $rows = array_values(array_filter($rows, fn($r) => in_array((json
 if ($adsChambres) $rows = array_values(array_filter($rows, fn($r) => ($n = (int) (json_decode((string) $r['attrs'], true)['chambres'] ?? 0)) && ($adsChambres >= 4 ? $n >= 4 : $n === $adsChambres)));
 if ($adsPiscine) $rows = array_values(array_filter($rows, fn($r) => (json_decode((string) $r['attrs'], true)['piscine'] ?? '') === 'Oui'));
 if ($adsJardin) $rows = array_values(array_filter($rows, fn($r) => (json_decode((string) $r['attrs'], true)['jardin'] ?? '') === 'Oui'));
-if (!$rows) return;
+if (!$rows) { if (!empty($adsEmptyMsg)) echo '<div class="empty"><p>' . e($adsEmptyMsg) . '</p><a class="btn btn-primary" href="/immobilier">Modifier ma recherche</a></div>'; return; }
 ?>
-<h2 class="h3 mt">Annonces des <?= $adsUniverse === 'immobilier' ? 'bailleurs' : ($adsUniverse === 'covoiturage' ? 'conducteurs' : 'prestataires') ?></h2>
+<?php if (($adsTitle ?? null) !== ''): ?><h2 class="h3 mt">Annonces des <?= $adsUniverse === 'immobilier' ? 'bailleurs' : ($adsUniverse === 'covoiturage' ? 'conducteurs' : 'prestataires') ?></h2><?php endif; ?>
 <div class="prop-grid">
   <?php foreach ($rows as $r): $ll = listing_lines($r['puni'], $r['attrs'] ?? null); ?>
     <?php $resUrl = '/profil-prestataire?id=' . (int) $r['pid']; $isImmo = $r['puni'] === 'immobilier'; if ($isImmo) $resUrl = '/immobilier?ad=' . (int) $r['id']; ?>
