@@ -1376,3 +1376,7 @@ body.immo-m .il-search .il-card i::before { position: absolute; left: 50%; top: 
   body.dom-bea .d-item-img, body.dom-bea .d-item-img img { border-top: 0 !important; border-bottom: 0 !important; border-left: 0 !important; box-shadow: none !important; outline: 0 !important; background: none !important; }
   body.dom-bea .d-item-img img { border: 0 !important; }
 }
+/* Immobilier : les deux cartes remplissent chacune leur moitié */
+body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !important; justify-self: stretch; }
+.il-banner > div { padding-right: 47%; }
+.il-banner p { max-width: 100%; }
