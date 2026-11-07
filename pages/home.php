@@ -42,7 +42,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <img src="/assets/img/logo.svg" alt="" width="34" height="34">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
-    <span class="m-loc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Abidjan<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    <span class="m-loc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Côte d'Ivoire<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
     <button class="m-burger" type="button" aria-label="Ouvrir le menu" aria-controls="m-drawer" aria-expanded="false" data-drawer-open><span></span><span></span><span></span></button>
   </div>
   <div class="container m-hero-in">
@@ -249,7 +249,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <div class="phone">
         <div class="phone-notch"></div>
         <div class="phone-screen">
-          <div class="ps-head"><img src="/assets/img/logo.svg" width="26" alt=""> <b>ChapTarif</b> <span class="ps-loc"> Abidjan</span></div>
+          <div class="ps-head"><img src="/assets/img/logo.svg" width="26" alt=""> <b>ChapTarif</b> <span class="ps-loc"> Côte d'Ivoire</span></div>
           <div class="ps-label">Offres populaires du moment</div>
           <?php foreach ($popular as $po): ?>
             <div class="ps-row"><span><?= e($po['label']) ?><small><?= e($po['sub']) ?></small></span><b><?= $po['price'] ? 'Dès ' . fcfa($po['price']) : '—' ?></b></div>
