@@ -1302,3 +1302,23 @@ body.immo-m .il-search .il-card i { width: 18px; height: 18px; }
 .il-banner h2 { font-size: 1.22rem; }
 body.immo-m .il-search .il-card i { color: transparent !important; overflow: hidden; text-indent: -99px; position: relative; }
 body.immo-m .il-search .il-card i::before { position: absolute; left: 50%; top: 50%; margin: -3px 0 0 -4px; text-indent: 0; }
+/* Immobilier : fenêtre « Affinez votre recherche » (maquette) */
+.il-villa .il-hico { width: 46px; height: 46px; border-radius: 12px; background: #148A63; display: grid; place-items: center; flex: none; }
+.il-villa .il-sheet-head { border-bottom: 0; }
+.il-villa .il-sheet-head b { font-size: 1.15rem; }
+.il-villa .il-row { justify-content: flex-start; gap: 10px; background: #F4F7FA; border-color: #E3E8EE; border-radius: 14px; padding: 10px 12px; }
+.il-villa .il-row > svg { flex: none; }
+.il-villa .il-row > span { flex: 1; font-weight: 600; font-size: .9rem; }
+.il-villa .il-row select { flex: none; background: #fff; border-radius: 999px; padding: 6px 10px; color: #3B4B57; max-width: 48%; }
+.il-villa .il-row input:not([type=checkbox]) { max-width: 46%; }
+.il-villa .il-sw i { margin-left: auto; }
+.il-villa .btn { background: linear-gradient(90deg, #13936A, #0F7A5C); border-radius: 999px; }
+.il-villa .il-villa-img { object-fit: cover; }
+.il-villa .il-row > span { white-space: nowrap; font-size: .84rem; }
+.il-villa .il-row select { font-size: .78rem; padding: 5px 8px; }
+.il-villa .il-row:has(input[name=vcommune]) > span { display: none; }
+.il-villa .il-row input[name=vcommune] { max-width: none; text-align: left; font-weight: 600; font-size: .84rem; color: #0F1B2D; }
+.il-villa .il-row input[name=vcommune]::placeholder { color: #0F1B2D; }
+.il-villa .il-row input[type=date] { max-width: 118px; font-size: .74rem; padding: 0; }
+.il-villa .il-row { gap: 8px; }
+.il-villa .il-row select { max-width: 40%; font-size: .74rem; text-overflow: ellipsis; text-align: center; }

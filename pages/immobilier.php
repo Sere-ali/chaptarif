@@ -232,19 +232,19 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <input type="hidden" name="cat" value="maison">
         <input type="hidden" name="commune" value="">
         <input type="hidden" name="dispo" value="">
-        <img class="il-villa-img" src="/assets/img/immo-villa.jpg" alt="" width="900" height="258">
+        <img class="il-villa-img" src="/assets/img/immo-villa2.jpg" alt="" width="958" height="306">
         <div class="il-sheet-head">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
-          <b>Cocher votre recherche<small>Villa ou Duplex</small></b>
+          <span class="il-hico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>
+          <b>Affinez votre recherche<small>Villa ou Duplex</small></b>
           <button type="button" class="il-x" data-close-sheet aria-label="Fermer">&times;</button>
         </div>
-        <label class="il-row"><span>Type de maison</span><select name="maison"><option value="">Villa ou Duplex</option><option value="Villa">Villa</option><option value="Duplex">Duplex</option></select></label>
-        <label class="il-row"><span>Nombre de chambres</span><select name="chambres"><option value="">1, 2, 3, 4 et +</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 et +</option></select></label>
-        <label class="il-row il-sw"><span>Piscine</span><input type="checkbox" name="piscine" value="1"><i></i></label>
-        <label class="il-row il-sw"><span>Jardin</span><input type="checkbox" name="jardin" value="1"><i></i></label>
-        <label class="il-row"><span>Commune ou quartier</span><input name="vcommune" list="immo-communes-l" placeholder="Commune ou quartier" maxlength="60" autocomplete="off"></label>
-        <label class="il-row"><span>Disponible à partir du</span><input type="date" name="vdispo" min="<?= date('Y-m-d') ?>"></label>
-        <button type="button" class="btn btn-primary btn-block btn-lg" data-validate-villa>Valider</button>
+        <label class="il-row"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#148A63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Type de maison</span><select name="maison"><option value="">Villa ou Duplex</option><option value="Villa">Villa</option><option value="Duplex">Duplex</option></select></label>
+        <label class="il-row"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#148A63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18V8M21 18v-5a3 3 0 0 0-3-3H8v8M3 14h18M3 18h18"/><circle cx="6" cy="11" r="1.5"/></svg><span>Nombre de chambres</span><select name="chambres"><option value="">1, 2, 3, 4 et +</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 et +</option></select></label>
+        <label class="il-row il-sw"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#148A63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c2 0 2-1.5 4.5-1.5S9.5 17 12 17s2-1.5 4.5-1.5S19 17 21 17M3 21c2 0 2-1.5 4.5-1.5S9.5 21 12 21s2-1.5 4.5-1.5S19 21 21 21M8 14V5a2 2 0 0 1 4 0M16 14V5a2 2 0 0 0-4 0M8 9h8"/></svg><span>Piscine</span><input type="checkbox" name="piscine" value="1"><i></i></label>
+        <label class="il-row il-sw"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#148A63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-9M12 12c0-4-3-7-8-7 0 4 3 7 8 7zM12 12c0-4 3-7 8-7 0 4-3 7-8 7z"/></svg><span>Jardin</span><input type="checkbox" name="jardin" value="1"><i></i></label>
+        <label class="il-row"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#148A63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Commune ou quartier</span><input name="vcommune" list="immo-communes-l" placeholder="Commune ou quartier" maxlength="60" autocomplete="off"></label>
+        <label class="il-row"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#148A63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Disponible à partir du</span><input type="date" name="vdispo" min="<?= date('Y-m-d') ?>"></label>
+        <button type="button" class="btn btn-primary btn-block btn-lg" data-validate-villa><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Valider ma recherche</button>
       </form>
     </div>
     <script>
