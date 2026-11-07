@@ -1205,3 +1205,4 @@ body.theme-beaute [data-universe=maquilleuse] .row2 { display: grid; grid-templa
   [data-universe=coiffeuse] .container { padding-left: 10px; padding-right: 10px; }
   [data-universe=coiffeuse] aside > .card, [data-universe=coiffeuse] aside .form-card { padding: 16px 12px; }
 }
+.on-row.off { opacity: .45; }

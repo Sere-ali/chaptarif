@@ -284,22 +284,27 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           'sparkle' => '<path d="M12 3l1.8 4.8L18 9.5l-4.2 1.8L12 16l-1.8-4.7L6 9.5l4.2-1.7L12 3zM19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z"/>',
         ]; ?>
         <h2 class="h3 mt" style="margin-bottom:2px">Beauté des ongles</h2>
-        <p class="muted" style="margin:0 0 10px">Choisissez la prestation souhaitée.</p>
+        <p class="muted" style="margin:0 0 10px">Choisissez la prestation souhaitée <small>(2 choix maximum)</small>.</p>
         <div class="on-list" data-on>
           <?php foreach (onglerie_options() as $ol => $o): ?>
             <label class="on-row on-<?= e($o['color']) ?>">
               <span class="on-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><?= $onIco[$o['icon']] ?></svg></span>
               <span class="on-txt"><b><?= e($o['title']) ?></b><small><?= e($o['desc']) ?></small><em><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $tagIco[$o['tagIcon']] ?></svg><?= e($o['tag']) ?></em></span>
               <span class="on-price"><?= number_format($o['price'], 0, ',', ' ') ?> FCFA</span>
-              <input type="radio" name="prestation" value="<?= e($ol) ?>" data-price="<?= (int) $o['price'] ?>" required>
+              <input type="checkbox" name="prestations[]" value="<?= e($ol) ?>" data-price="<?= (int) $o['price'] ?>">
             </label>
           <?php endforeach; ?>
         </div>
         <div class="mq-total"><b>Total estimatif</b><span data-on-total>0 FCFA</span></div>
+        <p class="fine" data-on-msg hidden style="color:#C62828;font-weight:600"></p>
         <script>
-        (function () { var b = document.querySelector('[data-on]'), t = document.querySelector('[data-on-total]'); if (!b) return;
-          b.addEventListener('change', function () { var r = b.querySelector('input:checked'); b.querySelectorAll('.on-row').forEach(function (x) { x.classList.toggle('on', x.contains(r)); });
-            t.textContent = (r ? +r.dataset.price : 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }); })();
+        (function () { var b = document.querySelector('[data-on]'), t = document.querySelector('[data-on-total]'), m = document.querySelector('[data-on-msg]'); if (!b) return;
+          var cbs = b.querySelectorAll('input');
+          function upd() { var sum = 0, n = 0; cbs.forEach(function (c) { if (c.checked) { sum += +c.dataset.price; n++; } });
+            cbs.forEach(function (c) { c.disabled = !c.checked && n >= 2; var r = c.closest('.on-row'); r.classList.toggle('on', c.checked); r.classList.toggle('off', c.disabled); });
+            t.textContent = sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; if (n) m.hidden = true; }
+          b.addEventListener('change', upd); upd();
+          b.closest('form').addEventListener('submit', function (e) { if (!b.querySelector('input:checked')) { e.preventDefault(); m.textContent = 'Cochez au moins une prestation.'; m.hidden = false; m.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }); })();
         </script>
         <?php elseif (in_array($uk, ['coiffeuse', 'onglerie'], true)): ?>
         <label class="fld"><span>Prestation</span><select name="prestation" required>

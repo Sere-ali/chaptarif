@@ -115,12 +115,25 @@ function build_quote(string $universe, array $in): array
             if (!$prov) $prov = best_provider($universe);
             if (!$offer) $offer = one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) ($in['offer'] ?? 0), $universe]);
             // Coiffure : 2 prestations à prix fixe.
+            // Onglerie : 1 ou 2 prestations cochées, prix additionnés.
+            $onKeys = [];
+            if ($universe === 'onglerie') {
+                $oo = onglerie_options();
+                $onKeys = array_values(array_unique(array_filter((array) ($in['prestations'] ?? []), fn($k) => is_string($k) && isset($oo[$k]))));
+                if (!$onKeys) return $fail('Cochez votre prestation.');
+                if (count($onKeys) > 2) return $fail('Vous pouvez choisir 2 prestations maximum.');
+            }
             if (in_array($universe, ['coiffeuse', 'onglerie'], true) && !$isListing) {
-                $co = $universe === 'coiffeuse' ? coiffure_options() : array_map(fn($o) => $o['price'], onglerie_options());
-                $pk0 = (string) ($in['prestation'] ?? '');
-                if (!isset($co[$pk0])) return $fail('Choisissez votre prestation.');
+                if ($universe === 'coiffeuse') {
+                    $co = coiffure_options();
+                    $pk0 = (string) ($in['prestation'] ?? '');
+                    if (!isset($co[$pk0])) return $fail('Choisissez votre prestation.');
+                    $ttl = $pk0; $pr = $co[$pk0];
+                } else {
+                    $ttl = implode(' + ', $onKeys); $pr = array_sum(array_map(fn($k) => $oo[$k]['price'], $onKeys));
+                }
                 $offer = one('SELECT * FROM offers WHERE universe = ? AND active = 1 ORDER BY id LIMIT 1', [$universe]);
-                if ($offer) $offer = ['id' => (int) $offer['id'], 'title' => $pk0, 'price' => $co[$pk0], 'unit' => 'forfait'];
+                if ($offer) $offer = ['id' => (int) $offer['id'], 'title' => $ttl, 'price' => $pr, 'unit' => 'forfait'];
             }
             // Maquillage : formules cochées (2 maximum), prix fixés par ChapTarif.
             $mqAmount = null; $mqLabel = '';
@@ -155,10 +168,12 @@ function build_quote(string $universe, array $in): array
             if ($mqAmount !== null) { $formule = $mqLabel; $personnes = max(0, min(30, (int) ($in['personnes'] ?? 0))); }
             $presta = '';
             if (in_array($universe, ['coiffeuse', 'onglerie'], true)) {
-                $pk = (string) ($in['prestation'] ?? '');
-                $flat = $universe === 'coiffeuse' ? array_keys(coiffure_options()) : array_keys(onglerie_options());
-                if (!in_array($pk, $flat, true)) return $fail('Choisissez votre prestation.');
-                $presta = $pk;
+                if ($universe === 'onglerie') $presta = implode(' + ', $onKeys);
+                else {
+                    $pk = (string) ($in['prestation'] ?? '');
+                    if (!isset(coiffure_options()[$pk])) return $fail('Choisissez votre prestation.');
+                    $presta = $pk;
+                }
             }
             $qty = $offer['unit'] === 'pièce' ? max(1, min(50, (int) ($in['qty'] ?? 1))) : 1;
             $amount = (int) $offer['price'] * $qty;
