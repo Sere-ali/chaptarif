@@ -1048,3 +1048,9 @@ html.force-mobile .checkout-cols > aside { order: -1; }
   body:not(.home-m) { padding-bottom: 92px; }
   body:not(.home-m) main > .section-tight { padding-bottom: 10px; }
 }
+/* Immobilier : cartes Appartement / Maison dans le formulaire, avant le bouton */
+.il-search .il-cards { gap: 10px; margin: 2px 0; }
+.il-search .il-card span { font-size: .72rem; padding: 6px; left: 6px; right: 6px; bottom: 6px; gap: 4px; }
+.il-search .il-card span .il-ico { width: 24px; height: 24px; flex: none; }
+.il-search .il-card span .il-ico svg { width: 14px; height: 14px; }
+.il-search .il-card i { display: none; }
