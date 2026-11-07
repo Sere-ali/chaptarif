@@ -248,7 +248,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           box.closest('form').addEventListener('submit', function (e) {
             var on = [].filter.call(cbs, function (c) { return c.checked; }), p = parseInt(n.value, 10) || 0, err = '';
             if (!on.length) err = 'Cochez au moins une formule.';
-            else if (on.some(function (c) { return c.dataset.pp === '1'; }) && p < 1) err = 'Indiquez le nombre de personnes pour « Invitées, famille et cortège ».';
+            else if (on.some(function (c) { return c.dataset.pp === '1'; }) && p < 1) err = 'Indiquez le nombre de personnes.';
             if (err) { e.preventDefault(); msg.textContent = err; msg.hidden = false; msg.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
           });
           calc();

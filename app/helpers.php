@@ -721,8 +721,8 @@ function maquillage_formules(): array
     return [
         'mariee' => ['title' => 'Maquillage de la mariée', 'desc' => 'Pour la mariée – prestation individuelle.', 'price' => 25000, 'per_person' => false, 'icon' => 'crown'],
         'invitees' => ['title' => 'Invitées, famille et cortège', 'desc' => 'Pour les proches et le cortège.', 'price' => 10000, 'per_person' => true, 'icon' => 'group'],
-        'jour_nude' => ['title' => 'Maquillage Jour / Nude', 'desc' => 'Maquillage naturel et discret.', 'price' => 7000, 'per_person' => false, 'icon' => 'sun'],
-        'evenementiel' => ['title' => 'Maquillage Événementiel', 'desc' => 'Soirée, festival, anniversaire, etc.', 'price' => 10000, 'per_person' => false, 'icon' => 'glass'],
+        'jour_nude' => ['title' => 'Maquillage Jour / Nude', 'desc' => 'Maquillage naturel et discret.', 'price' => 7000, 'per_person' => true, 'icon' => 'sun'],
+        'evenementiel' => ['title' => 'Maquillage Événementiel', 'desc' => 'Soirée, festival, anniversaire, etc.', 'price' => 10000, 'per_person' => true, 'icon' => 'glass'],
         'sfx' => ['title' => 'Effets spéciaux / Artistique', 'desc' => 'Maquillage créatif (shooting, scène, etc.).', 'price' => 0, 'per_person' => false, 'icon' => 'sparkle', 'devis' => true],
     ];
 }
