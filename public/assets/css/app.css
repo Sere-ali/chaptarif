@@ -1043,3 +1043,8 @@ html.force-mobile .checkout-cols > aside { order: -1; }
 .m-loc { font-size: .68rem; padding: 5px 8px; gap: 4px; }
 .m-loc svg { width: 13px; height: 13px; }
 @media (max-width: 400px) { .m-loc { font-size: .68rem; padding: 5px 8px; } }
+/* Pages de service : plus d'espace vide sous le dernier bloc */
+@media (max-width: 899px) {
+  body:not(.home-m) { padding-bottom: 92px; }
+  body:not(.home-m) main > .section-tight { padding-bottom: 10px; }
+}
