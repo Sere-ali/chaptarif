@@ -1080,3 +1080,11 @@ html.force-mobile .checkout-cols > aside { order: -1; }
 /* Immobilier : choix coché affiché sur la carte */
 .il-card.il-on { outline: 3px solid #2E7D5B; outline-offset: -3px; }
 .il-card .il-pick { position: absolute; top: 8px; left: 8px; right: 8px; background: #2E7D5B; color: #fff; font-style: normal; font-weight: 700; font-size: .72rem; padding: 4px 8px; border-radius: 999px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Immobilier mobile : le bloc occupe toute la hauteur, sans vide en bas */
+@media (max-width: 899px) {
+  body.immo-m:not(.immo-ads) .d-home { height: calc(100dvh - 96px); display: flex; flex-direction: column; }
+  body.immo-m:not(.immo-ads) .immo-land { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; flex-direction: column; padding-bottom: 10px; }
+  body.immo-m:not(.immo-ads) .il-hero { flex: 1 1 auto; min-height: 150px; display: flex; flex-direction: column; justify-content: center; padding-bottom: 70px; background-size: auto 100%; }
+  body.immo-m:not(.immo-ads) .il-search { flex: none; }
+  body.immo-m:not(.immo-ads) .il-search .il-card { aspect-ratio: 1 / .95; }
+}
