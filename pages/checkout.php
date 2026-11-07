@@ -71,15 +71,6 @@ view('layout/header', compact('title', 'active'));
                 <label class="fld"><span>Passager <?= $i + 1 ?></span><input name="passenger_names[]" maxlength="60" required autocomplete="off" placeholder="Nom et prénom" value="<?= e($pn[$i] ?? ($i === 0 && $np === 1 ? ($u['name'] ?? '') : '')) ?>"></label>
               <?php endfor; ?>
             <?php endif; ?>
-            <div class="promo">
-              <?php if ($codeApplied): ?>
-                <div class="promo-ok"><span>Code de réduction <b><?= e($codeApplied) ?></b> appliqué : <b>− <?= fcfa($q['discount']) ?></b></span><button class="btn btn-ghost btn-xs" formaction="/reserver/code" formnovalidate name="action" value="remove">Retirer</button></div>
-              <?php else: ?>
-                <details<?= !empty($_GET['code']) ? ' open' : '' ?>><summary>Code de réduction</summary>
-                  <div class="promo-row"><input name="code" maxlength="30" autocomplete="off" autocapitalize="characters" placeholder="Saisissez votre code"><button class="btn btn-soft" formaction="/reserver/code" formnovalidate name="action" value="apply">Appliquer</button></div>
-                </details>
-              <?php endif; ?>
-            </div>
             <h2 class="h3"> Choisissez votre moyen de paiement</h2>
             <div class="pay-methods">
               <?php $i = 0; foreach (payment_methods() as $k => [$label, $color, $hint]): ?>
