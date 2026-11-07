@@ -1054,3 +1054,9 @@ html.force-mobile .checkout-cols > aside { order: -1; }
 .il-search .il-card span .il-ico { width: 24px; height: 24px; flex: none; }
 .il-search .il-card span .il-ico svg { width: 14px; height: 14px; }
 .il-search .il-card i { display: none; }
+/* Pages domaine (mobile) : contenu réparti et centré sur tout l'écran, sans vide en bas */
+@media (max-width: 899px) {
+  body.domaine-m { padding-bottom: 92px; }
+  body.domaine-m .d-home { min-height: calc(100dvh - 92px); display: flex; flex-direction: column; justify-content: space-evenly; }
+  body.domaine-m .d-home > * { flex: none; }
+}
