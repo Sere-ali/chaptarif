@@ -1094,3 +1094,8 @@ html.force-mobile .checkout-cols > aside { order: -1; }
 .res-edit { font-weight: 800; font-size: .85rem; color: #2E7D5B; }
 .res-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .res-chips span { background: #E8F3EE; color: #1E5E43; font-weight: 700; font-size: .8rem; padding: 5px 11px; border-radius: 999px; }
+/* Immobilier mobile : photo du haut moins haute, contenu remonté */
+@media (max-width: 899px) {
+  body.immo-m:not(.immo-ads) .il-hero { flex: none; min-height: 0; height: 170px; justify-content: flex-start; padding-top: 26px; }
+  body.immo-m:not(.immo-ads) .immo-land { justify-content: flex-start; }
+}
