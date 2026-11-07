@@ -191,6 +191,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     </div>
     <form class="il-search" method="get" action="/immobilier" novalidate>
       <input type="hidden" name="cat" value="appart">
+      <input type="hidden" name="type" value="" disabled><input type="hidden" name="maison" value="" disabled><input type="hidden" name="chambres" value="" disabled><input type="hidden" name="piscine" value="" disabled><input type="hidden" name="jardin" value="" disabled>
       <label class="il-fld"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><input name="commune" list="immo-communes-l" placeholder="Commune ou quartier" aria-label="Commune ou quartier" maxlength="60" autocomplete="off"></label>
       <datalist id="immo-communes-l"><?php foreach (communes() as $cm): ?><option value="<?= e($cm) ?>"><?php endforeach; ?></datalist>
       <label class="il-fld"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" name="dispo" required aria-label="Disponible à partir du" min="<?= date('Y-m-d') ?>"><em>Disponible à partir du</em></label>
@@ -208,13 +209,13 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <input type="hidden" name="dispo" value="">
         <div class="il-sheet-head">
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10.5 21v-4h3v4"/></svg>
-          <b>Rechercher un appartement</b>
+          <b>Cocher votre recherche</b>
           <button type="button" class="il-x" data-close-sheet aria-label="Fermer">&times;</button>
         </div>
         <?php foreach (array_diff(PROPERTY_TYPES, ['Villa', 'Duplex']) as $t): ?>
           <label class="il-opt"><span><?= e($t) ?></span><input type="radio" name="type" value="<?= e($t) ?>" required></label>
         <?php endforeach; ?>
-        <button class="btn btn-primary btn-block btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Rechercher</button>
+        <!-- choix immédiat -->
       </form>
     </div>
     <div class="il-sheet" data-sheet="v" hidden>
@@ -226,7 +227,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <img class="il-villa-img" src="/assets/img/immo-villa.jpg" alt="" width="900" height="258">
         <div class="il-sheet-head">
           <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1E7A3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
-          <b>Rechercher une maison<small>Villa ou Duplex</small></b>
+          <b>Cocher votre recherche<small>Villa ou Duplex</small></b>
           <button type="button" class="il-x" data-close-sheet aria-label="Fermer">&times;</button>
         </div>
         <label class="il-row"><span>Type de maison</span><select name="maison"><option value="">Villa ou Duplex</option><option value="Villa">Villa</option><option value="Duplex">Duplex</option></select></label>
@@ -235,7 +236,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         <label class="il-row il-sw"><span>Jardin</span><input type="checkbox" name="jardin" value="1"><i></i></label>
         <label class="il-row"><span>Commune ou quartier</span><input name="vcommune" list="immo-communes-l" placeholder="Commune ou quartier" maxlength="60" autocomplete="off"></label>
         <label class="il-row"><span>Disponible à partir du</span><input type="date" name="vdispo" min="<?= date('Y-m-d') ?>"></label>
-        <button class="btn btn-primary btn-block btn-lg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg> Rechercher</button>
+        <button type="button" class="btn btn-primary btn-block btn-lg" data-validate-villa>Valider</button>
       </form>
     </div>
     <script>
@@ -255,6 +256,29 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
         sh.addEventListener('click', function (e) { if (e.target.closest('[data-close-sheet]')) sh.hidden = true; });
         var f = sh.querySelector('form');
         if (f.elements.vcommune) f.addEventListener('submit', function () { f.elements.commune.value = f.elements.vcommune.value; f.elements.dispo.value = f.elements.vdispo.value; f.elements.vcommune.disabled = true; f.elements.vdispo.disabled = true; });
+      });
+      function setMain(vals, cardKey, label) {
+        ['type', 'maison', 'chambres', 'piscine', 'jardin'].forEach(function (n) { var el = main.elements[n]; el.value = vals[n] || ''; el.disabled = !el.value; });
+        main.elements.cat.value = cardKey === 'v' ? 'maison' : 'appart';
+        Array.prototype.forEach.call(document.querySelectorAll('[data-open-sheet]'), function (c) {
+          var on = c.dataset.openSheet === cardKey; c.classList.toggle('il-on', on);
+          var t = c.querySelector('.il-pick'); if (t) t.remove();
+          if (on && label) { var s2 = document.createElement('em'); s2.className = 'il-pick'; s2.textContent = label; c.appendChild(s2); }
+        });
+        Array.prototype.forEach.call(sheets, function (sh) { sh.hidden = true; });
+      }
+      var shA = document.querySelector('.il-sheet[data-sheet=a]');
+      Array.prototype.forEach.call(shA.querySelectorAll('input[name=type]'), function (r) {
+        r.addEventListener('change', function () { setMain({ type: r.value }, 'a', r.value); });
+      });
+      var shV = document.querySelector('.il-sheet[data-sheet=v]'), fv = shV.querySelector('form');
+      fv.addEventListener('submit', function (e) { e.preventDefault(); });
+      shV.querySelector('[data-validate-villa]').addEventListener('click', function () {
+        var m = fv.elements.maison.value, ch = fv.elements.chambres.value;
+        if (fv.elements.vcommune.value) main.elements.commune.value = fv.elements.vcommune.value;
+        if (fv.elements.vdispo.value) main.elements.dispo.value = fv.elements.vdispo.value;
+        var lab = (m || 'Villa ou Duplex') + (ch ? ' · ' + ch + (ch === '4' ? '+' : '') + ' ch.' : '');
+        setMain({ maison: m, chambres: ch, piscine: fv.elements.piscine.checked ? '1' : '', jardin: fv.elements.jardin.checked ? '1' : '' }, 'v', lab);
       });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape') Array.prototype.forEach.call(sheets, function (sh) { sh.hidden = true; }); });
     })();

@@ -1077,3 +1077,6 @@ html.force-mobile .checkout-cols > aside { order: -1; }
 .after-sum { margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
 .after-sum .check { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; line-height: 1.4; }
 .after-sum .check input { margin-top: 3px; flex: none; }
+/* Immobilier : choix coché affiché sur la carte */
+.il-card.il-on { outline: 3px solid #2E7D5B; outline-offset: -3px; }
+.il-card .il-pick { position: absolute; top: 8px; left: 8px; right: 8px; background: #2E7D5B; color: #fff; font-style: normal; font-weight: 700; font-size: .72rem; padding: 4px 8px; border-radius: 999px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
