@@ -170,7 +170,7 @@ function domaines(): array
         'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'title_m' => 'Service à la personne', 'emoji' => '', 'sub' => 'Ménage & pressing', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/service-a-la-personne', 'group' => 'Service à la personne',
             'pitch' => 'Ménage à domicile et pressing & repassage de linge, prestataires vérifiés, tarif fixe.',
             'tagline' => 'Un intérieur propre, un quotidien plus serein !',
-            'select_h2' => 'Sélectionnez votre besoin', 'select_sub' => 'Trouvez le prestataire idéal, en quelques clics.',
+            'select_h2' => 'Sélectionnez votre besoin', 'select_sub' => 'Trouvez le service idéal, en quelques clics.',
             'trust_title' => 'Paiement sécurisé après prestation :', 'trust_text' => 'Votre paiement est bloqué sur ChapTarif et n\'est versé au prestataire qu\'après la confirmation du service.',
             'keys' => ['menage', 'pressing']],
     ];

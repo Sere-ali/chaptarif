@@ -8,7 +8,7 @@ if (!$d) not_found();
 $title = $d['name'] . ' à Abidjan';
 $desc = $d['pitch'];
 $active = $dk;
-$bodyClass = 'domaine-m' . ($dk === 'beaute' ? ' theme-beaute' : '') . ($dk === 'transport' ? ' dom-transport' : '');
+$bodyClass = 'domaine-m' . ($dk === 'beaute' ? ' theme-beaute' : '') . ($dk === 'transport' ? ' dom-transport' : '') . ($dk === 'service-a-la-personne' ? ' dom-sap' : '');
 $subs = array_map(fn ($k) => universe($k), $d['keys']);
 view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 ?>
@@ -44,6 +44,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <h1 class="d-top-title"><?= e($d['title_m'] ?? ($d['short'] ?: $d['name'])) ?></h1>
     <a href="/" class="d-home-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg> Chez vous</a>
   </div>
+  <?php if ($dk === 'service-a-la-personne'): ?><div class="container"><img class="sap-banner" src="/assets/img/sap-banner.jpg" alt="Des services du quotidien, à domicile" width="982" height="456"></div><?php endif; ?>
   <div class="d-hero" style="--hero:url('<?= e(img($d['img'], 'w_1200,h_700,c_fill,q_auto,f_auto')) ?>')">
     <span class="d-hero-tag"><?= e($d['tagline'] ?? $d['name']) ?></span>
   </div>
@@ -52,8 +53,8 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <p class="d-sub"><?= e($d['select_sub'] ?? 'Trouvez le meilleur tarif, en quelques clics.') ?></p>
     <div class="d-list">
       <?php foreach ($d['keys'] as $sk): $x = universe($sk); ?>
-        <a class="d-item reveal<?= in_array($sk, ['covoiturage', 'chauffeur'], true) ? ' d-alt' : '' ?>" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
-          <span class="d-item-img"><img src="<?= $dk === 'transport' && is_file(__DIR__ . '/../public/assets/img/tr-' . $sk . '.jpg') ? '/assets/img/tr-' . $sk . '.jpg' : e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
+        <a class="d-item reveal<?= in_array($sk, ['covoiturage', 'chauffeur', 'menage'], true) ? ' d-alt' : '' ?>" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
+          <span class="d-item-img"><img src="<?= in_array($dk, ['transport', 'service-a-la-personne'], true) && is_file(__DIR__ . '/../public/assets/img/tr-' . $sk . '.jpg') ? '/assets/img/tr-' . $sk . '.jpg' : e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
           <span class="d-item-body">
             <b><?= e($x['name']) ?></b>
             <small><?= e($x['pitch']) ?></small>

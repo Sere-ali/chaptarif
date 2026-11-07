@@ -1340,3 +1340,22 @@ body.immo-m .il-search .il-card i::before { position: absolute; left: 50%; top: 
   body.dom-transport .d-item-btn { padding: 7px 10px; font-size: .74rem; }
   body.dom-transport .d-item { gap: 8px; padding: 10px 8px; }
 }
+/* Service à la personne (mobile) : bannière et cartes (maquette) */
+@media (max-width: 899px) {
+  body.dom-sap .d-home .d-hero { display: none; }
+  body.dom-sap .sap-banner { width: 100%; height: auto; border-radius: 22px; display: block; }
+  body.dom-sap .d-home-link { background: #E3F5EE; color: #148A63; border-radius: 999px; padding: 6px 12px; font-weight: 700; }
+  body.dom-sap .d-h2 { border-left: 4px solid #148A63; padding-left: 12px; margin-bottom: 0; }
+  body.dom-sap .d-sub { padding-left: 16px; }
+  body.dom-sap .container { padding-left: 12px; padding-right: 12px; }
+  body.dom-sap .d-list { gap: 12px; }
+  body.dom-sap .d-item { background: #F1F6FD; border: 1.5px solid #D6E4F5; border-radius: 18px; padding: 10px 8px; gap: 10px; align-items: center; box-shadow: 0 8px 22px -18px rgba(15,27,45,.5); }
+  body.dom-sap .d-item.d-alt { background: #ECF8F3; border-color: #CDEBDF; }
+  body.dom-sap .d-item-img { width: 64px; height: 62px; flex: none; padding-right: 10px; border-right: 1.5px solid #C9D8EA; box-sizing: content-box; border-radius: 0; overflow: visible; }
+  body.dom-sap .d-item-img img { width: 64px; height: 62px; object-fit: cover; border-radius: 12px; }
+  body.dom-sap .d-item-body b { font-size: .98rem; }
+  body.dom-sap .d-item-body small { font-size: .76rem; line-height: 1.3; color: #3B4B57; }
+  body.dom-sap .d-item-btn { background: #1677C9; color: #fff; border-radius: 999px; padding: 7px 10px; font-weight: 800; font-size: .74rem; flex: none; }
+  body.dom-sap .d-item.d-alt .d-item-btn { background: #148A63; }
+}
+@media (max-width: 899px) { body.dom-sap .d-top-title { font-size: 1.05rem; white-space: nowrap; } }
