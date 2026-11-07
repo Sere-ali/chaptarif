@@ -1099,3 +1099,7 @@ html.force-mobile .checkout-cols > aside { order: -1; }
   body.immo-m:not(.immo-ads) .il-hero { flex: none; min-height: 0; height: 170px; justify-content: flex-start; padding-top: 26px; }
   body.immo-m:not(.immo-ads) .immo-land { justify-content: flex-start; }
 }
+/* Immobilier : plus d'image derrière le titre */
+.il-hero { background: #fff !important; }
+.il-hero::before { display: none; }
+@media (max-width: 899px) { body.immo-m:not(.immo-ads) .il-hero { height: auto; padding: 22px 20px 70px; } }
