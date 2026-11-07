@@ -1060,3 +1060,6 @@ html.force-mobile .checkout-cols > aside { order: -1; }
   body.domaine-m .d-home { min-height: calc(100dvh - 92px); display: flex; flex-direction: column; justify-content: space-evenly; }
   body.domaine-m .d-home > * { flex: none; }
 }
+.promo-sum { margin: 10px 0 6px; }
+.promo-sum .promo-row { display: flex; gap: 8px; }
+.promo-sum .promo-row input { flex: 1; min-width: 0; }

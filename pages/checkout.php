@@ -99,6 +99,15 @@ view('layout/header', compact('title', 'active'));
           <?php if ($gar): ?><div class="sum-row"><span>Garantie dommage (<?= e(str_replace('.', ',', (string) (float) setting('garantie_dommage_pct', 6.72))) ?>% du montant de la formule)</span><b><?= fcfa($gar) ?></b></div><?php endif; ?>
           <?php if ($fraisOnly > 0 || isset($q['garantie_fee'])): ?><div class="sum-row"><span>Frais de service</span><b><?= $fraisOnly > 0 ? fcfa($fraisOnly) : 'Offerts' ?></b></div><?php endif; ?>
           <?php if (!empty($q['discount'])): ?><div class="sum-row"><span>Code de réduction (<?= e($q['discount_code']) ?>)</span><b>− <?= fcfa($q['discount']) ?></b></div><?php endif; ?>
+          <form method="post" action="/reserver/code" class="promo-sum">
+            <?= csrf_field() ?>
+            <?php if (!empty($q['discount'])): ?>
+              <button class="btn btn-ghost btn-xs" name="action" value="remove">Retirer le code de réduction</button>
+            <?php else: ?>
+              <label class="fld" style="margin:0"><span>Code de réduction</span>
+                <div class="promo-row"><input name="code" maxlength="30" autocomplete="off" autocapitalize="characters" placeholder="Saisissez votre code"><button class="btn btn-soft" name="action" value="apply">Appliquer</button></div></label>
+            <?php endif; ?>
+          </form>
           <div class="sum-row total"><span>Total à payer</span><b><?= fcfa($q['total']) ?></b></div>
           <div class="escrow-note"> <b>Paiement protégé.</b> Les fonds restent bloqués chez ChapTarif et ne sont versés qu'après la bonne exécution du service.</div>
         </div>
