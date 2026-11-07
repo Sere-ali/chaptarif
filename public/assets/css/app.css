@@ -1039,3 +1039,7 @@ html.force-mobile .checkout-cols > aside { order: -1; }
 .m-home-top { gap: 8px; }
 .m-brand { min-width: 0; }
 @media (max-width: 400px) { .m-loc { font-size: .76rem; padding: 6px 9px; } .m-brand .brand-txt { font-size: 1.1rem; } .m-brand img { width: 32px; height: 32px; } .m-burger { width: 38px; height: 38px; } }
+/* Côte d'Ivoire : écriture réduite */
+.m-loc { font-size: .68rem; padding: 5px 8px; gap: 4px; }
+.m-loc svg { width: 13px; height: 13px; }
+@media (max-width: 400px) { .m-loc { font-size: .68rem; padding: 5px 8px; } }
