@@ -305,25 +305,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   </div>
 </section>
 
-<section class="section" id="garantie-dommage">
-  <div class="container split">
-    <div class="reveal">
-      <span class="eyebrow">Option de protection</span>
-      <h2> La <span class="grad">Garantie Dommage</span></h2>
-      <p class="lead-sm">En cas de dommage lié à la prestation, vous pouvez déposer une réclamation auprès de ChapTarif.</p>
-      <p>Chaque situation est examinée selon les conditions de la garantie.</p>
-      <ul class="checks">
-        <li><b>Option facultative à 6,72 %</b><br>Le montant est calculé sur le prix de la prestation et affiché avant la confirmation de votre réservation.</li>
-        <li><b>Pour le ménage et le pressing</b><br>Dommages matériels ou vêtements endommagés pendant la prestation, sous réserve des conditions applicables.</li>
-        <li><b>Réclamation examinée par ChapTarif</b><br>Vous fournissez les informations et justificatifs nécessaires.</li>
-      </ul>
-      <p>Une éventuelle prise en charge dépend de l’examen du dossier et des limites prévues.</p>
-      <p>Les exclusions, plafonds et modalités de réclamation sont consultables dans les conditions de la Garantie Dommages.</p>
-      <a class="btn btn-primary btn-lg" href="/garantie-dommage">Voir les conditions de la garantie</a>
-    </div>
-  </div>
-</section>
-
 <section class="section">
   <div class="container">
     <div class="pro-cta reveal">
