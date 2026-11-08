@@ -1,42 +1,48 @@
 <?php
 $title = 'Garantie Dommage';
 $active = 'garantie';
-$pct = (float) setting('garantie_dommage_pct', 5);
 view('layout/header', compact('title', 'active'));
+$ck = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 ?>
-<section class="page-hero" style="--c:#B45309;--hero:url('<?= e(img('hero-abidjan', 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
-  <div class="container"><nav class="crumbs"><a href="/">Accueil</a> › Garantie Dommage</nav><h1> La Garantie Dommage</h1><p>Une assurance interne ChapTarif, en option, pour les services à domicile : service à la personne (ménage, aide à domicile) et pressing.</p></div>
-</section>
-<section class="section">
-  <div class="container narrow">
-    <div class="alert alert-success" style="margin-bottom:20px"><b>En bref :</b> pour +<?= e((string) $pct) ?>% du prix du service, si la prestation est mal réalisée ou qu'un objet est endommagé, ChapTarif vous indemnise ou vous propose une nouvelle prestation gratuite.</div>
-
-    <h2 class="h4">Comment ça marche&nbsp;?</h2>
-    <div class="how">
-      <div class="how-step"><span>1</span><div><h3>Vous cochez l'option au moment de la réservation</h3><p>Sur les formulaires Ménage & Aide et Pressing & Linge, cochez «  Garantie Dommage » avant de payer. Son coût (+<?= e((string) $pct) ?>%) s'ajoute au total, affiché avant paiement.</p></div></div>
-      <div class="how-step"><span>2</span><div><h3>Le service est réalisé</h3><p>Le prestataire intervient normalement. La garantie ne change rien à son travail : elle vous protège en cas de problème.</p></div></div>
-      <div class="how-step"><span>3</span><div><h3>Un souci&nbsp;? Ouvrez une réclamation</h3><p>Depuis « Mes réservations », signalez le problème (ménage mal fait, vêtement brûlé au repassage, objet cassé…). Le paiement du prestataire est gelé pendant l'examen.</p></div></div>
-      <div class="how-step"><span>4</span><div><h3>ChapTarif tranche</h3><p>Notre équipe étudie votre réclamation et, si la garantie a été souscrite, décide soit de vous <b>indemniser</b>, soit de vous proposer <b>une nouvelle prestation gratuite</b>.</p></div></div>
+<section class="gd">
+  <div class="container gd-wrap">
+    <div class="gd-hero">
+      <div class="gd-hero-txt">
+        <h1><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg> Garantie Dommage</h1>
+        <i class="gd-swoosh"></i>
+        <p><b>Une protection optionnelle pour vos services à domicile</b> (ménage, aide à domicile et pressing).</p>
+      </div>
+      <img src="/assets/img/gd-shield.jpg" alt="" width="509" height="308">
     </div>
 
-    <h2 class="h4 mt">Exemples concrets</h2>
-    <ul class="checks">
-      <li><b>Ménage :</b> la femme de ménage n'a pas nettoyé correctement, avec beaucoup de manquements → indemnisation du ménage non effectué ou nouveau ménage offert.</li>
-      <li><b>Pressing :</b> un vêtement est brûlé pendant le repassage → indemnisation si la garantie avait été prise pour cette réservation.</li>
-      <li><b>Ménage :</b> casse, vol, dommage matériel ou prestation signalée comme non réalisée → réclamation possible avec la garantie souscrite, selon ses conditions.</li>
-    </ul>
-
-    <h2 class="h4 mt">Bon à savoir</h2>
-    <ul class="checks">
-      <li>La Garantie Dommage est <b>optionnelle et payante</b> : elle n'est pas incluse automatiquement, il faut la cocher avant de payer.</li>
-      <li>Elle ne peut être demandée qu'<b>au moment de la réservation</b>, pas après.</li>
-      <li>Elle est disponible sur : Ménage & Aide et Pressing & Linge.</li>
-      <li>Toute réclamation passe par le même circuit que les autres litiges (« Mes réservations » → Réclamation), examinée par l'équipe ChapTarif.</li>
-    </ul>
-
-    <div class="center mt">
-      <a class="btn btn-primary btn-lg" href="/#m-cats">Réserver un service</a>
+    <h2 class="gd-h2">Ce que couvre la garantie</h2>
+    <p class="gd-sub">Elle vous indemnise en cas de dommage survenu pendant la prestation.</p>
+    <div class="gd-cols">
+      <div class="gd-card gd-green">
+        <div class="gd-card-h"><span class="gd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3l-6 9M9.5 12.5l4 2.5-2 6c-2-.5-5.5-2.5-7-5l5-3.5z"/><path d="M18 14l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/></svg></span><b>Ménage &amp; Aide à domicile</b></div>
+        <ul><li><?= $ck ?><span>Dommages matériels (casse, détérioration).</span></li><li><?= $ck ?><span>Vol d’un bien dans le cadre de la prestation.</span></li></ul>
+      </div>
+      <div class="gd-card gd-blue">
+        <div class="gd-card-h"><span class="gd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="4.5"/><path d="M7 6h.01M10 6h.01"/></svg></span><b>Pressing &amp; Repassage</b></div>
+        <ul><li><?= $ck ?><span>Détérioration des vêtements (brûlé, déchiré ou abîmé) pendant le lavage, le séchage ou le repassage.</span></li></ul>
+      </div>
     </div>
+
+    <div class="gd-plaf">
+      <div class="gd-plaf-h"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#1E9E3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="6" rx="6" ry="2.5"/><path d="M3 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M3 10v4c0 1.4 2.7 2.5 6 2.5"/><ellipse cx="15" cy="14" rx="6" ry="2.5"/><path d="M9 14v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"/></svg>
+        <div><b>Plafonds d’indemnisation</b><small>L’indemnisation est accordée dans la limite des plafonds suivants :</small></div></div>
+      <div class="gd-plaf-cols">
+        <div><span class="gd-plaf-t gd-t-green"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1E9E3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20H3z"/><path d="M10 20v-5h4v5"/></svg>Ménage &amp; Aide à domicile</span><em class="gd-pill gd-p-green">Jusqu’à 150 000 FCFA<br>par prestation</em></div>
+        <div><span class="gd-plaf-t"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1677C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="4.5"/><path d="M7 6h.01M10 6h.01"/></svg>Pressing &amp; Repassage</span><em class="gd-pill gd-p-blue">Jusqu’à 100 000 FCFA<br>par prestation</em></div>
+      </div>
+    </div>
+
+    <div class="gd-info">
+      <div class="gd-info-h"><span>i</span><b>Bon à savoir</b></div>
+      <ul><li><?= $ck ?><span>La Garantie Dommage est <b>optionnelle</b> et payante.</span></li><li><?= $ck ?><span>Elle doit être souscrite au <b>moment de la réservation</b>.</span></li><li><?= $ck ?><span>Elle est disponible sur le ménage, l’aide à domicile et le pressing.</span></li></ul>
+    </div>
+
+    <div class="gd-cta"><a class="btn btn-primary btn-lg" href="/service-a-la-personne">Réserver un service</a></div>
   </div>
 </section>
 <?php view('layout/footer', compact('active'));
