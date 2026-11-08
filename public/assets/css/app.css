@@ -1437,3 +1437,33 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
 .gd-step p { margin: 0; font-size: .78rem; line-height: 1.3; }
 .gd-n { position: absolute; top: -8px; left: -4px; width: 28px; height: 28px; border-radius: 50%; background: #1E9E3E; color: #fff; font-weight: 800; display: grid; place-items: center; font-size: .9rem; }
 @media (min-width: 700px) { .gd-steps { grid-template-columns: repeat(4, 1fr); } .gd-step p { font-size: .9rem; } }
+/* Garantie Dommage v3 (maquette claire) */
+.gd-hero2 { position: relative; display: flex; align-items: center; min-height: 170px; overflow: hidden; border-radius: 0 0 0 0; }
+.gd-hero2 > div { position: relative; z-index: 1; padding-right: 38%; }
+.gd-hero2 h1 { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 1.35rem; }
+.gd-hero2 h1 svg { flex: none; width: 46px; height: 46px; }
+.gd-hero2 h1 span { background: #1E8E3E; color: #fff; padding: 6px 16px 6px 12px; border-radius: 6px 22px 22px 6px; font-weight: 800; line-height: 1.1; }
+.gd-hero2 .gd-swoosh { margin: 8px 0 8px 52px; background: #1E9E3E; }
+.gd-hero2 p { margin: 0; font-size: .82rem; color: #1F2A37; }
+.gd-hero2 img { position: absolute; right: -6px; top: 0; height: 100%; width: 44%; object-fit: cover; -webkit-mask-image: linear-gradient(100deg, transparent 0, #000 25%); mask-image: linear-gradient(100deg, transparent 0, #000 25%); }
+.gd-h2 { display: flex; align-items: center; gap: 8px; }
+.gd-h2 { background: linear-gradient(90deg, #DDF3E1, transparent); border-radius: 0 999px 999px 0; padding: 4px 12px; }
+.gd-card { background: #fff !important; border: 1.5px solid #DCE6EE; padding: 0; overflow: hidden; }
+.gd-card-h { background: #E6F1FC; padding: 10px 12px; margin: 0 0 8px; }
+.gd-green .gd-card-h { background: #E9F6EC; }
+.gd-card ul { padding: 0 12px 12px; }
+.gd-ico { background: none !important; width: 32px; height: 32px; }
+.gd-ico svg { width: 28px; height: 28px; }
+.gd-p-blue { background: #D9F2DF; }
+.gd-two { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 14px; }
+.gd-excl, .gd-delai { border: 1.5px solid #E3E8EE; border-radius: 18px; overflow: hidden; background: #fff; }
+.gd-excl h3, .gd-delai h3 { display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 12px; font-size: 1.05rem; }
+.gd-excl h3 { background: #FDECEC; color: #D32F2F; }
+.gd-delai h3 { background: #E6F1FC; }
+.gd-excl ul { padding: 10px 12px 12px; gap: 8px; }
+.gd-excl li { display: flex; gap: 8px; font-size: .8rem; line-height: 1.3; }
+.gd-excl li svg { flex: none; width: 20px; height: 20px; color: #E53935; background: #FDE3E3; border-radius: 50%; padding: 4px; box-sizing: border-box; }
+.gd-delai p { margin: 0; padding: 14px; font-size: .9rem; line-height: 1.7; }
+.gd-delai mark { background: #DDF3C8; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+@media (min-width: 700px) { .gd-two { grid-template-columns: 1fr 1fr; } .gd-hero2 h1 { font-size: 2rem; } .gd-hero2 p { font-size: 1rem; } }
+@media (max-width: 600px) { .gd-cols { grid-template-columns: 1fr; } .gd-card li { font-size: .84rem; } }
