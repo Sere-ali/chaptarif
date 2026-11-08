@@ -1467,3 +1467,16 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
 .gd-delai mark { background: #DDF3C8; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
 @media (min-width: 700px) { .gd-two { grid-template-columns: 1fr 1fr; } .gd-hero2 h1 { font-size: 2rem; } .gd-hero2 p { font-size: 1rem; } }
 @media (max-width: 600px) { .gd-cols { grid-template-columns: 1fr; } .gd-card li { font-size: .84rem; } }
+/* Garantie Dommage v4 : bleu marine, vétusté, objets précieux */
+.gd-hero2 h1 span { background: linear-gradient(90deg, #123E8C, #1A56B8); border-radius: 22px; padding: 6px 16px; }
+.gd-hero2 .gd-swoosh { background: #45C23B; }
+.gd-h2 { color: #123E8C; background: linear-gradient(90deg, #DCEAFB, transparent); border-left-color: #45C23B; }
+.gd-card-h b { color: #123E8C; }
+.gd-green .gd-card-h b { color: #1E6B30; }
+.gd-plaf { border-color: #D6E0EE; }
+.gd-plaf-h b { color: #4A1FA8; }
+.gd-plaf-h { background: linear-gradient(90deg, #ECE7FB, transparent); border-radius: 999px; padding: 4px 10px; margin: -4px -2px 0; }
+.gd-vet { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; background: #F2FAE8; border: 1.5px solid #C9E8A8; border-radius: 999px; padding: 6px 12px; font-size: .8rem; line-height: 1.35; }
+.gd-vet svg { flex: none; }
+.gd-vet mark { background: #CDEFA8; font-weight: 800; padding: 1px 7px; border-radius: 999px; }
+.gd-delai h3 { background: #EAF7DC; color: #1E6B30; }
