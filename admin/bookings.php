@@ -3,20 +3,30 @@ require_admin();
 $isDisputes = $path === '/admin/litiges';
 $status = $isDisputes ? 'EN_LITIGE' : (string) ($_GET['status'] ?? '');
 $uk = (string) ($_GET['universe'] ?? '');
+// Réservations rangées par service : jamais mélangées.
+$SERVICES = [
+    'transport' => ['Transport', domaine('transport')['keys'], '#1F5C8C', '<path d="M4 16V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9M4 16h16v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 11h16"/><circle cx="8" cy="14" r=".6"/><circle cx="16" cy="14" r=".6"/>'],
+    'immobilier' => ['Immobilier', ['immobilier'], '#C98512', '<path d="M3 11.5 12 4l9 7.5V20H3z"/><path d="M10 20v-5h4v5"/>'],
+    'service-a-la-personne' => ['Service à la personne', domaine('service-a-la-personne')['keys'], '#7A4FB5', '<path d="M4 10h11l-1.5 10h-8z"/><path d="M6.5 10a3 3 0 0 1 6 0"/><path d="M20 3l-2.5 11M16 14h3l1 6h-5z"/>'],
+    'beaute' => ['Beauté', domaine('beaute')['keys'], '#C2185B', '<path d="M12 19c-3-2-4-5-4-8 0-2 1.5-4.5 4-6 2.5 1.5 4 4 4 6 0 3-1 6-4 8z"/><path d="M12 19c-4 0-8-2-9-6 2-.5 4 0 5 .8M12 19c4 0 8-2 9-6-2-.5-4 0-5 .8"/>'],
+];
+$svc = isset($SERVICES[$_GET['service'] ?? '']) ? $_GET['service'] : 'transport';
+$svcKeys = $SERVICES[$svc][1];
 $s = trim((string) ($_GET['q'] ?? ''));
 $where = ['1=1'];
 $p = [];
 $claim = isset($_GET['claim']);
 if ($claim) { $where[] = "b.status = 'EN_ATTENTE_PAIEMENT' AND b.payment_ref = 'EN_ATTENTE_VALIDATION'"; }
 elseif ($status !== '' && isset(statuses()[$status])) { $where[] = 'b.status = ?'; $p[] = $status; }
-if ($uk !== '' && isset(universes()[$uk])) { $where[] = 'b.universe = ?'; $p[] = $uk; }
+if ($uk !== '' && in_array($uk, $svcKeys, true)) { $where[] = 'b.universe = ?'; $p[] = $uk; }
+else { $where[] = 'b.universe IN (' . implode(',', array_fill(0, count($svcKeys), '?')) . ')'; array_push($p, ...$svcKeys); }
 if ($s !== '') { $where[] = '(b.ref LIKE ? OR b.title LIKE ? OR u.phone LIKE ? OR u.name LIKE ?)'; array_push($p, "%$s%", "%$s%", '%' . preg_replace('/\D/', '', $s) . '%', "%$s%"); }
 $w = implode(' AND ', $where);
 $total = (int) val("SELECT COUNT(*) FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE $w", $p);
 
 if (isset($_GET['export'])) {
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="reservations-' . date('Ymd') . '.csv"');
+    header('Content-Disposition: attachment; filename="reservations-' . $svc . '-' . date('Ymd') . '.csv"');
     $out = fopen('php://output', 'w');
     fwrite($out, "\xEF\xBB\xBF");
     fputcsv($out, ['Référence', 'Date', 'Univers', 'Prestation', 'Client', 'Téléphone', 'Prestataire', 'Montant', 'Frais', 'Total', 'Commission', 'Part prestataire', 'Paiement', 'Statut'], ';');
@@ -29,21 +39,36 @@ if (isset($_GET['export'])) {
 
 [$pg, $pages, $off, $per] = paginate($total, 30);
 $rows = all("SELECT b.*, u.name AS uname, u.phone AS uphone, pr.name AS pname FROM bookings b LEFT JOIN users u ON u.id = b.user_id LEFT JOIN providers pr ON pr.id = b.provider_id WHERE $w ORDER BY b.id DESC LIMIT $per OFFSET $off", $p);
-$claimCount = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_ATTENTE_PAIEMENT' AND payment_ref = 'EN_ATTENTE_VALIDATION'");
-$page = $isDisputes ? 'Litiges à arbitrer' : 'Réservations';
+$claimCount = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_ATTENTE_PAIEMENT' AND payment_ref = 'EN_ATTENTE_VALIDATION' AND universe IN (" . implode(',', array_fill(0, count($svcKeys), '?')) . ')', $svcKeys);
+$svcCount = []; $svcAlert = [];
+foreach ($SERVICES as $sk => $sv) {
+    $ph = implode(',', array_fill(0, count($sv[1]), '?'));
+    $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM bookings WHERE universe IN ($ph)" . ($isDisputes ? " AND status = 'EN_LITIGE'" : ''), $sv[1]);
+    $svcAlert[$sk] = (int) val("SELECT COUNT(*) FROM bookings WHERE universe IN ($ph) AND (status = 'EN_LITIGE' OR (status = 'EN_ATTENTE_PAIEMENT' AND payment_ref = 'EN_ATTENTE_VALIDATION'))", $sv[1]);
+}
+$page = ($isDisputes ? 'Litiges à arbitrer' : 'Réservations') . ' · ' . $SERVICES[$svc][0];
 $nav = $isDisputes ? 'disputes' : 'bookings';
 view('admin/header', compact('page', 'nav'));
 ?>
+<nav class="svc-tabs">
+  <?php foreach ($SERVICES as $sk => [$sl, , $sc, $si]): ?>
+    <a href="?service=<?= $sk ?>" class="<?= $svc === $sk ? 'on' : '' ?>" style="--c:<?= $sc ?>">
+      <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $si ?></svg></i>
+      <span><?= e($sl) ?><small><?= $svcCount[$sk] ?> <?= $isDisputes ? 'litige(s)' : 'réservation(s)' ?></small></span>
+      <?php if ($svcAlert[$sk]): ?><em title="Litiges ou paiements à valider"><?= $svcAlert[$sk] ?></em><?php endif; ?>
+    </a>
+  <?php endforeach; ?>
+</nav>
 <div class="panel">
-  <form class="filters" method="get">
+  <form class="filters" method="get"><input type="hidden" name="service" value="<?= e($svc) ?>">
     <label class="fld"><span>Recherche</span><input name="q" value="<?= e($s) ?>" placeholder="Réf., client, téléphone…"></label>
     <?php if (!$isDisputes): ?>
     <label class="fld"><span>Statut</span><select name="status"><option value="">Tous</option><?php foreach (statuses() as $k => [$l]): ?><option value="<?= $k ?>" <?= $status === $k ? 'selected' : '' ?>><?= e($l) ?></option><?php endforeach; ?></select></label>
     <?php endif; ?>
-    <label class="fld"><span>Univers</span><select name="universe"><option value="">Tous</option><?php foreach (universes() as $k => $x): ?><option value="<?= $k ?>" <?= $uk === $k ? 'selected' : '' ?>><?= e($x['name']) ?></option><?php endforeach; ?></select></label>
+    <label class="fld"><span>Catégorie</span><select name="universe"><option value="">Toutes</option><?php foreach (array_intersect_key(universes(), array_flip($svcKeys)) as $k => $x): ?><option value="<?= $k ?>" <?= $uk === $k ? 'selected' : '' ?>><?= e($x['name']) ?></option><?php endforeach; ?></select></label>
     <button class="btn btn-primary">Filtrer</button>
     <a class="btn btn-ghost" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 1]))) ?>"> Export CSV</a>
-    <?php if (!$isDisputes && $claimCount): ?><a class="btn btn-soft" href="/admin/reservations?claim=1"> <?= $claimCount ?> paiement(s) manuel(s) à valider</a><?php endif; ?>
+    <?php if (!$isDisputes && $claimCount): ?><a class="btn btn-soft" href="/admin/reservations?service=<?= e($svc) ?>&amp;claim=1"> <?= $claimCount ?> paiement(s) manuel(s) à valider</a><?php endif; ?>
   </form>
   <p class="muted small"><?= $total ?> résultat(s)</p>
   <div class="tbl-wrap"><table class="tbl">

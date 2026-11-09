@@ -279,3 +279,16 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
   .ad-actions { flex-direction: column-reverse; }
 }
 @media (prefers-reduced-motion: reduce) { .ad-card, .ad-card *, .ad-band::after { animation: none !important; transition: none !important; } }
+/* Réservations : un onglet par service */
+.svc-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.svc-tabs a { position: relative; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: #fff; border: 1.5px solid #E6ECF2; text-decoration: none; color: #0F1B2D; transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s, border-color .2s, background .2s; }
+.svc-tabs a:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -18px rgba(15,27,45,.45); }
+.svc-tabs i { width: 44px; height: 44px; flex: none; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 12%, #fff); color: var(--c); }
+.svc-tabs i svg { width: 24px; height: 24px; }
+.svc-tabs span { display: flex; flex-direction: column; font-weight: 800; font-size: .98rem; line-height: 1.2; }
+.svc-tabs small { font-weight: 600; color: #6B7A8C; font-size: .78rem; }
+.svc-tabs a.on { background: var(--c); border-color: var(--c); color: #fff; box-shadow: 0 16px 30px -18px var(--c); }
+.svc-tabs a.on i { background: rgba(255,255,255,.2); color: #fff; }
+.svc-tabs a.on small { color: rgba(255,255,255,.85); }
+.svc-tabs em { position: absolute; top: -7px; right: -7px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #E53935; color: #fff; font-style: normal; font-weight: 800; font-size: .75rem; display: grid; place-items: center; box-shadow: 0 0 0 3px #F3F6FA; }
+@media (max-width: 900px) { .svc-tabs { grid-template-columns: 1fr 1fr; } }
