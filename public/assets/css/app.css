@@ -1562,3 +1562,50 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
   .tabbar a.on svg { background: #3A7FC1; stroke: #fff; width: 52px; height: 34px; padding: 6px 15px; border-radius: 20px; }
   body { padding-bottom: 96px; }
 }
+/* ===== Ordinateur : le contenu occupe toute la largeur de l'écran ===== */
+@media (min-width: 900px) {
+  .tabbar { width: auto; left: 32px; right: 32px; transform: none; max-width: none; }
+  /* Accueil */
+  .m-home .m-grid { max-width: none; width: 100%; padding: 0 40px; gap: 32px; }
+  .m-home .m-search, .m-trio { max-width: 900px; }
+  /* Transport / Service à la personne / Beauté */
+  body.domaine-m .d-home { max-width: none; padding: 20px 40px 40px; }
+  body.domaine-m .d-top { max-width: none; }
+  body.dom-sap .sap-banner { width: 100%; height: 340px; object-fit: cover; object-position: center 35%; }
+  body.domaine-m .d-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 18px; }
+  body.dom-transport .d-list { grid-template-columns: repeat(3, 1fr); }
+  body.domaine-m .d-item { height: 100%; }
+  body.domaine-m .d-item-body { flex: 1; min-width: 0; }
+  /* Immobilier */
+  body.immo-m .d-home .container, body.immo-m .immo-land { max-width: none; padding-left: 40px; padding-right: 40px; }
+  body.immo-m .il-banner { height: 300px; }
+  body.immo-m .il-banner h2 { font-size: 2.4rem; }
+  body.immo-m .il-banner p { font-size: 1.15rem; }
+  body.immo-m .il-banner > div { padding: 30px 50% 30px 40px; }
+  body.immo-m .il-fields { flex-direction: row; }
+  body.immo-m .il-fields .il-fld { flex: 1; }
+  body.immo-m .il-search .il-card { height: 300px; }
+  body.immo-m .il-search .il-card span { font-size: 1rem; padding: 10px; left: 12px; right: 12px; bottom: 12px; }
+  body.immo-m .il-search > .btn-primary { max-width: 520px; margin: 4px auto 0; width: 100%; }
+  /* Formulaires coiffure / maquillage / onglerie */
+  .svc-solo { max-width: none !important; padding-left: 40px; padding-right: 40px; }
+  .svc-solo .mq-list, .svc-solo .on-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .svc-solo .mq-new { grid-column: 1 / -1; }
+  .svc-solo .row2 { grid-template-columns: 1fr 1fr 2fr; }
+}
+@media (min-width: 900px) and (max-width: 1150px) {
+  body.dom-transport .d-list { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 900px) {
+  body.immo-m, body.immo-m:not(.immo-ads) { overflow: auto !important; height: auto !important; }
+  body.immo-m:not(.immo-ads) .d-home { height: auto !important; min-height: 0; overflow: visible !important; padding-bottom: 110px; }
+  body.immo-m:not(.immo-ads) .immo-land { flex: none; }
+  body.dom-sap .sap-banner { height: auto; max-height: 52vh; object-fit: cover; object-position: center top; }
+}
+@media (min-width: 900px) {
+  body.dom-bea .d-top-title, body.dom-bea .d-h2 { font-family: inherit !important; font-style: normal !important; color: #0F1B2D !important; font-weight: 800; }
+  body.dom-bea .d-top-title { display: flex; align-items: center; gap: 6px; justify-content: center; }
+  body.dom-bea .d-sub { color: #3B4B57 !important; }
+  body.dom-bea .d-item-img, body.dom-bea .d-item-img img { border-top: 0 !important; border-bottom: 0 !important; border-left: 0 !important; box-shadow: none !important; outline: 0 !important; background: none !important; }
+  body.dom-bea .d-item-img img { border: 0 !important; }
+}
