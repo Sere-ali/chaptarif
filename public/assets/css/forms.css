@@ -1,0 +1,78 @@
+/* ChapTarif — formulaires : style commun soigné, lisible et responsive. */
+:root { --f-bg: #F5F7FA; --f-line: #E2E8EF; --f-acc: #2E7D5B; --f-ring: rgba(46, 125, 91, .16); }
+body.theme-beaute, .theme-beaute { --f-acc: #D81B60; --f-ring: rgba(216, 27, 96, .14); }
+
+/* Cartes de formulaire */
+.form-card, .auth-card, .dv, .il-sheet-box, form.card { border-radius: 24px !important; border: 1px solid #EAEFF4; box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 24px 50px -32px rgba(15, 27, 45, .45) !important; background: #fff; }
+.form-card { padding: clamp(18px, 3.5vw, 30px) !important; position: relative; overflow: hidden; }
+.form-card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: linear-gradient(90deg, var(--f-acc), #3A7FC1, #F5B82E); opacity: .9; }
+.form-card .h3, .form-card .h4, .form-card h2 { display: flex; align-items: center; gap: 10px; }
+.form-card h2.h3::before, .form-card h2.h4::before { content: ""; width: 4px; height: 1.05em; border-radius: 4px; background: var(--f-acc); flex: none; }
+
+/* Libellés */
+.fld { gap: 7px; margin-bottom: 16px; }
+.fld > span, .fld > legend { font-size: .84rem; font-weight: 700; color: #2B3A4C; letter-spacing: .005em; transition: color .2s ease; }
+.fld:focus-within > span { color: var(--f-acc); }
+
+/* Champs */
+input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=hidden]), select, textarea {
+  background-color: var(--f-bg); border: 1.5px solid transparent; border-radius: 14px; padding: 13px 15px; min-height: 50px; font-size: 1rem; color: #0F1B2D;
+  transition: border-color .2s ease, box-shadow .25s ease, background-color .2s ease, transform .2s ease;
+}
+textarea { min-height: 110px; line-height: 1.5; resize: vertical; }
+input::placeholder, textarea::placeholder { color: #8A97A6; }
+input:hover:not(:focus):not([type=checkbox]):not([type=radio]), select:hover:not(:focus), textarea:hover:not(:focus) { background-color: #EEF2F6; }
+input:not([type=checkbox]):not([type=radio]):focus, select:focus, textarea:focus, .fld input:focus, .fld select:focus, .fld textarea:focus {
+  outline: none; background-color: #fff !important; border-color: var(--f-acc) !important; box-shadow: 0 0 0 4px var(--f-ring) !important;
+}
+input:user-invalid, select:user-invalid, textarea:user-invalid { border-color: #E53935 !important; box-shadow: 0 0 0 4px rgba(229, 57, 53, .12) !important; background-color: #FFF7F7 !important; }
+select { padding-right: 42px; background-position: right 16px center; cursor: pointer; }
+input[type=date], input[type=time], input[type=datetime-local] { cursor: pointer; }
+input[type=date]::-webkit-calendar-picker-indicator, input[type=datetime-local]::-webkit-calendar-picker-indicator { opacity: .6; cursor: pointer; }
+
+/* Téléphone avec indicatif */
+.tel { border: 1.5px solid transparent !important; background: var(--f-bg); border-radius: 14px !important; transition: border-color .2s, box-shadow .25s, background-color .2s; }
+.tel span { background: transparent !important; color: #2B3A4C; border-right: 1.5px solid var(--f-line); display: flex; align-items: center; padding: 0 14px !important; }
+.tel input { background: transparent !important; box-shadow: none !important; border: 0 !important; }
+.tel:focus-within { background: #fff; border-color: var(--f-acc) !important; box-shadow: 0 0 0 4px var(--f-ring) !important; }
+
+/* Cases à cocher et boutons radio */
+input[type=checkbox], input[type=radio] { accent-color: var(--f-acc); width: 20px; height: 20px; cursor: pointer; flex: none; }
+.check { padding: 12px 14px; margin: 10px 0; background: var(--f-bg); border-radius: 14px; border: 1.5px solid transparent; cursor: pointer; transition: border-color .2s, background-color .2s; line-height: 1.45; }
+.check:hover { background: #EEF2F6; }
+.check:has(input:checked) { background: #fff; border-color: var(--f-acc); box-shadow: 0 6px 18px -12px rgba(15,27,45,.35); }
+.check input { margin-top: 1px; }
+
+/* Fichiers : zone de dépôt */
+.fld.file, label.fld:has(input[type=file]) { position: relative; }
+input[type=file] { width: 100%; padding: 12px; border: 1.5px dashed #B8C4D0; border-radius: 14px; background: #FAFCFE; color: #5B6B7F; font-size: .88rem; cursor: pointer; transition: border-color .2s, background-color .2s; }
+input[type=file]:hover { border-color: var(--f-acc); background: #F3FAF6; }
+input[type=file]::file-selector-button { margin-right: 12px; border: 0; border-radius: 999px; padding: 8px 14px; background: var(--f-acc); color: #fff; font: 700 .82rem/1 inherit; cursor: pointer; transition: filter .2s; }
+input[type=file]::file-selector-button:hover { filter: brightness(1.08); }
+
+/* Lignes à deux colonnes */
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row2 > .fld { margin-bottom: 16px; }
+@media (max-width: 560px) { .row2:not(.keep) { grid-template-columns: 1fr; gap: 0; } [data-universe] .row2 { grid-template-columns: 1fr 1fr; gap: 10px; } }
+
+/* Boutons d'envoi */
+form .btn-block.btn-lg, .form-card .btn-lg { min-height: 54px; border-radius: 16px; font-size: 1.02rem; letter-spacing: .01em; }
+form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc) 80%, transparent); }
+
+/* Petits textes d'aide */
+.form-card .fine, .form-card .muted.small { color: #6B7A8C; }
+
+/* Téléphone : éviter le zoom automatique, espacements confortables */
+@media (max-width: 899px) {
+  input:not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea { font-size: 16px; }
+  .form-card { border-radius: 22px !important; }
+}
+/* Ordinateur : formulaires aérés */
+@media (min-width: 900px) {
+  .auth-card { max-width: 480px; margin-left: auto; margin-right: auto; padding: 34px !important; }
+  .form-card .fld { margin-bottom: 18px; }
+}
+/* Bouton « Activer ma localisation » aux couleurs de la page */
+[data-geo] { border-radius: 14px !important; min-height: 48px; transition: transform .2s, filter .2s; }
+[data-geo]:hover { filter: brightness(.97); transform: translateY(-1px); }
+.theme-beaute [data-geo] { background: #FDE7EF !important; color: #D81B60 !important; }
