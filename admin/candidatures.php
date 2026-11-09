@@ -73,6 +73,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
         <form method="post" data-confirm="Refuser cette candidature ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-ghost btn-sm" name="action" value="reject">Refuser</button></form>
       <?php endif; ?>
       <?php $pu = one('SELECT id FROM users WHERE phone = ?', [$p['phone']]); if ($pu): ?><a class="btn btn-ghost btn-sm" href="/admin/chat?u=<?= (int) $pu['id'] ?>">Écrire</a><?php endif; ?>
+      <a class="btn btn-soft btn-sm" href="/admin/prestataire/voir?id=<?= (int) $p['id'] ?>">Voir le profil</a>
       <a class="btn btn-ghost btn-sm" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Dossier</a>
       <?= del_btn('provider', (int) $p['id'], 'la candidature de ' . $p['name']) ?>
     </div>

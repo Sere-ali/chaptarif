@@ -51,7 +51,7 @@ view('admin/header', compact('page', 'nav'));
     <tbody>
     <?php foreach ($rows as $p): $x = universe($p['universe']); ?>
       <tr>
-        <td><div class="prov-mini" style="padding:0;border:0"><?= avatar($p) ?><div><a href="/admin/prestataire?id=<?= (int) $p['id'] ?>"><b><?= e($p['name']) ?></b></a><small><?= e(fmt_phone($p['phone'])) ?><?= $p['source'] === 'candidature' ? ' · candidature web' : '' ?></small></div></div></td>
+        <td><div class="prov-mini" style="padding:0;border:0"><?= avatar($p) ?><div><a href="/admin/prestataire/voir?id=<?= (int) $p['id'] ?>"><b><?= e($p['name']) ?></b></a><small><?= e(fmt_phone($p['phone'])) ?><?= $p['source'] === 'candidature' ? ' · candidature web' : '' ?></small></div></div></td>
         <td><span class="uni-dot" style="--c:<?= $x['color'] ?>"><i></i><?= e($x['short']) ?></span></td>
         <td><?= e($p['commune']) ?></td>
         <td><?= $p['rating'] > 0 ? stars((float) $p['rating']) : '—' ?><small><?= (int) $p['missions'] ?> missions</small></td>
@@ -59,6 +59,7 @@ view('admin/header', compact('page', 'nav'));
         <td><?= is_sponsored($p) ? '<span class="badge badge-gold">★ jusqu\'au ' . fmt_date($p['sponsored_until']) . '</span>' : '<span class="muted small">Standard</span>' ?></td>
         <td><?= (int) $p['active'] ? '<span class="badge badge-green">Actif</span>' : '<span class="badge badge-gray">Inactif</span>' ?></td>
         <td><div class="acts">
+          <a class="btn btn-primary btn-xs" href="/admin/prestataire/voir?id=<?= (int) $p['id'] ?>">👁 Voir le profil</a>
           <?php if ($p['kyc_status'] !== 'verified'): ?>
             <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-primary btn-xs" name="action" value="verify">✓ Valider KYC</button></form>
           <?php endif; ?>
