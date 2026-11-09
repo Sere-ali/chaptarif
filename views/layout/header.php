@@ -26,6 +26,7 @@ $U = nav_entries();
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/app.css?v=115">
 <link rel="stylesheet" href="/assets/css/polish.css?v=8">
+<link rel="stylesheet" href="/assets/css/motion.css?v=1">
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <?php endif; ?>

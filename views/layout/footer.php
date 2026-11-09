@@ -16,6 +16,7 @@
 <script src="/assets/js/app.js?v=19" defer></script>
 <script>document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll("[class*=ico],[class*=emoji],.fi,.step-ico,.sum-ico").forEach(function(e){if(!e.children.length&&!e.textContent.trim()&&e.tagName!=="IMG"&&e.tagName!=="svg")e.style.display="none";});});</script>
 <script src="/assets/js/polish.js?v=1" defer></script>
+<script src="/assets/js/motion.js?v=1" defer></script>
 <?php if (!empty($leaflet)): ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
 <?php endif; ?>
