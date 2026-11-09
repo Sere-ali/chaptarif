@@ -6,7 +6,14 @@ $type = (string) ($_POST['type'] ?? '');
 $id = (int) ($_POST['id'] ?? 0);
 $back = (string) ($_POST['back'] ?? '/admin');
 if (!str_starts_with($back, '/admin') || str_starts_with($back, '//')) $back = '/admin';
-$live = "status IN ('EN_ATTENTE_PAIEMENT','BLOQUE','VALIDE','EN_LITIGE')";
+// Seul l'argent réellement bloqué (payé, en séquestre ou en litige) empêche la suppression.
+$live = "status IN ('BLOQUE','EN_LITIGE')";
+// Réservations jamais payées : annulées automatiquement avant suppression.
+$cancelUnpaid = function (string $where, array $p) { q("UPDATE bookings SET status = 'ANNULE' WHERE status = 'EN_ATTENTE_PAIEMENT' AND $where", $p); };
+$blocking = function (string $where, array $p) use ($live) {
+    $refs = array_column(all("SELECT ref FROM bookings WHERE $where AND $live ORDER BY id LIMIT 5", $p), 'ref');
+    return $refs ? ' Réservation(s) concernée(s) : ' . implode(', ', $refs) . '. Clôturez-les (confirmer ou rembourser) depuis « Réservations », puis supprimez.' : '';
+};
 $used = fn (string $sql, array $p) => (int) val($sql, $p) > 0;
 $stop = function (string $msg) use ($back) { flash('error', $msg); redirect($back); };
 $label = '';
@@ -14,7 +21,8 @@ $label = '';
 switch ($type) {
     case 'provider':
         $p = one('SELECT * FROM providers WHERE id = ?', [$id]) ?: $stop('Prestataire introuvable.');
-        if ($used("SELECT COUNT(*) FROM bookings WHERE provider_id = ? AND $live", [$id])) $stop('Ce prestataire a des réservations en cours : suspendez-le plutôt que de le supprimer.');
+        if ($used("SELECT COUNT(*) FROM bookings WHERE provider_id = ? AND $live", [$id])) $stop('Ce prestataire a de l’argent bloqué sur des réservations payées.' . $blocking('provider_id = ?', [$id]));
+        $cancelUnpaid('provider_id = ?', [$id]);
         q('DELETE FROM visit_requests WHERE provider_id = ?', [$id]);
         q('DELETE FROM provider_services WHERE provider_id = ?', [$id]);
         q("UPDATE trips SET active = 0, provider_id = NULL WHERE provider_id = ?", [$id]);
@@ -23,7 +31,8 @@ switch ($type) {
         break;
     case 'listing':
         $a = one('SELECT * FROM provider_services WHERE id = ?', [$id]) ?: $stop('Annonce introuvable.');
-        if ($used("SELECT COUNT(*) FROM bookings WHERE item_type = 'listing' AND item_id = ? AND $live", [$id])) $stop('Cette annonce a des réservations en cours : désactivez-la plutôt.');
+        if ($used("SELECT COUNT(*) FROM bookings WHERE item_type = 'listing' AND item_id = ? AND $live", [$id])) $stop('Cette annonce a des réservations payées en cours.' . $blocking("item_type = 'listing' AND item_id = ?", [$id]));
+        $cancelUnpaid("item_type = 'listing' AND item_id = ?", [$id]);
         q('DELETE FROM visit_requests WHERE service_id = ?', [$id]);
         q('DELETE FROM provider_services WHERE id = ?', [$id]);
         $label = 'Annonce « ' . $a['title'] . ' »';
@@ -46,7 +55,8 @@ switch ($type) {
         break;
     case 'trip':
         $t = one('SELECT * FROM trips WHERE id = ?', [$id]) ?: $stop('Trajet introuvable.');
-        if ($used("SELECT COUNT(*) FROM bookings WHERE item_type = 'trip' AND item_id = ? AND $live", [$id])) $stop('Ce trajet a des billets vendus : désactivez-le plutôt.');
+        if ($used("SELECT COUNT(*) FROM bookings WHERE item_type = 'trip' AND item_id = ? AND $live", [$id])) $stop('Ce trajet a des billets payés en cours.' . $blocking("item_type = 'trip' AND item_id = ?", [$id]));
+        $cancelUnpaid("item_type = 'trip' AND item_id = ?", [$id]);
         q('DELETE FROM trips WHERE id = ?', [$id]);
         $label = 'Trajet ' . $t['from_city'] . ' → ' . $t['to_city'];
         break;
@@ -62,7 +72,8 @@ switch ($type) {
         break;
     case 'property':
         $p = one('SELECT * FROM properties WHERE id = ?', [$id]) ?: $stop('Logement introuvable.');
-        if ($used("SELECT COUNT(*) FROM bookings WHERE item_type = 'property' AND item_id = ? AND $live", [$id])) $stop('Ce logement a des réservations en cours : masquez-le plutôt.');
+        if ($used("SELECT COUNT(*) FROM bookings WHERE item_type = 'property' AND item_id = ? AND $live", [$id])) $stop('Ce logement a des réservations payées en cours.' . $blocking("item_type = 'property' AND item_id = ?", [$id]));
+        $cancelUnpaid("item_type = 'property' AND item_id = ?", [$id]);
         q('DELETE FROM properties WHERE id = ?', [$id]);
         $label = 'Logement « ' . $p['title'] . ' »';
         break;
