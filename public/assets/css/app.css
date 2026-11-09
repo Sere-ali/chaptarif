@@ -1552,3 +1552,13 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
   .topbar .nav-link { padding-left: 8px; padding-right: 8px; font-size: .9rem; }
   .topbar .top-actions .btn { padding-left: 12px; padding-right: 12px; font-size: .85rem; }
 }
+/* Barre du bas (Accueil, Réservations, Chat, Profil) aussi sur ordinateur */
+@media (min-width: 900px) {
+  .tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; z-index: 60; left: 50%; right: auto; transform: translateX(-50%); width: 480px; bottom: 18px; background: #fff; border: 0; border-radius: 30px; box-shadow: 0 12px 34px rgba(15, 27, 45, .18); padding: 8px 6px; }
+  .tabbar a { display: grid; justify-items: center; gap: 3px; font-size: .8rem; font-weight: 700; color: var(--muted); padding: 4px; border-radius: 10px; text-decoration: none; }
+  .tabbar a:hover { color: #3A7FC1; }
+  .tabbar svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+  .tabbar a.on { color: #3A7FC1; }
+  .tabbar a.on svg { background: #3A7FC1; stroke: #fff; width: 52px; height: 34px; padding: 6px 15px; border-radius: 20px; }
+  body { padding-bottom: 96px; }
+}
