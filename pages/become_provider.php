@@ -76,67 +76,134 @@ view('layout/header', compact('title', 'desc', 'active'));
         <div class="price-row best"><span>Vous recevez</span><b><?= fcfa(5000 - 5000 * (int) setting('commission_menage', 15) / 100) ?></b></div>
       </div>
     </div>
-    <div>
-    <form class="card form-card" id="connexion" method="post" action="/connexion" style="margin-bottom:18px">
-      <?= csrf_field() ?><input type="hidden" name="step" value="pwd"><input type="hidden" name="back" value="prestataire"><input type="hidden" name="next" value="/espace-prestataire">
-      <h2 class="h3"> Déjà prestataire ? Connectez-vous</h2>
-      <p class="muted">Accédez à votre espace pour créer vos services et vos annonces.</p>
-      <label class="fld"><span>Téléphone</span><div class="tel"><span> +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
-      <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
-      <button class="btn btn-primary btn-block">Me connecter</button>
-    </form>
-    <form class="card form-card" id="form" method="post" enctype="multipart/form-data">
-      <?= csrf_field() ?>
-      <h2 class="h3">Ma candidature</h2>
+    <div class="pa-wrap">
+    <div class="pa card" id="pa">
+      <div class="pa-tabs" role="tablist">
+        <button type="button" role="tab" class="on" data-pa-tab="signup">Créer mon compte</button>
+        <button type="button" role="tab" data-pa-tab="login">Se connecter</button>
+        <i class="pa-ink"></i>
+      </div>
+
+      <form class="pa-panel" id="connexion" data-pa-panel="login" method="post" action="/connexion" hidden>
+        <?= csrf_field() ?><input type="hidden" name="step" value="pwd"><input type="hidden" name="back" value="prestataire"><input type="hidden" name="next" value="/espace-prestataire">
+        <div class="pa-head"><span class="pa-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+          <div><h2>Bon retour parmi nous</h2><p>Accédez à votre espace pour gérer vos annonces, vos missions et vos paiements.</p></div></div>
+        <label class="fld"><span>Numéro de téléphone</span><div class="tel"><span>+225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
+        <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
+        <button class="btn btn-primary btn-block btn-lg">Me connecter</button>
+        <p class="pa-alt">Pas encore prestataire ? <button type="button" class="linklike" data-pa-tab="signup">Créer mon compte</button> · <a href="/connexion?mode=reset&amp;next=%2Fespace-prestataire">Mot de passe oublié ?</a></p>
+      </form>
+
+      <form class="pa-panel" id="form" data-pa-panel="signup" method="post" enctype="multipart/form-data" novalidate>
+        <?= csrf_field() ?>
+        <div class="pa-head"><span class="pa-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M18 8v6M15 11h6"/></svg></span>
+          <div><h2>Devenez prestataire</h2><p>Inscription gratuite, en 3 étapes. Notre équipe valide votre dossier rapidement.</p></div></div>
+        <ol class="pa-steps" aria-label="Étapes">
+          <li class="on"><b>1</b><span>Activité</span></li>
+          <li><b>2</b><span>Compte</span></li>
+          <li><b>3</b><span>Documents</span></li>
+          <i class="pa-bar"><i></i></i>
+        </ol>
+
+        <fieldset class="pa-step on" data-step="1">
       <label class="fld"><span>Activité</span><select name="universe" id="proUniverse" required><option value="">Choisir…</option><?php foreach ($U as $k => $x): ?><option value="<?= $k ?>" data-transport="<?= in_array($k, $transportKeys, true) ? '1' : '0' ?>"><?= $x['emoji'] ?> <?= e($x['name']) ?></option><?php endforeach; ?></select></label>
-      <label class="fld"><span>Nom complet / Entreprise</span><input name="name" required maxlength="80"></label>
-      <div class="row2">
-        <label class="fld"><span>Téléphone</span><input name="phone" inputmode="tel" required placeholder="07 00 00 00 00"></label>
-        <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
-      </div>
-      <label class="fld"><span>E-mail (facultatif)</span><input type="email" name="email" maxlength="120"></label>
-      <label class="fld"><span>Présentez votre activité</span><textarea name="bio" rows="3" maxlength="400" placeholder="Expérience, spécialités, horaires…"></textarea></label>
-      <label class="fld" id="vehicleFld" hidden><span>Véhicule</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>
-      <div class="row2">
+          <label class="fld"><span>Nom complet / Entreprise</span><input name="name" required maxlength="80" placeholder="Ex. Koné Aminata ou Clean Services CI"></label>
+          <div class="row2">
+            <label class="fld"><span>Téléphone</span><input name="phone" inputmode="tel" required placeholder="07 00 00 00 00"></label>
+            <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
+          </div>
+          <label class="fld" id="vehicleFld" hidden><span>Véhicule</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>
+          <label class="fld"><span>Présentez votre activité</span><textarea name="bio" rows="3" maxlength="400" placeholder="Expérience, spécialités, horaires…"></textarea></label>
+        </fieldset>
+
+        <fieldset class="pa-step" data-step="2" hidden>
+          <label class="fld"><span>E-mail (facultatif)</span><input type="email" name="email" maxlength="120" placeholder="vous@exemple.com"></label>
+          <div class="row2">
         <label class="fld"><span>Recevoir mes paiements sur</span><select name="payout_method"><option value="wave">Wave</option><option value="orange">Orange Money</option><option value="mtn">MTN MoMo</option><option value="moov">Moov Money</option></select></label>
-        <label class="fld"><span>Numéro de paiement</span><input name="payout_number" inputmode="tel" placeholder="Si différent"></label>
-      </div>
-      <div class="row2">
-        <label class="fld"><span> Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
-        <label class="fld"><span>Confirmer</span><input type="password" name="password2" minlength="8" required autocomplete="new-password"></label>
-      </div>
-      <div class="kyc-docs" id="kycDocs" hidden>
-        <b class="kyc-title">Documents à fournir</b>
-        <?php foreach (kyc_doc_labels() as $dk => [$dt, $dp]): ?>
-          <label class="fld file" data-doc="<?= $dk ?>" hidden><span><?= e($dt) ?><?= $dp ? ' <small>(' . e($dp) . ')</small>' : '' ?> — JPG/PNG/PDF</span><input type="file" name="<?= $dk ?>" accept="image/*,application/pdf"></label>
-        <?php endforeach; ?>
-        <p class="kyc-retenir">À retenir : les documents doivent être lisibles, valides et à jour.</p>
-      </div>
-      <p class="fine">Vos documents sont stockés de façon privée et consultés uniquement par l'équipe de vérification.</p>
-      <button class="btn btn-primary btn-block btn-lg">Envoyer ma candidature</button>
-      <script>
-      (function () {
-        var sel = document.getElementById('proUniverse'), fld = document.getElementById('vehicleFld');
-        if (!sel || !fld) return;
-        var upd = function () {
-          var opt = sel.options[sel.selectedIndex];
-          var isTransport = opt && opt.dataset.transport === '1';
-          fld.hidden = !isTransport;
-          fld.querySelector('input').required = !!isTransport;
-        };
-        var rules = <?= json_encode(array_combine(array_keys($U), array_map('kyc_docs_required', array_keys($U)))) ?>;
-        var docs = document.querySelectorAll('[data-doc]');
-        var updDocs = function () {
-          var need = rules[sel.value] || [];
-          docs.forEach(function (l) { var on = need.indexOf(l.dataset.doc) > -1; l.hidden = !on; l.querySelector('input').required = on; });
-          document.getElementById('kycDocs').hidden = !need.length;
-        };
-        sel.addEventListener('change', updDocs); updDocs();
-        sel.addEventListener('change', upd); upd();
-      })();
-      </script>
-    </form>
+            <label class="fld"><span>Numéro de paiement</span><input name="payout_number" inputmode="tel" placeholder="Si différent"></label>
+          </div>
+          <div class="row2">
+            <label class="fld"><span>Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
+            <label class="fld"><span>Confirmer le mot de passe</span><input type="password" name="password2" minlength="8" required autocomplete="new-password"></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="pa-step" data-step="3" hidden>
+          <div class="kyc-docs" id="kycDocs">
+            <b class="kyc-title">Documents à fournir</b>
+            <p class="muted small" data-kyc-empty>Choisissez d’abord votre activité à l’étape 1.</p>
+            <?php foreach (kyc_doc_labels() as $dk => [$dt, $dp]): ?>
+              <label class="fld file" data-doc="<?= $dk ?>" hidden><span><?= e($dt) ?><?= $dp ? ' <small>(' . e($dp) . ')</small>' : '' ?></span><input type="file" name="<?= $dk ?>" accept="image/*,application/pdf"></label>
+            <?php endforeach; ?>
+            <p class="kyc-retenir">À retenir : les documents doivent être lisibles, valides et à jour (JPG, PNG ou PDF).</p>
+          </div>
+          <p class="fine">🔒 Vos documents sont stockés de façon privée et consultés uniquement par l'équipe de vérification.</p>
+        </fieldset>
+
+        <p class="pa-err" data-pa-err hidden></p>
+        <div class="pa-nav">
+          <button type="button" class="btn btn-ghost btn-lg" data-pa-prev hidden>← Retour</button>
+          <button type="button" class="btn btn-primary btn-lg" data-pa-next>Continuer →</button>
+          <button class="btn btn-primary btn-lg" data-pa-send hidden>Envoyer ma candidature</button>
+        </div>
+        <p class="pa-alt">Déjà prestataire ? <button type="button" class="linklike" data-pa-tab="login">Se connecter</button></p>
+      </form>
+    </div>
     </div>
   </div>
 </section>
+<script>
+(function () {
+  var pa = document.getElementById('pa'); if (!pa) return;
+  var tabs = pa.querySelectorAll('.pa-tabs [data-pa-tab]'), ink = pa.querySelector('.pa-ink');
+  function show(t) {
+    tabs.forEach(function (b, i) { var on = b.dataset.paTab === t; b.classList.toggle('on', on); if (on) { ink.style.transform = 'translateX(' + (i * 100) + '%)'; } });
+    pa.querySelectorAll('[data-pa-panel]').forEach(function (f) { var on = f.dataset.paPanel === t; f.hidden = !on; if (on) { f.classList.remove('pa-in'); void f.offsetWidth; f.classList.add('pa-in'); } });
+  }
+  pa.querySelectorAll('[data-pa-tab]').forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.paTab); }); });
+  if (location.hash === '#connexion') show('login');
+
+  // Assistant en 3 étapes
+  var f = document.getElementById('form'), steps = f.querySelectorAll('.pa-step'), dots = f.querySelectorAll('.pa-steps li'), bar = f.querySelector('.pa-bar i');
+  var prev = f.querySelector('[data-pa-prev]'), next = f.querySelector('[data-pa-next]'), send = f.querySelector('[data-pa-send]'), err = f.querySelector('[data-pa-err]'), cur = 1, dir = 1;
+  function go(n) {
+    dir = n > cur ? 1 : -1; cur = n;
+    steps.forEach(function (s) { var on = +s.dataset.step === n; s.hidden = !on; s.classList.remove('in-l', 'in-r'); if (on) { void s.offsetWidth; s.classList.add(dir > 0 ? 'in-r' : 'in-l'); } });
+    dots.forEach(function (d, i) { d.classList.toggle('on', i + 1 === n); d.classList.toggle('done', i + 1 < n); });
+    bar.style.width = ((n - 1) / 2 * 100) + '%';
+    prev.hidden = n === 1; next.hidden = n === 3; send.hidden = n !== 3; err.hidden = true;
+    pa.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function valid(n) {
+    var bad = null;
+    f.querySelectorAll('.pa-step[data-step="' + n + '"] input, .pa-step[data-step="' + n + '"] select, .pa-step[data-step="' + n + '"] textarea').forEach(function (el) {
+      if (bad || el.closest('[hidden]')) return;
+      if (!el.checkValidity()) bad = el;
+    });
+    if (!bad && n === 2 && f.password.value !== f.password2.value) { bad = f.password2; bad.setCustomValidity('Les deux mots de passe ne sont pas identiques.'); }
+    if (bad) { err.textContent = bad.validationMessage || 'Complétez ce champ.'; err.hidden = false; bad.focus(); bad.closest('.fld') && bad.closest('.fld').classList.add('shake'); setTimeout(function () { var x = bad.closest('.fld'); x && x.classList.remove('shake'); }, 500); return false; }
+    return true;
+  }
+  f.password2.addEventListener('input', function () { f.password2.setCustomValidity(''); });
+  next.addEventListener('click', function () { if (valid(cur)) go(cur + 1); });
+  prev.addEventListener('click', function () { go(cur - 1); });
+  dots.forEach(function (d, i) { d.addEventListener('click', function () { if (i + 1 < cur || (i + 1 === cur + 1 && valid(cur))) go(i + 1); }); });
+  f.addEventListener('submit', function (e) { if (!valid(1) ) { e.preventDefault(); go(1); return; } if (!valid(2)) { e.preventDefault(); go(2); return; } if (!valid(3)) { e.preventDefault(); } });
+
+  // Champ véhicule et documents selon l'activité
+  var sel = document.getElementById('proUniverse'), fld = document.getElementById('vehicleFld');
+  var rules = <?= json_encode(array_combine(array_keys($U), array_map('kyc_docs_required', array_keys($U)))) ?>;
+  var docs = f.querySelectorAll('[data-doc]'), empty = f.querySelector('[data-kyc-empty]');
+  function upd() {
+    var opt = sel.options[sel.selectedIndex], tr = opt && opt.dataset.transport === '1';
+    fld.hidden = !tr; fld.querySelector('input').required = !!tr;
+    var need = rules[sel.value] || [];
+    docs.forEach(function (l) { var on = need.indexOf(l.dataset.doc) > -1; l.hidden = !on; l.querySelector('input').required = on; });
+    empty.hidden = need.length > 0;
+  }
+  sel.addEventListener('change', upd); upd();
+  // Nom du fichier choisi affiché joliment
+  f.querySelectorAll('input[type=file]').forEach(function (i) { i.addEventListener('change', function () { i.closest('.fld').classList.toggle('has-file', !!i.files.length); }); });
+})();
+</script>
 <?php view('layout/footer', compact('active'));
