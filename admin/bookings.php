@@ -46,7 +46,7 @@ foreach ($SERVICES as $sk => $sv) {
     $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM bookings WHERE universe IN ($ph)" . ($isDisputes ? " AND status = 'EN_LITIGE'" : ''), $sv[1]);
     $svcAlert[$sk] = (int) val("SELECT COUNT(*) FROM bookings WHERE universe IN ($ph) AND (status = 'EN_LITIGE' OR (status = 'EN_ATTENTE_PAIEMENT' AND payment_ref = 'EN_ATTENTE_VALIDATION'))", $sv[1]);
 }
-$page = ($isDisputes ? 'Litiges à arbitrer' : 'Réservations') . ' · ' . $SERVICES[$svc][0];
+$page = ($isDisputes ? 'Litiges à arbitrer' : 'Réservations') . ' · ' . ($uk !== '' && in_array($uk, $svcKeys, true) ? universe($uk)['name'] : $SERVICES[$svc][0]);
 $nav = $isDisputes ? 'disputes' : 'bookings';
 view('admin/header', compact('page', 'nav'));
 ?>
@@ -59,13 +59,23 @@ view('admin/header', compact('page', 'nav'));
     </a>
   <?php endforeach; ?>
 </nav>
+<?php $catCounts = [];
+foreach ($svcKeys as $ck) $catCounts[$ck] = [(int) val('SELECT COUNT(*) FROM bookings WHERE universe = ?' . ($isDisputes ? " AND status = 'EN_LITIGE'" : ''), [$ck]), (int) val("SELECT COUNT(*) FROM bookings WHERE universe = ? AND (status = 'EN_LITIGE' OR (status = 'EN_ATTENTE_PAIEMENT' AND payment_ref = 'EN_ATTENTE_VALIDATION'))", [$ck])]; ?>
+<div class="cat-tiles">
+  <a href="?service=<?= e($svc) ?>" class="cat-tile cat-all <?= $uk === '' ? 'on' : '' ?>" style="--c:<?= $SERVICES[$svc][2] ?>"><span class="cat-all-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span><b>Tout <?= e($SERVICES[$svc][0]) ?></b><small><?= $svcCount[$svc] ?> <?= $isDisputes ? "litige(s)" : "réservation(s)" ?></small></a>
+  <?php foreach ($svcKeys as $ck): $cx = universe($ck); $ci = is_file(__DIR__ . '/../public/assets/img/tr-' . $ck . '.jpg') ? '/assets/img/tr-' . $ck . '.jpg' : img($cx['img'], 'w_160,h_160,c_fill,q_auto,f_auto'); ?>
+    <a href="?service=<?= e($svc) ?>&amp;universe=<?= e($ck) ?>" class="cat-tile <?= $uk === $ck ? 'on' : '' ?>" style="--c:<?= $SERVICES[$svc][2] ?>">
+      <?php if ($catCounts[$ck][1]): ?><em><?= $catCounts[$ck][1] ?></em><?php endif; ?>
+      <img src="<?= e($ci) ?>" alt="" loading="lazy" width="56" height="56"><b><?= e($cx['name']) ?></b><small><?= $catCounts[$ck][0] ?> <?= $isDisputes ? 'litige(s)' : 'réservation(s)' ?></small>
+    </a>
+  <?php endforeach; ?>
+</div>
 <div class="panel">
-  <form class="filters" method="get"><input type="hidden" name="service" value="<?= e($svc) ?>">
+  <form class="filters" method="get"><input type="hidden" name="service" value="<?= e($svc) ?>"><?php if ($uk !== ''): ?><input type="hidden" name="universe" value="<?= e($uk) ?>"><?php endif; ?>
     <label class="fld"><span>Recherche</span><input name="q" value="<?= e($s) ?>" placeholder="Réf., client, téléphone…"></label>
     <?php if (!$isDisputes): ?>
     <label class="fld"><span>Statut</span><select name="status"><option value="">Tous</option><?php foreach (statuses() as $k => [$l]): ?><option value="<?= $k ?>" <?= $status === $k ? 'selected' : '' ?>><?= e($l) ?></option><?php endforeach; ?></select></label>
     <?php endif; ?>
-    <label class="fld"><span>Catégorie</span><select name="universe"><option value="">Toutes</option><?php foreach (array_intersect_key(universes(), array_flip($svcKeys)) as $k => $x): ?><option value="<?= $k ?>" <?= $uk === $k ? 'selected' : '' ?>><?= e($x['name']) ?></option><?php endforeach; ?></select></label>
     <button class="btn btn-primary">Filtrer</button>
     <a class="btn btn-ghost" href="?<?= e(http_build_query(array_merge($_GET, ['export' => 1]))) ?>"> Export CSV</a>
     <?php if (!$isDisputes && $claimCount): ?><a class="btn btn-soft" href="/admin/reservations?service=<?= e($svc) ?>&amp;claim=1"> <?= $claimCount ?> paiement(s) manuel(s) à valider</a><?php endif; ?>

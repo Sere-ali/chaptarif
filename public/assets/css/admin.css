@@ -292,3 +292,16 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .svc-tabs a.on small { color: rgba(255,255,255,.85); }
 .svc-tabs em { position: absolute; top: -7px; right: -7px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #E53935; color: #fff; font-style: normal; font-weight: 800; font-size: .75rem; display: grid; place-items: center; box-shadow: 0 0 0 3px #F3F6FA; }
 @media (max-width: 900px) { .svc-tabs { grid-template-columns: 1fr 1fr; } }
+/* Réservations : tuiles illustrées par activité */
+.cat-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.cat-tile { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border-radius: 16px; background: #fff; border: 1.5px solid #E6ECF2; text-decoration: none; color: #2B3A4C; text-align: center; transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s, border-color .2s, background .2s; }
+.cat-tile:hover { transform: translateY(-3px); box-shadow: 0 12px 22px -16px rgba(15,27,45,.5); }
+.cat-tile img { width: 56px; height: 56px; border-radius: 14px; object-fit: cover; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.cat-tile:hover img { transform: scale(1.08); }
+.cat-tile b { font-size: .82rem; line-height: 1.2; }
+.cat-tile small { font-size: .74rem; color: #6B7A8C; font-weight: 600; }
+.cat-tile.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 7%, #fff); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent); }
+.cat-tile.on b { color: var(--c); }
+.cat-all-ic { width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 12%, #fff); color: var(--c); }
+.cat-all-ic svg { width: 28px; height: 28px; }
+.cat-tile em { position: absolute; top: -7px; right: -7px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #E53935; color: #fff; font-style: normal; font-weight: 800; font-size: .75rem; display: grid; place-items: center; box-shadow: 0 0 0 3px #F3F6FA; }
