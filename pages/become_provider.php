@@ -56,26 +56,25 @@ $desc = 'Aides ménagères, pressings, coiffeuses, maquilleuses, prothésistes o
 $active = 'pro';
 view('layout/header', compact('title', 'desc', 'active'));
 ?>
-<section class="page-hero" style="--c:#2E7D5B;--hero:url('<?= e(img('univers-menage', 'w_1600,h_600,c_fill,q_auto,f_auto')) ?>')">
-  <div class="container"><nav class="crumbs"><a href="/">Accueil</a> › Devenir prestataire</nav><h1>Rejoignez le réseau ChapTarif</h1><p>Des clients qui ont déjà payé, un paiement garanti après chaque mission.</p></div>
-</section>
-<section class="section-tight">
-  <div class="container two-col">
-    <div>
-      <h2 class="h3">Pourquoi nous rejoindre ?</h2>
-      <div class="features features-col">
-        <div><span></span><b>Paiement garanti</b><small>Le client paie à la réservation. Vous êtes payé sur Wave / Orange Money dès la validation.</small></div>
-        <div><span></span><b>Plus de clients</b><small>Visibilité dans votre commune auprès de milliers d'Abidjanais.</small></div>
-        <div><span></span><b>Badge « Recommandé »</b><small>Apparaissez en tête de liste pour <?= fcfa(setting('sponsor_price', 5000)) ?> / mois (optionnel).</small></div>
-        <div><span></span><b>Commission claire</b><small><?= (int) setting('commission_menage', 15) ?> % sur les services à domicile. Inscription gratuite.</small></div>
+<section class="pv">
+  <div class="pv-in">
+    <aside class="pv-side">
+      <span class="pv-tag">Espace partenaires</span>
+      <h1>Rejoignez le réseau <span>ChapTarif</span></h1>
+      <p class="pv-lead">Des clients qui ont déjà payé, un paiement garanti après chaque mission.</p>
+      <ul class="pv-perks">
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></i><div><b>Paiement garanti</b><small>Le client paie à la réservation, vous êtes payé sur Wave ou Orange Money dès la validation.</small></div></li>
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg></i><div><b>Plus de clients</b><small>Visibilité dans votre commune auprès de milliers d’Abidjanais.</small></div></li>
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6-4.5-4.2 6.1-.7z"/></svg></i><div><b>Badge « Recommandé »</b><small>En tête de liste pour <?= fcfa(setting('sponsor_price', 5000)) ?> / mois (optionnel).</small></div></li>
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 3 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2-1.4 0-2.6-.6-3-1.6M12 6.5v1.5M12 16v1.5"/></svg></i><div><b>Commission claire</b><small><?= (int) setting('commission_menage', 15) ?> % sur les services à domicile. Inscription gratuite.</small></div></li>
+      </ul>
+      <div class="pv-earn">
+        <small>Exemple sur un ménage à 5 000 F</small>
+        <div><span>Le client paie</span><b>5 000 F</b></div>
+        <div><span>Commission (<?= (int) setting('commission_menage', 15) ?> %)</span><b>− <?= fcfa(5000 * (int) setting('commission_menage', 15) / 100) ?></b></div>
+        <div class="pv-you"><span>Vous recevez</span><b><?= fcfa(5000 - 5000 * (int) setting('commission_menage', 15) / 100) ?></b></div>
       </div>
-      <div class="card mt">
-        <h3 class="h4">Exemple sur un ménage à 5 000 F</h3>
-        <div class="price-row"><span>Le client paie</span><b>5 000 F</b></div>
-        <div class="price-row"><span>Commission ChapTarif (<?= (int) setting('commission_menage', 15) ?> %)</span><b>- <?= fcfa(5000 * (int) setting('commission_menage', 15) / 100) ?></b></div>
-        <div class="price-row best"><span>Vous recevez</span><b><?= fcfa(5000 - 5000 * (int) setting('commission_menage', 15) / 100) ?></b></div>
-      </div>
-    </div>
+    </aside>
     <div class="pa-wrap">
     <div class="pa card" id="pa">
       <div class="pa-tabs" role="tablist">
@@ -106,7 +105,14 @@ view('layout/header', compact('title', 'desc', 'active'));
         </ol>
 
         <fieldset class="pa-step on" data-step="1">
-      <label class="fld"><span>Activité</span><select name="universe" id="proUniverse" required><option value="">Choisir…</option><?php foreach ($U as $k => $x): ?><option value="<?= $k ?>" data-transport="<?= in_array($k, $transportKeys, true) ? '1' : '0' ?>"><?= $x['emoji'] ?> <?= e($x['name']) ?></option><?php endforeach; ?></select></label>
+          <div class="fld"><span>Votre activité</span>
+            <div class="pv-acts" role="radiogroup">
+              <?php foreach ($U as $k => $x): $ti = is_file(__DIR__ . '/../public/assets/img/tr-' . $k . '.jpg') ? '/assets/img/tr-' . $k . '.jpg' : img($x['img'], 'w_160,h_160,c_fill,q_auto,f_auto'); ?>
+                <button type="button" class="pv-act" data-act="<?= e($k) ?>" role="radio" aria-checked="false"><img src="<?= e($ti) ?>" alt="" loading="lazy" width="56" height="56"><span><?= e($x['name']) ?></span></button>
+              <?php endforeach; ?>
+            </div>
+            <div hidden><label class="fld"><span>Activité</span><select name="universe" id="proUniverse" required><option value="">Choisir…</option><?php foreach ($U as $k => $x): ?><option value="<?= $k ?>" data-transport="<?= in_array($k, $transportKeys, true) ? '1' : '0' ?>"><?= $x['emoji'] ?> <?= e($x['name']) ?></option><?php endforeach; ?></select></label></div>
+          </div>
           <label class="fld"><span>Nom complet / Entreprise</span><input name="name" required maxlength="80" placeholder="Ex. Koné Aminata ou Clean Services CI"></label>
           <div class="row2">
             <label class="fld"><span>Téléphone</span><input name="phone" inputmode="tel" required placeholder="07 00 00 00 00"></label>
@@ -176,6 +182,7 @@ view('layout/header', compact('title', 'desc', 'active'));
   }
   function valid(n) {
     var bad = null;
+    if (n === 1 && !sel.value) { err.textContent = 'Choisissez votre activité.'; err.hidden = false; var g = f.querySelector('.pv-acts'); g.classList.add('shake'); setTimeout(function () { g.classList.remove('shake'); }, 500); return false; }
     f.querySelectorAll('.pa-step[data-step="' + n + '"] input, .pa-step[data-step="' + n + '"] select, .pa-step[data-step="' + n + '"] textarea').forEach(function (el) {
       if (bad || el.closest('[hidden]')) return;
       if (!el.checkValidity()) bad = el;
@@ -192,6 +199,9 @@ view('layout/header', compact('title', 'desc', 'active'));
 
   // Champ véhicule et documents selon l'activité
   var sel = document.getElementById('proUniverse'), fld = document.getElementById('vehicleFld');
+  f.querySelectorAll('[data-act]').forEach(function (t) { t.addEventListener('click', function () {
+    f.querySelectorAll('[data-act]').forEach(function (o) { var on = o === t; o.classList.toggle('on', on); o.setAttribute('aria-checked', on); });
+    sel.value = t.dataset.act; sel.dispatchEvent(new Event('change')); err.hidden = true; }); });
   var rules = <?= json_encode(array_combine(array_keys($U), array_map('kyc_docs_required', array_keys($U)))) ?>;
   var docs = f.querySelectorAll('[data-doc]'), empty = f.querySelector('[data-kyc-empty]');
   function upd() {

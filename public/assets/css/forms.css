@@ -127,3 +127,61 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
 @media (prefers-reduced-motion: reduce) { .pa, .pa *, .pa-panel, .pa-step { animation: none !important; transition: none !important; } }
 @media (max-width: 899px) { .two-col > .pa-wrap { order: -1; margin-bottom: 18px; } }
 .pa-tabs button { font-weight: 800; font-size: .92rem; }
+
+/* ===== Devenir prestataire : mise en page premium ===== */
+.pv { position: relative; padding: 18px 16px 120px; background:
+  radial-gradient(60% 40% at 0% 0%, rgba(46,125,91,.10), transparent 70%),
+  radial-gradient(50% 40% at 100% 20%, rgba(58,127,193,.10), transparent 70%), #F6F9FC; }
+.pv-in { max-width: 1240px; margin: 0 auto; display: grid; gap: 20px; }
+.pv-side { position: relative; overflow: hidden; border-radius: 28px; padding: 28px 22px; color: #fff;
+  background: linear-gradient(150deg, #0F4D37 0%, #1F6E50 45%, #2B6FA8 100%); box-shadow: 0 30px 60px -34px rgba(15, 77, 55, .8); animation: pa-rise .7s ease both; }
+.pv-side::before, .pv-side::after { content: ""; position: absolute; border-radius: 50%; filter: blur(2px); pointer-events: none; }
+.pv-side::before { width: 260px; height: 260px; right: -80px; top: -90px; background: radial-gradient(circle, rgba(245,184,46,.45), transparent 65%); animation: pv-blob 9s ease-in-out infinite alternate; }
+.pv-side::after { width: 300px; height: 300px; left: -120px; bottom: -140px; background: radial-gradient(circle, rgba(124,227,154,.35), transparent 65%); animation: pv-blob 11s ease-in-out infinite alternate-reverse; }
+@keyframes pv-blob { to { transform: translate(30px, 24px) scale(1.15); } }
+.pv-side > * { position: relative; z-index: 1; }
+.pv-tag { display: inline-block; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.pv-side h1 { color: #fff; font-size: clamp(1.7rem, 4.6vw, 2.6rem); line-height: 1.08; margin: 14px 0 10px; letter-spacing: -.02em; }
+.pv-side h1 span { background: linear-gradient(90deg, #F5B82E, #FFE08A); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pv-lead { margin: 0 0 20px; font-size: 1.02rem; color: rgba(255,255,255,.88); max-width: 520px; }
+.pv-perks { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 10px; }
+.pv-perks li { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 16px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px); animation: pa-fade .6s ease both; transition: transform .3s ease, background .3s; }
+.pv-perks li:nth-child(2) { animation-delay: .08s; } .pv-perks li:nth-child(3) { animation-delay: .16s; } .pv-perks li:nth-child(4) { animation-delay: .24s; }
+.pv-perks li:hover { transform: translateX(4px); background: rgba(255,255,255,.13); }
+.pv-perks i { width: 40px; height: 40px; flex: none; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.95); color: #1F6E50; }
+.pv-perks i svg { width: 22px; height: 22px; }
+.pv-perks b { display: block; font-size: .95rem; }
+.pv-perks small { color: rgba(255,255,255,.8); font-size: .82rem; line-height: 1.4; }
+.pv-earn { border-radius: 18px; padding: 14px 16px; background: rgba(255,255,255,.96); color: #0F1B2D; box-shadow: 0 18px 30px -22px rgba(0,0,0,.6); }
+.pv-earn small { display: block; font-weight: 800; color: #1F6E50; margin-bottom: 6px; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+.pv-earn > div { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed #E2E8EF; font-size: .9rem; }
+.pv-earn > div:last-child { border: 0; }
+.pv-you { margin-top: 4px; padding: 10px 12px !important; border-radius: 12px; background: #E6F6EE; color: #1F6E50; font-weight: 800; }
+.pv-you b { font-size: 1.15rem; }
+.pv .pa-wrap { min-width: 0; }
+/* Tuiles d'activité */
+.pv-acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pv-act { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; border: 1.5px solid #E6ECF2; border-radius: 16px; background: #fff; cursor: pointer; font: 700 .72rem/1.2 inherit; color: #2B3A4C; text-align: center; transition: transform .25s cubic-bezier(.34,1.56,.64,1), border-color .2s, box-shadow .25s, background .2s; }
+.pv-act img { width: 48px; height: 48px; border-radius: 14px; object-fit: cover; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.pv-act:hover { transform: translateY(-3px); box-shadow: 0 12px 22px -16px rgba(15,27,45,.5); }
+.pv-act:hover img { transform: scale(1.08); }
+.pv-act.on { border-color: #2E7D5B; background: #F1FAF5; box-shadow: 0 0 0 4px rgba(46,125,91,.15); }
+.pv-act.on img { transform: scale(1.05); }
+.pv-acts.shake { animation: pa-shake .45s; }
+@media (min-width: 560px) { .pv-acts { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 899px) {
+  .pv { padding-top: 10px; }
+  .pv-in { display: flex; flex-direction: column; }
+  .pv .pa-wrap { order: 2; margin-top: -40px; z-index: 2; }
+  .pv-side { order: 1; padding-bottom: 60px; }
+  .pv-side .pv-perks, .pv-side .pv-earn { display: none; }
+  .pv-in::after { content: none; }
+}
+@media (min-width: 900px) {
+  .pv { padding: 28px 32px 120px; }
+  .pv-in { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: start; gap: 28px; }
+  .pv-side { position: sticky; top: 92px; padding: 40px 36px; }
+  .pv .pa-wrap { position: static; }
+}
+/* Avantages repris sous le formulaire sur téléphone */
+.pv-mobile-perks { display: none; }
