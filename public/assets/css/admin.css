@@ -305,3 +305,17 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .cat-all-ic { width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 12%, #fff); color: var(--c); }
 .cat-all-ic svg { width: 28px; height: 28px; }
 .cat-tile em { position: absolute; top: -7px; right: -7px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #E53935; color: #fff; font-style: normal; font-weight: 800; font-size: .75rem; display: grid; place-items: center; box-shadow: 0 0 0 3px #F3F6FA; }
+.svc-home { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.svc-home a { padding: 26px 22px; min-height: 120px; }
+.svc-home i { width: 60px; height: 60px; border-radius: 18px; }
+.svc-home i svg { width: 32px; height: 32px; }
+.svc-home span { font-size: 1.25rem; }
+.svc-home small { font-size: .88rem; margin-top: 2px; }
+.svc-go { margin-left: auto; font-size: .85rem; color: var(--c); font-weight: 800; transition: transform .25s; }
+.svc-home a:hover { border-color: var(--c); }
+.svc-home a:hover .svc-go { transform: translateX(4px); }
+.svc-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.svc-badge { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 8px; border-radius: 999px; background: var(--c); color: #fff; font-weight: 800; box-shadow: 0 12px 24px -16px var(--c); }
+.svc-badge i { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.2); }
+.svc-badge i svg { width: 20px; height: 20px; }
+@media (max-width: 700px) { .svc-home { grid-template-columns: 1fr; } }
