@@ -14,54 +14,86 @@ if (is_post()) {
     redirect('/admin/candidatures');
 }
 $rows = all("SELECT * FROM providers WHERE source = 'candidature' ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC");
-$pending = array_filter($rows, fn ($p) => $p['kyc_status'] === 'pending');
+$counts = ['pending' => 0, 'verified' => 0, 'rejected' => 0];
+foreach ($rows as $r0) if (isset($counts[$r0['kyc_status']])) $counts[$r0['kyc_status']]++;
+$tab = in_array($_GET['statut'] ?? '', ['pending', 'verified', 'rejected', 'all'], true) ? $_GET['statut'] : ($counts['pending'] ? 'pending' : 'all');
+$list = $tab === 'all' ? $rows : array_values(array_filter($rows, fn ($p) => $p['kyc_status'] === $tab));
+$DL = kyc_doc_labels();
 $page = 'Candidatures prestataires';
 $nav = 'candidatures';
 view('admin/header', compact('page', 'nav'));
+$tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => 'Refusées', 'all' => 'Toutes'];
 ?>
-<p class="muted">Toutes les candidatures envoyées depuis le formulaire public <a href="/devenir-prestataire" target="_blank" rel="noopener">/devenir-prestataire</a>. <?= count($pending) ?> en attente de vérification.</p>
-<?php if (!$rows): ?>
-  <div class="panel"><p class="muted">Aucune candidature reçue pour le moment.</p></div>
-<?php endif; ?>
-<div class="grid2">
-<?php foreach ($rows as $p): $x = universe($p['universe']); ?>
-  <div class="panel">
-    <div class="prov-mini" style="padding:0;border:0;margin-bottom:.6rem">
+<p class="muted">Candidatures envoyées depuis <a href="/devenir-prestataire" target="_blank" rel="noopener">/devenir-prestataire</a>.</p>
+<div class="cd-bar">
+  <nav class="cd-tabs">
+    <?php foreach ($tabs as $k => $l): ?>
+      <a href="?statut=<?= $k ?>" class="<?= $tab === $k ? 'on' : '' ?>"><?= $l ?> <b><?= $k === 'all' ? count($rows) : $counts[$k] ?></b></a>
+    <?php endforeach; ?>
+  </nav>
+  <input type="search" class="cd-search" placeholder="Rechercher un nom, un numéro, une activité…" data-cd-search>
+</div>
+
+<?php if (!$list): ?>
+  <div class="panel"><p class="muted">Aucune candidature dans cette liste.</p></div>
+<?php else: ?>
+<div class="cd-table" role="table">
+  <div class="cd-row cd-head" role="row"><span>Candidat</span><span>Contact</span><span>Documents</span><span>Statut</span><span>Actions</span></div>
+  <?php foreach ($list as $p): $x = universe($p['universe']);
+    $pdocs = json_decode((string) ($p['docs'] ?? ''), true) ?: [];
+    if (!$pdocs) $pdocs = array_filter(['cni' => $p['cni_public_id'] ?? null, 'casier' => $p['casier_public_id'] ?? null, 'permis' => $p['permis_public_id'] ?? null, 'carte_grise' => $p['vehicule_public_id'] ?? null]);
+    $req = kyc_docs_required($p['universe']);
+    $have = count(array_filter($req, fn ($k) => !empty($pdocs[$k])));
+    $search = mb_strtolower($p['name'] . ' ' . $p['phone'] . ' ' . fmt_phone($p['phone']) . ' ' . $x['name'] . ' ' . $p['commune']); ?>
+  <div class="cd-row" role="row" data-cd="<?= e($search) ?>">
+    <div class="cd-who">
       <?= avatar($p) ?>
-      <div>
-        <b><?= e($p['name']) ?></b>
-        <small><span class="uni-dot" style="--c:<?= $x['color'] ?>"><i></i><?= e($x['name']) ?></span></small>
+      <div><b><?= e($p['name']) ?></b><small><span class="uni-dot" style="--c:<?= $x['color'] ?>"><i></i><?= e($x['name']) ?></span></small><small class="muted">Reçue le <?= fmt_date(substr((string) $p['created_at'], 0, 10)) ?></small></div>
+    </div>
+    <div class="cd-contact" data-l="Contact">
+      <a href="tel:<?= e($p['phone']) ?>"><?= e(fmt_phone($p['phone'])) ?></a>
+      <?php if ($p['commune']): ?><small><?= e($p['commune']) ?></small><?php endif; ?>
+      <?php if ($p['email']): ?><small><?= e($p['email']) ?></small><?php endif; ?>
+    </div>
+    <div class="cd-docs" data-l="Documents">
+      <span class="cd-count <?= $have === count($req) ? 'ok' : 'ko' ?>"><?= $have ?>/<?= count($req) ?> fournis</span>
+      <div class="cd-chips">
+        <?php foreach ($req as $dk): ?>
+          <?php if (!empty($pdocs[$dk])): ?><a class="cd-chip ok" target="_blank" rel="noopener" href="<?= e(cld_private_url($pdocs[$dk])) ?>">✓ <?= e($DL[$dk][0]) ?></a>
+          <?php else: ?><span class="cd-chip ko">✕ <?= e($DL[$dk][0]) ?></span><?php endif; ?>
+        <?php endforeach; ?>
       </div>
-      <span style="margin-left:auto"><?= kyc_badge($p['kyc_status']) ?></span>
     </div>
-    <div class="sum-row"><span> Téléphone</span><b><?= e(fmt_phone($p['phone'])) ?></b></div>
-    <?php if ($p['email']): ?><div class="sum-row"><span> E-mail</span><b><?= e($p['email']) ?></b></div><?php endif; ?>
-    <?php if ($p['commune']): ?><div class="sum-row"><span> Commune</span><b><?= e($p['commune']) ?></b></div><?php endif; ?>
-    <?php if ($p['vehicle']): ?><div class="sum-row"><span> Véhicule</span><b><?= e($p['vehicle']) ?></b></div><?php endif; ?>
-    <div class="sum-row"><span> Versement</span><b><?= e($p['payout_method']) ?> · <?= e(fmt_phone($p['payout_number'])) ?></b></div>
-    <?php if ($p['bio']): ?><p class="muted"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
-    <div class="row2 mt">
-      <?php $pdocs = json_decode((string) ($p['docs'] ?? ''), true) ?: [];
-        if (!$pdocs) $pdocs = array_filter(['cni' => $p['cni_public_id'] ?? null, 'casier' => $p['casier_public_id'] ?? null, 'permis' => $p['permis_public_id'] ?? null, 'carte_grise' => $p['vehicule_public_id'] ?? null]);
-        $DL = kyc_doc_labels(); ?>
-      <?php foreach (kyc_docs_required($p['universe']) as $dk): ?>
-        <?php if (!empty($pdocs[$dk])): ?>
-          <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($pdocs[$dk])) ?>">Voir : <?= e($DL[$dk][0]) ?></a>
-        <?php else: ?>
-          <span class="badge badge-gray"><?= e($DL[$dk][0]) ?> non fourni(e)</span>
-        <?php endif; ?>
-      <?php endforeach; ?>
-    </div>
-    <div class="acts mt">
+    <div class="cd-status" data-l="Statut"><?= kyc_badge($p['kyc_status']) ?></div>
+    <div class="cd-acts" data-l="Actions">
       <?php if ($p['kyc_status'] !== 'verified'): ?>
-        <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-primary btn-sm" name="action" value="verify">✓ Valider & activer</button></form>
+        <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-primary btn-sm" name="action" value="verify">✓ Valider</button></form>
       <?php endif; ?>
       <?php if ($p['kyc_status'] === 'pending'): ?>
         <form method="post" data-confirm="Refuser cette candidature ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-ghost btn-sm" name="action" value="reject">Refuser</button></form>
       <?php endif; ?>
-      <a class="btn btn-ghost btn-sm" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Modifier le dossier</a>
+      <a class="btn btn-ghost btn-sm" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Dossier</a>
     </div>
+    <details class="cd-more">
+      <summary>Plus d’infos</summary>
+      <div class="sum-row"><span>Versement</span><b><?= e($p['payout_method']) ?> · <?= e(fmt_phone($p['payout_number'])) ?></b></div>
+      <?php if ($p['vehicle']): ?><div class="sum-row"><span>Véhicule / bien</span><b><?= e($p['vehicle']) ?></b></div><?php endif; ?>
+      <?php if ($p['bio']): ?><p class="muted" style="margin:.4rem 0 0"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
+    </details>
   </div>
-<?php endforeach; ?>
+  <?php endforeach; ?>
 </div>
+<p class="muted" data-cd-empty hidden>Aucun résultat pour cette recherche.</p>
+<script>
+(function () {
+  var q = document.querySelector('[data-cd-search]'), rows = document.querySelectorAll('[data-cd]'), empty = document.querySelector('[data-cd-empty]');
+  if (!q) return;
+  q.addEventListener('input', function () {
+    var v = q.value.trim().toLowerCase(), n = 0;
+    rows.forEach(function (r) { var on = !v || r.dataset.cd.indexOf(v) > -1; r.hidden = !on; if (on) n++; });
+    empty.hidden = n > 0;
+  });
+})();
+</script>
+<?php endif; ?>
 <?php view('admin/footer');
