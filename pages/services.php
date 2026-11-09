@@ -52,7 +52,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
 <form class="section-tight" method="post" action="/reserver" data-service-form data-universe="<?= e($uk) ?>" data-garantie-pct="<?= e((string) $garantiePct) ?>" data-fee-pct="<?= $uk === 'menage' ? e((string) setting('service_fee_menage_pct', 10)) : '0' ?>">
   <?= csrf_field() ?>
   <input type="hidden" name="universe" value="<?= e($uk) ?>">
-  <div class="container <?= $isRental ? 'narrow-2' : 'two-col wide-left' ?>">
+  <div class="container <?= ($isRental || in_array($uk, ['coiffeuse', 'maquilleuse', 'onglerie'], true)) ? 'narrow-2 svc-solo' : 'two-col wide-left' ?>">
     <div>
       <?php if (true): ?>
       <?php if (($autoProv && !in_array($uk, ['menage', 'pressing'], true)) || $isRental):

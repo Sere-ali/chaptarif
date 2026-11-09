@@ -1488,3 +1488,57 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
 .kyc-title { display: block; color: #123E8C; margin-bottom: 6px; }
 .kyc-docs .fld span small { font-weight: 500; color: #5B6B7F; }
 .kyc-retenir { margin: 6px 0 0; font-size: .82rem; font-weight: 700; color: #1E6B30; }
+/* ===== Ordinateur : mise en page propre (≥ 900px) ===== */
+@media (min-width: 900px) {
+  /* Accueil : 4 grandes cartes bien lisibles */
+  .m-home .m-grid { max-width: 920px; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  .m-home .m-cat { max-width: none; width: 100%; }
+  .m-home .m-cat b { font-size: 1.15rem; }
+  .m-home .m-cat-arrow { width: 30px; }
+  .m-home .m-search { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .m-trio { max-width: 640px; margin-left: auto !important; margin-right: auto !important; }
+  .m-trio svg { width: 24px; height: 24px; }
+  .m-trio b { font-size: .9rem; }
+  .m-home { min-height: 0; padding: 40px 0 56px; }
+
+  /* Pages Transport / Service à la personne / Beauté : colonne centrée façon appli */
+  body.domaine-m .d-home { max-width: 760px; margin: 0 auto; padding: 18px 20px 40px; }
+  body.domaine-m .d-home .container { max-width: none; padding-left: 0; padding-right: 0; }
+  body.domaine-m .d-home .d-hero { margin: 4px 0 22px; width: 100%; max-width: none; }
+  body.dom-transport .d-home .d-hero { display: none; }
+  body.dom-sap .d-home .d-hero, body.dom-bea .d-home .d-hero { display: none; }
+  body.dom-sap .sap-banner { width: 100%; height: auto; border-radius: 24px; display: block; margin-bottom: 8px; }
+  body.dom-transport .d-list, body.dom-sap .d-list { gap: 14px; }
+  body.dom-transport .d-item, body.dom-sap .d-item { background: #F1F6FD; border: 1.5px solid #D6E4F5; border-radius: 20px; padding: 14px; gap: 14px; align-items: center; box-shadow: 0 10px 26px -20px rgba(15,27,45,.5); }
+  body.dom-transport .d-item.d-alt, body.dom-sap .d-item.d-alt { background: #ECF8F3; border-color: #CDEBDF; }
+  body.dom-transport .d-item-img, body.dom-sap .d-item-img { width: 96px; height: 80px; flex: none; padding-right: 14px; border-right: 1.5px solid #C9D8EA; box-sizing: content-box; border-radius: 0; overflow: visible; }
+  body.dom-transport .d-item-img img, body.dom-sap .d-item-img img { width: 96px; height: 80px; object-fit: cover; border-radius: 14px; }
+  body.dom-transport .d-item-body b, body.dom-sap .d-item-body b { font-size: 1.15rem; }
+  body.dom-transport .d-item-body small, body.dom-sap .d-item-body small { font-size: .9rem; color: #3B4B57; }
+  body.dom-transport .d-item-btn, body.dom-sap .d-item-btn { background: #0F55A8; color: #fff; border-radius: 999px; padding: 10px 18px; font-weight: 800; flex: none; }
+  body.dom-transport .d-item.d-alt .d-item-btn, body.dom-sap .d-item.d-alt .d-item-btn { background: #148A63; }
+  body.dom-sap .d-item-btn { background: #1677C9; }
+  body.dom-sap .d-h2 { border-left: 4px solid #148A63; padding-left: 12px; margin-bottom: 0; }
+  body.dom-sap .d-sub { padding-left: 16px; }
+  body.dom-bea .d-h2 { border-left-color: #E5175F; }
+  body.dom-bea .d-item, body.dom-bea .d-item.d-alt { background: #FFF6FA; border-color: #F6D3E2; }
+  body.dom-bea .d-item-img { border-right-color: #F0B9D0; }
+  body.dom-bea .d-item-btn { background: linear-gradient(90deg, #E5175F, #C2185B); }
+  body.dom-bea .d-item.d-alt .d-item-btn { background: linear-gradient(90deg, #7B2CC4, #5B1A9C); }
+  body.dom-sap .d-home-link { background: #E3F5EE; color: #148A63; border-radius: 999px; padding: 6px 12px; font-weight: 700; }
+  body.dom-bea .d-home-link { background: #FDE3EE; color: #D81B60; }
+  body.domaine-m .d-item.reveal { opacity: 1 !important; transform: none !important; }
+
+  /* Immobilier : bloc centré un peu plus large */
+  body.immo-m .d-home .container, body.immo-m .immo-land { max-width: 640px; margin-left: auto; margin-right: auto; }
+  body.immo-m .il-banner { height: 180px; }
+  body.immo-m .il-banner h2 { font-size: 1.7rem; }
+  body.immo-m .il-banner p { font-size: .95rem; }
+  body.immo-m .il-search .il-card { height: 190px; }
+  body.immo-m .il-search .il-card span { font-size: .85rem; padding: 7px; }
+
+  /* Coiffure / Maquillage / Onglerie : formulaire centré, sans colonne vide */
+  .svc-solo { max-width: 640px !important; }
+  .svc-solo > div:first-child:not(:has(*)) , .svc-solo > div:first-child:has(> .offer-grid:empty) { display: none; }
+  .svc-solo > aside { position: static; }
+}
