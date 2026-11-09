@@ -60,6 +60,8 @@ if (PHP_SAPI !== 'cli') {
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header('Permissions-Policy: geolocation=(self), camera=(self)');
     if ($https) header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    // Pages toujours revérifiées : chaque mise à jour du site s'affiche immédiatement.
+    if (!headers_sent()) header('Cache-Control: no-cache, must-revalidate');
 }
 
 require APP . '/db.php';
