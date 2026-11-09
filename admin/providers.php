@@ -70,7 +70,7 @@ view('admin/header', compact('page', 'nav'));
             <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-ghost btn-xs" name="action" value="toggle"><?= (int) $p['active'] ? 'Suspendre' : 'Activer' ?></button></form>
           <?php endif; ?>
           <a class="btn btn-ghost btn-xs" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Modifier</a>
-        </div></td>
+        <?= del_btn('provider', (int) $p['id'], 'le prestataire ' . $p['name']) ?></div></td>
       </tr>
     <?php endforeach; if (!$rows): ?><tr><td colspan="8" class="muted">Aucun prestataire.</td></tr><?php endif; ?>
     </tbody>

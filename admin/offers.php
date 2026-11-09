@@ -56,7 +56,7 @@ view('admin/header', compact('page', 'nav'));
         <td><input form="<?= $f ?>" type="number" name="sort" value="<?= (int) $o['sort'] ?>" style="width:64px"></td>
         <td><input form="<?= $f ?>" type="checkbox" name="popular" <?= $o['popular'] ? 'checked' : '' ?>></td>
         <td><input form="<?= $f ?>" type="checkbox" name="active" <?= $o['active'] ? 'checked' : '' ?>></td>
-        <td><div class="acts"><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button></div></td>
+        <td><div class="acts"><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button><?= del_btn('offer', (int) $o['id'], 'la formule « ' . $o['title'] . ' »') ?></div></td>
       </tr>
     <?php endforeach; ?>
     </tbody>

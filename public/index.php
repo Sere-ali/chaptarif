@@ -28,6 +28,7 @@ $routes = [
     '/reserver'             => 'pages/checkout.php',
     '/reserver/code'        => 'pages/checkout_code.php',
     '/admin/codes'          => 'admin/codes.php',
+    '/admin/supprimer'      => 'admin/delete.php',
     '/paiement'             => 'pages/pay.php',
     '/paiement/simulateur'  => 'pages/pay_simulator.php',
     '/paiement/manuel'      => 'pages/pay_manual.php',

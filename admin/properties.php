@@ -34,6 +34,7 @@ view('admin/header', compact('page', 'nav'));
           <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-ghost btn-xs" name="action" value="certify"><?= (int) $p['certified'] ? 'Retirer certif.' : 'Certifier' ?></button></form>
           <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-ghost btn-xs" name="action" value="toggle"><?= (int) $p['active'] ? 'Masquer' : 'Publier' ?></button></form>
           <a class="btn btn-soft btn-xs" href="/admin/bien?id=<?= (int) $p['id'] ?>">Modifier</a>
+          <?= del_btn('property', (int) $p['id'], 'le logement « ' . $p['title'] . ' »') ?>
         </div></td>
       </tr>
     <?php endforeach; ?>

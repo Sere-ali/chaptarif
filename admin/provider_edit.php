@@ -5,7 +5,7 @@ $p = $id ? one('SELECT * FROM providers WHERE id = ?', [$id]) : null;
 if ($id && !$p) not_found();
 
 if (is_post()) {
-    if (($_POST['action'] ?? '') === 'delete' && $p) {
+    if (($_POST['action'] ?? '') === 'delete' && $p && is_super()) {
         if ((int) val('SELECT COUNT(*) FROM bookings WHERE provider_id = ?', [$p['id']])) {
             flash('error', 'Ce prestataire a des réservations : suspendez-le plutôt que de le supprimer.');
             redirect('/admin/prestataire?id=' . $p['id']);
@@ -154,7 +154,7 @@ view('admin/header', compact('page', 'nav'));
       <label class="fld"><span> Définir / réinitialiser son mot de passe d'accès</span><input type="text" name="new_password" minlength="8" placeholder="8 caractères minimum" autocomplete="off"></label>
       <button class="btn btn-soft btn-sm" name="action" value="set_password">Enregistrer le mot de passe</button>
     </form>
-    <form method="post" data-confirm="Supprimer définitivement ce prestataire ?"><?= csrf_field() ?><button class="btn btn-ghost btn-sm" name="action" value="delete"> Supprimer</button></form>
+    <?php if (is_super()): ?><form method="post" data-confirm="Supprimer définitivement ce prestataire ?"><?= csrf_field() ?><button class="btn btn-danger btn-sm" name="action" value="delete"> Supprimer</button></form><?php endif; ?>
     <?php endif; ?>
   </div>
 </div>

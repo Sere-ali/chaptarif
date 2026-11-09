@@ -39,6 +39,7 @@ view('admin/header', compact('page', 'nav'));
         <?php if ($a['status'] !== 'approved'): ?><button class="btn btn-primary btn-sm" name="action" value="approve"> Approuver</button><?php endif; ?>
         <?php if ($a['status'] !== 'rejected'): ?><input name="reason" placeholder="Motif si refus (ex. photo floue)" maxlength="200" style="flex:1;min-width:180px"><button class="btn btn-ghost btn-sm" name="action" value="reject">Refuser</button><?php endif; ?>
       </form>
+      <?= del_btn('listing', (int) $a['id'], 'l’annonce « ' . $a['title'] . ' »') ?>
     </div>
   </div>
 <?php endforeach; if (!$rows): ?><p class="muted">Rien dans cette liste. </p><?php endif; ?>

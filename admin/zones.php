@@ -40,7 +40,7 @@ view('admin/header', compact('page', 'nav'));
     <td><input form="<?= $f ?>" name="lat" value="<?= e($z['lat']) ?>" style="width:110px"></td>
     <td><input form="<?= $f ?>" name="lng" value="<?= e($z['lng']) ?>" style="width:110px"></td>
     <td><input form="<?= $f ?>" type="checkbox" name="active" <?= $z['active'] ? 'checked' : '' ?>></td>
-    <td><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button></td></tr>
+    <td><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button><?= del_btn('zone', (int) $z['id'], 'le quartier ' . $z['name']) ?></td></tr>
   <?php endforeach; ?>
   </tbody></table></div></div>
 <?php view('admin/footer');

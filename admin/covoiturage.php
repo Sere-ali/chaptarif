@@ -73,7 +73,7 @@ view('admin/header', compact('page', 'nav'));
         <td><input form="<?= $f ?>" type="number" name="seats_total" value="<?= (int) $t['seats_total'] ?>" min="1" max="4" style="width:56px"></td>
         <td class="num"><?= $sold ?></td>
         <td><input form="<?= $f ?>" type="checkbox" name="active" <?= $t['active'] ? 'checked' : '' ?>></td>
-        <td><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button></td>
+        <td><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button><?= del_btn('trip', (int) $t['id'], 'ce trajet') ?></td>
       </tr>
     <?php endforeach; if (!$rows): ?><tr><td colspan="10" class="muted">Aucun trajet publié.</td></tr><?php endif; ?>
     </tbody>

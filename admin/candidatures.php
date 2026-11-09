@@ -74,6 +74,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
       <?php endif; ?>
       <?php $pu = one('SELECT id FROM users WHERE phone = ?', [$p['phone']]); if ($pu): ?><a class="btn btn-ghost btn-sm" href="/admin/chat?u=<?= (int) $pu['id'] ?>">Écrire</a><?php endif; ?>
       <a class="btn btn-ghost btn-sm" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Dossier</a>
+      <?= del_btn('provider', (int) $p['id'], 'la candidature de ' . $p['name']) ?>
     </div>
     <details class="cd-more">
       <summary>Plus d’infos</summary>

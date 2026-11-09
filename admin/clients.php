@@ -31,7 +31,7 @@ view('admin/header', compact('page', 'nav'));
       <td class="num"><a href="/admin/reservations?q=<?= urlencode(substr((string) $u['phone'], -10)) ?>"><?= (int) $u['nb'] ?></a></td>
       <td class="num"><?= fcfa($u['spent']) ?></td>
       <td><?= (int) $u['active'] ? '<span class="badge badge-green">Actif</span>' : '<span class="badge badge-red">Suspendu</span>' ?></td>
-      <td><form method="post" data-confirm="Confirmer ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $u['id'] ?>"><button class="btn btn-ghost btn-xs"><?= (int) $u['active'] ? 'Suspendre' : 'Réactiver' ?></button></form></td></tr>
+      <td><form method="post" data-confirm="Confirmer ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $u['id'] ?>"><button class="btn btn-ghost btn-xs"><?= (int) $u['active'] ? 'Suspendre' : 'Réactiver' ?></button></form><?= del_btn('client', (int) $u['id'], 'le client ' . ($u['name'] ?: $u['phone'])) ?></td></tr>
     <?php endforeach; if (!$rows): ?><tr><td colspan="7" class="muted">Aucun client.</td></tr><?php endif; ?>
     </tbody>
   </table></div>

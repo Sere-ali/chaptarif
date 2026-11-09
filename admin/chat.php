@@ -64,6 +64,7 @@ if ($uid):
       <?php if ((int) $t['unread'] > 0): ?><span class="badge badge-amber"><?= (int) $t['unread'] ?> nouveau<?= $t['unread'] > 1 ? 'x' : '' ?></span><?php endif; ?>
       <p class="muted small"><?= $lm['sender'] === 'admin' ? 'Vous : ' : '' ?><?= e(mb_substr((string) $lm['body'], 0, 90) ?: 'Pièce jointe') ?> · <?= e(fmt_date($lm['created_at'], true)) ?></p>
     </a>
+    <?php if (is_super()): ?><div class="chat-del"><?= del_btn('chat', (int) $t['id'], 'toute la conversation avec ' . ($t['pname'] ?: ($t['name'] ?: 'ce contact'))) ?></div><?php endif; ?>
   <?php endforeach; ?>
   <?php if ($others): ?>
     <h3 class="h4" style="padding:14px 16px 4px;margin:0">Démarrer une conversation</h3>

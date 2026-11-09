@@ -194,3 +194,8 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
   .cd-acts { justify-content: flex-start; }
   .cd-search { max-width: none; }
 }
+/* Bouton « Supprimer » (Super Admin uniquement) */
+.del-form { display: inline-flex; margin: 0; }
+.del-btn { display: inline-flex; align-items: center; gap: 5px; background: #FDECEC !important; color: #C62828 !important; border: 1px solid #F6C9C9 !important; box-shadow: none !important; }
+.del-btn:hover { background: #C62828 !important; color: #fff !important; border-color: #C62828 !important; }
+.chat-del { display: flex; justify-content: flex-end; padding: 0 16px 10px; margin-top: -6px; }

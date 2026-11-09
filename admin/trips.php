@@ -62,7 +62,7 @@ view('admin/header', compact('page', 'nav'));
         <td><input form="<?= $f ?>" type="number" name="seats_total" value="<?= (int) $t['seats_total'] ?>" style="width:64px"></td>
         <td class="num"><?= $sold ?></td>
         <td><input form="<?= $f ?>" type="checkbox" name="active" <?= $t['active'] ? 'checked' : '' ?>></td>
-        <td><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button></td>
+        <td><button form="<?= $f ?>" class="btn btn-soft btn-xs" name="action" value="save">Enregistrer</button><?= del_btn('trip', (int) $t['id'], 'ce départ') ?></td>
       </tr>
     <?php endforeach; ?>
     </tbody>
