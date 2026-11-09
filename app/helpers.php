@@ -820,7 +820,8 @@ function coiffure_options(): array
 {
     return [
         'Pose de perruque (avec ou sans colle)' => 8000,
-        'Tout mèche (sans les mèches)' => 10000,
+        'Nattes tous modèles' => 10000,
+        'Tresses tous modèles' => 15000,
     ];
 }
 

@@ -142,7 +142,8 @@ function build_quote(string $universe, array $in): array
                     $co = coiffure_options();
                     $pk0 = (string) ($in['prestation'] ?? '');
                     if (!isset($co[$pk0])) return $fail('Choisissez votre prestation.');
-                    $ttl = $pk0; $pr = $co[$pk0];
+                    $coN = max(1, min(30, (int) ($in['personnes'] ?? 1)));
+                    $ttl = $pk0 . ($coN > 1 ? ' × ' . $coN . ' personnes' : ''); $pr = $co[$pk0] * $coN;
                 } else {
                     $ttl = implode(' + ', $onKeys); $pr = array_sum(array_map(fn($k) => $oo[$k]['price'], $onKeys));
                 }
@@ -197,6 +198,7 @@ function build_quote(string $universe, array $in): array
             $q['item_id'] = (int) $offer['id'];
             $q['details'] = ['offer' => $offer['title'], 'qty' => $qty, 'zone' => $zone['name'] ?? '', 'gps' => $gps0, 'time' => $time, 'address' => mb_substr((string) ($in['address'] ?? ''), 0, 200), 'provider' => $prov['name']];
             if ($presta !== '') $q['details']['prestation'] = $presta;
+            if ($universe === 'coiffeuse' && !$isListing) $q['details']['personnes'] = max(1, min(30, (int) ($in['personnes'] ?? 1)));
             if ($formule !== '') { $q['details']['formule'] = $formule; $q['details']['personnes'] = $personnes; }
             $q['summary'] = [['Prestataire', $prov['name']], ['Formule', $offer['title'] . ($qty > 1 ? " × $qty" : '')], ['Rendez-vous', fmt_date($in['date']) . ' à ' . $time], ['Lieu', trim(($zone['name'] ?? '') . ($addr0 !== '' ? ($zone ? ' · ' : '') . mb_substr($addr0, 0, 200) : '') . ($gps0 !== '' && $addr0 === '' && !$zone ? 'Position partagée' : ''))]];
             if ($presta !== '') $q['summary'][] = ['Prestation', $presta];
