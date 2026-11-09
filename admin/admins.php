@@ -104,43 +104,50 @@ view('admin/header', compact('page', 'nav'));
 $pwFields = function (bool $required, bool $showForce) {
     ?>
     <div class="row2">
-      <label class="fld"><span>Mot de passe<?= $required ? '' : ' (laisser vide pour ne pas changer)' ?></span>
-        <input type="password" name="password" autocomplete="new-password" minlength="8" <?= $required ? 'required' : '' ?>></label>
+      <label class="fld"><span>Mot de passe<?= $required ? '' : ' <small>(laisser vide pour ne pas changer)</small>' ?></span>
+        <input type="password" name="password" autocomplete="new-password" minlength="8" <?= $required ? 'required' : '' ?> data-pw placeholder="8 caractères minimum"></label>
       <label class="fld"><span>Confirmer le mot de passe</span>
-        <input type="password" name="password_confirm" autocomplete="new-password" minlength="8" <?= $required ? 'required' : '' ?>></label>
+        <input type="password" name="password_confirm" autocomplete="new-password" minlength="8" <?= $required ? 'required' : '' ?> data-pw2 placeholder="Retapez le mot de passe"></label>
     </div>
-    <p class="fine">8 caractères minimum : chiffres, lettres ou symboles, au choix. Transmettez-le à l'intéressé par un moyen sûr (en main propre ou par appel).</p>
+    <div class="ad-meter" data-meter hidden><i><b></b></i><span data-meter-txt></span></div>
+    <p class="ad-hint">🔒 Transmettez le mot de passe à l’intéressé par un moyen sûr (en main propre ou par appel), jamais par écrit.</p>
     <?php if ($showForce): ?>
-      <label class="check"><input type="checkbox" name="force_change"> Obliger l'administrateur à choisir son propre mot de passe à la prochaine connexion</label>
+      <label class="ad-switch"><input type="checkbox" name="force_change"><i></i><span><b>Changement obligatoire</b><small>L’administrateur choisira son propre mot de passe à sa première connexion.</small></span></label>
     <?php endif;
+};
+$roleCards = function (string $cur, bool $disabled = false) {
+    ?>
+    <div class="ad-roles" role="radiogroup">
+      <label class="ad-role"><input type="radio" name="role" value="admin" <?= $cur !== 'super_admin' ? 'checked' : '' ?> <?= $disabled ? 'disabled' : '' ?>>
+        <span class="ad-role-ic ad-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+        <span><b>Administrateur</b><small>Réservations, litiges, prestataires, catalogue et finances.</small></span><em></em></label>
+      <label class="ad-role"><input type="radio" name="role" value="super_admin" <?= $cur === 'super_admin' ? 'checked' : '' ?> <?= $disabled ? 'disabled' : '' ?>>
+        <span class="ad-role-ic ad-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5L3 8z"/></svg></span>
+        <span><b>Super Administrateur</b><small>Tous les droits, plus la gestion de l’équipe, des tarifs, des suppressions et du journal d’audit.</small></span><em></em></label>
+    </div>
+    <?php
 };
 ?>
 
 <?php if ($edit): $self = (int) $edit['id'] === (int) $me['id']; ?>
   <p><a href="/admin/administrateurs">← Retour à la liste des administrateurs</a></p>
-  <form class="panel" method="post" style="max-width:720px"><?= csrf_field() ?>
+  <form class="ad-card" method="post" autocomplete="off"><?= csrf_field() ?>
     <input type="hidden" name="action" value="update"><input type="hidden" name="id" value="<?= (int) $edit['id'] ?>">
-    <h2 class="h4">Informations du compte</h2>
-    <div class="row2">
-      <label class="fld"><span>Nom complet</span><input name="name" value="<?= e($edit['name']) ?>" required maxlength="80"></label>
-      <label class="fld"><span>E-mail de connexion</span><input type="email" name="email" value="<?= e($edit['email']) ?>" required></label>
+    <div class="ad-band"><span class="ad-av" data-av><?= e(initials($edit['name'] ?: $edit['email'])) ?></span><div><h2>Modifier le compte</h2><p>Dernière connexion : <?= fmt_date($edit['last_login_at'], true) ?> · créé le <?= fmt_date($edit['created_at']) ?></p></div></div>
+    <div class="ad-body">
+      <div class="ad-sec"><b>1</b>Identité</div>
+      <div class="row2">
+        <label class="fld"><span>Nom complet</span><input name="name" value="<?= e($edit['name']) ?>" required maxlength="80" data-name></label>
+        <label class="fld"><span>E-mail de connexion</span><input type="email" name="email" value="<?= e($edit['email']) ?>" required></label>
+      </div>
+      <div class="ad-sec"><b>2</b>Rôle et accès</div>
+      <?php $roleCards($edit['role'], $self); ?>
+      <label class="ad-switch"><input type="checkbox" name="active" <?= (int) $edit['active'] ? 'checked' : '' ?> <?= $self ? 'disabled' : '' ?>><i></i><span><b>Compte actif</b><small>Désactivé, l’administrateur ne peut plus se connecter.</small></span></label>
+      <?php if ($self): ?><p class="ad-hint">Vous ne pouvez pas changer votre propre rôle ni désactiver votre compte.</p><?php endif; ?>
+      <div class="ad-sec"><b>3</b>Nouveau mot de passe</div>
+      <?php $pwFields(false, !$self); ?>
+      <div class="ad-actions"><a class="btn btn-ghost btn-lg" href="/admin/administrateurs">Annuler</a><button class="btn btn-primary btn-lg">Enregistrer les modifications</button></div>
     </div>
-    <div class="row2">
-      <label class="fld"><span>Rôle</span>
-        <select name="role" <?= $self ? 'disabled' : '' ?>>
-          <option value="admin" <?= $edit['role'] === 'admin' ? 'selected' : '' ?>>Administrateur</option>
-          <option value="super_admin" <?= $edit['role'] === 'super_admin' ? 'selected' : '' ?>>Super Administrateur</option>
-        </select></label>
-      <label class="check" style="align-self:end"><input type="checkbox" name="active" <?= (int) $edit['active'] ? 'checked' : '' ?> <?= $self ? 'disabled' : '' ?>> Compte actif</label>
-    </div>
-    <?php if ($self): ?><p class="fine">Vous ne pouvez pas changer votre propre rôle ni désactiver votre compte.</p><?php endif; ?>
-    <h2 class="h4 mt">Nouveau mot de passe</h2>
-    <?php $pwFields(false, !$self); ?>
-    <div class="bk-actions mt">
-      <button class="btn btn-primary">Enregistrer les modifications</button>
-      <a class="btn btn-ghost" href="/admin/administrateurs">Annuler</a>
-    </div>
-    <p class="fine">Dernière connexion : <?= fmt_date($edit['last_login_at'], true) ?> · Créé le <?= fmt_date($edit['created_at']) ?></p>
   </form>
 
 <?php else: ?>
@@ -166,16 +173,19 @@ $pwFields = function (bool $required, bool $showForce) {
     </table></div>
   </div>
   <div class="grid2e">
-  <div class="panel">
-    <h2 class="h4">Ajouter un administrateur</h2>
-    <form method="post" autocomplete="off"><?= csrf_field() ?><input type="hidden" name="action" value="create">
-      <label class="fld"><span>Nom complet</span><input name="name" value="<?= e($old['name']) ?>" required maxlength="80"></label>
-      <label class="fld"><span>E-mail de connexion</span><input type="email" name="email" value="<?= e($old['email']) ?>" required autocomplete="off"></label>
-      <label class="fld"><span>Rôle</span><select name="role"><option value="admin">Administrateur</option><option value="super_admin" <?= $old['role'] === 'super_admin' ? 'selected' : '' ?>>Super Administrateur</option></select></label>
+  <form class="ad-card" method="post" autocomplete="off" id="ad-new"><?= csrf_field() ?><input type="hidden" name="action" value="create">
+    <div class="ad-band"><span class="ad-av" data-av>+</span><div><h2>Ajouter un administrateur</h2><p>Créez un accès au back-office pour un membre de votre équipe.</p></div></div>
+    <div class="ad-body">
+      <div class="ad-sec"><b>1</b>Identité</div>
+      <label class="fld"><span>Nom complet</span><input name="name" value="<?= e($old['name']) ?>" required maxlength="80" placeholder="Ex. Koné Aminata" data-name></label>
+      <label class="fld"><span>E-mail de connexion</span><input type="email" name="email" value="<?= e($old['email']) ?>" required autocomplete="off" placeholder="prenom.nom@chaptarif.ci"></label>
+      <div class="ad-sec"><b>2</b>Rôle</div>
+      <?php $roleCards($old['role']); ?>
+      <div class="ad-sec"><b>3</b>Mot de passe</div>
       <?php $pwFields(true, true); ?>
-      <button class="btn btn-primary btn-block mt">Créer le compte</button>
-    </form>
-  </div>
+      <button class="btn btn-primary btn-block btn-lg ad-go">Créer le compte</button>
+    </div>
+  </form>
   <div class="panel">
     <h3 class="h4">Qui peut faire quoi ?</h3>
     <table class="tbl small"><thead><tr><th>Permission</th><th>Admin</th><th>Super</th></tr></thead><tbody>
@@ -191,4 +201,20 @@ $pwFields = function (bool $required, bool $showForce) {
   </div>
 </div>
 <?php endif; ?>
+<script>
+(function () {
+  document.querySelectorAll('.ad-card').forEach(function (f) {
+    var nm = f.querySelector('[data-name]'), av = f.querySelector('[data-av]');
+    if (nm && av) nm.addEventListener('input', function () { var w = nm.value.trim().split(/\s+/).filter(Boolean); var t = w.length ? (w[0][0] + (w[1] ? w[1][0] : '')).toUpperCase() : '+'; if (av.textContent !== t) { av.textContent = t; av.classList.remove('pop'); void av.offsetWidth; av.classList.add('pop'); } });
+    var pw = f.querySelector('[data-pw]'), pw2 = f.querySelector('[data-pw2]'), m = f.querySelector('[data-meter]');
+    if (!pw || !m) return;
+    var bar = m.querySelector('b'), tx = m.querySelector('[data-meter-txt]');
+    function score(v) { var s = 0; if (v.length >= 8) s++; if (v.length >= 12) s++; if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++; if (/\d/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v)) s++; return Math.min(4, s); }
+    var lab = [['Trop court', '#E53935'], ['Faible', '#F57C00'], ['Moyen', '#F5B82E'], ['Bon', '#2E9E5B'], ['Excellent', '#1B7A45']];
+    function upd() { var v = pw.value; m.hidden = !v; var s = v.length < 8 ? 0 : score(v); bar.style.width = (v.length < 8 ? 15 : (s + 1) * 20) + '%'; bar.style.background = lab[s][1]; tx.textContent = lab[s][0]; tx.style.color = lab[s][1];
+      if (pw2) pw2.setCustomValidity(pw2.value && pw2.value !== v ? 'Les deux mots de passe ne sont pas identiques.' : ''); }
+    pw.addEventListener('input', upd); if (pw2) pw2.addEventListener('input', upd);
+  });
+})();
+</script>
 <?php view('admin/footer');
