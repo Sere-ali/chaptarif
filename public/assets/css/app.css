@@ -1625,3 +1625,10 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
 }
 @media (min-width: 900px) and (max-width: 1180px) { .topbar .brand .brand-txt { font-size: 1.15rem; } .topbar .top-actions .btn { font-size: .78rem; padding: 7px 10px; } }
 @media (min-width: 900px) and (max-width: 1180px) { .topbar .nav a[href="/comment-ca-marche"] { display: none; } }
+/* Espace prestataire : accès à la messagerie */
+.ps-chat { display: flex; align-items: center; gap: 14px; margin: 14px 0; padding: 14px 16px; text-decoration: none !important; color: inherit; border: 1.5px solid #CDEBDF; background: #F1FAF5; }
+.ps-chat-ico { position: relative; width: 48px; height: 48px; border-radius: 14px; background: #2E7D5B; color: #fff; display: grid; place-items: center; flex: none; }
+.ps-chat-ico i { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; border-radius: 999px; background: #E53935; color: #fff; font-style: normal; font-size: .72rem; font-weight: 800; display: grid; place-items: center; padding: 0 5px; }
+.ps-chat > span:nth-child(2) { flex: 1; display: flex; flex-direction: column; }
+.ps-chat small { color: #3B4B57; }
+.ps-chat em { font-style: normal; font-weight: 800; color: #2E7D5B; white-space: nowrap; }

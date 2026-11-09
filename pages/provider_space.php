@@ -81,6 +81,13 @@ view('layout/header', compact('title', 'active', 'providerMode'));
   <div class="container" style="max-width:900px">
     <h1 class="h2"> Mon espace prestataire</h1>
     <p class="muted">Gérez vos annonces et votre profil. Elles sont publiées après validation par l'équipe.</p>
+    <?php if ($mine): $proUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE user_id = ? AND sender = 'admin' AND read_by_user = 0", [$me['id']]); ?>
+      <a class="ps-chat card" href="/chat?pro=1">
+        <span class="ps-chat-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><?php if ($proUnread): ?><i><?= $proUnread ?></i><?php endif; ?></span>
+        <span><b>Messagerie avec l’équipe ChapTarif</b><small><?= $proUnread ? $proUnread . ' nouveau' . ($proUnread > 1 ? 'x' : '') . ' message' . ($proUnread > 1 ? 's' : '') : 'Une question sur votre dossier, une annonce ou un paiement ? Écrivez-nous.' ?></small></span>
+        <em>Ouvrir →</em>
+      </a>
+    <?php endif; ?>
 
     <?php if (!$mine): ?>
       <div class="card"><h2 class="h3">Vous n'êtes pas encore prestataire</h2>

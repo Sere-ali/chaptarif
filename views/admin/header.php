@@ -6,7 +6,9 @@ $pendingKyc = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pend
 $pendingCandidatures = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'");
 $unread = (int) val('SELECT COUNT(*) FROM contact_messages WHERE handled = 0');
 $pendingListings = (int) val("SELECT COUNT(*) FROM provider_services WHERE status = 'pending'");
-$chatUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0");
+$PROV_SQL = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
+$chatUnreadPro = (int) val("SELECT COUNT(*) FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE c.sender = 'user' AND c.read_by_admin = 0 AND $PROV_SQL");
+$chatUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0") - $chatUnreadPro;
 $myOpenTasks = $me ? (int) val("SELECT COUNT(*) FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule')", [$me['id']]) : 0;
 $items = [
     ['Pilotage', null],
@@ -28,6 +30,7 @@ $items = [
     ['Relation client', null],
     ['clients', '/admin/clients', '', 'Clients', 0],
     ['chat', '/admin/chat', '', 'Chat service client', $chatUnread],
+    ['chatpro', '/admin/chat?type=pro', '', 'Chat prestataires', $chatUnreadPro],
     ['messages', '/admin/messages', '', 'Messages', $unread],
 ];
 if (is_super($me)) {

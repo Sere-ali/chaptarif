@@ -27,8 +27,9 @@ if ($uid && isset($_GET['poll'])) {
     exit;
 }
 
-$page = 'Chat service client';
-$nav = 'chat';
+$isPro = ($_GET['type'] ?? '') === 'pro' || ($uid && one('SELECT 1 FROM providers p JOIN users u ON u.phone = p.phone WHERE u.id = ?', [$uid]));
+$page = $isPro ? 'Chat prestataires' : 'Chat service client';
+$nav = $isPro ? 'chatpro' : 'chat';
 view('admin/header', compact('page', 'nav'));
 if ($uid):
     $u = one('SELECT * FROM users WHERE id = ?', [$uid]);
@@ -38,23 +39,46 @@ if ($uid):
     $prov = $u ? one('SELECT name, universe FROM providers WHERE phone = ? LIMIT 1', [$u['phone'] ?? '']) : null;
 ?>
 <div class="wa-admin">
-<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => $u['name'] ?: 'Sans nom', 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
+<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => $u['name'] ?: 'Sans nom', 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => $isPro ? '/admin/chat?type=pro' : '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
 </div>
 <?php else:
-    $threads = all("SELECT u.id, u.name, u.phone, MAX(c.id) AS last_id, SUM(CASE WHEN c.sender = 'user' AND c.read_by_admin = 0 THEN 1 ELSE 0 END) AS unread
-        FROM chat_messages c JOIN users u ON u.id = c.user_id GROUP BY u.id, u.name, u.phone ORDER BY unread DESC, last_id DESC LIMIT 100");
+    $provCond = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
+    $threads = all("SELECT u.id, u.name, u.phone, MAX(c.id) AS last_id, SUM(CASE WHEN c.sender = 'user' AND c.read_by_admin = 0 THEN 1 ELSE 0 END) AS unread,
+        (SELECT pp.name FROM providers pp WHERE pp.phone = u.phone ORDER BY pp.id LIMIT 1) AS pname, (SELECT pp.universe FROM providers pp WHERE pp.phone = u.phone ORDER BY pp.id LIMIT 1) AS puni
+        FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE " . ($isPro ? $provCond : "NOT $provCond") . " GROUP BY u.id, u.name, u.phone ORDER BY unread DESC, last_id DESC LIMIT 150");
+    $withChat = array_map('intval', array_column($threads, 'id'));
+    $others = $isPro ? all("SELECT u.id, u.name, u.phone, p.name AS pname, p.universe AS puni, p.kyc_status FROM providers p JOIN users u ON u.phone = p.phone ORDER BY CASE p.kyc_status WHEN 'verified' THEN 0 ELSE 1 END, p.name LIMIT 400") : [];
+    $others = array_values(array_filter($others, fn ($o) => !in_array((int) $o['id'], $withChat, true)));
 ?>
-<p class="muted">Les clients et prestataires vous écrivent depuis l'onglet « Chat » de l'application.</p>
-<div class="panel">
-  <?php if (!$threads): ?><p class="muted" style="padding:16px">Aucune conversation pour le moment.</p><?php endif; ?>
-  <?php foreach ($threads as $t): $lm = one('SELECT body, sender, created_at FROM chat_messages WHERE id = ?', [$t['last_id']]); ?>
-    <a class="chat-thread" href="/admin/chat?u=<?= (int) $t['id'] ?>">
-      <b><?= e($t['name'] ?: 'Sans nom') ?></b> <small class="muted"><?= e($t['phone'] ?? '') ?></small>
+<nav class="cd-tabs" style="margin:6px 0 12px">
+  <a href="/admin/chat" class="<?= $isPro ? '' : 'on' ?>">Clients</a>
+  <a href="/admin/chat?type=pro" class="<?= $isPro ? 'on' : '' ?>">Prestataires</a>
+</nav>
+<p class="muted"><?= $isPro ? 'Échangez avec vos prestataires. Ils vous écrivent depuis leur espace prestataire ; vous pouvez aussi démarrer une conversation avec n’importe quel prestataire.' : 'Les clients vous écrivent depuis l’onglet « Chat » de l’application.' ?></p>
+<input type="search" class="cd-search" style="max-width:none;width:100%;margin-bottom:12px" placeholder="Rechercher un nom ou un numéro…" data-cd-search>
+<div class="panel chat-list">
+  <?php if (!$threads && !$others): ?><p class="muted" style="padding:16px">Aucune conversation pour le moment.</p><?php endif; ?>
+  <?php foreach ($threads as $t): $lm = one('SELECT body, sender, created_at FROM chat_messages WHERE id = ?', [$t['last_id']]); $tx = $t['puni'] ? universe($t['puni']) : null; ?>
+    <a class="chat-thread" href="/admin/chat?u=<?= (int) $t['id'] ?>" data-cd="<?= e(mb_strtolower(($t['pname'] ?? '') . ' ' . $t['name'] . ' ' . $t['phone'])) ?>">
+      <b><?= e($t['pname'] ?: ($t['name'] ?: 'Sans nom')) ?></b> <small class="muted"><?= e(fmt_phone($t['phone'] ?? '')) ?><?= $tx ? ' · ' . e($tx['name']) : '' ?></small>
       <?php if ((int) $t['unread'] > 0): ?><span class="badge badge-amber"><?= (int) $t['unread'] ?> nouveau<?= $t['unread'] > 1 ? 'x' : '' ?></span><?php endif; ?>
-      <p class="muted small"><?= $lm['sender'] === 'admin' ? 'Vous : ' : '' ?><?= e(mb_substr($lm['body'], 0, 90)) ?> · <?= e(fmt_date($lm['created_at'], true)) ?></p>
+      <p class="muted small"><?= $lm['sender'] === 'admin' ? 'Vous : ' : '' ?><?= e(mb_substr((string) $lm['body'], 0, 90) ?: 'Pièce jointe') ?> · <?= e(fmt_date($lm['created_at'], true)) ?></p>
     </a>
   <?php endforeach; ?>
+  <?php if ($others): ?>
+    <h3 class="h4" style="padding:14px 16px 4px;margin:0">Démarrer une conversation</h3>
+    <?php foreach ($others as $o): $ox = universe($o['puni']); ?>
+      <a class="chat-thread" href="/admin/chat?u=<?= (int) $o['id'] ?>" data-cd="<?= e(mb_strtolower($o['pname'] . ' ' . $o['name'] . ' ' . $o['phone'])) ?>">
+        <b><?= e($o['pname']) ?></b> <small class="muted"><?= e(fmt_phone($o['phone'])) ?> · <?= e($ox['name']) ?></small> <?= kyc_badge($o['kyc_status']) ?>
+        <p class="muted small">Aucun message · cliquer pour écrire</p>
+      </a>
+    <?php endforeach; ?>
+  <?php endif; ?>
 </div>
-<script>setTimeout(function(){ location.reload(); }, 30000);</script>
+<script>
+(function () { var q = document.querySelector('[data-cd-search]'); if (!q) return; var rows = document.querySelectorAll('.chat-list [data-cd]');
+  q.addEventListener('input', function () { var v = q.value.trim().toLowerCase(); rows.forEach(function (r) { r.hidden = v && r.dataset.cd.indexOf(v) < 0; }); }); })();
+</script>
+<script>setTimeout(function(){ if (!document.querySelector('[data-cd-search]') || !document.querySelector('[data-cd-search]').value) location.reload(); }, 30000);</script>
 <?php endif;
 view('admin/footer');

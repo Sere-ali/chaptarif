@@ -37,6 +37,6 @@ view('layout/header', compact('title', 'active', 'providerMode', 'bodyClass'));
 $url = '/chat' . ($providerMode ? '?pro=1' : '');
 ?>
 <section class="wa-wrap">
-<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => $url, 'name' => 'Service client ChapTarif', 'sub' => 'Nous répondons dès que possible', 'back' => $providerMode ? '/espace-prestataire' : '/', 'admin' => false]); ?>
+<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => $url, 'name' => $providerMode ? 'Équipe ChapTarif' : 'Service client ChapTarif', 'sub' => $providerMode ? 'Messagerie prestataires · réponse rapide' : 'Nous répondons dès que possible', 'back' => $providerMode ? '/espace-prestataire' : '/', 'admin' => false]); ?>
 </section>
 <?php view('layout/footer', compact('active', 'providerMode'));

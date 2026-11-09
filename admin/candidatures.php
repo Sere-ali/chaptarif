@@ -72,6 +72,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
       <?php if ($p['kyc_status'] === 'pending'): ?>
         <form method="post" data-confirm="Refuser cette candidature ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-ghost btn-sm" name="action" value="reject">Refuser</button></form>
       <?php endif; ?>
+      <?php $pu = one('SELECT id FROM users WHERE phone = ?', [$p['phone']]); if ($pu): ?><a class="btn btn-ghost btn-sm" href="/admin/chat?u=<?= (int) $pu['id'] ?>">Écrire</a><?php endif; ?>
       <a class="btn btn-ghost btn-sm" href="/admin/prestataire?id=<?= (int) $p['id'] ?>">Dossier</a>
     </div>
     <details class="cd-more">
