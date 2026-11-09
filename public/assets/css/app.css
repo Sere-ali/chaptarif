@@ -1542,3 +1542,13 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
   .svc-solo > div:first-child:not(:has(*)) , .svc-solo > div:first-child:has(> .offer-grid:empty) { display: none; }
   .svc-solo > aside { position: static; }
 }
+/* En-tête ordinateur : liens sur une seule ligne */
+@media (min-width: 900px) {
+  .topbar .nav-link, .topbar .top-actions a, .topbar .top-actions .btn { white-space: nowrap; }
+  .topbar .nav { flex-wrap: nowrap; min-width: 0; }
+  .topbar .top-actions { flex: none; }
+}
+@media (min-width: 900px) and (max-width: 1280px) {
+  .topbar .nav-link { padding-left: 8px; padding-right: 8px; font-size: .9rem; }
+  .topbar .top-actions .btn { padding-left: 12px; padding-right: 12px; font-size: .85rem; }
+}
