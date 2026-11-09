@@ -260,6 +260,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <?php if ($uk === 'maquilleuse'): ?>
         <?php $mqIco = [
           'crown' => '<path d="M3 8l4 4 5-7 5 7 4-4-2 11H5L3 8z"/>',
+          'bride' => '<path d="M9.5 4.5 12 3l2.5 1.5"/><circle cx="12" cy="9" r="3.5"/><path d="M8.5 8C7 10 6 13 4 21h16c-2-8-3-11-4.5-13"/><path d="M8 21c.5-3.5 2-5 4-5s3.5 1.5 4 5"/>',
           'group' => '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><circle cx="4.5" cy="9" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5M14 15.5c3 0 7 1.5 7 4.5M1 20c0-2.5 1.5-4 4-4.5"/>',
           'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
           'glass' => '<path d="M6 3h12l-6 9-6-9zM12 12v8M8 21h8"/>',
@@ -275,7 +276,8 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
                 <a class="mq-devis" href="/devis-maquillage">Cliquer pour un devis <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
               </div>
             <?php else: ?>
-              <label class="mq-row">
+              <label class="mq-row<?= !empty($f['badge']) ? ' mq-new' : '' ?>">
+                <?php if (!empty($f['badge'])): ?><span class="mq-badge">★ <?= e($f['badge']) ?></span><?php endif; ?>
                 <span class="mq-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?= $mqIco[$f['icon']] ?></svg></span>
                 <span class="mq-txt"><b><?= e($f['title']) ?></b><small><?= e($f['desc']) ?></small></span>
                 <span class="mq-price"><?= number_format($f['price'], 0, ',', ' ') ?> FCFA<?= $f['per_person'] ? '<em>/ personne</em>' : '' ?></span>

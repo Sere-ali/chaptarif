@@ -719,10 +719,11 @@ function listing_lines(string $universe, ?string $json): array
 function maquillage_formules(): array
 {
     return [
+        'formule_mariee' => ['title' => 'Formule Mariée', 'desc' => 'Coiffure et maquillage et retouches incluses', 'price' => 150000, 'per_person' => false, 'icon' => 'bride', 'badge' => 'Nouvelle formule'],
         'mariee' => ['title' => 'Maquillage de la mariée', 'desc' => 'Pour la mariée – prestation individuelle.', 'price' => 50000, 'per_person' => false, 'icon' => 'crown'],
-        'invitees' => ['title' => 'Mariage – Invitées, famille et cortège', 'desc' => 'Pour les proches et le cortège.', 'price' => 15000, 'per_person' => true, 'icon' => 'group'],
-        'jour_nude' => ['title' => 'Maquillage Jour / Nude', 'desc' => 'Maquillage naturel et discret.', 'price' => 7000, 'per_person' => true, 'icon' => 'sun'],
-        'evenementiel' => ['title' => 'Maquillage Événementiel', 'desc' => 'Soirée, festival, anniversaire, etc.', 'price' => 10000, 'per_person' => true, 'icon' => 'glass'],
+        'invitees' => ['title' => 'Mariage (invités, famille, proches…)', 'desc' => 'Pour les proches et le cortège.', 'price' => 15000, 'per_person' => true, 'icon' => 'group'],
+        'evenementiel' => ['title' => 'Maquillage Événementiel', 'desc' => 'Soirée, festival, anniversaire, etc.', 'price' => 15000, 'per_person' => true, 'icon' => 'glass'],
+        'jour_nude' => ['title' => 'Maquillage de Jour', 'desc' => 'Maquillage naturel et discret.', 'price' => 10000, 'per_person' => true, 'icon' => 'sun'],
         'sfx' => ['title' => 'Effets spéciaux / Artistique', 'desc' => 'Maquillage créatif (shooting, scène, etc.).', 'price' => 0, 'per_person' => false, 'icon' => 'sparkle', 'devis' => true],
     ];
 }
