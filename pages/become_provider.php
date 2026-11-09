@@ -86,7 +86,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       <form class="pa-panel" id="connexion" data-pa-panel="login" method="post" action="/connexion" hidden>
         <?= csrf_field() ?><input type="hidden" name="step" value="pwd"><input type="hidden" name="back" value="prestataire"><input type="hidden" name="next" value="/espace-prestataire">
         <div class="pa-head"><span class="pa-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
-          <div><h2>Bon retour parmi nous</h2><p>Accédez à votre espace pour gérer vos annonces, vos missions et vos paiements.</p></div></div>
+          <div><h2>Ravi de vous revoir !</h2><p>Accédez à votre espace pour gérer vos annonces, vos missions et vos paiements.</p></div></div>
         <label class="fld"><span>Numéro de téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
         <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
         <button class="btn btn-primary btn-block btn-lg">Me connecter</button>
