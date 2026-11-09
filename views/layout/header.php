@@ -24,7 +24,7 @@ $U = nav_entries();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/app.css?v=115">
+<link rel="stylesheet" href="/assets/css/app.css?v=119">
 <link rel="stylesheet" href="/assets/css/polish.css?v=8">
 <link rel="stylesheet" href="/assets/css/motion.css?v=1">
 <?php if (!empty($leaflet)): ?>
@@ -56,6 +56,7 @@ $U = nav_entries();
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
     <button class="btn btn-ghost btn-sm install-btn" id="installBtn" type="button" hidden> Télécharger</button>
+    <span class="top-loc" aria-label="Pays"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Côte d'Ivoire</span>
     <nav class="nav" aria-label="Navigation principale">
       <div class="nav-drop">
         <button class="nav-link" aria-haspopup="true" aria-expanded="false">Services <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>

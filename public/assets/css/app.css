@@ -1609,3 +1609,19 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
   body.dom-bea .d-item-img, body.dom-bea .d-item-img img { border-top: 0 !important; border-bottom: 0 !important; border-left: 0 !important; box-shadow: none !important; outline: 0 !important; background: none !important; }
   body.dom-bea .d-item-img img { border: 0 !important; }
 }
+/* Localisation « Côte d'Ivoire » dans l'en-tête ordinateur */
+.top-loc { display: none; }
+@media (min-width: 900px) {
+  .top-loc { display: inline-flex; align-items: center; gap: 5px; flex: none; white-space: nowrap; margin-left: 10px; margin-right: 0; padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid #E3E8EE; box-shadow: 0 4px 12px -8px rgba(15,27,45,.35); font-size: .82rem; font-weight: 700; color: #0F1B2D; }
+  .top-loc svg { color: #2E7D5B; }
+  .top-loc + .top-actions { margin-left: 0; }
+}
+@media (min-width: 900px) and (max-width: 1180px) { .top-loc { font-size: .74rem; padding: 5px 9px; } .top-loc svg { width: 13px; height: 13px; } .topbar .nav-link { font-size: .84rem; padding-left: 6px; padding-right: 6px; } }
+@media (min-width: 900px) {
+  .topbar-in { max-width: none !important; width: 100%; padding-left: 28px; padding-right: 28px; gap: 14px; }
+  .topbar .nav { flex: 1 1 auto; margin-left: 4px; overflow: hidden; }
+  .topbar .top-actions { margin-left: 0; }
+  .topbar .brand { flex: none; }
+}
+@media (min-width: 900px) and (max-width: 1180px) { .topbar .brand .brand-txt { font-size: 1.15rem; } .topbar .top-actions .btn { font-size: .78rem; padding: 7px 10px; } }
+@media (min-width: 900px) and (max-width: 1180px) { .topbar .nav a[href="/comment-ca-marche"] { display: none; } }
