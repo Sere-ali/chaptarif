@@ -15,29 +15,20 @@ if (is_post()) {
     elseif ($pw !== (string) ($_POST['password2'] ?? '')) $errors[] = 'Les deux mots de passe ne sont pas identiques.';
     if (too_many_attempts('apply:' . client_ip(), 5, 60)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
     $need = isset($U[$uk]) ? kyc_docs_required($uk) : [];
-    $docLabels = ['cni' => 'Carte d\'identité', 'permis' => 'Permis de conduire', 'vehicule' => 'Papiers du véhicule et assurance', 'casier' => 'Casier judiciaire'];
-    foreach ($need as $nk) if (empty($_FILES[$nk]['name'])) $errors[] = $docLabels[$nk] . ' : document obligatoire.';
-    $permis = $vehicule = null;
-    foreach (['permis' => &$permis, 'vehicule' => &$vehicule] as $dk => &$ref) {
-        if (!$errors && !empty($_FILES[$dk]['name'])) {
-            $r = cld_upload($_FILES[$dk], 'chaptarif/kyc', 'authenticated');
-            if ($r['ok']) $ref = $r['public_id'] . '.' . $r['format'];
-            else $errors[] = $docLabels[$dk] . ' : ' . $r['error'];
-        }
+    $DL = kyc_doc_labels();
+    foreach ($need as $nk) if (empty($_FILES[$nk]['name'])) $errors[] = $DL[$nk][0] . ' : document obligatoire.';
+    $docs = [];
+    foreach ($need as $dk) {
+        if ($errors) break;
+        $r = cld_upload($_FILES[$dk], 'chaptarif/kyc', 'authenticated');
+        if ($r['ok']) $docs[$dk] = $r['public_id'] . '.' . $r['format'];
+        else $errors[] = $DL[$dk][0] . ' : ' . $r['error'];
     }
-    unset($ref);
-    $cni = null;
-    if (!$errors && !empty($_FILES['cni']['name'])) {
-        $r = cld_upload($_FILES['cni'], 'chaptarif/kyc', 'authenticated');
-        if ($r['ok']) $cni = $r['public_id'] . '.' . $r['format'];
-        else $errors[] = 'Pièce d\'identité : ' . $r['error'];
-    }
-    $casier = null;
-    if (!$errors && !empty($_FILES['casier']['name'])) {
-        $r = cld_upload($_FILES['casier'], 'chaptarif/kyc', 'authenticated');
-        if ($r['ok']) $casier = $r['public_id'] . '.' . $r['format'];
-        else $errors[] = 'Casier judiciaire : ' . $r['error'];
-    }
+    // Colonnes historiques conservées pour l'admin.
+    $cni = $docs['cni'] ?? $docs['cni_rep'] ?? $docs['cni_proprio'] ?? null;
+    $casier = $docs['casier'] ?? null;
+    $permis = $docs['permis'] ?? null;
+    $vehicule = $docs['carte_grise'] ?? null;
     if ($errors) {
         foreach ($errors as $er) flash('error', $er);
         redirect('/devenir-prestataire#form');
@@ -47,7 +38,7 @@ if (is_post()) {
         'universe' => $uk, 'name' => $name, 'phone' => $phone, 'email' => mb_substr((string) ($_POST['email'] ?? ''), 0, 120),
         'commune' => in_array($_POST['commune'] ?? '', communes(), true) ? $_POST['commune'] : null,
         'bio' => mb_substr(trim((string) ($_POST['bio'] ?? '')), 0, 400), 'vehicle' => mb_substr((string) ($_POST['vehicle'] ?? ''), 0, 80),
-        'kyc_status' => 'pending', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'permis_public_id' => $permis, 'vehicule_public_id' => $vehicule, 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
+        'kyc_status' => 'pending', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'permis_public_id' => $permis, 'vehicule_public_id' => $vehicule, 'docs' => json_encode($docs, JSON_UNESCAPED_SLASHES), 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
         'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
     ]);
     // Compte d'accès : jamais écrasé si le numéro a déjà un compte.
@@ -114,10 +105,13 @@ view('layout/header', compact('title', 'desc', 'active'));
         <label class="fld"><span> Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
         <label class="fld"><span>Confirmer</span><input type="password" name="password2" minlength="8" required autocomplete="new-password"></label>
       </div>
-      <label class="fld file" data-doc="cni"><span> Carte d'identité (CNI, recto) — JPG/PNG/PDF</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
-      <label class="fld file" data-doc="permis" hidden><span> Permis de conduire — JPG/PNG/PDF</span><input type="file" name="permis" accept="image/*,application/pdf"></label>
-      <label class="fld file" data-doc="vehicule" hidden><span> Papiers du véhicule et assurance — JPG/PNG/PDF</span><input type="file" name="vehicule" accept="image/*,application/pdf"></label>
-      <label class="fld file" data-doc="casier" hidden><span> Casier judiciaire (bulletin n°3) — JPG/PNG/PDF</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
+      <div class="kyc-docs" id="kycDocs" hidden>
+        <b class="kyc-title">Documents à fournir</b>
+        <?php foreach (kyc_doc_labels() as $dk => [$dt, $dp]): ?>
+          <label class="fld file" data-doc="<?= $dk ?>" hidden><span><?= e($dt) ?><?= $dp ? ' <small>(' . e($dp) . ')</small>' : '' ?> — JPG/PNG/PDF</span><input type="file" name="<?= $dk ?>" accept="image/*,application/pdf"></label>
+        <?php endforeach; ?>
+        <p class="kyc-retenir">À retenir : les documents doivent être lisibles, valides et à jour.</p>
+      </div>
       <p class="fine">Vos documents sont stockés de façon privée et consultés uniquement par l'équipe de vérification.</p>
       <button class="btn btn-primary btn-block btn-lg">Envoyer ma candidature</button>
       <script>
@@ -135,6 +129,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         var updDocs = function () {
           var need = rules[sel.value] || [];
           docs.forEach(function (l) { var on = need.indexOf(l.dataset.doc) > -1; l.hidden = !on; l.querySelector('input').required = on; });
+          document.getElementById('kycDocs').hidden = !need.length;
         };
         sel.addEventListener('change', updDocs); updDocs();
         sel.addEventListener('change', upd); upd();

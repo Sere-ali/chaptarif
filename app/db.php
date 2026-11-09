@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 25;
+const SCHEMA_VERSION = 26;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -208,6 +208,7 @@ function db_migrate(): void
         "ALTER TABLE providers ADD COLUMN casier_public_id TEXT",
         "ALTER TABLE providers ADD COLUMN permis_public_id TEXT",
         "ALTER TABLE providers ADD COLUMN vehicule_public_id TEXT",
+        "ALTER TABLE providers ADD COLUMN docs TEXT",
         "ALTER TABLE provider_services ADD COLUMN price INTEGER",
         "ALTER TABLE provider_services ADD COLUMN unit TEXT",
         "ALTER TABLE provider_services ADD COLUMN photo_url TEXT",

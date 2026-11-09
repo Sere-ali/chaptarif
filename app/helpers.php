@@ -497,13 +497,33 @@ function chat_reply_id(int $userId): ?int
 function kyc_docs_required(string $universe): array
 {
     return match ($universe) {
-        'immobilier' => ['cni'],
-        'covoiturage' => ['cni', 'permis'],
-        'chauffeur', 'location_car', 'location_vehicule', 'location_camion' => ['cni', 'permis', 'vehicule'],
-        'cars' => [],
-        'menage', 'pressing', 'coiffeuse', 'maquilleuse', 'onglerie' => ['cni', 'casier'],
-        default => ['cni', 'casier'],
+        'pressing', 'coiffeuse', 'maquilleuse', 'onglerie' => ['cni', 'photo'],
+        'menage' => ['cni', 'photo', 'casier'],
+        'covoiturage' => ['permis', 'photo', 'carte_grise', 'assurance'],
+        'chauffeur' => ['permis', 'photo'],
+        'cars', 'location_car', 'location_camion' => ['rccm', 'statuts', 'cni_rep'],
+        'location_vehicule' => ['cni', 'photo', 'carte_grise', 'assurance'],
+        'immobilier' => ['titre_propriete', 'cni_proprio'],
+        default => ['cni', 'photo'],
     };
+}
+
+/** Libellés des documents demandés aux prestataires (clé => [titre, précision]). */
+function kyc_doc_labels(): array
+{
+    return [
+        'cni' => ['Pièce d’identité', 'CNI, passeport ou titre de séjour'],
+        'photo' => ['Photo d’identité', ''],
+        'casier' => ['Casier judiciaire', 'moins de 3 mois'],
+        'permis' => ['Permis de conduire valide', ''],
+        'carte_grise' => ['Carte grise du véhicule', ''],
+        'assurance' => ['Assurance du véhicule valide', ''],
+        'rccm' => ['Extrait du RCCM', 'entreprise de transport ou de location'],
+        'statuts' => ['Statuts de la société', ''],
+        'cni_rep' => ['Pièce d’identité du représentant légal', ''],
+        'titre_propriete' => ['Titre de propriété ou attestation de mise à disposition du bien', 'contrat de gestion, mandat, etc.'],
+        'cni_proprio' => ['Pièce d’identité du propriétaire', 'CNI, passeport ou titre de séjour'],
+    ];
 }
 
 /**

@@ -1483,3 +1483,8 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
 .mq-row { position: relative; }
 .mq-new { border: 2px solid #D81B60; background: #FFF5F9; margin-top: 12px; }
 .mq-badge { position: absolute; top: -11px; right: 10px; background: #E5175F; color: #fff; font-weight: 800; font-size: .7rem; padding: 3px 10px; border-radius: 999px; }
+/* Devenir prestataire : documents à fournir */
+.kyc-docs { border: 1.5px solid #D6E4F5; background: #F5F9FE; border-radius: 16px; padding: 12px; margin: 6px 0 10px; }
+.kyc-title { display: block; color: #123E8C; margin-bottom: 6px; }
+.kyc-docs .fld span small { font-weight: 500; color: #5B6B7F; }
+.kyc-retenir { margin: 6px 0 0; font-size: .82rem; font-weight: 700; color: #1E6B30; }

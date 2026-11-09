@@ -41,19 +41,16 @@ view('admin/header', compact('page', 'nav'));
     <div class="sum-row"><span> Versement</span><b><?= e($p['payout_method']) ?> · <?= e(fmt_phone($p['payout_number'])) ?></b></div>
     <?php if ($p['bio']): ?><p class="muted"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
     <div class="row2 mt">
-      <?php if (!empty($p['cni_public_id'])): ?>
-        <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['cni_public_id'])) ?>"> Voir la CNI</a>
-      <?php else: ?>
-        <span class="badge badge-gray">CNI non fournie</span>
-      <?php endif; ?>
-      <?php foreach (['permis_public_id' => ' Voir le permis', 'vehicule_public_id' => ' Voir les papiers du véhicule'] as $dcol => $dlab): if (!empty($p[$dcol])): ?>
-        <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p[$dcol])) ?>"><?= $dlab ?></a>
-      <?php endif; endforeach; ?>
-      <?php if (!empty($p['casier_public_id'])): ?>
-        <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['casier_public_id'])) ?>"> Voir le casier</a>
-      <?php else: ?>
-        <span class="badge badge-gray">Casier non fourni</span>
-      <?php endif; ?>
+      <?php $pdocs = json_decode((string) ($p['docs'] ?? ''), true) ?: [];
+        if (!$pdocs) $pdocs = array_filter(['cni' => $p['cni_public_id'] ?? null, 'casier' => $p['casier_public_id'] ?? null, 'permis' => $p['permis_public_id'] ?? null, 'carte_grise' => $p['vehicule_public_id'] ?? null]);
+        $DL = kyc_doc_labels(); ?>
+      <?php foreach (kyc_docs_required($p['universe']) as $dk): ?>
+        <?php if (!empty($pdocs[$dk])): ?>
+          <a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="<?= e(cld_private_url($pdocs[$dk])) ?>">Voir : <?= e($DL[$dk][0]) ?></a>
+        <?php else: ?>
+          <span class="badge badge-gray"><?= e($DL[$dk][0]) ?> non fourni(e)</span>
+        <?php endif; ?>
+      <?php endforeach; ?>
     </div>
     <div class="acts mt">
       <?php if ($p['kyc_status'] !== 'verified'): ?>
