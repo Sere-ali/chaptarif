@@ -61,7 +61,7 @@ view('layout/header', compact('title', 'desc', 'active'));
     <aside class="pv-side">
       <span class="pv-tag">Espace partenaires</span>
       <h1>Rejoignez le réseau <span>ChapTarif</span></h1>
-      <p class="pv-lead">Des clients qui ont déjà payé, un paiement garanti après chaque mission.</p>
+      <p class="pv-lead">Plus de missions, plus de clients, plus de DJÈ 🥳</p>
       <ul class="pv-perks">
         <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></i><div><b>Paiement garanti</b><small>Le client paie à la réservation, vous êtes payé sur Wave ou Orange Money dès la validation.</small></div></li>
         <li><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg></i><div><b>Plus de clients</b><small>Visibilité dans votre commune auprès de milliers d’Abidjanais.</small></div></li>
