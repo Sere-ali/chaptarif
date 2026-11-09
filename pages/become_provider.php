@@ -4,7 +4,7 @@ if (is_post()) {
     $uk = (string) ($_POST['universe'] ?? '');
     $phone = normalize_phone((string) ($_POST['phone'] ?? ''));
     $name = mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 80);
-    $payout = normalize_phone((string) ($_POST['payout_number'] ?? '')) ?: $phone;
+    $payout = normalize_phone((string) ($_POST['payout_number'] ?? ''), '225') ?: $phone;
     $errors = [];
     if (!isset($U[$uk])) $errors[] = 'Choisissez votre activité.';
     if (mb_strlen($name) < 3) $errors[] = 'Indiquez votre nom complet ou celui de votre entreprise.';
@@ -87,7 +87,7 @@ view('layout/header', compact('title', 'desc', 'active'));
         <?= csrf_field() ?><input type="hidden" name="step" value="pwd"><input type="hidden" name="back" value="prestataire"><input type="hidden" name="next" value="/espace-prestataire">
         <div class="pa-head"><span class="pa-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
           <div><h2>Bon retour parmi nous</h2><p>Accédez à votre espace pour gérer vos annonces, vos missions et vos paiements.</p></div></div>
-        <label class="fld"><span>Numéro de téléphone</span><div class="tel"><span>+225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
+        <label class="fld"><span>Numéro de téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
         <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
         <button class="btn btn-primary btn-block btn-lg">Me connecter</button>
         <p class="pa-alt">Pas encore prestataire ? <button type="button" class="linklike" data-pa-tab="signup">Créer mon compte</button> · <a href="/connexion?mode=reset&amp;next=%2Fespace-prestataire">Mot de passe oublié ?</a></p>
@@ -115,7 +115,7 @@ view('layout/header', compact('title', 'desc', 'active'));
           </div>
           <label class="fld"><span>Nom complet / Entreprise</span><input name="name" required maxlength="80" placeholder="Ex. Koné Aminata ou Clean Services CI"></label>
           <div class="row2">
-            <label class="fld"><span>Téléphone</span><input name="phone" inputmode="tel" required placeholder="07 00 00 00 00"></label>
+            <label class="fld"><span>Téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
             <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           </div>
           <label class="fld" id="vehicleFld" hidden><span>Véhicule</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>

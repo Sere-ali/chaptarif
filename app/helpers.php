@@ -314,20 +314,64 @@ function ref_gen(string $prefix = 'CT'): string
     return $prefix . '-' . $s;
 }
 
-function normalize_phone(string $p): ?string
+/** Indicatifs proposés dans les champs téléphone (code => [pays, drapeau]). */
+function phone_countries(): array
 {
-    $d = preg_replace('/\D+/', '', $p);
-    if (str_starts_with($d, '00225')) $d = substr($d, 5);
-    if (str_starts_with($d, '225') && strlen($d) === 13) $d = substr($d, 3);
-    if (strlen($d) !== 10) return null;
-    return '+225' . $d;
+    return [
+        '225' => ["Côte d'Ivoire", '🇨🇮'], '33' => ['France', '🇫🇷'], '226' => ['Burkina Faso', '🇧🇫'], '223' => ['Mali', '🇲🇱'],
+        '221' => ['Sénégal', '🇸🇳'], '224' => ['Guinée', '🇬🇳'], '228' => ['Togo', '🇹🇬'], '229' => ['Bénin', '🇧🇯'],
+        '227' => ['Niger', '🇳🇪'], '233' => ['Ghana', '🇬🇭'], '231' => ['Liberia', '🇱🇷'], '237' => ['Cameroun', '🇨🇲'],
+        '234' => ['Nigeria', '🇳🇬'], '241' => ['Gabon', '🇬🇦'], '242' => ['Congo', '🇨🇬'], '243' => ['RD Congo', '🇨🇩'],
+        '212' => ['Maroc', '🇲🇦'], '216' => ['Tunisie', '🇹🇳'], '32' => ['Belgique', '🇧🇪'], '41' => ['Suisse', '🇨🇭'],
+        '44' => ['Royaume-Uni', '🇬🇧'], '49' => ['Allemagne', '🇩🇪'], '39' => ['Italie', '🇮🇹'], '34' => ['Espagne', '🇪🇸'],
+        '1' => ['États-Unis / Canada', '🇺🇸'], '971' => ['Émirats', '🇦🇪'], '961' => ['Liban', '🇱🇧'], '86' => ['Chine', '🇨🇳'],
+    ];
+}
+
+/**
+ * Numéro au format international (+indicatif…). Accepte les numéros du monde entier :
+ * « +33 6… » / « 0033 6… » saisis en entier, ou un numéro local avec l'indicatif choisi (champ « cc »).
+ */
+function normalize_phone(string $p, ?string $cc = null): ?string
+{
+    $raw = trim($p);
+    $d = preg_replace('/\D+/', '', $raw);
+    if ($d === '') return null;
+    if (str_starts_with($raw, '+') || str_starts_with($d, '00')) {
+        $d = ltrim(str_starts_with($d, '00') ? substr($d, 2) : $d, '0');
+    } else {
+        $cc = preg_replace('/\D+/', '', (string) ($cc ?? ($_POST['cc'] ?? '225'))) ?: '225';
+        if ($cc === '225') {
+            if (str_starts_with($d, '225') && strlen($d) === 13) $d = substr($d, 3);
+            if (strlen($d) !== 10) return null;
+            return '+225' . $d;
+        }
+        if (str_starts_with($d, $cc) && strlen($d) > strlen($cc) + 6) $d = substr($d, strlen($cc));
+        $d = $cc . ltrim($d, '0');
+    }
+    if (str_starts_with($d, '225')) return strlen($d) === 13 ? '+' . $d : null;
+    return (strlen($d) >= 8 && strlen($d) <= 15) ? '+' . $d : null;
 }
 
 function fmt_phone(?string $p): string
 {
     if (!$p) return '';
-    $d = substr(preg_replace('/\D+/', '', $p), -10);
-    return '+225 ' . trim(chunk_split($d, 2, ' '));
+    $d = preg_replace('/\D+/', '', $p);
+    if (str_starts_with($d, '225') && strlen($d) === 13) return '+225 ' . trim(chunk_split(substr($d, 3), 2, ' '));
+    if (strlen($d) === 10 && !str_starts_with((string) $p, '+')) return '+225 ' . trim(chunk_split($d, 2, ' '));
+    foreach (array_keys(phone_countries()) as $cc) {
+        $cc = (string) $cc;
+        if ($cc !== '225' && str_starts_with($d, $cc) && strlen($d) > strlen($cc) + 5) { $l = substr($d, strlen($cc)); $h = strlen($l) % 2 ? $l[0] . ' ' : ''; return '+' . $cc . ' ' . $h . trim(chunk_split(strlen($l) % 2 ? substr($l, 1) : $l, 2, ' ')); }
+    }
+    return '+' . $d;
+}
+
+/** Champ téléphone international : liste d'indicatifs + numéro. */
+function phone_field(string $name = 'phone', string $placeholder = '07 00 00 00 00', bool $required = true, string $value = ''): string
+{
+    $opts = '';
+    foreach (phone_countries() as $cc => [$n, $f]) $opts .= '<option value="' . $cc . '"' . ($cc === '225' ? ' selected' : '') . '>' . $f . ' +' . $cc . ' · ' . e($n) . '</option>';
+    return '<div class="tel tel-intl"><select name="cc" aria-label="Indicatif du pays" data-cc>' . $opts . '</select><input name="' . e($name) . '" inputmode="tel" autocomplete="tel" placeholder="' . e($placeholder) . '"' . ($required ? ' required' : '') . ' value="' . e($value) . '"></div>';
 }
 
 function fmt_date(?string $d, bool $time = false): string

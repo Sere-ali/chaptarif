@@ -185,3 +185,8 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
 }
 /* Avantages repris sous le formulaire sur téléphone */
 .pv-mobile-perks { display: none; }
+/* Téléphone international : indicatif + numéro */
+.tel-intl { display: flex; align-items: stretch; }
+.tel-intl select { flex: 0 0 auto; width: 104px; min-height: 50px; border: 0 !important; border-right: 1.5px solid var(--f-line) !important; border-radius: 14px 0 0 14px !important; background-color: transparent !important; box-shadow: none !important; padding: 0 26px 0 12px !important; font-weight: 700; font-size: .95rem; background-position: right 8px center; text-overflow: ellipsis; }
+.tel-intl input { flex: 1; min-width: 0; }
+.fld > span small { font-weight: 600; color: #25A55F; }

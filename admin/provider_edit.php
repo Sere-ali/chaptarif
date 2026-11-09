@@ -44,7 +44,7 @@ if (is_post()) {
         'vehicle' => mb_substr(trim((string) ($_POST['vehicle'] ?? '')), 0, 80),
         'rating' => max(0, min(5, (float) str_replace(',', '.', (string) ($_POST['rating'] ?? 0)))),
         'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
-        'payout_number' => normalize_phone((string) ($_POST['payout_number'] ?? '')) ?: null,
+        'payout_number' => normalize_phone((string) ($_POST['payout_number'] ?? ''), '225') ?: null,
         'kyc_status' => in_array($_POST['kyc_status'] ?? '', ['pending', 'verified', 'rejected'], true) ? $_POST['kyc_status'] : 'pending',
         'active' => isset($_POST['active']) ? 1 : 0,
     ];

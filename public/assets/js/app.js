@@ -267,3 +267,12 @@
   });
 })();
 
+
+// Indicatif téléphone : n'affiche que le drapeau et l'indicatif une fois choisi ; exemple adapté au pays.
+document.querySelectorAll('select[data-cc]').forEach(function (s) {
+  var inp = s.parentNode.querySelector('input');
+  function short() { Array.prototype.forEach.call(s.options, function (o) { if (!o.dataset.full) o.dataset.full = o.textContent; o.textContent = o.selected ? o.dataset.full.split(' · ')[0] : o.dataset.full; });
+    if (inp) inp.placeholder = s.value === '225' ? '07 00 00 00 00' : (s.value === '33' ? '6 12 34 56 78' : 'Votre numéro'); }
+  s.addEventListener('focus', function () { Array.prototype.forEach.call(s.options, function (o) { if (o.dataset.full) o.textContent = o.dataset.full; }); });
+  s.addEventListener('change', short); s.addEventListener('blur', short); short();
+});

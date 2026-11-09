@@ -24,7 +24,7 @@ if (is_post()) {
         'capacity' => max(1, min(20, (int) ($_POST['capacity'] ?? 2))),
         'amenities' => mb_substr(trim((string) ($_POST['amenities'] ?? '')), 0, 500),
         'owner_name' => mb_substr(trim((string) ($_POST['owner_name'] ?? '')), 0, 80),
-        'owner_phone' => normalize_phone((string) ($_POST['owner_phone'] ?? '')) ?: '',
+        'owner_phone' => normalize_phone((string) ($_POST['owner_phone'] ?? ''), '225') ?: '',
         'certified' => isset($_POST['certified']) ? 1 : 0,
         'active' => isset($_POST['active']) ? 1 : 0,
         'images' => json_encode(array_slice($imgs, 0, 12)),

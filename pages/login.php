@@ -48,7 +48,7 @@ if (is_post()) {
         elseif (mb_strlen($name) < 3 || !str_contains($name, ' ')) $err = 'Entrez votre nom et prénom.';
         elseif (!$bd || $bd->format('Y-m-d') !== $birth || $bd > new DateTime('today') || $bd < new DateTime('1900-01-01')) $err = 'Date de naissance invalide.';
         elseif ($bd->diff(new DateTime('today'))->y < 18) $err = 'Vous devez avoir au moins 18 ans pour créer un compte.';
-        elseif (!$phone) $err = 'Numéro invalide. Entrez les 10 chiffres de votre numéro ivoirien (ex. 07 00 00 00 00).';
+        elseif (!$phone) $err = 'Numéro invalide. Choisissez l’indicatif de votre pays puis saisissez votre numéro (ex. 07 00 00 00 00 pour la Côte d’Ivoire).';
         elseif (strlen($pw) < 8) $err = 'Le mot de passe doit contenir au moins 8 caractères.';
         elseif ($pw !== $pw2) $err = 'Les deux mots de passe ne sont pas identiques.';
         if (!$err) {
@@ -140,7 +140,7 @@ view('layout/header', compact('title'));
       <form method="post" action="/connexion">
         <?= csrf_field() ?>
         <input type="hidden" name="step" value="pwd"><input type="hidden" name="next" value="<?= e($next) ?>">
-        <label class="fld"><span>Numéro de téléphone</span><div class="tel"><span> +225</span><input name="phone" inputmode="tel" autocomplete="username" placeholder="07 00 00 00 00" required autofocus></div></label>
+        <label class="fld"><span>Numéro de téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
         <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
         <button class="btn btn-primary btn-block btn-lg">Se connecter</button>
       </form>
@@ -153,7 +153,7 @@ view('layout/header', compact('title'));
         <input type="hidden" name="step" value="signup"><input type="hidden" name="next" value="<?= e($next) ?>">
         <label class="fld"><span>Nom et prénom</span><input name="name" maxlength="80" autocomplete="name" placeholder="Ex. Koné Aminata" required></label>
         <label class="fld"><span>Date de naissance</span><input type="date" name="birthdate" autocomplete="bday" max="<?= date('Y-m-d') ?>" required></label>
-        <label class="fld"><span>Numéro de téléphone</span><div class="tel"><span> +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required></div></label>
+        <label class="fld"><span>Numéro de téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
         <label class="fld"><span>Mot de passe (8 caractères minimum)</span><input type="password" name="password" minlength="8" autocomplete="new-password" required></label>
         <label class="fld"><span>Confirmer le mot de passe</span><input type="password" name="password2" minlength="8" autocomplete="new-password" required></label>
         <button class="btn btn-primary btn-block btn-lg">Créer mon compte</button>
@@ -165,7 +165,7 @@ view('layout/header', compact('title'));
       <form method="post" action="/connexion">
         <?= csrf_field() ?>
         <input type="hidden" name="step" value="reset_send"><input type="hidden" name="next" value="<?= e($next) ?>">
-        <label class="fld"><span>Numéro de téléphone</span><div class="tel"><span> +225</span><input name="phone" inputmode="tel" autocomplete="tel" placeholder="07 00 00 00 00" required autofocus></div></label>
+        <label class="fld"><span>Numéro de téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
         <button class="btn btn-primary btn-block btn-lg">Recevoir mon code</button>
       </form>
       <p class="center mt"><a href="<?= e($qs()) ?>">Retour à la connexion</a></p>
