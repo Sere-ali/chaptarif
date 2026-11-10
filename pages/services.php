@@ -184,7 +184,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
               <?php if (!empty($pServices[(int) $p['id']])): ?>
                 <ul class="prov-svc"><?php foreach ($pServices[(int) $p['id']] as $ps): ?><li><b><?= e($ps['title']) ?></b></li><?php endforeach; ?></ul>
               <?php endif; ?>
-              <?= kyc_badge($p['kyc_status']) ?> <a class="fine" href="/profil-prestataire?id=<?= (int) $p['id'] ?>" onclick="event.stopPropagation()">Voir toutes ses annonces →</a>
+              <?= kyc_badge($p['kyc_status'], $p) ?> <a class="fine" href="/profil-prestataire?id=<?= (int) $p['id'] ?>" onclick="event.stopPropagation()">Voir toutes ses annonces →</a>
             </div>
             <span class="prov-check" aria-hidden="true">✓</span>
           </label>

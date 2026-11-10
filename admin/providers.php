@@ -55,7 +55,7 @@ view('admin/header', compact('page', 'nav'));
         <td><span class="uni-dot" style="--c:<?= $x['color'] ?>"><i></i><?= e($x['short']) ?></span></td>
         <td><?= e($p['commune']) ?></td>
         <td><?= $p['rating'] > 0 ? stars((float) $p['rating']) : '—' ?><small><?= (int) $p['missions'] ?> missions</small></td>
-        <td><?= kyc_badge($p['kyc_status']) ?></td>
+        <td><?= kyc_badge($p['kyc_status'], $p) ?></td>
         <td><?= is_sponsored($p) ? '<span class="badge badge-gold">★ jusqu\'au ' . fmt_date($p['sponsored_until']) . '</span>' : '<span class="muted small">Standard</span>' ?></td>
         <td><?= (int) $p['active'] ? '<span class="badge badge-green">Actif</span>' : '<span class="badge badge-gray">Inactif</span>' ?></td>
         <td><div class="acts">

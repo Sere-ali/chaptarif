@@ -29,7 +29,7 @@ view('admin/header', compact('page', 'nav'));
   <div class="pvw-id">
     <h2><?= e($p['name']) ?> <?php if (is_sponsored($p)): ?><span class="badge badge-gold">★ Recommandé</span><?php endif; ?></h2>
     <p><span class="uni-dot" style="--c:<?= $x['color'] ?>"><i></i><?= e($x['name']) ?></span> · <?= e($p['commune'] ?: '—') ?> · <a href="tel:<?= e($p['phone']) ?>"><?= e(fmt_phone($p['phone'])) ?></a><?= $p['email'] ? ' · ' . e($p['email']) : '' ?></p>
-    <p class="pvw-badges"><?= kyc_badge($p['kyc_status']) ?> <span class="badge badge-<?= (int) $p['active'] ? 'green' : 'gray' ?>"><?= (int) $p['active'] ? 'Actif' : 'Inactif' ?></span> <span class="badge badge-gray">Inscrit le <?= fmt_date(substr((string) $p['created_at'], 0, 10)) ?></span></p>
+    <p class="pvw-badges"><?= kyc_badge($p['kyc_status'], $p) ?> <span class="badge badge-<?= (int) $p['active'] ? 'green' : 'gray' ?>"><?= (int) $p['active'] ? 'Actif' : 'Inactif' ?></span> <span class="badge badge-gray">Inscrit le <?= fmt_date(substr((string) $p['created_at'], 0, 10)) ?></span></p>
   </div>
   <div class="pvw-acts">
     <?php if ($p['kyc_status'] === 'verified' && (int) $p['active']): ?><a class="btn btn-soft btn-sm" target="_blank" rel="noopener" href="/profil-prestataire?id=<?= (int) $p['id'] ?>">Voir sa page publique ↗</a><?php endif; ?>

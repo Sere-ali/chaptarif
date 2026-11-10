@@ -126,7 +126,7 @@ view('admin/header', compact('page', 'nav'));
     <div class="panel center">
       <?= avatar($p + ['name' => $p['name'] ?: '?'], 'lg') ?>
       <h2 class="h3 mt"><?= e($p['name'] ?: 'Nouveau') ?></h2>
-      <p><?= kyc_badge($p['kyc_status']) ?> <?= is_sponsored($p) ? '<span class="badge badge-gold">★ Recommandé</span>' : '' ?></p>
+      <p><?= kyc_badge($p['kyc_status'], $p) ?> <?= is_sponsored($p) ? '<span class="badge badge-gold">★ Recommandé</span>' : '' ?></p>
       <?php if ($id): ?><p class="muted"><?= (int) $p['missions'] ?> missions · <?= fcfa($earned) ?> reversés</p><?php endif; ?>
       <?php if (!empty($p['photo_url'])): ?><form method="post"><?= csrf_field() ?><button class="linklike" name="action" value="remove_photo">Retirer la photo</button></form><?php endif; ?>
     </div>

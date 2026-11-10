@@ -273,11 +273,14 @@ function status_badge(string $s): string
     return '<span class="badge badge-' . $c . '">' . e($label) . '</span>';
 }
 
-function kyc_badge(string $s): string
+function kyc_badge(string $s, ?array $p = null): string
 {
     $m = ['verified' => ['CNI vérifiée', 'green'], 'pending' => ['KYC en attente', 'amber'], 'rejected' => ['KYC refusé', 'red']];
     [$l, $c] = $m[$s] ?? [$s, 'gray'];
-    return '<span class="badge badge-' . $c . '">' . e($l) . '</span>';
+    $h = '<span class="badge badge-' . $c . '">' . e($l) . '</span>';
+    // Casier judiciaire vérifié : dossier validé et casier fourni.
+    if ($s === 'verified' && $p && !empty(provider_docs($p)['casier'])) $h .= ' <span class="badge badge-green">Casier judiciaire vérifié</span>';
+    return $h;
 }
 
 function is_sponsored(?array $p): bool

@@ -63,7 +63,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
         <?php endforeach; ?>
       </div>
     </div>
-    <div class="cd-status" data-l="Statut"><?= kyc_badge($p['kyc_status']) ?></div>
+    <div class="cd-status" data-l="Statut"><?= kyc_badge($p['kyc_status'], $p) ?></div>
     <div class="cd-acts" data-l="Actions">
       <?php if ($p['kyc_status'] !== 'verified'): ?>
         <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-primary btn-sm" name="action" value="verify">✓ Valider</button></form>

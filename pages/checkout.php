@@ -57,7 +57,7 @@ view('layout/header', compact('title', 'active'));
         <div class="prov-pick-top">
           <?= avatar($prov, 'lg') ?>
           <div><small class="muted">Prestataire disponible</small><b><?= e($prov['name']) ?></b><span><?= e($x['name']) ?><?= !empty($prov['commune']) ? ' · ' . e($prov['commune']) : '' ?></span>
-            <span class="prov-pick-meta"><?= stars((float) $prov['rating']) ?> · <?= (int) $prov['missions'] ?> missions <?= kyc_badge($prov['kyc_status']) ?></span></div>
+            <span class="prov-pick-meta"><?= stars((float) $prov['rating']) ?> · <?= (int) $prov['missions'] ?> missions <?= kyc_badge($prov['kyc_status'], $prov) ?></span></div>
         </div>
         <a class="prov-pick-link" href="/profil-prestataire?id=<?= (int) $prov['id'] ?>">Voir son profil</a>
         <button type="button" class="btn btn-primary btn-block btn-lg" data-pick>Sélectionner ce prestataire</button>
