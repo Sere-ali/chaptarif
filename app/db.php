@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 26;
+const SCHEMA_VERSION = 27;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -312,6 +312,23 @@ function db_migrate(): void
 
     // v23 : suppression des résidences meublées (logements à la nuitée).
     q('UPDATE properties SET active = 0');
+
+    // v27 : purge des données de test (demande du propriétaire, une seule fois) :
+    // réservations, paiements, litiges, comptes clients, candidatures, messages, prestataires de démo.
+    // Les administrateurs, réglages, zones, formules et codes de réduction sont conservés.
+    if ($v > 0 && $v < 27) {
+        foreach ([
+            'DELETE FROM transactions', 'DELETE FROM bookings', 'DELETE FROM subscriptions',
+            'DELETE FROM visit_requests', 'DELETE FROM provider_services', 'DELETE FROM chat_messages',
+            'DELETE FROM contact_messages', 'DELETE FROM otp_codes', 'DELETE FROM login_attempts',
+            'DELETE FROM tasks', 'DELETE FROM trips WHERE provider_id IS NOT NULL', 'DELETE FROM providers',
+            "DELETE FROM users WHERE role NOT IN ('admin', 'super_admin')",
+            'UPDATE discount_codes SET uses = 0',
+        ] as $sql) {
+            try { db()->exec($sql); } catch (Throwable $e) { /* table absente */ }
+        }
+        try { audit('purge.donnees_test', 'back-office', ['schema' => 27]); } catch (Throwable $e) { }
+    }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");
     q("INSERT INTO settings (key, value) VALUES ('schema_version', ?)", [(string) SCHEMA_VERSION]);
