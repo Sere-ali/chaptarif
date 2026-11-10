@@ -336,3 +336,9 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .docv-body { padding: 12px; overflow: auto; display: grid; place-items: center; min-height: 200px; }
 .docv-body img { max-width: 100%; max-height: calc(92vh - 90px); object-fit: contain; border-radius: 10px; }
 .docv-body iframe { width: 100%; height: calc(92vh - 90px); border: 0; border-radius: 10px; }
+.kpis { grid-template-columns: repeat(5, 1fr); }
+@media (max-width: 1250px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+a.kpi-link { color: inherit; text-decoration: none; transition: transform .15s, box-shadow .15s; }
+a.kpi-link:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(14, 27, 51, .12); }
+a.kpi-link em { color: #2E7D5B; }

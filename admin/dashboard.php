@@ -7,6 +7,9 @@ $escrow = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN
 $disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'");
 $nbPaid = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN $paid");
 $clients = (int) val("SELECT COUNT(*) FROM users WHERE role = 'client'");
+$provTot = (int) val('SELECT COUNT(*) FROM providers');
+$provOk = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'verified' AND active = 1");
+$provWait = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'");
 $toPay = (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE status = 'A_VIRER'");
 
 $days = [];
@@ -42,6 +45,7 @@ view('admin/header', compact('page', 'nav'));
   <div class="kpi hl"><span class="kpi-ico"></span><small>Revenus ChapTarif</small><b><?= fcfa($revenue) ?></b><em>Commissions + frais + abonnements</em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Volume d'affaires</small><b><?= fcfa($gmv) ?></b><em><?= $nbPaid ?> réservations payées</em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Fonds sous séquestre</small><b><?= fcfa($escrow) ?></b><em>En attente de validation</em></div>
+  <a class="kpi kpi-link" href="/admin/prestataires"><span class="kpi-ico"></span><small>Prestataires</small><b><?= $provTot ?></b><em><?= $provOk ?> validé<?= $provOk > 1 ? 's' : '' ?> · <?= $provWait ?> en attente</em></a>
   <div class="kpi"><span class="kpi-ico"></span><small>Litiges ouverts</small><b><?= $disputes ?></b><em><a href="/admin/litiges">Traiter les litiges →</a></em></div>
 </div>
 <?php if ($toPay): ?><div class="warn-box"> <?= fcfa($toPay) ?> de reversements / remboursements à effectuer. <a href="/admin/finances?status=A_VIRER">Voir la file</a></div><?php endif; ?>
