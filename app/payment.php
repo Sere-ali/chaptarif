@@ -20,12 +20,17 @@ function payment_mode(): string
 
 function payment_methods(): array
 {
-    return [
+    $m = [
         'wave'   => ['Wave', '#1DC4FF', 'Paiement instantané via l\'app Wave'],
         'orange' => ['Orange Money', '#FF7900', 'Validation par code secret #144#'],
         'mtn'    => ['MTN MoMo', '#FFCB05', 'Validation sur votre téléphone MTN'],
         'moov'   => ['Moov Money', '#0066B3', 'Validation sur votre téléphone Moov'],
+        'djamo'  => ['Djamo', '#1C1C5E', 'Paiement avec votre carte Djamo'],
+        'carte'  => ['Carte bancaire', '#334155', 'Visa ou Mastercard, paiement sécurisé'],
     ];
+    // Paiement manuel : la carte bancaire n'est possible qu'avec une passerelle en ligne.
+    if (payment_mode() === 'manuel') unset($m['carte']);
+    return $m;
 }
 
 /** Logo d'un moyen de paiement : fichier public/assets/img/pay/<clé>.(svg|png|webp|jpg) s'il existe, sinon null. */
@@ -45,6 +50,7 @@ function payment_numbers(): array
         'orange' => (string) setting('pay_orange_number', ''),
         'mtn'    => (string) setting('pay_mtn_number', ''),
         'moov'   => (string) setting('pay_moov_number', ''),
+        'djamo'  => (string) setting('pay_djamo_number', ''),
     ];
 }
 
@@ -106,6 +112,8 @@ function payment_init(array $b, array $user): array
         ]);
         if (($res['response_code'] ?? '') === '00' && !empty($res['response_text']) && !empty($res['token'])) {
             q('UPDATE bookings SET payment_ref = ? WHERE id = ?', [$res['token'], $b['id']]);
+            // Carte bancaire / Djamo : page de paiement sécurisée PayDunya (saisie de la carte).
+            if (in_array($b['payment_method'], ['carte', 'djamo'], true)) return ['ok' => true, 'url' => (string) $res['response_text']];
             return ['ok' => true, 'url' => '/paiement/mobile?ref=' . urlencode($b['ref'])];
         }
         error_log('PayDunya init error: ' . json_encode($res));

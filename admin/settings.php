@@ -13,10 +13,10 @@ $groups = [
     'Support client' => ['support_phone' => 'Téléphone', 'support_email' => 'E-mail'],
     'Paiement manuel · numéros de réception Mobile Money' => [
         'pay_wave_number' => 'Numéro Wave', 'pay_orange_number' => 'Numéro Orange Money',
-        'pay_mtn_number' => 'Numéro MTN MoMo', 'pay_moov_number' => 'Numéro Moov Money',
+        'pay_mtn_number' => 'Numéro MTN MoMo', 'pay_moov_number' => 'Numéro Moov Money', 'pay_djamo_number' => 'Numéro Djamo',
     ],
 ];
-$textFields = ['support_phone', 'support_email', 'pay_wave_number', 'pay_orange_number', 'pay_mtn_number', 'pay_moov_number'];
+$textFields = ['support_phone', 'support_email', 'pay_wave_number', 'pay_orange_number', 'pay_mtn_number', 'pay_moov_number', 'pay_djamo_number'];
 if (is_post()) {
     $changes = [];
     foreach ($groups as $fields) {
