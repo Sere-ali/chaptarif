@@ -28,7 +28,9 @@ function payment_methods(): array
         'djamo'  => ['Djamo', '#1C1C5E', 'Paiement avec votre carte Djamo'],
         'carte'  => ['Carte bancaire', '#334155', 'Visa ou Mastercard, paiement sécurisé'],
     ];
-    // Paiement manuel : la carte bancaire n'est possible qu'avec une passerelle en ligne.
+    // Carte bancaire et Djamo masqués en attendant le RCCM (compte PayDunya entreprise ChapTarif).
+    // Pour les réactiver : réglage « pay_carte_djamo » = 1 (ou retirer ce bloc).
+    if (setting('pay_carte_djamo', '0') !== '1') unset($m['carte'], $m['djamo']);
     if (payment_mode() === 'manuel') unset($m['carte']);
     return $m;
 }

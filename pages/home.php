@@ -327,7 +327,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     <div class="faq">
       <details><summary>Comment mon argent est-il protégé&nbsp;?</summary><p>Lorsque vous payez, les fonds sont conservés sur le compte séquestre de ChapTarif. Ils ne sont reversés au prestataire qu'après votre confirmation (bouton « Confirmer la fin du travail » ou code de validation remis au prestataire). En cas de problème, vous ouvrez une réclamation et le paiement est gelé jusqu'à l'arbitrage de notre équipe.</p></details>
       <details><summary>Dois-je créer un compte pour comparer&nbsp;?</summary><p>Non. Vous comparez librement. Au moment de payer, il suffit d'entrer votre numéro : vous recevez un code par SMS pour vous identifier.</p></details>
-      <details><summary>Quels moyens de paiement sont acceptés&nbsp;?</summary><p>Wave, Orange Money, MTN Mobile Money, Moov Money, Djamo et carte bancaire (Visa, Mastercard), directement dans l'application.</p></details>
+      <details><summary>Quels moyens de paiement sont acceptés&nbsp;?</summary><p>Wave, Orange Money, MTN Mobile Money et Moov Money, directement dans l'application.</p></details>
       <details><summary>Comment les prestataires sont-ils vérifiés&nbsp;?</summary><p>Chaque prestataire fournit sa pièce d'identité (CNI) contrôlée par notre équipe. Les chauffeurs fournissent aussi leur permis, les bailleurs leur titre ou mandat. Les logements sont inspectés physiquement.</p></details>
       <details><summary>Que se passe-t-il si le prestataire ne vient pas&nbsp;?</summary><p>Ouvrez un litige depuis « Mes réservations ». Le paiement est gelé et, si l'absence est confirmée, vous êtes intégralement remboursé.</p></details>
     </div>
