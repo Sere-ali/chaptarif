@@ -25,7 +25,7 @@ if (is_post()) {
         else $errors[] = $DL[$dk][0] . ' : ' . $r['error'];
     }
     // Colonnes historiques conservées pour l'admin.
-    $cni = $docs['cni'] ?? $docs['cni_rep'] ?? $docs['cni_proprio'] ?? null;
+    $cni = $docs['cni_recto'] ?? $docs['cni_rep_recto'] ?? $docs['cni_proprio_recto'] ?? null;
     $casier = $docs['casier'] ?? null;
     $permis = $docs['permis'] ?? null;
     $vehicule = $docs['carte_grise'] ?? null;
@@ -139,8 +139,9 @@ view('layout/header', compact('title', 'desc', 'active'));
             <b class="kyc-title">Documents à fournir</b>
             <p class="muted small" data-kyc-empty>Choisissez d’abord votre activité à l’étape 1.</p>
             <?php foreach (kyc_doc_labels() as $dk => [$dt, $dp]): ?>
-              <label class="fld file" data-doc="<?= $dk ?>" hidden><span><?= e($dt) ?><?= $dp ? ' <small>(' . e($dp) . ')</small>' : '' ?></span><input type="file" name="<?= $dk ?>" accept="image/*,application/pdf"></label>
+              <label class="fld file" data-doc="<?= $dk ?>" hidden><span><?= e($dt) ?><?= $dp ? ' <small>(' . e($dp) . ')</small>' : '' ?></span><input type="file" name="<?= $dk ?>" accept="image/*,application/pdf"><button type="button" class="kyc-eye" data-eye hidden aria-label="Voir le document" title="Voir le document"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
             <?php endforeach; ?>
+            <div class="kyc-view" data-kyc-view hidden><div class="kyc-view-box"><button type="button" class="kyc-view-x" data-kyc-x aria-label="Fermer">×</button><img alt="Aperçu du document" data-kyc-img><iframe title="Aperçu du document" data-kyc-pdf hidden></iframe></div></div>
             <p class="kyc-retenir">À retenir : les documents doivent être lisibles, valides et à jour (JPG, PNG ou PDF).</p>
           </div>
           <p class="fine">🔒 Vos documents sont stockés de façon privée et consultés uniquement par l'équipe de vérification.</p>
@@ -213,7 +214,16 @@ view('layout/header', compact('title', 'desc', 'active'));
   }
   sel.addEventListener('change', upd); upd();
   // Nom du fichier choisi affiché joliment
-  f.querySelectorAll('input[type=file]').forEach(function (i) { i.addEventListener('change', function () { i.closest('.fld').classList.toggle('has-file', !!i.files.length); }); });
+  f.querySelectorAll('input[type=file]').forEach(function (i) { i.addEventListener('change', function () { i.closest('.fld').classList.toggle('has-file', !!i.files.length);
+    var eb = i.parentNode.querySelector('[data-eye]'); if (eb) eb.hidden = !i.files.length; }); });
+  // Œil : voir le document choisi
+  var vw = f.querySelector('[data-kyc-view]'), vi = f.querySelector('[data-kyc-img]'), vp = f.querySelector('[data-kyc-pdf]'), vu = null;
+  function closeV() { vw.hidden = true; vi.removeAttribute('src'); vp.removeAttribute('src'); if (vu) { URL.revokeObjectURL(vu); vu = null; } }
+  f.querySelectorAll('[data-eye]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation();
+    var fl = b.parentNode.querySelector('input[type=file]').files[0]; if (!fl) return; vu = URL.createObjectURL(fl);
+    var pdf = fl.type === 'application/pdf'; vi.hidden = pdf; vp.hidden = !pdf; (pdf ? vp : vi).src = vu; vw.hidden = false; }); });
+  f.querySelector('[data-kyc-x]').addEventListener('click', closeV);
+  vw.addEventListener('click', function (e) { if (e.target === vw) closeV(); });
 })();
 </script>
 <?php view('layout/footer', compact('active'));

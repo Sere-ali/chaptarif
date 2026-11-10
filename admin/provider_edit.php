@@ -60,6 +60,11 @@ if (is_post()) {
         $r = cld_upload($_FILES['cni'], 'chaptarif/kyc', 'authenticated');
         $r['ok'] ? $data['cni_public_id'] = $r['public_id'] . '.' . $r['format'] : flash('error', 'CNI : ' . $r['error']);
     }
+    if (!empty($_FILES['cni_verso']['name'])) {
+        $r = cld_upload($_FILES['cni_verso'], 'chaptarif/kyc', 'authenticated');
+        if ($r['ok']) { $dd = $p ? (json_decode((string) ($p['docs'] ?? ''), true) ?: []) : []; $dd['cni_verso'] = $r['public_id'] . '.' . $r['format']; $data['docs'] = json_encode($dd, JSON_UNESCAPED_SLASHES); }
+        else flash('error', 'Pièce d\'identité (verso) : ' . $r['error']);
+    }
     if (!empty($_FILES['casier']['name'])) {
         $r = cld_upload($_FILES['casier'], 'chaptarif/kyc', 'authenticated');
         $r['ok'] ? $data['casier_public_id'] = $r['public_id'] . '.' . $r['format'] : flash('error', 'Casier judiciaire : ' . $r['error']);
@@ -111,8 +116,9 @@ view('admin/header', compact('page', 'nav'));
     </div>
     <div class="row2">
       <label class="fld file"><span> Photo de profil (Cloudinary)</span><input type="file" name="photo" accept="image/*"></label>
-      <label class="fld file"><span> Pièce d'identité (privée)</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
+      <label class="fld file"><span> Pièce d'identité — recto (privée)</span><input type="file" name="cni" accept="image/*,application/pdf"></label>
     </div>
+    <label class="fld file"><span> Pièce d'identité — verso (privée)</span><input type="file" name="cni_verso" accept="image/*,application/pdf"></label>
     <label class="fld file"><span> Casier judiciaire (privé)</span><input type="file" name="casier" accept="image/*,application/pdf"></label>
     <button class="btn btn-primary">Enregistrer</button>
   </form>
@@ -124,16 +130,16 @@ view('admin/header', compact('page', 'nav'));
       <?php if ($id): ?><p class="muted"><?= (int) $p['missions'] ?> missions · <?= fcfa($earned) ?> reversés</p><?php endif; ?>
       <?php if (!empty($p['photo_url'])): ?><form method="post"><?= csrf_field() ?><button class="linklike" name="action" value="remove_photo">Retirer la photo</button></form><?php endif; ?>
     </div>
-    <?php if (!empty($p['cni_public_id'])): ?>
-    <div class="panel"><h2 class="h4">Pièce d'identité</h2>
-      <?php if (str_ends_with((string) $p['cni_public_id'], '.pdf')): ?>
-        <a class="btn btn-soft" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['cni_public_id'])) ?>">Ouvrir le PDF</a>
+    <?php $pdx = provider_docs($p); foreach (['cni_recto' => 'Pièce d\'identité — recto', 'cni_verso' => 'Pièce d\'identité — verso'] as $xk => $xl): if (empty($pdx[$xk])) continue; ?>
+    <div class="panel"><h2 class="h4"><?= e($xl) ?></h2>
+      <?php if (str_ends_with((string) $pdx[$xk], '.pdf')): ?>
+        <a class="btn btn-soft" target="_blank" rel="noopener" href="<?= e(cld_private_url($pdx[$xk])) ?>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> Voir le PDF</a>
       <?php else: ?>
-        <a target="_blank" rel="noopener" href="<?= e(cld_private_url($p['cni_public_id'])) ?>"><img class="cni-thumb" src="<?= e(cld_private_url($p['cni_public_id'])) ?>" alt="CNI"></a>
+        <a target="_blank" rel="noopener" href="<?= e(cld_private_url($pdx[$xk])) ?>" title="Voir en grand"><img class="cni-thumb" src="<?= e(cld_private_url($pdx[$xk])) ?>" alt="<?= e($xl) ?>"></a>
       <?php endif; ?>
       <p class="fine">Document privé (lien signé Cloudinary). Consultation journalisée.</p>
     </div>
-    <?php endif; ?>
+    <?php endforeach; ?>
     <?php if (!empty($p['casier_public_id'])): ?>
     <div class="panel"><h2 class="h4">Casier judiciaire</h2>
       <?php if (str_ends_with((string) $p['casier_public_id'], '.pdf')): ?>

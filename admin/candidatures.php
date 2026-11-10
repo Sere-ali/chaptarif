@@ -40,8 +40,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
 <div class="cd-table" role="table">
   <div class="cd-row cd-head" role="row"><span>Candidat</span><span>Contact</span><span>Documents</span><span>Statut</span><span>Actions</span></div>
   <?php foreach ($list as $p): $x = universe($p['universe']);
-    $pdocs = json_decode((string) ($p['docs'] ?? ''), true) ?: [];
-    if (!$pdocs) $pdocs = array_filter(['cni' => $p['cni_public_id'] ?? null, 'casier' => $p['casier_public_id'] ?? null, 'permis' => $p['permis_public_id'] ?? null, 'carte_grise' => $p['vehicule_public_id'] ?? null]);
+    $pdocs = provider_docs($p);
     $req = kyc_docs_required($p['universe']);
     $have = count(array_filter($req, fn ($k) => !empty($pdocs[$k])));
     $search = mb_strtolower($p['name'] . ' ' . $p['phone'] . ' ' . fmt_phone($p['phone']) . ' ' . $x['name'] . ' ' . $p['commune']); ?>
@@ -59,7 +58,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
       <span class="cd-count <?= $have === count($req) ? 'ok' : 'ko' ?>"><?= $have ?>/<?= count($req) ?> fournis</span>
       <div class="cd-chips">
         <?php foreach ($req as $dk): ?>
-          <?php if (!empty($pdocs[$dk])): ?><a class="cd-chip ok" target="_blank" rel="noopener" href="<?= e(cld_private_url($pdocs[$dk])) ?>">✓ <?= e($DL[$dk][0]) ?></a>
+          <?php if (!empty($pdocs[$dk])): ?><a class="cd-chip ok" target="_blank" rel="noopener" title="Voir le document" href="<?= e(cld_private_url($pdocs[$dk])) ?>"><svg class="cd-eye" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> <?= e($DL[$dk][0]) ?></a>
           <?php else: ?><span class="cd-chip ko">✕ <?= e($DL[$dk][0]) ?></span><?php endif; ?>
         <?php endforeach; ?>
       </div>

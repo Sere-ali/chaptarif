@@ -14,8 +14,7 @@ $earned = $sum(['VALIDE'], 'provider_amount');
 $held = $sum(['BLOQUE', 'EN_LITIGE'], 'provider_amount');
 $done = count(array_filter($bk, fn ($b) => $b['status'] === 'VALIDE'));
 $disputes = count(array_filter($bk, fn ($b) => $b['status'] === 'EN_LITIGE'));
-$pdocs = json_decode((string) ($p['docs'] ?? ''), true) ?: [];
-if (!$pdocs) $pdocs = array_filter(['cni' => $p['cni_public_id'] ?? null, 'casier' => $p['casier_public_id'] ?? null, 'permis' => $p['permis_public_id'] ?? null, 'carte_grise' => $p['vehicule_public_id'] ?? null]);
+$pdocs = provider_docs($p);
 $DL = kyc_doc_labels();
 $chatN = $u ? (int) val('SELECT COUNT(*) FROM chat_messages WHERE user_id = ?', [$u['id']]) : 0;
 $adSt = ['approved' => ['En ligne', 'green'], 'pending' => ['À valider', 'amber'], 'rejected' => ['Refusée', 'red']];
@@ -58,7 +57,7 @@ view('admin/header', compact('page', 'nav'));
     <h3 class="h4">Documents</h3>
     <div class="cd-chips">
       <?php foreach (kyc_docs_required($p['universe']) as $dk): ?>
-        <?php if (!empty($pdocs[$dk])): ?><a class="cd-chip ok" target="_blank" rel="noopener" href="<?= e(cld_private_url($pdocs[$dk])) ?>">✓ <?= e($DL[$dk][0]) ?></a>
+        <?php if (!empty($pdocs[$dk])): ?><a class="cd-chip ok" target="_blank" rel="noopener" title="Voir le document" href="<?= e(cld_private_url($pdocs[$dk])) ?>"><svg class="cd-eye" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> <?= e($DL[$dk][0]) ?></a>
         <?php else: ?><span class="cd-chip ko">✕ <?= e($DL[$dk][0]) ?></span><?php endif; ?>
       <?php endforeach; ?>
     </div>

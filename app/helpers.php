@@ -541,22 +541,33 @@ function chat_reply_id(int $userId): ?int
 function kyc_docs_required(string $universe): array
 {
     return match ($universe) {
-        'pressing', 'coiffeuse', 'maquilleuse', 'onglerie' => ['cni', 'photo'],
-        'menage' => ['cni', 'photo', 'casier'],
+        'pressing', 'coiffeuse', 'maquilleuse', 'onglerie' => ['cni_recto', 'cni_verso', 'photo'],
+        'menage' => ['cni_recto', 'cni_verso', 'photo', 'casier'],
         'covoiturage' => ['permis', 'photo', 'carte_grise', 'assurance'],
         'chauffeur' => ['permis', 'photo'],
-        'cars', 'location_car', 'location_camion' => ['rccm', 'statuts', 'cni_rep'],
-        'location_vehicule' => ['cni', 'photo', 'carte_grise', 'assurance'],
-        'immobilier' => ['titre_propriete', 'cni_proprio'],
-        default => ['cni', 'photo'],
+        'cars', 'location_car', 'location_camion' => ['rccm', 'statuts', 'cni_rep_recto', 'cni_rep_verso'],
+        'location_vehicule' => ['cni_recto', 'cni_verso', 'photo', 'carte_grise', 'assurance'],
+        'immobilier' => ['titre_propriete', 'cni_proprio_recto', 'cni_proprio_verso'],
+        default => ['cni_recto', 'cni_verso', 'photo'],
     };
+}
+
+/** Documents KYC d'un prestataire (JSON docs + anciennes colonnes, ancienne clé « cni » = recto). */
+function provider_docs(array $p): array
+{
+    $d = json_decode((string) ($p['docs'] ?? ''), true) ?: [];
+    $d += array_filter(['cni_recto' => $p['cni_public_id'] ?? null, 'casier' => $p['casier_public_id'] ?? null, 'permis' => $p['permis_public_id'] ?? null, 'carte_grise' => $p['vehicule_public_id'] ?? null]);
+    foreach (['cni', 'cni_rep', 'cni_proprio'] as $o) if (!empty($d[$o]) && empty($d[$o . '_recto'])) $d[$o . '_recto'] = $d[$o];
+    if (!empty($p['cni_verso_public_id'])) $d['cni_verso'] ??= $p['cni_verso_public_id'];
+    return $d;
 }
 
 /** Libellés des documents demandés aux prestataires (clé => [titre, précision]). */
 function kyc_doc_labels(): array
 {
     return [
-        'cni' => ['Pièce d’identité', 'CNI, passeport ou titre de séjour'],
+        'cni_recto' => ['Pièce d’identité — recto', 'face avant : CNI, passeport ou titre de séjour'],
+        'cni_verso' => ['Pièce d’identité — verso', 'face arrière'],
         'photo' => ['Photo d’identité', ''],
         'casier' => ['Casier judiciaire', 'moins de 3 mois'],
         'permis' => ['Permis de conduire valide', ''],
@@ -564,9 +575,11 @@ function kyc_doc_labels(): array
         'assurance' => ['Assurance du véhicule valide', ''],
         'rccm' => ['Extrait du RCCM', 'entreprise de transport ou de location'],
         'statuts' => ['Statuts de la société', ''],
-        'cni_rep' => ['Pièce d’identité du représentant légal', ''],
+        'cni_rep_recto' => ['Pièce d’identité du représentant légal — recto', 'face avant'],
+        'cni_rep_verso' => ['Pièce d’identité du représentant légal — verso', 'face arrière'],
         'titre_propriete' => ['Titre de propriété ou attestation de mise à disposition du bien', 'contrat de gestion, mandat, etc.'],
-        'cni_proprio' => ['Pièce d’identité du propriétaire', 'CNI, passeport ou titre de séjour'],
+        'cni_proprio_recto' => ['Pièce d’identité du propriétaire — recto', 'face avant : CNI, passeport ou titre de séjour'],
+        'cni_proprio_verso' => ['Pièce d’identité du propriétaire — verso', 'face arrière'],
     ];
 }
 

@@ -319,3 +319,5 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .svc-badge i { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.2); }
 .svc-badge i svg { width: 20px; height: 20px; }
 @media (max-width: 700px) { .svc-home { grid-template-columns: 1fr; } }
+
+.cd-chip .cd-eye { vertical-align: -2px; }
