@@ -104,12 +104,20 @@ function payment_init(array $b, array $user): array
     if (payment_mode() === 'paydunya') {
         $base = APP_URL ?: ((IS_HTTPS ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
         $ret = $base . '/paiement/retour?ref=' . urlencode($b['ref']);
-        $res = paydunya_call('checkout-invoice/create', [
+        $inv = [
             'invoice' => ['total_amount' => (int) $b['total'], 'description' => 'ChapTarif ' . $b['ref']],
-            'store' => ['name' => 'ChapTarif', 'website_url' => $base],
+            'store' => ['name' => 'ChapTarif', 'website_url' => $base, 'logo_url' => $base . '/assets/img/icon-512.png'],
             'custom_data' => ['ref' => $b['ref']],
             'actions' => ['cancel_url' => $ret, 'return_url' => $ret, 'callback_url' => $base . '/webhook/paydunya'],
-        ]);
+        ];
+        // Carte / Djamo : la page sécurisée n'affiche que le moyen choisi par le client.
+        $ch = ['carte' => 'card', 'djamo' => 'djamo-ci'][$b['payment_method']] ?? null;
+        if ($ch) $inv['invoice']['channels'] = [$ch];
+        $res = paydunya_call('checkout-invoice/create', $inv);
+        if ($ch && ($res['response_code'] ?? '') !== '00') { // nom de canal refusé : page avec tous les moyens
+            unset($inv['invoice']['channels']);
+            $res = paydunya_call('checkout-invoice/create', $inv);
+        }
         if (($res['response_code'] ?? '') === '00' && !empty($res['response_text']) && !empty($res['token'])) {
             q('UPDATE bookings SET payment_ref = ? WHERE id = ?', [$res['token'], $b['id']]);
             // Carte bancaire / Djamo : page de paiement sécurisée PayDunya (saisie de la carte).
