@@ -58,7 +58,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
       <span class="cd-count <?= $have === count($req) ? 'ok' : 'ko' ?>"><?= $have ?>/<?= count($req) ?> fournis</span>
       <div class="cd-chips">
         <?php foreach ($req as $dk): ?>
-          <?php if (!empty($pdocs[$dk])): ?><a class="cd-chip ok" target="_blank" rel="noopener" title="Voir le document" href="<?= e(cld_private_url($pdocs[$dk])) ?>"><svg class="cd-eye" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> <?= e($DL[$dk][0]) ?></a>
+          <?php if (!empty($pdocs[$dk])): ?><a class="cd-chip ok" title="Voir le document" data-doc-view="<?= str_ends_with(strtolower((string) $pdocs[$dk]), '.pdf') ? 'pdf' : 'img' ?>" data-doc-title="<?= e($DL[$dk][0] . ' · ' . $p['name']) ?>" href="<?= e(doc_url($p, $dk)) ?>"><svg class="cd-eye" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> <?= e($DL[$dk][0]) ?></a>
           <?php else: ?><span class="cd-chip ko">✕ <?= e($DL[$dk][0]) ?></span><?php endif; ?>
         <?php endforeach; ?>
       </div>

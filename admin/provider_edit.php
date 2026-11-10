@@ -133,9 +133,9 @@ view('admin/header', compact('page', 'nav'));
     <?php $pdx = provider_docs($p); foreach (['cni_recto' => 'Pièce d\'identité — recto', 'cni_verso' => 'Pièce d\'identité — verso'] as $xk => $xl): if (empty($pdx[$xk])) continue; ?>
     <div class="panel"><h2 class="h4"><?= e($xl) ?></h2>
       <?php if (str_ends_with((string) $pdx[$xk], '.pdf')): ?>
-        <a class="btn btn-soft" target="_blank" rel="noopener" href="<?= e(cld_private_url($pdx[$xk])) ?>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> Voir le PDF</a>
+        <a class="btn btn-soft" data-doc-view="pdf" data-doc-title="<?= e($xl) ?>" href="<?= e(doc_url($p, $xk)) ?>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> Voir le PDF</a>
       <?php else: ?>
-        <a target="_blank" rel="noopener" href="<?= e(cld_private_url($pdx[$xk])) ?>" title="Voir en grand"><img class="cni-thumb" src="<?= e(cld_private_url($pdx[$xk])) ?>" alt="<?= e($xl) ?>"></a>
+        <a data-doc-view="img" data-doc-title="<?= e($xl) ?>" href="<?= e(doc_url($p, $xk)) ?>" title="Voir en grand"><img class="cni-thumb" src="<?= e(doc_url($p, $xk, true)) ?>" alt="<?= e($xl) ?>"></a>
       <?php endif; ?>
       <p class="fine">Document privé (lien signé Cloudinary). Consultation journalisée.</p>
     </div>
@@ -143,9 +143,9 @@ view('admin/header', compact('page', 'nav'));
     <?php if (!empty($p['casier_public_id'])): ?>
     <div class="panel"><h2 class="h4">Casier judiciaire</h2>
       <?php if (str_ends_with((string) $p['casier_public_id'], '.pdf')): ?>
-        <a class="btn btn-soft" target="_blank" rel="noopener" href="<?= e(cld_private_url($p['casier_public_id'])) ?>">Ouvrir le PDF</a>
+        <a class="btn btn-soft" data-doc-view="pdf" data-doc-title="Casier judiciaire" href="<?= e(doc_url($p, 'casier')) ?>">Voir le PDF</a>
       <?php else: ?>
-        <a target="_blank" rel="noopener" href="<?= e(cld_private_url($p['casier_public_id'])) ?>"><img class="cni-thumb" src="<?= e(cld_private_url($p['casier_public_id'])) ?>" alt="Casier judiciaire"></a>
+        <a data-doc-view="img" data-doc-title="Casier judiciaire" href="<?= e(doc_url($p, 'casier')) ?>"><img class="cni-thumb" src="<?= e(doc_url($p, 'casier', true)) ?>" alt="Casier judiciaire"></a>
       <?php endif; ?>
       <p class="fine">Document privé (lien signé Cloudinary). Consultation journalisée.</p>
     </div>

@@ -572,6 +572,12 @@ function provider_docs(array $p): array
     return $d;
 }
 
+/** Lien d'affichage d'un document KYC dans le back office. */
+function doc_url(array $p, string $k, bool $thumb = false): string
+{
+    return '/admin/document?id=' . (int) $p['id'] . '&k=' . rawurlencode($k) . ($thumb ? '&t=1' : '');
+}
+
 /** Libellés des documents demandés aux prestataires (clé => [titre, précision]). */
 function kyc_doc_labels(): array
 {

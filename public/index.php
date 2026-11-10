@@ -68,6 +68,7 @@ $routes = [
     '/admin/prestataires'   => 'admin/providers.php',
     '/admin/prestataire'    => 'admin/provider_edit.php',
     '/admin/prestataire/voir' => 'admin/provider_view.php',
+    '/admin/document'       => 'admin/document.php',
     '/admin/offres'         => 'admin/offers.php',
     '/admin/cars'           => 'admin/trips.php',
     '/admin/covoiturage'    => 'admin/covoiturage.php',
