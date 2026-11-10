@@ -48,6 +48,19 @@ view('admin/header', compact('page', 'nav'));
   <a class="kpi kpi-link" href="/admin/prestataires"><span class="kpi-ico"></span><small>Prestataires</small><b><?= $provTot ?></b><em><?= $provOk ?> validé<?= $provOk > 1 ? 's' : '' ?> · <?= $provWait ?> en attente</em></a>
   <div class="kpi"><span class="kpi-ico"></span><small>Litiges ouverts</small><b><?= $disputes ?></b><em><a href="/admin/litiges">Traiter les litiges →</a></em></div>
 </div>
+<?php $SV = admin_services(); ?>
+<div class="panel dash-prov"><div class="panel-h"><h2>Prestataires par service</h2><a class="btn btn-soft btn-sm" href="/admin/prestataires?tous=1">Tous (<?= $provTot ?>)</a></div>
+  <nav class="svc-tabs svc-home">
+  <?php foreach ($SV as $sk => [$sl, $sks, $sc, $si]): $ph = implode(',', array_fill(0, count($sks), '?')); $n = (int) val("SELECT COUNT(*) FROM providers WHERE universe IN ($ph)", $sks); $nw = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending' AND universe IN ($ph)", $sks); ?>
+    <a href="/admin/prestataires?service=<?= $sk ?>" style="--c:<?= $sc ?>">
+      <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $si ?></svg></i>
+      <span><?= e($sl) ?><small><?= $n ?> prestataire<?= $n > 1 ? 's' : '' ?></small></span>
+      <?php if ($nw): ?><em title="Dossiers en attente"><?= $nw ?></em><?php endif; ?>
+      <b class="svc-go">Voir →</b>
+    </a>
+  <?php endforeach; ?>
+  </nav>
+</div>
 <?php if ($toPay): ?><div class="warn-box"> <?= fcfa($toPay) ?> de reversements / remboursements à effectuer. <a href="/admin/finances?status=A_VIRER">Voir la file</a></div><?php endif; ?>
 <div class="grid2">
   <div class="panel"><div class="panel-h"><h2>Activité des 14 derniers jours</h2><span class="muted small"><?= $clients ?> clients inscrits</span></div><div style="height:280px"><canvas id="chart"></canvas></div></div>

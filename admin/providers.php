@@ -21,26 +21,58 @@ if (is_post()) {
         if ($act === 'unsponsor') { q('UPDATE providers SET sponsored_until = NULL WHERE id = ?', [$p['id']]); flash('info', 'Badge retiré.'); }
         audit('prestataire.' . $act, $p['name'] . ' #' . $p['id']);
     }
-    redirect('/admin/prestataires?' . http_build_query(array_intersect_key($_GET, ['universe' => 1, 'kyc' => 1, 'q' => 1])));
+    redirect('/admin/prestataires?' . http_build_query(array_intersect_key($_GET, ['universe' => 1, 'kyc' => 1, 'q' => 1, 'service' => 1, 'tous' => 1])));
 }
 
 $uk = (string) ($_GET['universe'] ?? '');
 $kyc = (string) ($_GET['kyc'] ?? '');
 $s = trim((string) ($_GET['q'] ?? ''));
+$SERVICES = admin_services();
+$svc = isset($SERVICES[$_GET['service'] ?? '']) ? (string) $_GET['service'] : null;
+$landing = $svc === null && $uk === '' && $kyc === '' && $s === '' && !isset($_GET['tous']);
+$svcCount = []; $svcWait = [];
+foreach ($SERVICES as $sk => $sv) {
+    $ph = implode(',', array_fill(0, count($sv[1]), '?'));
+    $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE universe IN ($ph)", $sv[1]);
+    $svcWait[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending' AND universe IN ($ph)", $sv[1]);
+}
 $w = ['1=1']; $pp = [];
+if ($svc !== null) { $w[] = 'universe IN (' . implode(',', array_fill(0, count($SERVICES[$svc][1]), '?')) . ')'; array_push($pp, ...$SERVICES[$svc][1]); }
 if ($uk !== '') { $w[] = 'universe = ?'; $pp[] = $uk; }
 if ($kyc !== '') { $w[] = 'kyc_status = ?'; $pp[] = $kyc; }
 if ($s !== '') { $w[] = '(name LIKE ? OR phone LIKE ?)'; $pp[] = "%$s%"; $pp[] = '%' . preg_replace('/\D/', '', $s) . '%'; }
 $rows = all('SELECT * FROM providers WHERE ' . implode(' AND ', $w) . " ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC", $pp);
 $page = 'Prestataires & KYC';
 $nav = 'providers';
+if ($svc !== null) $page = 'Prestataires · ' . $SERVICES[$svc][0];
 view('admin/header', compact('page', 'nav'));
-?>
+if ($landing): ?>
+<p class="muted">Choisissez un service pour voir ses prestataires.</p>
+<nav class="svc-tabs svc-home">
+  <?php foreach ($SERVICES as $sk => [$sl, , $sc, $si]): ?>
+    <a href="?service=<?= $sk ?>" style="--c:<?= $sc ?>">
+      <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $si ?></svg></i>
+      <span><?= e($sl) ?><small><?= $svcCount[$sk] ?> prestataire<?= $svcCount[$sk] > 1 ? 's' : '' ?></small></span>
+      <?php if ($svcWait[$sk]): ?><em title="Dossiers en attente de validation"><?= $svcWait[$sk] ?></em><?php endif; ?>
+      <b class="svc-go">Voir →</b>
+    </a>
+  <?php endforeach; ?>
+</nav>
+<p style="margin-top:14px"><a class="btn btn-soft" href="?tous=1">Voir tous les prestataires (<?= array_sum($svcCount) ?>)</a> <a class="btn btn-primary" href="/admin/prestataire">+ Nouveau prestataire</a></p>
+<?php view('admin/footer'); return; endif; ?>
+<?php if ($svc !== null): ?>
+<div class="svc-bar" style="--c:<?= $SERVICES[$svc][2] ?>">
+  <a class="btn btn-ghost btn-sm" href="/admin/prestataires">← Retour</a>
+  <span class="svc-badge"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $SERVICES[$svc][3] ?></svg></i><?= e($SERVICES[$svc][0]) ?> · <?= count($rows) ?> prestataire<?= count($rows) > 1 ? 's' : '' ?></span>
+</div>
+<?php else: ?>
+<p><a class="btn btn-ghost btn-sm" href="/admin/prestataires">← Retour</a></p>
+<?php endif; ?>
 <div class="panel">
   <div class="panel-h">
-    <form class="filters" method="get" style="margin:0">
+    <form class="filters" method="get" style="margin:0"><?php if ($svc !== null): ?><input type="hidden" name="service" value="<?= e($svc) ?>"><?php endif; ?>
       <label class="fld"><span>Recherche</span><input name="q" value="<?= e($s) ?>" placeholder="Nom, téléphone"></label>
-      <label class="fld"><span>Univers</span><select name="universe"><option value="">Tous</option><?php foreach (universes() as $k => $x): ?><option value="<?= $k ?>" <?= $uk === $k ? 'selected' : '' ?>><?= e($x['name']) ?></option><?php endforeach; ?></select></label>
+      <label class="fld"><span>Univers</span><select name="universe"><option value="">Tous</option><?php foreach (universes() as $k => $x): if ($svc !== null && !in_array($k, $SERVICES[$svc][1], true)) continue; ?><option value="<?= $k ?>" <?= $uk === $k ? 'selected' : '' ?>><?= e($x['name']) ?></option><?php endforeach; ?></select></label>
       <label class="fld"><span>KYC</span><select name="kyc"><option value="">Tous</option><option value="pending" <?= $kyc === 'pending' ? 'selected' : '' ?>>En attente</option><option value="verified" <?= $kyc === 'verified' ? 'selected' : '' ?>>Vérifié</option><option value="rejected" <?= $kyc === 'rejected' ? 'selected' : '' ?>>Refusé</option></select></label>
       <button class="btn btn-primary">Filtrer</button>
     </form>

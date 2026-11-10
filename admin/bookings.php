@@ -4,12 +4,7 @@ $isDisputes = $path === '/admin/litiges';
 $status = $isDisputes ? 'EN_LITIGE' : (string) ($_GET['status'] ?? '');
 $uk = (string) ($_GET['universe'] ?? '');
 // Réservations rangées par service : jamais mélangées.
-$SERVICES = [
-    'transport' => ['Transport', domaine('transport')['keys'], '#1F5C8C', '<path d="M4 16V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9M4 16h16v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 11h16"/><circle cx="8" cy="14" r=".6"/><circle cx="16" cy="14" r=".6"/>'],
-    'immobilier' => ['Immobilier', ['immobilier'], '#C98512', '<path d="M3 11.5 12 4l9 7.5V20H3z"/><path d="M10 20v-5h4v5"/>'],
-    'service-a-la-personne' => ['Service à la personne', domaine('service-a-la-personne')['keys'], '#7A4FB5', '<path d="M4 10h11l-1.5 10h-8z"/><path d="M6.5 10a3 3 0 0 1 6 0"/><path d="M20 3l-2.5 11M16 14h3l1 6h-5z"/>'],
-    'beaute' => ['Beauté', domaine('beaute')['keys'], '#C2185B', '<path d="M12 19c-3-2-4-5-4-8 0-2 1.5-4.5 4-6 2.5 1.5 4 4 4 6 0 3-1 6-4 8z"/><path d="M12 19c-4 0-8-2-9-6 2-.5 4 0 5 .8M12 19c4 0 8-2 9-6-2-.5-4 0-5 .8"/>'],
-];
+$SERVICES = admin_services();
 $svc = isset($SERVICES[$_GET['service'] ?? '']) ? $_GET['service'] : null;
 $landing = $svc === null && !isset($_GET['claim']) && trim((string) ($_GET['q'] ?? '')) === '';
 if ($svc === null) $svc = 'transport';
