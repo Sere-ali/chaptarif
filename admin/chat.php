@@ -93,6 +93,5 @@ if ($uid):
 (function () { var q = document.querySelector('[data-cd-search]'); if (!q) return; var rows = document.querySelectorAll('.chat-list [data-cd]');
   q.addEventListener('input', function () { var v = q.value.trim().toLowerCase(); rows.forEach(function (r) { r.hidden = v && r.dataset.cd.indexOf(v) < 0; }); }); })();
 </script>
-<script>setTimeout(function(){ if (!document.querySelector('[data-cd-search]') || !document.querySelector('[data-cd-search]').value) location.reload(); }, 30000);</script>
 <?php endif;
 view('admin/footer');

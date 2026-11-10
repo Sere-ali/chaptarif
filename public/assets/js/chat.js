@@ -46,7 +46,7 @@
       .catch(function () { alert('Connexion perdue : message non envoyé.'); if (onFail) onFail(); });
   };
   var base = function () { var d = new FormData(); d.append('_csrf', form.elements._csrf.value); if (replyId.value) d.append('reply_to', replyId.value); return d; };
-  down(); setInterval(poll, 4000); document.addEventListener('visibilitychange', poll);
+  down(); setInterval(poll, 1000); document.addEventListener('visibilitychange', poll);
 
   // --- répondre à un message
   var setReply = function (msg) {

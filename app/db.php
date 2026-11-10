@@ -43,7 +43,31 @@ function q(string $sql, array $params = []): PDOStatement
 {
     $st = db()->prepare($sql);
     $st->execute($params);
+    if (preg_match('/^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+(\w+)/i', $sql, $m)
+        && !in_array(strtolower($m[1]), ['login_attempts', 'otp_codes', 'audit_logs'], true) && $st->rowCount() > 0) {
+        data_changed();
+    }
     return $st;
+}
+
+/**
+ * Mise à jour en direct : note qu'une donnée a changé. Le jeton (storage/.datav) est écrit
+ * en fin de requête (après validation des transactions) ; les pages ouvertes l'interrogent
+ * chaque seconde via /pulse.php et se rafraîchissent d'elles-mêmes.
+ */
+function data_changed(): void
+{
+    static $armed = false;
+    if ($armed) return;
+    $armed = true;
+    register_shutdown_function(function () {
+        @file_put_contents(ROOT . '/storage/.datav', sprintf('%.4f', microtime(true)), LOCK_EX);
+    });
+}
+
+function data_version(): string
+{
+    return (string) (@file_get_contents(ROOT . '/storage/.datav') ?: '0');
 }
 
 function one(string $sql, array $params = []): ?array

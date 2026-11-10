@@ -33,4 +33,4 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
   </form>
 </div>
 <link rel="stylesheet" href="/assets/css/chat.css?v=1">
-<script src="/assets/js/chat.js?v=1" defer></script>
+<script src="/assets/js/chat.js?v=2" defer></script>

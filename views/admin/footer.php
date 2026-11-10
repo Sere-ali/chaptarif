@@ -1,6 +1,6 @@
   </div>
 </div>
-<script>
+<script data-live-rerun>
 (function(){
   var t=document.querySelector('[data-side-toggle]'),s=document.querySelector('[data-side]');
   if(t)t.addEventListener('click',function(){s.classList.toggle('open');});
@@ -9,6 +9,8 @@
 })();
 </script>
 <script src="/assets/js/pw-eye.js?v=1"></script>
+<script src="/assets/js/live.js?v=1" defer></script>
+<script src="/assets/js/prefetch.js?v=1" defer></script>
 <?= $scripts ?? '' ?>
 </body>
 </html>

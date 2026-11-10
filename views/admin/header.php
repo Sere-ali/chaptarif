@@ -41,7 +41,7 @@ if (is_super($me)) {
     $items[] = ['audit', '/admin/journal', '', "Journal d'audit", 0];
 }
 ?><!doctype html>
-<html lang="fr">
+<html lang="fr" data-v="<?= e(data_version()) ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -51,10 +51,10 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=22">
+<link rel="stylesheet" href="/assets/css/admin.css?v=23">
 </head>
 <body class="adm">
-<div class="main">
+<div class="main" data-live>
   <header class="adm-top">
     <a class="brand" href="/admin"><img src="/assets/img/logo.svg" width="34" alt=""><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></a>
     <span class="role-tag <?= is_super($me) ? 'super' : '' ?>"><?= is_super($me) ? ' Super Admin' : ' Administrateur' ?></span>

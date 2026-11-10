@@ -5,7 +5,7 @@ $desc = $desc ?? 'ChapTarif, votre meilleur comparateur en Côte d\'Ivoire : car
 $u = current_user();
 $U = nav_entries();
 ?><!doctype html>
-<html lang="fr">
+<html lang="fr" data-v="<?= e(data_version()) ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -24,7 +24,7 @@ $U = nav_entries();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/app.css?v=122">
+<link rel="stylesheet" href="/assets/css/app.css?v=123">
 <link rel="stylesheet" href="/assets/css/polish.css?v=8">
 <link rel="stylesheet" href="/assets/css/motion.css?v=1">
 <link rel="stylesheet" href="/assets/css/forms.css?v=6">
@@ -104,7 +104,8 @@ $U = nav_entries();
   </div>
 </header>
 <?php endif; ?>
-<main id="main">
+<?php $livePath = '/' . trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), '/'); ?>
+<main id="main"<?= in_array($livePath, ['/compte', '/espace-prestataire', '/profil-prestataire', '/billet'], true) ? ' data-live' : '' ?>>
 <?php
 $__bt = (empty($providerMode) && !in_array(explode(' ', (string) ($bodyClass ?? ''))[0], ['domaine-m', 'immo-m', 'home-m'], true))
     ? back_target((string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH)) : null;
