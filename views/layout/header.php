@@ -24,7 +24,7 @@ $U = nav_entries();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/app.css?v=126">
+<link rel="stylesheet" href="/assets/css/app.css?v=127">
 <link rel="stylesheet" href="/assets/css/polish.css?v=9">
 <link rel="stylesheet" href="/assets/css/motion.css?v=2">
 <link rel="stylesheet" href="/assets/css/forms.css?v=6">

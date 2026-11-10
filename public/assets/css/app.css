@@ -1619,7 +1619,8 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
 @media (min-width: 900px) and (max-width: 1180px) { .top-loc { font-size: .74rem; padding: 5px 9px; } .top-loc svg { width: 13px; height: 13px; } .topbar .nav-link { font-size: .84rem; padding-left: 6px; padding-right: 6px; } }
 @media (min-width: 900px) {
   .topbar-in { max-width: none !important; width: 100%; padding-left: 28px; padding-right: 28px; gap: 14px; }
-  .topbar .nav { flex: 1 1 auto; margin-left: 4px; overflow: hidden; }
+  .topbar .nav { flex: 1 1 auto; margin-left: 4px; overflow: visible; min-width: 0; }
+  .topbar .nav-drop .drop { z-index: 1000; }
   .topbar .top-actions { margin-left: 0; }
   .topbar .brand { flex: none; }
 }
