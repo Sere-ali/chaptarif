@@ -42,24 +42,24 @@ if ($path === '/admin/2fa/activer') {
     $me = require_admin();
     $mode = 'setup';
     if (is_post() && ($_POST['action'] ?? '') === 'enable') {
-        $sec = (string) ($_SESSION['totp_setup'] ?? '');
+        $sec = (string) ($me['totp_secret'] ?? '');
         $tmp = $me; $tmp['totp_secret'] = $sec; $tmp['totp_last'] = 0;
         if ($sec !== '' && totp_verify($tmp, (string) ($_POST['code'] ?? ''))) {
-            q('UPDATE users SET totp_secret = ?, totp_enabled = 1 WHERE id = ?', [$sec, $me['id']]);
-            unset($_SESSION['totp_setup']);
+            q('UPDATE users SET totp_enabled = 1 WHERE id = ?', [$me['id']]);
             $_SESSION['totp_codes'] = totp_recovery_new((int) $me['id']);
             audit('admin.2fa_activee', $me['email']);
             security_event('2fa.activee', 'info', $me['email'], (int) $me['id']);
             login_device_check(one('SELECT * FROM users WHERE id = ?', [$me['id']]));
             redirect('/admin/2fa/activer?ok=1');
         }
-        flash('error', 'Code incorrect. Scannez à nouveau le QR code et saisissez le code affiché.');
+        flash('error', 'Code incorrect. Vérifiez que la clé saisie dans l\'application est exactement celle affichée ci-dessous, et que l\'heure du téléphone est en automatique.');
         redirect('/admin/2fa/activer');
     }
     if (!empty($me['totp_enabled']) && empty($_SESSION['totp_codes'])) redirect('/admin');
     if (empty($me['totp_enabled'])) {
-        $_SESSION['totp_setup'] ??= totp_new_secret();
-        $secret = $_SESSION['totp_setup'];
+        // La clé est enregistrée tout de suite : elle reste la même après un rechargement ou une mise à jour du site.
+        $secret = (string) ($me['totp_secret'] ?? '');
+        if ($secret === '') { $secret = totp_new_secret(); q('UPDATE users SET totp_secret = ? WHERE id = ?', [$secret, $me['id']]); }
         $uri = totp_uri($me, $secret);
     }
 }
