@@ -44,7 +44,7 @@ function totp_verify(array $user, string $code): bool
     $code = preg_replace('/\D/', '', $code);
     if (strlen($code) !== 6 || empty($user['totp_secret'])) return false;
     $now = intdiv(time(), 30);
-    foreach ([0, -1, 1] as $d) {
+    foreach ([0, -1, -2, -3, 1] as $d) { // un code reste valable environ 2 minutes
         $step = $now + $d;
         if ($step <= (int) ($user['totp_last'] ?? 0)) continue; // anti-rejeu
         if (hash_equals(totp_code($user['totp_secret'], $step), $code)) {
