@@ -12,7 +12,7 @@ $ck = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="curre
         <i class="gd-swoosh"></i>
         <p>Une protection optionnelle pour vos services à domicile (ménage, aide à domicile et pressing).</p>
       </div>
-      <img src="/assets/img/gd-shield2.jpg" alt="" width="404" height="300">
+      <img src="/assets/img/gd-shield2.jpg" fetchpriority="high" alt="" width="404" height="300">
     </div>
 
     <h2 class="gd-h2">Ce que couvre la garantie</h2>

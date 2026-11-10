@@ -24,7 +24,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <div class="uni-grid">
       <?php foreach ($subs as $x): ?>
         <a class="uni reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>;--bg:<?= $x['bg'] ?>">
-          <div class="uni-img"><img src="<?= e(img($x['img'], 'w_640,h_420,c_fill,q_auto,f_auto')) ?>" alt="<?= e($x['name']) ?>" loading="lazy" width="640" height="420"></div>
+          <div class="uni-img"><img src="<?= e(img($x['img'], 'w_640,h_420,c_fill,q_auto,f_auto')) ?>" alt="<?= e($x['name']) ?>" decoding="async" width="640" height="420"></div>
           <div class="uni-body"><span class="uni-emoji"><?= $x['emoji'] ?></span>
             <h3><?= e($x['name']) ?></h3>
             <p class="uni-sub"><?= e($x['sub']) ?></p>
@@ -54,7 +54,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
     <div class="d-list">
       <?php foreach ($d['keys'] as $sk): $x = universe($sk); ?>
         <a class="d-item reveal<?= in_array($sk, ['covoiturage', 'chauffeur', 'menage', 'maquilleuse'], true) ? ' d-alt' : '' ?>" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
-          <span class="d-item-img"><img src="<?= in_array($dk, ['transport', 'service-a-la-personne', 'beaute'], true) && is_file(__DIR__ . '/../public/assets/img/tr-' . $sk . '.jpg') ? '/assets/img/tr-' . $sk . '.jpg' : e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" width="60" height="60"></span>
+          <span class="d-item-img"><img src="<?= in_array($dk, ['transport', 'service-a-la-personne', 'beaute'], true) && is_file(__DIR__ . '/../public/assets/img/tr-' . $sk . '.jpg') ? '/assets/img/tr-' . $sk . '.jpg' : e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" decoding="async" width="60" height="60"></span>
           <span class="d-item-body">
             <b><?= e($x['name']) ?></b>
             <small><?= e($x['pitch']) ?></small>

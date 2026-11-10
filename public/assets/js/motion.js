@@ -12,7 +12,8 @@
     ['.sap-banner, .il-banner, .gd-hero2, .gd-hero', 'mo-wipe']
   ];
   var seen = [];
-  groups.forEach(function (g) {
+  // Affichage immédiat : plus d'apparition en cascade, tout s'affiche d'un coup.
+  if (false) groups.forEach(function (g) {
     document.querySelectorAll(g[0]).forEach(function (el) {
       if (el.classList.contains('reveal') || el.closest('.tabbar, .il-sheet, .topbar') || seen.indexOf(el) > -1) return;
       seen.push(el);
@@ -21,7 +22,6 @@
       el.classList.add(g[1]);
     });
   });
-  if (!seen.length) return;
   root.classList.add('mo');
   var io = new IntersectionObserver(function (es) {
     es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('mo-in'); io.unobserve(e.target); } });

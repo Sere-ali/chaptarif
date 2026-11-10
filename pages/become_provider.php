@@ -110,7 +110,7 @@ view('layout/header', compact('title', 'desc', 'active'));
           <div class="fld"><span>Votre activité</span>
             <div class="pv-acts" role="radiogroup">
               <?php foreach ($U as $k => $x): $ti = is_file(__DIR__ . '/../public/assets/img/tr-' . $k . '.jpg') ? '/assets/img/tr-' . $k . '.jpg' : img($x['img'], 'w_160,h_160,c_fill,q_auto,f_auto'); ?>
-                <button type="button" class="pv-act" data-act="<?= e($k) ?>" role="radio" aria-checked="false"><img src="<?= e($ti) ?>" alt="" loading="lazy" width="56" height="56"><span><?= e($x['name']) ?></span></button>
+                <button type="button" class="pv-act" data-act="<?= e($k) ?>" role="radio" aria-checked="false"><img src="<?= e($ti) ?>" alt="" decoding="async" width="56" height="56"><span><?= e($x['name']) ?></span></button>
               <?php endforeach; ?>
             </div>
             <div hidden><label class="fld"><span>Activité</span><select name="universe" id="proUniverse" required><option value="">Choisir…</option><?php foreach ($U as $k => $x): ?><option value="<?= $k ?>" data-transport="<?= in_array($k, $transportKeys, true) ? '1' : '0' ?>"><?= $x['emoji'] ?> <?= e($x['name']) ?></option><?php endforeach; ?></select></label></div>

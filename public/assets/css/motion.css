@@ -90,3 +90,10 @@ html.mo .d-h2.mo-in, html.mo .gd-h2.mo-in { border-left-color: currentColor; tra
   html.mo .mo-up, html.mo .mo-pop, html.mo .mo-left { opacity: 1 !important; transform: none !important; }
   html.mo .mo-wipe { clip-path: none !important; }
 }
+
+/* ---------- Affichage immédiat (demande : tout s'affiche en même temps, sans attente) ---------- */
+.reveal, .reveal.in, html.mo .mo-up, html.mo .mo-pop, html.mo .mo-left { opacity: 1 !important; transform: none !important; transition-delay: 0s !important; }
+html.mo .mo-wipe { clip-path: none !important; }
+.il-banner h2, .il-banner p, .gd-swoosh, .tabbar, .pv-side, .pv-perks li, .pa-step .fld, .pa-panel.pa-in, .pa-step.in-r, .pa-step.in-l, .alert,
+body.home-m .m-home-top, body.home-m .m-title, body.home-m .m-sub, body.home-m .m-search { animation: none !important; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }

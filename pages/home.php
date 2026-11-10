@@ -116,7 +116,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
           $ac = $mAcc[$k] ?? [$x['color'], $x['bg'], null];
       ?>
         <a class="m-cat reveal" href="<?= $x['url'] ?>" style="--c:<?= $ac[0] ?>;--t:<?= $ac[1] ?>">
-          <?php if ($ac[2]): ?><span class="m-cat-photo"><img src="/assets/img/<?= $ac[2] ?>.jpg" alt="" loading="lazy" width="390" height="190"></span><?php endif; ?>
+          <?php if ($ac[2]): ?><span class="m-cat-photo"><img src="/assets/img/<?= $ac[2] ?>.jpg" alt="" decoding="async" width="390" height="190"></span><?php endif; ?>
           <span class="m-cat-ico"><?= $mCatIcon($k, $ac[0]) ?></span>
           <b><?= e($x['short']) ?></b>
           <span class="m-cat-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
@@ -276,7 +276,7 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
     <div class="uni-grid">
       <?php foreach ($N as $k => $x): ?>
         <a class="uni reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>;--bg:<?= $x['bg'] ?>">
-          <div class="uni-img"><img src="<?= e(img($x['img'], 'w_640,h_420,c_fill,q_auto,f_auto')) ?>" alt="<?= e($x['name']) ?>" loading="lazy" width="640" height="420"></div>
+          <div class="uni-img"><img src="<?= e(img($x['img'], 'w_640,h_420,c_fill,q_auto,f_auto')) ?>" alt="<?= e($x['name']) ?>" decoding="async" width="640" height="420"></div>
           <div class="uni-body"><span class="uni-emoji"><?= $x['emoji'] ?></span>
             <h3><?= e($x['name']) ?></h3>
             <p class="uni-sub"><?= e($x['sub']) ?></p>
