@@ -19,7 +19,7 @@ $mine = strlen($mine) > 10 ? substr($mine, -10) : $mine;
 // Interrogation de l'état du paiement (sondage depuis la page d'attente)
 if (isset($_GET['statut'])) {
     header('Content-Type: application/json');
-    if (payment_verify($b)) { booking_mark_paid($b, 'PD-' . $b['ref']); echo json_encode(['paid' => true]); }
+    if (payment_verify($b)) { booking_mark_paid($b, 'PD-' . $b['payment_ref']); echo json_encode(['paid' => true]); }
     else echo json_encode(['paid' => false]);
     exit;
 }

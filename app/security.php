@@ -279,6 +279,7 @@ function maintenance_maybe(): void
             q('DELETE FROM otp_codes WHERE created_at < ?', [date('Y-m-d H:i:s', time() - 86400)]);
             q('DELETE FROM security_events WHERE created_at < ? AND level = ?', [date('Y-m-d H:i:s', time() - 365 * 86400), 'info']);
             docs_retention_purge();
+            reconcile_run();
             if (cld_config()) backup_run('auto');
         } catch (Throwable $e) {
             error_log('maintenance: ' . $e->getMessage());

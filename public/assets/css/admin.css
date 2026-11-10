@@ -376,3 +376,7 @@ a.kpi-link em { color: #2E7D5B; }
 .sec-adm small { display: block; color: #7A8AA0; font-size: .8rem; }
 .sec-plan { padding-left: 18px; font-size: .9rem; line-height: 1.5; color: #334155; }
 tr.sec-new td { background: #FFF8E6; }
+
+.rec-ok { color: #1F7A4F; font-weight: 700; margin: 6px 0 0; }
+.rec-ko { color: #B42318; font-weight: 700; margin: 6px 0; }
+.rec-list { margin: 0; padding-left: 18px; font-size: .9rem; line-height: 1.55; }

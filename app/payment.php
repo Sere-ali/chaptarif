@@ -146,6 +146,17 @@ function payment_verify(array $b): bool
         if ($tok === '' || $tok === 'EN_ATTENTE_VALIDATION') return false;
         $res = paydunya_call('checkout-invoice/confirm/' . rawurlencode($tok));
         $paid = ($res['status'] ?? '') === 'completed';
+        // La facture payée doit bien être celle de cette réservation (référence) et en francs CFA.
+        $rref = (string) ($res['custom_data']['ref'] ?? $b['ref']);
+        if ($paid && $rref !== (string) $b['ref']) {
+            security_event('paiement.reference_incoherente', 'critical', $b['ref'] . ' : facture PayDunya liée à ' . $rref);
+            return false;
+        }
+        $cur = strtoupper((string) ($res['invoice']['currency'] ?? 'XOF'));
+        if ($paid && !in_array($cur, ['XOF', 'FCFA', 'CFA'], true)) {
+            security_event('paiement.devise_incoherente', 'critical', $b['ref'] . ' : devise ' . $cur);
+            return false;
+        }
         if ($paid && (int) ($res['invoice']['total_amount'] ?? 0) < (int) $b['total']) {
             security_event('paiement.montant_incoherent', 'critical', $b['ref'] . ' : payé ' . (int) ($res['invoice']['total_amount'] ?? 0) . ' F au lieu de ' . (int) $b['total'] . ' F');
             return false;
@@ -190,4 +201,53 @@ function http_json(string $url, array $payload): array
     $r = curl_exec($ch);
     curl_close($ch);
     return json_decode((string) $r, true) ?: [];
+}
+
+
+/**
+ * Rapprochement : compare les réservations, le grand livre et (pour PayDunya) les sommes
+ * réellement reçues. Retourne la liste des anomalies détectées.
+ */
+function reconcile_run(bool $checkGateway = true): array
+{
+    $an = [];
+    $add = function (string $ref, string $msg) use (&$an) { $an[] = ['ref' => $ref, 'msg' => $msg]; };
+    $paidSt = "('BLOQUE','VALIDE','EN_LITIGE','REMBOURSE')";
+    // 1. Chaque réservation payée a exactement un encaissement du bon montant.
+    foreach (all("SELECT b.id, b.ref, b.total, COUNT(t.id) AS n, COALESCE(SUM(t.amount),0) AS s FROM bookings b
+                  LEFT JOIN transactions t ON t.booking_id = b.id AND t.type = 'ENCAISSEMENT'
+                  WHERE b.status IN $paidSt GROUP BY b.id, b.ref, b.total") as $r) {
+        if ((int) $r['n'] === 0) $add($r['ref'], 'Réservation payée sans encaissement au grand livre.');
+        elseif ((int) $r['n'] > 1) $add($r['ref'], 'Encaissement enregistré ' . $r['n'] . ' fois (double paiement ?).');
+        elseif ((int) $r['s'] !== (int) $r['total']) $add($r['ref'], 'Montant encaissé ' . $r['s'] . ' F ≠ montant de la réservation ' . $r['total'] . ' F.');
+    }
+    // 2. Aucun encaissement sur une réservation non payée.
+    foreach (all("SELECT b.ref, b.status FROM transactions t JOIN bookings b ON b.id = t.booking_id
+                  WHERE t.type = 'ENCAISSEMENT' AND b.status NOT IN $paidSt") as $r) {
+        $add($r['ref'], 'Encaissement présent alors que la réservation est « ' . $r['status'] . ' ».');
+    }
+    // 3. Réservations validées : un seul reversement ; remboursées : un seul remboursement.
+    foreach (all("SELECT b.ref, b.status, SUM(CASE WHEN t.type = 'REVERSEMENT' THEN 1 ELSE 0 END) AS rv, SUM(CASE WHEN t.type = 'REMBOURSEMENT' THEN 1 ELSE 0 END) AS rb
+                  FROM bookings b LEFT JOIN transactions t ON t.booking_id = b.id WHERE b.status IN ('VALIDE','REMBOURSE') GROUP BY b.id, b.ref, b.status") as $r) {
+        if ($r['status'] === 'VALIDE' && (int) $r['rv'] !== 1) $add($r['ref'], (int) $r['rv'] . ' reversement(s) au prestataire au lieu de 1.');
+        if ($r['status'] === 'REMBOURSE' && (int) $r['rb'] !== 1) $add($r['ref'], (int) $r['rb'] . ' remboursement(s) au client au lieu de 1.');
+        if ($r['status'] === 'REMBOURSE' && (int) $r['rv'] > 0) $add($r['ref'], 'Remboursé ET reversé au prestataire.');
+    }
+    // 4. Sommes réellement reçues : revérification auprès de PayDunya (paiements des 14 derniers jours).
+    $checked = 0;
+    if ($checkGateway && payment_mode() === 'paydunya') {
+        foreach (all("SELECT * FROM bookings WHERE status IN $paidSt AND payment_ref LIKE 'PD-%' AND paid_at > ? ORDER BY id DESC LIMIT 100", [date('Y-m-d H:i:s', time() - 14 * 86400)]) as $b) {
+            $tok = substr((string) $b['payment_ref'], 3);
+            if ($tok === '' || $tok === $b['ref']) continue; // anciens paiements sans jeton
+            $res = paydunya_call('checkout-invoice/confirm/' . rawurlencode($tok));
+            $checked++;
+            if (($res['status'] ?? '') !== 'completed') $add($b['ref'], 'PayDunya ne confirme pas ce paiement (statut : ' . ($res['status'] ?? 'inconnu') . ').');
+            elseif ((int) ($res['invoice']['total_amount'] ?? 0) < (int) $b['total']) $add($b['ref'], 'PayDunya a reçu ' . (int) $res['invoice']['total_amount'] . ' F au lieu de ' . $b['total'] . ' F.');
+        }
+    }
+    $escrow = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN ('BLOQUE','EN_LITIGE')");
+    setting_set('reconcile_last', now());
+    setting_set('reconcile_result', json_encode(['anomalies' => $an, 'checked' => $checked, 'escrow' => $escrow], JSON_UNESCAPED_UNICODE));
+    if ($an) security_event('rapprochement.anomalies', 'critical', count($an) . ' anomalie(s) : ' . $an[0]['ref'] . ' — ' . $an[0]['msg']);
+    return ['anomalies' => $an, 'checked' => $checked, 'escrow' => $escrow];
 }

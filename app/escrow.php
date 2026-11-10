@@ -71,9 +71,13 @@ function booking_mark_paid(array $b, string $paymentRef): array
 function booking_release(array $b, string $by = 'client', string $note = ''): bool
 {
     if (!in_array($b['status'], ['BLOQUE', 'EN_LITIGE'], true)) return false;
-    tx(function () use ($b, $by, $note) {
-        q("UPDATE bookings SET status = 'VALIDE', validated_at = ?, updated_at = ?, admin_note = COALESCE(admin_note, '') || ? WHERE id = ?",
+    $done = false;
+    tx(function () use ($b, $by, $note, &$done) {
+        // Anti double versement : la transition n'a lieu qu'une fois, même en cas de double clic.
+        $st = q("UPDATE bookings SET status = 'VALIDE', validated_at = ?, updated_at = ?, admin_note = COALESCE(admin_note, '') || ? WHERE id = ? AND status IN ('BLOQUE','EN_LITIGE')",
             [now(), now(), $note ? "\n[" . now() . "] $note" : '', $b['id']]);
+        if ($st->rowCount() !== 1) return;
+        $done = true;
         $rev = (int) $b['commission'] + (int) $b['service_fee'] - (int) ($b['discount'] ?? 0);
         insert('transactions', [
             'booking_id' => $b['id'], 'provider_id' => $b['provider_id'], 'type' => 'COMMISSION', 'amount' => $rev,
@@ -90,7 +94,7 @@ function booking_release(array $b, string $by = 'client', string $note = ''): bo
         ]);
         if ($b['provider_id']) q('UPDATE providers SET missions = missions + 1 WHERE id = ?', [$b['provider_id']]);
     });
-    return true;
+    return $done;
 }
 
 function booking_dispute(array $b, string $reason): bool
@@ -103,8 +107,11 @@ function booking_dispute(array $b, string $reason): bool
 function booking_refund(array $b, string $note = ''): bool
 {
     if (!in_array($b['status'], ['BLOQUE', 'EN_LITIGE'], true)) return false;
-    tx(function () use ($b, $note) {
-        q("UPDATE bookings SET status = 'REMBOURSE', updated_at = ?, admin_note = COALESCE(admin_note, '') || ? WHERE id = ?", [now(), $note ? "\n[" . now() . "] $note" : '', $b['id']]);
+    $done = false;
+    tx(function () use ($b, $note, &$done) {
+        $st = q("UPDATE bookings SET status = 'REMBOURSE', updated_at = ?, admin_note = COALESCE(admin_note, '') || ? WHERE id = ? AND status IN ('BLOQUE','EN_LITIGE')", [now(), $note ? "\n[" . now() . "] $note" : '', $b['id']]);
+        if ($st->rowCount() !== 1) return;
+        $done = true;
         $r = payment_refund($b);
         insert('transactions', [
             'booking_id' => $b['id'], 'provider_id' => $b['provider_id'], 'type' => 'REMBOURSEMENT', 'amount' => (int) $b['total'],
@@ -112,7 +119,7 @@ function booking_refund(array $b, string $note = ''): bool
             'note' => 'Remboursement client', 'created_at' => now(),
         ]);
     });
-    return true;
+    return $done;
 }
 
 function booking_cancel(array $b): bool

@@ -1,5 +1,11 @@
 <?php
 $me = require_admin();
+if (is_post() && ($_POST['action'] ?? '') === 'reconcile') {
+    $r = reconcile_run();
+    audit('finances.rapprochement', '', ['anomalies' => count($r['anomalies']), 'verifies_paydunya' => $r['checked']]);
+    $r['anomalies'] ? flash('error', count($r['anomalies']) . ' anomalie(s) détectée(s) : voir le rapprochement.') : flash('success', 'Rapprochement OK : réservations, grand livre et paiements reçus concordent.');
+    redirect('/admin/finances');
+}
 if (is_post()) {
     stepup_require($me, '/admin/finances');
     $t = one('SELECT * FROM transactions WHERE id = ?', [(int) ($_POST['id'] ?? 0)]);
@@ -54,6 +60,17 @@ view('admin/header', compact('page', 'nav'));
   <div class="kpi hl"><span class="kpi-ico"></span><small>Revenus ChapTarif</small><b><?= fcfa($com + $abo) ?></b><em>Commissions <?= fcfa($com) ?> · Abonnements <?= fcfa($abo) ?></em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Reversé aux prestataires</small><b><?= fcfa($pay) ?></b><em>Remboursements : <?= fcfa($ref) ?></em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Solde séquestre actuel</small><b><?= fcfa($escrow) ?></b><em>Fonds clients bloqués</em></div>
+</div>
+<?php $rec = json_decode((string) setting('reconcile_result', ''), true); $recAt = (string) setting('reconcile_last', ''); ?>
+<div class="panel rec-panel">
+  <div class="panel-h"><h2>Rapprochement</h2>
+    <form method="post"><?= csrf_field() ?><button class="btn btn-primary btn-sm" name="action" value="reconcile">Lancer le rapprochement</button></form></div>
+  <p class="muted small">Contrôle automatique chaque nuit : chaque réservation payée ↔ son encaissement au grand livre ↔ la somme réellement reçue chez PayDunya, ainsi que les reversements et remboursements (jamais en double).</p>
+  <?php if (!$recAt): ?><p class="muted">Pas encore lancé.</p>
+  <?php elseif (empty($rec['anomalies'])): ?><p class="rec-ok">✓ Tout concorde — dernier contrôle le <?= fmt_date($recAt, true) ?><?= !empty($rec['checked']) ? ' · ' . (int) $rec['checked'] . ' paiement(s) revérifié(s) chez PayDunya' : '' ?>.</p>
+  <?php else: ?><p class="rec-ko">⚠ <?= count($rec['anomalies']) ?> anomalie(s) au contrôle du <?= fmt_date($recAt, true) ?> :</p>
+    <ul class="rec-list"><?php foreach (array_slice($rec['anomalies'], 0, 30) as $a): ?><li><b class="mono"><?= e($a['ref']) ?></b> — <?= e($a['msg']) ?></li><?php endforeach; ?></ul>
+  <?php endif; ?>
 </div>
 <div class="panel">
   <div class="panel-h"><h2><?= $status ? 'Virements en attente' : 'Grand livre' ?></h2><span class="muted small"><?= $total ?> mouvement(s)</span></div>

@@ -38,6 +38,7 @@ $checks = [
     ['Paiements', 'Paiement vérifié côté serveur auprès de PayDunya (jamais sur la seule base du navigateur)', $pm !== 'simulation', $pm === 'simulation' ? 'Mode simulation actif' : ''],
     ['Paiements', 'Webhooks signés et revérifiés · anti double paiement', true],
     ['Paiements', 'PIN / code OTP jamais stockés', true],
+    ['Paiements', 'Rapprochement quotidien réservations ↔ grand livre ↔ sommes reçues', ($rc = json_decode((string) setting('reconcile_result', ''), true)) !== null && empty($rc['anomalies']), setting('reconcile_last') ? 'Dernier : ' . fmt_date((string) setting('reconcile_last'), true) . (!empty($rc['anomalies']) ? ' — ' . count($rc['anomalies']) . ' anomalie(s), voir Finances' : '') : 'Pas encore lancé (Finances › Rapprochement)'],
     ['Paiements', 'Remboursements, virements et coordonnées de paiement : double validation (code 2FA) + journal', true],
     ['Documents', 'Pièces d\'identité stockées en privé, accessibles aux seuls admins connectés, chiffrées au repos (AES-256)', true],
     ['Documents', 'Durée de conservation : suppression à la suppression du prestataire, 2 ans après un refus', true],

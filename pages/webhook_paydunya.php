@@ -10,7 +10,7 @@ if ($hash !== '' && hash_equals(hash('sha512', (string) env('PAYDUNYA_MASTER_KEY
     $tok = (string) ($d['invoice']['token'] ?? '');
     $b = $tok !== '' ? one('SELECT * FROM bookings WHERE payment_ref = ?', [$tok]) : null;
     if ($b && $b['status'] === 'EN_ATTENTE_PAIEMENT' && payment_verify($b)) {
-        booking_mark_paid($b, 'PD-' . $b['ref']);
+        booking_mark_paid($b, 'PD-' . $tok); // on garde le jeton PayDunya pour le rapprochement
         audit('paiement.webhook', $b['ref'], 'Paiement confirmé par PayDunya');
     }
 } else {
