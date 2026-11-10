@@ -391,7 +391,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
         <?php if ($hasGarantie): ?>
           <label class="check garantie-check">
             <input type="checkbox" name="garantie" value="1" data-garantie>
-            <span class="gc-txt"><b class="gc-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> Garantie Dommage</b> <?= $uk === 'pressing' ? 'Confiez vos vêtements en toute sérénité. Pensez à les protéger !' : "Bénéficiez d'une tranquillité supplémentaire en cas de casse, de détérioration d'un objet ou de vol survenu dans le cadre de la prestation." ?></span>
+            <span class="gc-head"><svg class="gc-shield" width="46" height="46" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#3B82F6" stroke="#1E3A8A" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Garantie<br>Dommage</b></span><span class="gc-txt"><?= $uk === 'pressing' ? 'Confiez vos vêtements en toute sérénité. Pensez à les protéger !' : "Bénéficiez d'une tranquillité supplémentaire en cas de casse, de détérioration d'un objet ou de vol survenu dans le cadre de la prestation." ?></span>
           </label>
           <p class="fine" style="margin:-6px 0 10px"><a href="/garantie-dommage" target="_blank" rel="noopener">En savoir plus sur la Garantie Dommage →</a></p>
         <?php endif; ?>

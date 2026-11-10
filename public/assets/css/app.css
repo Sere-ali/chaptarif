@@ -1651,9 +1651,11 @@ body.immo-m .il-search .il-card { width: 100% !important; aspect-ratio: auto !im
 /* « Prestataire disponible » en doré */
 .prov-dispo { display: block; font-weight: 700; letter-spacing: .01em; background: linear-gradient(90deg, #B8860B, #E6B422 55%, #C9971C); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-/* Garantie Dommage en bleu, bien visible */
-label.check.garantie-check { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 16px; background: linear-gradient(135deg, #1E5BD8, #2F7BF5); color: #fff; border: 0; box-shadow: 0 8px 22px rgba(30, 91, 216, .28); }
-label.check.garantie-check input { flex: none; width: 22px; height: 22px; margin-top: 2px; accent-color: #fff; }
-label.check.garantie-check .gc-txt { display: block; line-height: 1.45; font-size: .95rem; color: #EAF2FF; }
-label.check.garantie-check .gc-title { display: flex; align-items: center; gap: 6px; color: #fff; font-size: 1.05rem; margin-bottom: 4px; }
-label.check.garantie-check:has(input:checked) { background: linear-gradient(135deg, #1546AE, #1E5BD8); box-shadow: 0 0 0 3px #9CC0FF, 0 8px 22px rgba(30, 91, 216, .35); }
+/* Garantie Dommage : maquette bleue (case · bouclier + titre · texte) */
+label.check.garantie-check { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 20px; background: #EAF2FE; border: 2px solid #2563EB; color: #0E1B33; box-shadow: none; cursor: pointer; }
+label.check.garantie-check input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: #2563EB; }
+label.check.garantie-check .gc-head { flex: none; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; padding-right: 14px; border-right: 2px solid #B9CFF3; }
+label.check.garantie-check .gc-head b { font-size: 1.08rem; line-height: 1.15; color: #0E1B33; font-weight: 800; }
+label.check.garantie-check .gc-txt { display: block; font-size: .92rem; line-height: 1.45; color: #1F2A44; }
+label.check.garantie-check:has(input:checked) { background: #DCE9FD; box-shadow: 0 0 0 3px rgba(37, 99, 235, .25); }
+@media (max-width: 380px) { label.check.garantie-check .gc-head b { font-size: .98rem; } label.check.garantie-check .gc-shield { width: 38px; height: 38px; } }
