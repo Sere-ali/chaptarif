@@ -26,7 +26,7 @@ if (is_post()) {
     redirect('/compte?ref=' . urlencode($b['ref']));
 }
 
-$bookings = all("SELECT b.*, p.name AS provider_name, p.phone AS provider_phone FROM bookings b LEFT JOIN providers p ON p.id = b.provider_id WHERE b.user_id = ? AND b.status <> 'ANNULE' ORDER BY b.id DESC LIMIT 100", [$u['id']]);
+$bookings = all("SELECT b.*, p.name AS provider_name FROM bookings b LEFT JOIN providers p ON p.id = b.provider_id WHERE b.user_id = ? AND b.status <> 'ANNULE' ORDER BY b.id DESC LIMIT 100", [$u['id']]);
 $hl = (string) ($_GET['ref'] ?? '');
 $title = 'Mes réservations';
 $active = 'account';
@@ -62,7 +62,7 @@ view('layout/header', compact('title', 'active'));
               <a class="btn btn-primary" href="/billet?ref=<?= urlencode($b['ref']) ?>"> Afficher mon E-billet</a>
             <?php else: ?>
               <div class="code-box"><span> Votre code de validation à 4 chiffres<br>À remettre au prestataire <em>uniquement une fois le service terminé</em> pour qu'il reçoive son paiement</span><b class="mono"><?= e($b['release_code']) ?></b></div>
-              <?php if (!empty($b['provider_name'])): ?><p class="muted small">Prestataire : <b><?= e($b['provider_name']) ?></b><?= $b['provider_phone'] ? ' · <a href="tel:' . e($b['provider_phone']) . '">' . e(fmt_phone($b['provider_phone'])) . '</a>' : '' ?></p><?php endif; ?>
+              <?php if (!empty($b['provider_name'])): ?><p class="muted small">Prestataire : <b><?= e($b['provider_name']) ?></b></p><?php endif; ?>
               <?php if (!empty($d['garantie_dommage'])): ?><p class="muted small"> <b>Garantie Dommage active</b> sur cette commande : en cas de problème, indemnisation ou nouvelle prestation possible.</p><?php endif; ?>
               <div class="bk-actions">
                 <form method="post" data-confirm="Confirmez-vous que le service a bien été réalisé ? Le prestataire sera payé immédiatement."><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $b['id'] ?>"><button name="action" value="confirm" class="btn btn-primary">✓ Confirmer la fin du travail</button></form>

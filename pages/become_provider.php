@@ -17,10 +17,12 @@ if (is_post()) {
     $need = isset($U[$uk]) ? kyc_docs_required($uk) : [];
     $DL = kyc_doc_labels();
     foreach ($need as $nk) if (empty($_FILES[$nk]['name'])) $errors[] = $DL[$nk][0] . ' : document obligatoire.';
-    $docs = [];
+    $docs = []; $photoUrl = null;
     foreach ($need as $dk) {
         if ($errors) break;
-        $r = cld_upload($_FILES[$dk], 'chaptarif/kyc', 'authenticated');
+        // La photo d'identité sert aussi de photo de profil : stockée en public, les autres documents restent privés.
+        $r = $dk === 'photo' ? cld_upload($_FILES[$dk], 'chaptarif/prestataires') : cld_upload($_FILES[$dk], 'chaptarif/kyc', 'authenticated');
+        if ($r['ok'] && $dk === 'photo') $photoUrl = $r['url'];
         if ($r['ok']) $docs[$dk] = $r['public_id'] . '.' . $r['format'];
         else $errors[] = $DL[$dk][0] . ' : ' . $r['error'];
     }
@@ -39,7 +41,7 @@ if (is_post()) {
         'commune' => in_array($_POST['commune'] ?? '', communes(), true) ? $_POST['commune'] : null,
         'bio' => mb_substr(trim((string) ($_POST['bio'] ?? '')), 0, 400), 'vehicle' => mb_substr((string) ($_POST['vehicle'] ?? ''), 0, 80),
         'kyc_status' => 'pending', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'permis_public_id' => $permis, 'vehicule_public_id' => $vehicule, 'docs' => json_encode($docs, JSON_UNESCAPED_SLASHES), 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
-        'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
+        'photo_url' => $photoUrl, 'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
     ]);
     // Compte d'accès : jamais écrasé si le numéro a déjà un compte.
     if (!one('SELECT id FROM users WHERE phone = ?', [$phone])) {

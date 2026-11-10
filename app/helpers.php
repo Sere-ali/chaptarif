@@ -294,6 +294,13 @@ function initials(string $name): string
 
 function avatar(array $p, string $cls = ''): string
 {
+    // Photo de profil, sinon photo d'identité fournie à l'inscription (lien signé).
+    if (empty($p['photo_url']) && !empty($p['docs'])) {
+        $pd = json_decode((string) $p['docs'], true) ?: [];
+        if (!empty($pd['photo']) && !str_ends_with((string) $pd['photo'], '.pdf')) {
+            return '<img class="avatar ' . $cls . '" src="' . e(cld_private_url($pd['photo'])) . '" alt="' . e($p['name']) . '" loading="lazy" style="object-fit:cover">';
+        }
+    }
     if (!empty($p['photo_url'])) {
         return '<img class="avatar ' . $cls . '" src="' . e(cld($p['photo_url'], 'w_160,h_160,c_fill,g_face,q_auto,f_auto')) . '" alt="' . e($p['name']) . '" loading="lazy">';
     }
