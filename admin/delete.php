@@ -16,6 +16,7 @@ $blocking = function (string $where, array $p) use ($live) {
 };
 $used = fn (string $sql, array $p) => (int) val($sql, $p) > 0;
 $stop = function (string $msg) use ($back) { flash('error', $msg); redirect($back); };
+stepup_require($me, $back);
 $label = '';
 
 switch ($type) {
@@ -26,6 +27,7 @@ switch ($type) {
         q('DELETE FROM visit_requests WHERE provider_id = ?', [$id]);
         q('DELETE FROM provider_services WHERE provider_id = ?', [$id]);
         q("UPDATE trips SET active = 0, provider_id = NULL WHERE provider_id = ?", [$id]);
+        provider_docs_destroy($p); // conservation : les pièces d'identité sont effacées avec le prestataire
         q('DELETE FROM providers WHERE id = ?', [$id]);
         $label = 'Prestataire « ' . $p['name'] . ' »';
         break;

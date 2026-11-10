@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 27;
+const SCHEMA_VERSION = 28;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -217,6 +217,13 @@ function db_migrate(): void
         "CREATE TABLE IF NOT EXISTS discount_codes (
             id $PK, code TEXT NOT NULL UNIQUE, kind TEXT NOT NULL DEFAULT 'percent', value INTEGER NOT NULL,
             active INTEGER NOT NULL DEFAULT 1, expires_at TEXT, max_uses INTEGER, uses INTEGER NOT NULL DEFAULT 0, created_at TEXT)",
+        "CREATE TABLE IF NOT EXISTS security_events (
+            id $PK, kind TEXT NOT NULL, level TEXT NOT NULL DEFAULT 'info', user_id INTEGER, ip TEXT, detail TEXT,
+            seen INTEGER NOT NULL DEFAULT 0, created_at TEXT)",
+        "CREATE INDEX IF NOT EXISTS idx_secev_created ON security_events(created_at)",
+        "CREATE TABLE IF NOT EXISTS login_devices (
+            id $PK, user_id INTEGER NOT NULL, fp TEXT NOT NULL, label TEXT, ip TEXT, created_at TEXT, last_seen TEXT)",
+        "CREATE INDEX IF NOT EXISTS idx_devices_user ON login_devices(user_id, fp)",
     ];
     foreach ($stmts as $s) db()->exec($s);
 
@@ -244,6 +251,10 @@ function db_migrate(): void
         "ALTER TABLE chat_messages ADD COLUMN att_type TEXT",
         "ALTER TABLE chat_messages ADD COLUMN att_name TEXT",
         "ALTER TABLE chat_messages ADD COLUMN reply_to INTEGER",
+        "ALTER TABLE users ADD COLUMN totp_secret TEXT",
+        "ALTER TABLE users ADD COLUMN totp_enabled INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE users ADD COLUMN totp_last INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE users ADD COLUMN totp_recovery TEXT",
     ] as $alter) {
         try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }
     }

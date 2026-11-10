@@ -1,5 +1,5 @@
 <?php
-require_super();
+$me = require_super();
 $groups = [
     'Commissions (%)' => [
         'commission_menage' => 'Ménage & Aide', 'commission_pressing' => 'Pressing & Linge',
@@ -18,6 +18,10 @@ $groups = [
 ];
 $textFields = ['support_phone', 'support_email', 'pay_wave_number', 'pay_orange_number', 'pay_mtn_number', 'pay_moov_number', 'pay_djamo_number'];
 if (is_post()) {
+    // Numéros de réception des paiements modifiés : double validation obligatoire.
+    foreach (['pay_wave_number', 'pay_orange_number', 'pay_mtn_number', 'pay_moov_number', 'pay_djamo_number'] as $pk) {
+        if (isset($_POST[$pk]) && trim((string) $_POST[$pk]) !== (string) setting($pk)) { stepup_require($me, '/admin/parametres'); break; }
+    }
     $changes = [];
     foreach ($groups as $fields) {
         foreach ($fields as $k => $label) {
@@ -40,7 +44,7 @@ $page = 'Paramètres de la plateforme';
 $nav = 'settings';
 view('admin/header', compact('page', 'nav'));
 ?>
-<form method="post"><?= csrf_field() ?>
+<form method="post" data-stepup-if="pay_wave_number,pay_orange_number,pay_mtn_number,pay_moov_number,pay_djamo_number"><?= csrf_field() ?>
   <div class="grid2e">
     <?php foreach ($groups as $title => $fields): ?>
       <div class="panel"><h2 class="h4"><?= e($title) ?></h2>

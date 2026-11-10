@@ -32,7 +32,7 @@ if (is_post()) {
             redirect($errBack);
         }
         clear_attempts($key);
-        login_user($user);
+        login_user($user); login_device_check($user);
         flash('success', 'Bienvenue sur ChapTarif !');
         redirect(login_dest($next, $user));
     }
@@ -44,7 +44,7 @@ if (is_post()) {
         $pw2 = (string) ($_POST['password2'] ?? '');
         $err = null;
         $bd = DateTime::createFromFormat('Y-m-d', $birth);
-        if (too_many_attempts('signup', 6, 30)) $err = 'Trop de tentatives. Patientez quelques minutes.';
+        if (too_many_attempts('signup:' . client_ip(), 6, 30)) $err = 'Trop de tentatives. Patientez quelques minutes.';
         elseif (mb_strlen($name) < 3 || !str_contains($name, ' ')) $err = 'Entrez votre nom et prénom.';
         elseif (!$bd || $bd->format('Y-m-d') !== $birth || $bd > new DateTime('today') || $bd < new DateTime('1900-01-01')) $err = 'Date de naissance invalide.';
         elseif ($bd->diff(new DateTime('today'))->y < 18) $err = 'Vous devez avoir au moins 18 ans pour créer un compte.';
@@ -52,7 +52,7 @@ if (is_post()) {
         elseif (strlen($pw) < 8) $err = 'Le mot de passe doit contenir au moins 8 caractères.';
         elseif ($pw !== $pw2) $err = 'Les deux mots de passe ne sont pas identiques.';
         if (!$err) {
-            record_attempt('signup');
+            record_attempt('signup:' . client_ip());
             $ex = one('SELECT * FROM users WHERE phone = ?', [$phone]);
             if ($ex && !empty($ex['password_hash'])) $err = 'Ce numéro a déjà un compte. Connectez-vous avec votre mot de passe.';
             elseif ($ex) $err = 'Ce numéro a déjà un compte sans mot de passe. Utilisez « Mot de passe oublié » pour en créer un.';
@@ -63,7 +63,7 @@ if (is_post()) {
         }
         $id = insert('users', ['role' => 'client', 'name' => $name, 'birthdate' => $birth, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
         $user = one('SELECT * FROM users WHERE id = ?', [$id]);
-        login_user($user);
+        login_user($user); login_device_check($user);
         flash('success', 'Compte créé. Bienvenue sur ChapTarif !');
         redirect(login_dest($next, $user));
     }
@@ -115,7 +115,7 @@ if (is_post()) {
         clear_attempts('otp:' . $phone);
         q('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($pw, PASSWORD_DEFAULT), $user['id']]);
         unset($_SESSION['reset_phone']);
-        login_user($user);
+        login_user($user); login_device_check($user);
         flash('success', 'Mot de passe modifié. Vous êtes connecté.');
         redirect(login_dest($next, $user));
     }

@@ -39,6 +39,8 @@ if (is_super($me)) {
     $items[] = ['codes', '/admin/codes', '', 'Codes de réduction', 0];
     $items[] = ['settings', '/admin/parametres', '', 'Paramètres', 0];
     $items[] = ['audit', '/admin/journal', '', "Journal d'audit", 0];
+    $secAlerts = 0; try { $secAlerts = (int) val("SELECT COUNT(*) FROM security_events WHERE seen = 0 AND level IN ('warn','critical')"); } catch (Throwable $e) {}
+    $items[] = ['security', '/admin/securite', '', 'Sécurité', $secAlerts];
 }
 ?><!doctype html>
 <html lang="fr" data-v="<?= e(data_version()) ?>">
@@ -51,7 +53,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=26">
+<link rel="stylesheet" href="/assets/css/admin.css?v=27">
 </head>
 <body class="adm">
 <div class="main" data-live>

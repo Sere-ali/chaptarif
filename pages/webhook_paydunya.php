@@ -13,6 +13,8 @@ if ($hash !== '' && hash_equals(hash('sha512', (string) env('PAYDUNYA_MASTER_KEY
         booking_mark_paid($b, 'PD-' . $b['ref']);
         audit('paiement.webhook', $b['ref'], 'Paiement confirmé par PayDunya');
     }
+} else {
+    security_event('webhook.signature_invalide', 'warn', 'Notification PayDunya rejetée (signature absente ou fausse)');
 }
 http_response_code(200);
 echo 'OK';

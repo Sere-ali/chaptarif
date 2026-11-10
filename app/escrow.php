@@ -31,7 +31,13 @@ function booking_create(array $quote, array $user, string $method): array
 function booking_mark_paid(array $b, string $paymentRef): array
 {
     if ($b['status'] !== 'EN_ATTENTE_PAIEMENT') return $b;
-    tx(function () use ($b, $paymentRef) {
+    $done = false;
+    tx(function () use ($b, $paymentRef, &$done) {
+        // Anti double paiement : on « réserve » d'abord la transition de statut ; si une autre requête
+        // (webhook + retour navigateur simultanés) l'a déjà faite, on s'arrête sans rien encaisser deux fois.
+        $st = q("UPDATE bookings SET status = 'BLOQUE', updated_at = ? WHERE id = ? AND status = 'EN_ATTENTE_PAIEMENT'", [now(), $b['id']]);
+        if ($st->rowCount() !== 1) return;
+        $done = true;
         $seat = null;
         if (in_array($b['universe'], ['cars', 'covoiturage'], true)) {
             $taken = (int) val("SELECT COALESCE(MAX(seat_no), 0) FROM bookings WHERE universe = ? AND item_id = ? AND service_date = ? AND status IN ('BLOQUE','VALIDE')", [$b['universe'], $b['item_id'], $b['service_date']]);
@@ -43,7 +49,7 @@ function booking_mark_paid(array $b, string $paymentRef): array
                 q('UPDATE bookings SET details = ? WHERE id = ?', [json_encode($d, JSON_UNESCAPED_UNICODE), $b['id']]);
             }
         }
-        q("UPDATE bookings SET status = 'BLOQUE', paid_at = ?, payment_ref = ?, release_code = ?, seat_no = ?, updated_at = ? WHERE id = ? AND status = 'EN_ATTENTE_PAIEMENT'",
+        q("UPDATE bookings SET paid_at = ?, payment_ref = ?, release_code = ?, seat_no = ?, updated_at = ? WHERE id = ?",
             [now(), $paymentRef, (string) random_int(1000, 9999), $seat, now(), $b['id']]);
         if (!empty($b['discount_code'])) q('UPDATE discount_codes SET uses = uses + 1 WHERE code = ?', [$b['discount_code']]);
         insert('transactions', [
@@ -53,6 +59,7 @@ function booking_mark_paid(array $b, string $paymentRef): array
         ]);
     });
     $b = one('SELECT * FROM bookings WHERE id = ?', [$b['id']]);
+    if (!$done) return $b;
     $u = one('SELECT phone FROM users WHERE id = ?', [$b['user_id']]);
     if ($u && $u['phone']) {
         sms_send($u['phone'], "ChapTarif : paiement de {$b['total']} F reçu pour {$b['ref']}. Fonds sécurisés jusqu'à la fin du service. Code de validation à remettre au prestataire : {$b['release_code']}");

@@ -920,7 +920,7 @@ function del_btn(string $type, int $id, string $what = 'cet élément'): string
 {
     if (!is_super()) return '';
     $back = $_SERVER['REQUEST_URI'] ?? '/admin';
-    return '<form method="post" action="/admin/supprimer" class="del-form" data-confirm="Supprimer définitivement ' . e($what) . ' ? Cette action est irréversible.">'
+    return '<form method="post" action="/admin/supprimer" class="del-form" data-stepup data-confirm="Supprimer définitivement ' . e($what) . ' ? Cette action est irréversible.">'
         . csrf_field() . '<input type="hidden" name="type" value="' . e($type) . '"><input type="hidden" name="id" value="' . $id . '"><input type="hidden" name="back" value="' . e($back) . '">'
         . '<button class="btn btn-danger btn-xs del-btn" title="Supprimer (Super Admin)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg> Supprimer</button></form>';
 }

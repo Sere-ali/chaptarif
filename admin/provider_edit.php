@@ -1,15 +1,17 @@
 <?php
-require_admin();
+$me = require_admin();
 $id = (int) ($_GET['id'] ?? 0);
 $p = $id ? one('SELECT * FROM providers WHERE id = ?', [$id]) : null;
 if ($id && !$p) not_found();
 
 if (is_post()) {
     if (($_POST['action'] ?? '') === 'delete' && $p && is_super()) {
+        stepup_require($me, '/admin/prestataire?id=' . $p['id']);
         if ((int) val('SELECT COUNT(*) FROM bookings WHERE provider_id = ?', [$p['id']])) {
             flash('error', 'Ce prestataire a des réservations : suspendez-le plutôt que de le supprimer.');
             redirect('/admin/prestataire?id=' . $p['id']);
         }
+        provider_docs_destroy($p);
         q('DELETE FROM providers WHERE id = ?', [$p['id']]);
         audit('prestataire.suppression', $p['name']);
         flash('success', 'Prestataire supprimé.');
@@ -48,6 +50,11 @@ if (is_post()) {
         'kyc_status' => in_array($_POST['kyc_status'] ?? '', ['pending', 'verified', 'rejected'], true) ? $_POST['kyc_status'] : 'pending',
         'active' => isset($_POST['active']) ? 1 : 0,
     ];
+    // Coordonnées de versement modifiées : double validation obligatoire.
+    if ($p && (($p['payout_method'] ?? '') !== $data['payout_method'] || (string) ($p['payout_number'] ?? '') !== (string) $data['payout_number'])) {
+        stepup_require($me, '/admin/prestataire?id=' . $p['id']);
+        audit('prestataire.coordonnees_paiement', $p['name'] . ' #' . $p['id'], ['avant' => ($p['payout_method'] ?? '') . ' ' . ($p['payout_number'] ?? ''), 'apres' => $data['payout_method'] . ' ' . $data['payout_number']]);
+    }
     if (mb_strlen($data['name']) < 2) {
         flash('error', 'Le nom est obligatoire.');
         redirect('/admin/prestataire' . ($p ? '?id=' . $p['id'] : ''));
@@ -91,7 +98,7 @@ view('admin/header', compact('page', 'nav'));
 ?>
 <p><a href="/admin/prestataires">← Tous les prestataires</a></p>
 <div class="grid2">
-  <form class="panel" method="post" enctype="multipart/form-data"><?= csrf_field() ?>
+  <form class="panel" method="post" enctype="multipart/form-data" data-stepup-if="payout_method,payout_number"><?= csrf_field() ?>
     <div class="row2">
       <label class="fld"><span>Univers</span><select name="universe"><?php foreach (universes() as $k => $x): ?><option value="<?= $k ?>" <?= $p['universe'] === $k ? 'selected' : '' ?>><?= e($x['name']) ?></option><?php endforeach; ?></select></label>
       <label class="fld"><span>Nom / Entreprise</span><input name="name" value="<?= e($p['name']) ?>" required></label>

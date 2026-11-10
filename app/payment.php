@@ -15,7 +15,10 @@
 
 function payment_mode(): string
 {
-    return env('PAYMENT_MODE', 'simulation');
+    $m = (string) env('PAYMENT_MODE', 'simulation');
+    // Exigence absolue : en production, jamais de paiement « simulé » validé par le navigateur.
+    if ($m === 'simulation' && env('APP_ENV') === 'production') return 'manuel';
+    return $m;
 }
 
 function payment_methods(): array
@@ -142,7 +145,12 @@ function payment_verify(array $b): bool
         $tok = (string) ($b['payment_ref'] ?? '');
         if ($tok === '' || $tok === 'EN_ATTENTE_VALIDATION') return false;
         $res = paydunya_call('checkout-invoice/confirm/' . rawurlencode($tok));
-        return ($res['status'] ?? '') === 'completed' && (int) ($res['invoice']['total_amount'] ?? 0) >= (int) $b['total'];
+        $paid = ($res['status'] ?? '') === 'completed';
+        if ($paid && (int) ($res['invoice']['total_amount'] ?? 0) < (int) $b['total']) {
+            security_event('paiement.montant_incoherent', 'critical', $b['ref'] . ' : payé ' . (int) ($res['invoice']['total_amount'] ?? 0) . ' F au lieu de ' . (int) $b['total'] . ' F');
+            return false;
+        }
+        return $paid;
     }
     if (payment_mode() !== 'cinetpay') return false;
     $res = http_json('https://api-checkout.cinetpay.com/v2/payment/check', [

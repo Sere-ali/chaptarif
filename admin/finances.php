@@ -1,6 +1,7 @@
 <?php
 $me = require_admin();
 if (is_post()) {
+    stepup_require($me, '/admin/finances');
     $t = one('SELECT * FROM transactions WHERE id = ?', [(int) ($_POST['id'] ?? 0)]);
     if ($t && in_array($t['status'], ['A_VIRER', 'A_REMBOURSER'], true)) {
         $ref = mb_substr(trim((string) ($_POST['reference'] ?? '')), 0, 80);
@@ -68,7 +69,7 @@ view('admin/header', compact('page', 'nav'));
       <td><?= e($t['status']) ?></td>
       <td class="num"><b><?= fcfa($t['amount']) ?></b></td>
       <td><?php if (in_array($t['status'], ['A_VIRER', 'A_REMBOURSER'], true)): ?>
-        <form method="post" class="acts" data-confirm="Confirmer que le virement a bien été effectué ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $t['id'] ?>"><input name="reference" placeholder="Réf. transfert" style="width:130px"><button class="btn btn-primary btn-xs">Marquer payé</button></form>
+        <form method="post" class="acts" data-stepup data-confirm="Confirmer que le virement a bien été effectué ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $t['id'] ?>"><input name="reference" placeholder="Réf. transfert" style="width:130px"><button class="btn btn-primary btn-xs">Marquer payé</button></form>
       <?php endif; ?></td></tr>
     <?php endforeach; if (!$rows): ?><tr><td colspan="8" class="muted">Aucun mouvement sur la période.</td></tr><?php endif; ?>
     </tbody>

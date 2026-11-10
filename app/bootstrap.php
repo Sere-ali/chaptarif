@@ -55,11 +55,25 @@ if (PHP_SAPI !== 'cli') {
     ]);
     session_start();
 
+    // HTTPS obligatoire en production (redirection permanente).
+    if (!$https && env('APP_ENV') === 'production' && ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'http') {
+        header('Location: https://' . ($_SERVER['HTTP_HOST'] ?? 'chaptarif.com') . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
+        exit;
+    }
+    // Politique de sécurité du contenu : ressources limitées au site et aux fournisseurs utilisés.
+    header("Content-Security-Policy: default-src 'self'; "
+        . "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
+        . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
+        . "font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; "
+        . "connect-src 'self' https://nominatim.openstreetmap.org; frame-src 'self' blob:; worker-src 'self' blob:; "
+        . "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https:"
+        . ($https ? '; upgrade-insecure-requests' : ''));
+    header('Cross-Origin-Opener-Policy: same-origin');
     header('X-Frame-Options: SAMEORIGIN');
     header('X-Content-Type-Options: nosniff');
     header('Referrer-Policy: strict-origin-when-cross-origin');
-    header('Permissions-Policy: geolocation=(self), camera=(self)');
-    if ($https) header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    header('Permissions-Policy: geolocation=(self), camera=(self), microphone=(self), payment=(), usb=()');
+    if ($https) header('Strict-Transport-Security: max-age=63072000; includeSubDomains');
     // Pages toujours revérifiées : chaque mise à jour du site s'affiche immédiatement.
     if (!headers_sent()) header('Cache-Control: no-cache, must-revalidate');
 }
@@ -72,5 +86,7 @@ require APP . '/pricing.php';
 require APP . '/escrow.php';
 require APP . '/payment.php';
 require APP . '/sms.php';
+require APP . '/security.php';
 
 db_migrate();
+if (PHP_SAPI !== 'cli') maintenance_maybe();

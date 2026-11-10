@@ -66,6 +66,11 @@ function require_admin(): array
         redirect('/admin/login');
     }
     $_SESSION['admin_seen'] = time();
+    // Double authentification obligatoire pour tout administrateur.
+    $uri = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+    if (empty($u['totp_enabled']) && !in_array($uri, ['/admin/2fa/activer', '/admin/logout'], true)) {
+        redirect('/admin/2fa/activer');
+    }
     if ((int) $u['must_change_password'] === 1 && ($_SERVER['REQUEST_URI'] ?? '') !== '/admin/mot-de-passe') {
         flash('warn', 'Pour sécuriser votre compte, choisissez un nouveau mot de passe.');
         redirect('/admin/mot-de-passe');

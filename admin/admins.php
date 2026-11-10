@@ -20,6 +20,7 @@ if ($editId && !$edit) not_found();
 
 if (is_post()) {
     $act = $_POST['action'] ?? '';
+    stepup_require($me, '/admin/administrateurs');
     $supers = (int) val("SELECT COUNT(*) FROM users WHERE role = 'super_admin' AND active = 1");
 
     // ---- Création ----
@@ -82,6 +83,13 @@ if (is_post()) {
     }
 
     // ---- Activer / désactiver ----
+    if ($act === 'reset2fa' && !$self) {
+        q('UPDATE users SET totp_enabled = 0, totp_secret = NULL, totp_recovery = NULL, totp_last = 0 WHERE id = ?', [$u['id']]);
+        audit('admin.2fa_reinitialisee', $u['email']);
+        security_event('2fa.reinitialisee', 'warn', $u['email'] . ' — par ' . ($me['email'] ?? ''), (int) $u['id']);
+        flash('success', 'Double authentification réinitialisée : ' . $u['email'] . ' devra la réactiver à sa prochaine connexion.');
+        redirect('/admin/administrateurs');
+    }
     if ($act === 'toggle') {
         if ($self) flash('error', 'Vous ne pouvez pas désactiver votre propre compte.');
         elseif ($u['role'] === 'super_admin' && (int) $u['active'] && $supers <= 1) flash('error', 'Il doit rester au moins un Super Admin actif.');
@@ -131,7 +139,7 @@ $roleCards = function (string $cur, bool $disabled = false) {
 
 <?php if ($edit): $self = (int) $edit['id'] === (int) $me['id']; ?>
   <p><a href="/admin/administrateurs">← Retour à la liste des administrateurs</a></p>
-  <form class="ad-card" method="post" autocomplete="off"><?= csrf_field() ?>
+  <form class="ad-card" method="post" autocomplete="off" data-stepup><?= csrf_field() ?>
     <input type="hidden" name="action" value="update"><input type="hidden" name="id" value="<?= (int) $edit['id'] ?>">
     <div class="ad-band"><span class="ad-av" data-av><?= e(initials($edit['name'] ?: $edit['email'])) ?></span><div><h2>Modifier le compte</h2><p>Dernière connexion : <?= fmt_date($edit['last_login_at'], true) ?> · créé le <?= fmt_date($edit['created_at']) ?></p></div></div>
     <div class="ad-body">
@@ -161,11 +169,12 @@ $roleCards = function (string $cur, bool $disabled = false) {
         <tr><td><b><?= e($u['name']) ?></b><?= $self ? ' <span class="badge badge-blue">Vous</span>' : '' ?><small><?= e($u['email']) ?></small></td>
         <td><?= $u['role'] === 'super_admin' ? '<span class="badge badge-gold"> Super Admin</span>' : '<span class="badge badge-blue">Admin</span>' ?></td>
         <td><?= fmt_date($u['last_login_at'], true) ?></td>
-        <td><?= (int) $u['active'] ? '<span class="badge badge-green">Actif</span>' : '<span class="badge badge-gray">Désactivé</span>' ?></td>
+        <td><?= (int) $u['active'] ? '<span class="badge badge-green">Actif</span>' : '<span class="badge badge-gray">Désactivé</span>' ?> <?= !empty($u['totp_enabled']) ? '<span class="badge badge-green">2FA ✓</span>' : '<span class="badge badge-amber">2FA à activer</span>' ?></td>
         <td><div class="acts">
           <a class="btn btn-primary btn-xs" href="/admin/administrateurs?id=<?= (int) $u['id'] ?>"> Modifier</a>
           <?php if (!$self): ?>
-          <form method="post" data-confirm="<?= (int) $u['active'] ? 'Désactiver' : 'Réactiver' ?> le compte de <?= e($u['email']) ?> ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $u['id'] ?>"><button class="btn btn-ghost btn-xs" name="action" value="toggle"><?= (int) $u['active'] ? 'Désactiver' : 'Réactiver' ?></button></form>
+          <form method="post" data-stepup data-confirm="<?= (int) $u['active'] ? 'Désactiver' : 'Réactiver' ?> le compte de <?= e($u['email']) ?> ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $u['id'] ?>"><button class="btn btn-ghost btn-xs" name="action" value="toggle"><?= (int) $u['active'] ? 'Désactiver' : 'Réactiver' ?></button></form>
+          <?php if (!empty($u['totp_enabled'])): ?><form method="post" data-stepup data-confirm="Réinitialiser la double authentification de <?= e($u['email']) ?> (téléphone perdu) ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $u['id'] ?>"><button class="btn btn-ghost btn-xs" name="action" value="reset2fa">Réinit. 2FA</button></form><?php endif; ?>
           <?php endif; ?>
         </div></td></tr>
       <?php endforeach; ?>
@@ -173,7 +182,7 @@ $roleCards = function (string $cur, bool $disabled = false) {
     </table></div>
   </div>
   <div class="grid2e">
-  <form class="ad-card" method="post" autocomplete="off" id="ad-new"><?= csrf_field() ?><input type="hidden" name="action" value="create">
+  <form class="ad-card" method="post" autocomplete="off" id="ad-new" data-stepup><?= csrf_field() ?><input type="hidden" name="action" value="create">
     <div class="ad-band"><span class="ad-av" data-av>+</span><div><h2>Ajouter un administrateur</h2><p>Créez un accès au back-office pour un membre de votre équipe.</p></div></div>
     <div class="ad-body">
       <div class="ad-sec"><b>1</b>Identité</div>

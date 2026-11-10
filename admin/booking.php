@@ -8,6 +8,7 @@ if (is_post()) {
     $note = mb_substr(trim((string) ($_POST['note'] ?? '')), 0, 500);
     $who = ($me['name'] ?: $me['email']);
     $ok = false;
+    if (in_array($act, ['release', 'refund', 'mark_paid'], true)) stepup_require($me, '/admin/reservation?id=' . (int) $b['id']);
     switch ($act) {
         case 'release':
             $ok = booking_release($b, 'admin ' . $who, 'Déblocage admin' . ($note ? " : $note" : ''));
@@ -104,12 +105,12 @@ view('admin/header', compact('page', 'nav'));
         <label class="fld"><span>Note / motif (journalisé)</span><textarea name="note" rows="2" maxlength="500"></textarea></label>
         <div class="bk-actions">
           <?php if (in_array($b['status'], ['BLOQUE', 'EN_LITIGE'], true)): ?>
-            <button class="btn btn-primary btn-sm" name="action" value="release" onclick="return confirm('Débloquer les fonds et payer le prestataire ?')">✓ Débloquer & payer le prestataire</button>
-            <button class="btn btn-danger btn-sm" name="action" value="refund" onclick="return confirm('Rembourser intégralement le client ?')"> Rembourser le client</button>
+            <button class="btn btn-primary btn-sm" name="action" value="release" data-stepup onclick="return confirm('Débloquer les fonds et payer le prestataire ?')">✓ Débloquer & payer le prestataire</button>
+            <button class="btn btn-danger btn-sm" name="action" value="refund" data-stepup onclick="return confirm('Rembourser intégralement le client ?')"> Rembourser le client</button>
           <?php endif; ?>
           <?php if ($b['status'] === 'EN_ATTENTE_PAIEMENT'): ?>
             <?php if ($b['payment_ref'] === 'EN_ATTENTE_VALIDATION'): ?><div class="alert alert-warn small" style="margin:0 0 8px"> Le client indique avoir envoyé le paiement. Vérifiez la réception sur votre compte <?= e(payment_methods()[$b['payment_method']][0] ?? 'Mobile Money') ?> avant de valider.</div><?php endif; ?>
-            <?php if (payment_mode() === 'simulation' || is_super($me)): ?><button class="btn btn-soft btn-sm" name="action" value="mark_paid" onclick="return confirm('Confirmer que le paiement de ' + <?= json_encode(fcfa($b['total'])) ?> + ' a bien été reçu sur votre compte Mobile Money ?')">✓ Confirmer la réception du paiement</button><?php endif; ?>
+            <?php if (payment_mode() === 'simulation' || is_super($me)): ?><button class="btn btn-soft btn-sm" name="action" value="mark_paid" data-stepup onclick="return confirm('Confirmer que le paiement de ' + <?= json_encode(fcfa($b['total'])) ?> + ' a bien été reçu sur votre compte Mobile Money ?')">✓ Confirmer la réception du paiement</button><?php endif; ?>
             <button class="btn btn-ghost btn-sm" name="action" value="cancel">Annuler</button>
           <?php endif; ?>
           <button class="btn btn-ghost btn-sm" name="action" value="note">Ajouter la note</button>
