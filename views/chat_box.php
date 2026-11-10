@@ -9,6 +9,7 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <div class="wa-who"><b><?= e($name) ?></b><small><?= e($sub) ?></small></div>
   </header>
   <div class="wa-log" data-chat-log>
+    <?php if (!empty($notice)): ?><div class="chat-pour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7.5v.5"/></svg><span><?= $notice ?></span></div><?php endif; ?>
     <?php if (!$msgs): ?><p class="wa-empty" data-chat-empty>👋 Bonjour ! Comment pouvons-nous vous aider ?</p><?php endif; ?>
     <?php foreach ($msgs as $m) echo chat_msg_html($m); ?>
   </div>

@@ -62,7 +62,7 @@ view('layout/header', compact('title', 'active'));
               <a class="btn btn-primary" href="/billet?ref=<?= urlencode($b['ref']) ?>"> Afficher mon E-billet</a>
             <?php else: ?>
               <div class="code-box"><span> Votre code de validation à 4 chiffres<br>À remettre au prestataire <em>uniquement une fois le service terminé</em> pour qu'il reçoive son paiement</span><b class="mono"><?= e($b['release_code']) ?></b></div>
-              <?php if (!empty($b['provider_name'])): ?><p class="muted small">Prestataire : <b><?= e($b['provider_name']) ?></b></p><?php endif; ?>
+              <?php if (!empty($b['provider_name'])): ?><p class="muted small">Prestataire : <b><?= e($b['provider_name']) ?></b> · <a href="/chat?pour=<?= (int) $b['id'] ?>">Écrire au prestataire</a></p><?php endif; ?>
               <?php if (!empty($d['garantie_dommage'])): ?><p class="muted small"> <b>Garantie Dommage active</b> sur cette commande : en cas de problème, indemnisation ou nouvelle prestation possible.</p><?php endif; ?>
               <div class="bk-actions">
                 <form method="post" data-confirm="Confirmez-vous que le service a bien été réalisé ? Le prestataire sera payé immédiatement."><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $b['id'] ?>"><button name="action" value="confirm" class="btn btn-primary">✓ Confirmer la fin du travail</button></form>

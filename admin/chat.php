@@ -38,6 +38,19 @@ if ($uid):
     $last = $msgs ? (int) end($msgs)['id'] : 0;
     $prov = $u ? one('SELECT name, universe FROM providers WHERE phone = ? LIMIT 1', [$u['phone'] ?? '']) : null;
 ?>
+<?php if (!$isPro && $u):
+    $rel = all('SELECT DISTINCT p.id, p.name, p.phone FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE b.user_id = ? ORDER BY p.name LIMIT 10', [$uid]);
+    foreach (all("SELECT body FROM chat_messages WHERE user_id = ? AND sender = 'user' AND body LIKE ? ORDER BY id DESC LIMIT 20", [$uid, '%Pour le prestataire %']) as $mm) {
+        if (preg_match('/Pour le prestataire (.+?)(?: \(réservation [^)]*\))? : /u', (string) $mm['body'], $mt)) {
+            $px = one('SELECT id, name, phone FROM providers WHERE name = ? LIMIT 1', [$mt[1]]);
+            if ($px && !in_array((int) $px['id'], array_map('intval', array_column($rel, 'id')), true)) $rel[] = $px;
+        }
+    }
+    $rel = array_values(array_filter(array_map(function ($r) { $r['uid'] = (int) val('SELECT id FROM users WHERE phone = ?', [$r['phone']]); return $r; }, $rel), fn ($r) => $r['uid'] > 0));
+    if ($rel): ?>
+  <div class="chat-relay"><b>Faire la demande au prestataire :</b>
+    <?php foreach ($rel as $r): ?><a class="btn btn-soft btn-sm" href="/admin/chat?u=<?= $r['uid'] ?>">✉️ <?= e($r['name']) ?></a><?php endforeach; ?></div>
+<?php endif; endif; ?>
 <div class="wa-admin">
 <?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => $u['name'] ?: 'Sans nom', 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => $isPro ? '/admin/chat?type=pro' : '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
 </div>
