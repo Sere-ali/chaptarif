@@ -104,7 +104,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         $nRej = count(array_filter($svcs, fn($s) => $s['status'] === 'rejected'));
         $isTransport = in_array($p['universe'], domaine('transport')['keys'], true);
         $edit = $editId ? one('SELECT * FROM provider_services WHERE id = ? AND provider_id = ?', [$editId, $p['id']]) : null;
-        $recent = all('SELECT ref, title, status, created_at FROM bookings WHERE provider_id = ? ORDER BY id DESC LIMIT 5', [$p['id']]);
+        $recent = all('SELECT id, ref, title, status, created_at FROM bookings WHERE provider_id = ? ORDER BY id DESC LIMIT 5', [$p['id']]);
         $pub = '/' . str_replace('_', '-', $p['universe']);
     ?>
     <div class="card mt" id="p<?= (int) $p['id'] ?>">
@@ -184,7 +184,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
 
       <?php if ($recent): ?>
         <h3 class="h4 mt"> Mes dernières réservations</h3>
-        <?php foreach ($recent as $b): ?><div class="prov-mini"><div><b><?= e($b['title']) ?></b><small><?= e($b['ref']) ?> · <?= fmt_date($b['created_at']) ?></small></div><?= status_badge($b['status']) ?></div><?php endforeach; ?>
+        <?php foreach ($recent as $b): ?><div class="prov-mini"><div><b><?= e($b['title']) ?></b><small><?= e($b['ref']) ?> · <?= fmt_date($b['created_at']) ?></small></div><div class="prov-mini-r"><?= status_badge($b['status']) ?><?php if ($b['status'] !== 'EN_ATTENTE_PAIEMENT'): ?><a class="btn btn-soft btn-xs" href="/chat?pro=1&amp;client=<?= (int) $b['id'] ?>">✉️ Écrire au client</a><?php endif; ?></div></div><?php endforeach; ?>
       <?php endif; ?>
 
       <?php endif; ?>

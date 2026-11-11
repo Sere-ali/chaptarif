@@ -40,8 +40,8 @@ if ($uid):
 ?>
 <?php if (!$isPro && $u):
     $rel = all('SELECT DISTINCT p.id, p.name, p.phone FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE b.user_id = ? ORDER BY p.name LIMIT 10', [$uid]);
-    foreach (all("SELECT body FROM chat_messages WHERE user_id = ? AND sender = 'user' AND body LIKE ? ORDER BY id DESC LIMIT 20", [$uid, '%Pour le prestataire %']) as $mm) {
-        if (preg_match('/Pour le prestataire (.+?)(?: \(réservation [^)]*\))? : /u', (string) $mm['body'], $mt)) {
+    foreach (all("SELECT DISTINCT about FROM chat_messages WHERE user_id = ? AND sender = 'user' AND about LIKE 'Pour le prestataire %' ORDER BY about LIMIT 20", [$uid]) as $mm) {
+        if (preg_match('/^Pour le prestataire (.+?)(?: \(réservation [^)]*\))?$/u', (string) $mm['about'], $mt)) {
             $px = one('SELECT id, name, phone FROM providers WHERE name = ? LIMIT 1', [$mt[1]]);
             if ($px && !in_array((int) $px['id'], array_map('intval', array_column($rel, 'id')), true)) $rel[] = $px;
         }
@@ -50,6 +50,15 @@ if ($uid):
     if ($rel): ?>
   <div class="chat-relay"><b>Faire la demande au prestataire :</b>
     <?php foreach ($rel as $r): ?><a class="btn btn-soft btn-sm" href="/admin/chat?u=<?= $r['uid'] ?>">✉️ <?= e($r['name']) ?></a><?php endforeach; ?></div>
+<?php endif; endif; ?>
+<?php if ($isPro && $u):
+    $cl = [];
+    foreach (all("SELECT DISTINCT about FROM chat_messages WHERE user_id = ? AND sender = 'user' AND about LIKE 'Pour le client %' LIMIT 20", [$uid]) as $mm) {
+        if (preg_match('/\(réservation ([^)]+)\)$/u', (string) $mm['about'], $mt) && ($cx = one('SELECT u.id, u.name, u.phone FROM bookings b JOIN users u ON u.id = b.user_id WHERE b.ref = ?', [$mt[1]]))) $cl[(int) $cx['id']] = $cx;
+    }
+    if ($cl): ?>
+  <div class="chat-relay"><b>Transmettre au client :</b>
+    <?php foreach ($cl as $c): ?><a class="btn btn-soft btn-sm" href="/admin/chat?u=<?= (int) $c['id'] ?>">✉️ <?= e($c['name'] ?: fmt_phone($c['phone'])) ?></a><?php endforeach; ?></div>
 <?php endif; endif; ?>
 <div class="wa-admin">
 <?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => $u['name'] ?: 'Sans nom', 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => $isPro ? '/admin/chat?type=pro' : '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
@@ -60,7 +69,8 @@ if ($uid):
         (SELECT pp.name FROM providers pp WHERE pp.phone = u.phone ORDER BY pp.id LIMIT 1) AS pname, (SELECT pp.universe FROM providers pp WHERE pp.phone = u.phone ORDER BY pp.id LIMIT 1) AS puni
         FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE " . ($isPro ? $provCond : "NOT $provCond") . " GROUP BY u.id, u.name, u.phone ORDER BY unread DESC, last_id DESC LIMIT 150");
     $withChat = array_map('intval', array_column($threads, 'id'));
-    $others = $isPro ? all("SELECT u.id, u.name, u.phone, p.name AS pname, p.universe AS puni, p.kyc_status FROM providers p JOIN users u ON u.phone = p.phone ORDER BY CASE p.kyc_status WHEN 'verified' THEN 0 ELSE 1 END, p.name LIMIT 400") : [];
+    $others = $isPro ? all("SELECT u.id, u.name, u.phone, p.name AS pname, p.universe AS puni, p.kyc_status FROM providers p JOIN users u ON u.phone = p.phone ORDER BY CASE p.kyc_status WHEN 'verified' THEN 0 ELSE 1 END, p.name LIMIT 400")
+        : all("SELECT u.id, u.name, u.phone, NULL AS pname, NULL AS puni, NULL AS kyc_status FROM users u WHERE u.role = 'client' AND u.active = 1 AND NOT EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone) ORDER BY u.id DESC LIMIT 400");
     $others = array_values(array_filter($others, fn ($o) => !in_array((int) $o['id'], $withChat, true)));
 ?>
 <nav class="cd-tabs" style="margin:6px 0 12px">
@@ -81,9 +91,9 @@ if ($uid):
   <?php endforeach; ?>
   <?php if ($others): ?>
     <h3 class="h4" style="padding:14px 16px 4px;margin:0">Démarrer une conversation</h3>
-    <?php foreach ($others as $o): $ox = universe($o['puni']); ?>
-      <a class="chat-thread" href="/admin/chat?u=<?= (int) $o['id'] ?>" data-cd="<?= e(mb_strtolower($o['pname'] . ' ' . $o['name'] . ' ' . $o['phone'])) ?>">
-        <b><?= e($o['pname']) ?></b> <small class="muted"><?= e(fmt_phone($o['phone'])) ?> · <?= e($ox['name']) ?></small> <?= kyc_badge($o['kyc_status']) ?>
+    <?php foreach ($others as $o): $ox = $o['puni'] ? universe($o['puni']) : null; ?>
+      <a class="chat-thread" href="/admin/chat?u=<?= (int) $o['id'] ?>" data-cd="<?= e(mb_strtolower(($o['pname'] ?? '') . ' ' . $o['name'] . ' ' . $o['phone'])) ?>">
+        <b><?= e($o['pname'] ?: ($o['name'] ?: 'Client')) ?></b> <small class="muted"><?= e(fmt_phone($o['phone'])) ?><?= $ox ? ' · ' . e($ox['name']) : '' ?></small> <?= $o['kyc_status'] ? kyc_badge($o['kyc_status']) : '' ?>
         <p class="muted small">Aucun message · cliquer pour écrire</p>
       </a>
     <?php endforeach; ?>

@@ -530,6 +530,7 @@ function chat_decorate(array $rows, bool $admin, string $otherName): array
     }
     foreach ($rows as &$r) {
         $r['mine'] = $r['sender'] === $mineSender;
+        $r['about_admin'] = $admin ? ($r['about'] ?? null) : null; // mention réservée à l'équipe
         $r['read'] = $r['mine'] && (int) ($admin ? $r['read_by_user'] : $r['read_by_admin']) === 1;
         $r['quote'] = null;
         if (!empty($r['reply_to']) && isset($quoted[(int) $r['reply_to']])) {
@@ -545,6 +546,7 @@ function chat_decorate(array $rows, bool $admin, string $otherName): array
 function chat_msg_html(array $m): string
 {
     $h = '<div class="wa-msg ' . ($m['mine'] ? 'me' : 'them') . '" data-id="' . (int) $m['id'] . '">';
+    if (!empty($m['about_admin'])) $h .= '<div class="wa-about">✉️ ' . e($m['about_admin']) . '</div>';
     if (!empty($m['quote'])) $h .= '<div class="wa-quote"><b>' . e($m['quote']['who']) . '</b><span>' . e($m['quote']['text']) . '</span></div>';
     if (!empty($m['att_url'])) {
         $u = e($m['att_url']);
@@ -561,7 +563,7 @@ function chat_msg_html(array $m): string
 
 function chat_json(array $r): array
 {
-    return ['id' => (int) $r['id'], 'me' => $r['mine'], 'read' => $r['read'], 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5), 'quote' => $r['quote'],
+    return ['id' => (int) $r['id'], 'me' => $r['mine'], 'read' => $r['read'], 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5), 'quote' => $r['quote'], 'about' => $r['about_admin'] ?? null,
         'att' => empty($r['att_url']) ? null : ['type' => $r['att_type'], 'url' => $r['att_url'], 'name' => $r['att_name'], 'img' => $r['att_type'] === 'image' ? cld($r['att_url'], 'w_480,q_auto,f_auto') : null]];
 }
 
