@@ -1,6 +1,6 @@
 <?php
 $next = (string) ($_POST['next'] ?? $_GET['next'] ?? '/compte');
-if (!str_starts_with($next, '/') || str_starts_with($next, '//')) $next = '/compte';
+$next = safe_path($next, '/compte');
 
 // Un prestataire qui se connecte sans destination précise arrive dans son espace, pas sur le site public.
 function login_dest(string $next, array $user): string
@@ -61,10 +61,36 @@ if (is_post()) {
             flash('error', $err);
             redirect($qs('signup'));
         }
+        // Vérification du numéro par code SMS/WhatsApp dès qu'une passerelle d'envoi est active :
+        // personne ne peut créer un compte avec le numéro de quelqu'un d'autre.
+        if (infobip_configured() || whatsapp_configured()) {
+            $r = otp_send($phone);
+            if (!$r['ok'] || empty($r['sent'])) { flash('error', $r['error'] ?? "L'envoi du code n'est pas disponible pour le moment. Réessayez plus tard."); redirect($qs('signup')); }
+            $_SESSION['signup_pending'] = ['name' => $name, 'birth' => $birth, 'phone' => $phone, 'hash' => password_hash($pw, PASSWORD_DEFAULT), 't' => time()];
+            flash('info', 'Un code à 6 chiffres vient d\'être envoyé au ' . fmt_phone($phone) . '.');
+            redirect('/connexion?mode=signup&step=code&next=' . urlencode($next));
+        }
         $id = insert('users', ['role' => 'client', 'name' => $name, 'birthdate' => $birth, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
         $user = one('SELECT * FROM users WHERE id = ?', [$id]);
         login_user($user); login_device_check($user);
         flash('success', 'Compte créé. Bienvenue sur ChapTarif !');
+        redirect(login_dest($next, $user));
+    }
+    if ($action === 'signup_verify') {
+        $sp = $_SESSION['signup_pending'] ?? null;
+        if (!$sp || time() - (int) $sp['t'] > 900) { unset($_SESSION['signup_pending']); flash('error', 'Inscription expirée, recommencez.'); redirect($qs('signup')); }
+        $code = preg_replace('/\D/', '', (string) ($_POST['code'] ?? ''));
+        if (too_many_attempts('otp:' . $sp['phone'], 8, 15, false) || !otp_verify($sp['phone'], $code)) {
+            record_attempt('otp:' . $sp['phone']);
+            flash('error', 'Code incorrect ou expiré.');
+            redirect('/connexion?mode=signup&step=code&next=' . urlencode($next));
+        }
+        if (one('SELECT id FROM users WHERE phone = ?', [$sp['phone']])) { unset($_SESSION['signup_pending']); flash('error', 'Ce numéro a déjà un compte. Connectez-vous.'); redirect($qs()); }
+        $id = insert('users', ['role' => 'client', 'name' => $sp['name'], 'birthdate' => $sp['birth'], 'phone' => $sp['phone'], 'password_hash' => $sp['hash'], 'active' => 1, 'created_at' => now()]);
+        unset($_SESSION['signup_pending']);
+        $user = one('SELECT * FROM users WHERE id = ?', [$id]);
+        login_user($user); login_device_check($user);
+        flash('success', 'Numéro vérifié, compte créé. Bienvenue sur ChapTarif !');
         redirect(login_dest($next, $user));
     }
     if ($action === 'reset_send') {
@@ -145,6 +171,16 @@ view('layout/header', compact('title'));
         <button class="btn btn-primary btn-block btn-lg">Se connecter</button>
       </form>
       <p class="center mt"><a href="<?= e($qs('reset')) ?>">Mot de passe oublié ?</a></p>
+
+    <?php elseif ($mode === 'signup' && ($_GET['step'] ?? '') === 'code' && !empty($_SESSION['signup_pending'])): ?>
+      <h1 class="h2">Vérifiez votre numéro</h1>
+      <p class="muted">Code envoyé au <b><?= e(fmt_phone($_SESSION['signup_pending']['phone'])) ?></b>. <a href="<?= e($qs('signup')) ?>">Modifier</a></p>
+      <form method="post" action="/connexion">
+        <?= csrf_field() ?>
+        <input type="hidden" name="step" value="signup_verify"><input type="hidden" name="next" value="<?= e($next) ?>">
+        <input class="otp-input" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="\d{6}" placeholder="••••••" required autofocus>
+        <button class="btn btn-primary btn-block btn-lg">Valider et créer mon compte</button>
+      </form>
 
     <?php elseif ($mode === 'signup'): ?>
       <h1 class="h2">Créer mon compte</h1>

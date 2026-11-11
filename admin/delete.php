@@ -5,7 +5,8 @@ if (!is_post()) redirect('/admin');
 $type = (string) ($_POST['type'] ?? '');
 $id = (int) ($_POST['id'] ?? 0);
 $back = (string) ($_POST['back'] ?? '/admin');
-if (!str_starts_with($back, '/admin') || str_starts_with($back, '//')) $back = '/admin';
+$back = safe_path($back, '/admin');
+if (!str_starts_with($back, '/admin')) $back = '/admin';
 // Seul l'argent réellement bloqué (payé, en séquestre ou en litige) empêche la suppression.
 $live = "status IN ('BLOQUE','EN_LITIGE')";
 // Réservations jamais payées : annulées automatiquement avant suppression.

@@ -13,6 +13,7 @@ if (($_POST['action'] ?? '') === 'remove') {
     redirect('/reserver#pay');
 }
 $code = (string) ($_POST['code'] ?? '');
+if (too_many_attempts('promo:' . client_ip(), 10, 15, false)) { flash('error', 'Trop d\'essais de codes. Réessayez dans 15 minutes.'); redirect('/reserver#pay'); }
 $r = build_quote($co['quote']['universe'], $_SESSION['checkout']['input']);
 if (!$r['ok']) redirect('/reserver');
 $d = discount_apply($r['quote'], $code);
@@ -21,5 +22,6 @@ if ($d['ok']) {
     flash('success', 'Code appliqué : vous économisez ' . fcfa($d['quote']['discount']) . '.');
     redirect('/reserver#pay');
 }
+record_attempt('promo:' . client_ip());
 flash('error', $d['error']);
 redirect('/reserver#pay');

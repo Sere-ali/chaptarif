@@ -1,5 +1,7 @@
 <?php
 /** Le prestataire saisit la référence + le code remis par le client pour débloquer son paiement. */
+$me = current_user();
+if (!$me) { flash('info', 'Connectez-vous à votre espace prestataire pour valider une mission.'); redirect('/devenir-prestataire#connexion'); }
 if (is_post()) {
     $ref = strtoupper(trim((string) ($_POST['ref'] ?? '')));
     $code = preg_replace('/\D/', '', (string) ($_POST['code'] ?? ''));
@@ -7,9 +9,16 @@ if (is_post()) {
         flash('error', 'Trop de tentatives sur cette réservation. Réessayez dans 30 minutes.');
         redirect('/prestataire/valider');
     }
-    $b = one('SELECT * FROM bookings WHERE ref = ?', [$ref]);
+    // Seul le prestataire affecté à la réservation peut la valider (connecté avec son numéro).
+    $b = one('SELECT b.* FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE b.ref = ? AND p.phone = ?', [$ref, $me['phone']]);
+    if ($b && too_many_attempts('release-total:' . $ref, 10, 24 * 60, false)) {
+        security_event('mission.code_force', 'critical', 'Trop de codes erronés pour ' . $ref . ' — validation bloquée 24 h', (int) $me['id']);
+        flash('error', 'Validation bloquée pour cette réservation. Contactez le support ChapTarif.');
+        redirect('/prestataire/valider');
+    }
     if (!$b || $b['status'] !== 'BLOQUE' || !$b['release_code'] || !hash_equals((string) $b['release_code'], $code)) {
         record_attempt('release:' . $ref);
+        if ($b) record_attempt('release-total:' . $ref);
         flash('error', 'Référence ou code invalide, ou réservation déjà clôturée.');
         redirect('/prestataire/valider');
     }

@@ -10,14 +10,23 @@ function current_user(): ?array
     if ($u !== false) return $u;
     $id = $_SESSION['uid'] ?? null;
     $u = $id ? one('SELECT * FROM users WHERE id = ? AND active = 1', [$id]) : null;
-    if ($id && !$u) unset($_SESSION['uid']);
+    // Mot de passe changé ailleurs : les autres sessions sont fermées.
+    if ($u && isset($_SESSION['pwv']) && !hash_equals((string) $_SESSION['pwv'], pw_version($u))) $u = null;
+    if ($id && !$u) unset($_SESSION['uid'], $_SESSION['tfa_ok']);
     return $u;
+}
+
+/** Empreinte du mot de passe actuel (sans le révéler), pour invalider les sessions après un changement. */
+function pw_version(array $u): string
+{
+    return substr(hash_hmac('sha256', (string) ($u['password_hash'] ?? ''), APP_KEY), 0, 16);
 }
 
 function login_user(array $user): void
 {
     session_regenerate_id(true);
     $_SESSION['uid'] = (int) $user['id'];
+    $_SESSION['pwv'] = pw_version($user);
     $_SESSION['login_at'] = time();
     q('UPDATE users SET last_login_at = ? WHERE id = ?', [now(), $user['id']]);
 }
@@ -71,6 +80,13 @@ function require_admin(): array
     if (empty($u['totp_enabled']) && !in_array($uri, ['/admin/2fa/activer', '/admin/logout'], true)) {
         redirect('/admin/2fa/activer');
     }
+    // La session doit avoir réellement passé la 2FA (aucune autre porte d'entrée vers le back-office).
+    if (!empty($u['totp_enabled']) && (int) ($_SESSION['tfa_ok'] ?? 0) !== (int) $u['id']) {
+        logout_user();
+        session_start();
+        flash('warn', 'Reconnectez-vous avec votre code de double authentification.');
+        redirect('/admin/login');
+    }
     if ((int) $u['must_change_password'] === 1 && ($_SERVER['REQUEST_URI'] ?? '') !== '/admin/mot-de-passe') {
         flash('warn', 'Pour sécuriser votre compte, choisissez un nouveau mot de passe.');
         redirect('/admin/mot-de-passe');
@@ -90,10 +106,12 @@ function require_super(): array
 }
 
 // ---- Limitation des tentatives ------------------------------------------------
-function too_many_attempts(string $identifier, int $max = 5, int $minutes = 15): bool
+function too_many_attempts(string $identifier, int $max = 5, int $minutes = 15, bool $alsoIp = true): bool
 {
     $since = date('Y-m-d H:i:s', time() - $minutes * 60);
-    $n = (int) val('SELECT COUNT(*) FROM login_attempts WHERE (identifier = ? OR ip = ?) AND created_at > ?', [$identifier, client_ip(), $since]);
+    $n = $alsoIp
+        ? (int) val('SELECT COUNT(*) FROM login_attempts WHERE (identifier = ? OR ip = ?) AND created_at > ?', [$identifier, client_ip(), $since])
+        : (int) val('SELECT COUNT(*) FROM login_attempts WHERE identifier = ? AND created_at > ?', [$identifier, $since]);
     return $n >= $max;
 }
 

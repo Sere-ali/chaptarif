@@ -4,7 +4,8 @@ if (is_post()) {
     $r = build_quote($uk, $_POST);
     if (!$r['ok']) {
         flash('error', $r['error']);
-        redirect($_SERVER['HTTP_REFERER'] ?? (universes()[$uk]['url'] ?? '/'));
+        $ref = (string) parse_url((string) ($_SERVER['HTTP_REFERER'] ?? ''), PHP_URL_PATH);
+        redirect(safe_path($ref, universes()[$uk]['url'] ?? '/'));
     }
     $_SESSION['checkout'] = ['quote' => $r['quote'], 'input' => array_diff_key($_POST, ['_csrf' => 1, 'code' => 1])];
     $postedCode = trim((string) ($_POST['code'] ?? ''));

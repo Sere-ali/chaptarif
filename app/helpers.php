@@ -18,6 +18,17 @@ function now(): string
     return date('Y-m-d H:i:s');
 }
 
+/** Chemin interne sûr (anti redirection ouverte : refuse //, \\, schémas et caractères de contrôle). */
+function safe_path(string $p, string $default = '/'): string
+{
+    $d = rawurldecode($p);
+    if ($p === '' || $p[0] !== '/' || strlen($p) > 500) return $default;
+    foreach ([$p, $d] as $x) {
+        if (str_starts_with($x, '//') || str_contains($x, '\\') || preg_match('/[\x00-\x1f\x7f]/', $x)) return $default;
+    }
+    return $p;
+}
+
 function redirect(string $to): never
 {
     header('Location: ' . $to);

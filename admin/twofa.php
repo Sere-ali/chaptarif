@@ -24,6 +24,7 @@ if ($path === '/admin/2fa') {
             clear_attempts('2fa:' . $u['id']);
             unset($_SESSION['pending_2fa']);
             login_user($u);
+            $_SESSION['tfa_ok'] = (int) $u['id'];
             $_SESSION['admin_seen'] = time();
             audit('admin.connexion', $u['email'], '2FA validée');
             login_device_check($u);
@@ -46,6 +47,7 @@ if ($path === '/admin/2fa/activer') {
         $tmp = $me; $tmp['totp_secret'] = $sec; $tmp['totp_last'] = 0;
         if ($sec !== '' && totp_verify($tmp, (string) ($_POST['code'] ?? ''))) {
             q('UPDATE users SET totp_enabled = 1 WHERE id = ?', [$me['id']]);
+            $_SESSION['tfa_ok'] = (int) $me['id'];
             $_SESSION['totp_codes'] = totp_recovery_new((int) $me['id']);
             audit('admin.2fa_activee', $me['email']);
             security_event('2fa.activee', 'info', $me['email'], (int) $me['id']);

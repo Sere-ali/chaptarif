@@ -45,6 +45,8 @@ if (APP_ENV === 'local') {
 $https = (($_SERVER['HTTPS'] ?? '') === 'on') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
 define('IS_HTTPS', $https);
 if (PHP_SAPI !== 'cli') {
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
     session_name('CTSESS');
     session_set_cookie_params([
         'lifetime' => 0,
