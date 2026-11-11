@@ -26,16 +26,19 @@ function infobip_send(string $to, string $message): bool
         CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json', 'Authorization: App ' . env('INFOBIP_API_KEY')],
         CURLOPT_POSTFIELDS => json_encode(['messages' => [[
             'destinations' => [['to' => ltrim($to, '+')]],
-            'from' => env('SMS_SENDER', 'ChapTarif'),
+            'from' => env('SMS_SENDER', 'InfoSMS'),
             'text' => $message,
         ]]]),
     ]);
     $res = curl_exec($ch);
     $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    if ($http < 200 || $http >= 300) error_log('[Infobip SMS échec] HTTP ' . $http . ' ' . substr((string) $res, 0, 300));
     $GLOBALS['sms_last_result'] = 'HTTP ' . $http . ' — ' . substr((string) $res, 0, 400);
-    return $http >= 200 && $http < 300;
+    $st = json_decode((string) $res, true)['messages'][0]['status'] ?? [];
+    // Journal de diagnostic (sans le contenu du message) : statut renvoyé par Infobip.
+    error_log('[Infobip SMS] HTTP ' . $http . ' vers ' . substr($to, 0, -4) . '**** : ' . ($st['groupName'] ?? '?') . ' / ' . ($st['name'] ?? '?') . ' — ' . ($st['description'] ?? substr((string) $res, 0, 200)));
+    if ($http < 200 || $http >= 300) return false;
+    return ($st['groupName'] ?? '') !== 'REJECTED';
 }
 
 function sms_send(string $to, string $message): bool
