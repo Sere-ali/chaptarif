@@ -34,6 +34,7 @@ function infobip_send(string $to, string $message): bool
     $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     if ($http < 200 || $http >= 300) error_log('[Infobip SMS échec] HTTP ' . $http . ' ' . substr((string) $res, 0, 300));
+    $GLOBALS['sms_last_result'] = 'HTTP ' . $http . ' — ' . substr((string) $res, 0, 400);
     return $http >= 200 && $http < 300;
 }
 

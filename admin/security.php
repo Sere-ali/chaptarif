@@ -11,6 +11,16 @@ if (is_post()) {
         stepup_require($me, '/admin/securite');
         $r = backup_run('manuel · ' . ($me['email'] ?? ''));
         $r['ok'] ? flash('success', 'Sauvegarde chiffrée créée et envoyée hors du serveur (' . round($r['bytes'] / 1024) . ' Ko).') : flash('error', 'Sauvegarde impossible : ' . $r['error']);
+    } elseif ($act === 'sms_test') {
+        $to = normalize_phone((string) ($_POST['phone'] ?? ''), (string) ($_POST['cc'] ?? '225'));
+        if (!$to) flash('error', 'Numéro invalide.');
+        elseif (!infobip_configured()) flash('error', 'Infobip n\'est pas configuré (clé API / URL de base manquantes).');
+        else {
+            $ok = infobip_send($to, 'ChapTarif : SMS de test réussi. Les codes et alertes SMS sont opérationnels.');
+            audit('securite.sms_test', $to, ['ok' => $ok]);
+            $ok ? flash('success', 'SMS de test envoyé au ' . fmt_phone($to) . '. Réponse Infobip : ' . mb_substr((string) ($GLOBALS['sms_last_result'] ?? ''), 0, 200))
+                : flash('error', 'Échec de l\'envoi. Réponse Infobip : ' . mb_substr((string) ($GLOBALS['sms_last_result'] ?? ''), 0, 300));
+        }
     } elseif ($act === 'restore_test') {
         $r = backup_test_restore();
         $r['ok'] ? flash('success', 'Test de restauration réussi : sauvegarde du ' . fmt_date($r['created'], true) . ' lue et déchiffrée (' . $r['tables'] . ' tables, ' . $r['rows'] . ' lignes).') : flash('error', 'Test de restauration échoué : ' . $r['error']);
@@ -72,6 +82,10 @@ view('admin/header', compact('page', 'nav'));
         <form method="post" data-stepup><?= csrf_field() ?><button class="btn btn-primary btn-sm" name="action" value="backup">Sauvegarder maintenant</button></form>
         <form method="post"><?= csrf_field() ?><button class="btn btn-soft btn-sm" name="action" value="restore_test">Tester la restauration</button></form>
       </div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h2>SMS (Infobip)</h2><?= infobip_configured() ? '<span class="badge badge-green">Configuré</span>' : '<span class="badge badge-amber">Non configuré</span>' ?></div>
+      <form method="post" class="acts"><?= csrf_field() ?><?= phone_field() ?><button class="btn btn-soft btn-sm" name="action" value="sms_test">Envoyer un SMS de test</button></form>
     </div>
     <div class="panel">
       <div class="panel-h"><h2>Double authentification</h2></div>
