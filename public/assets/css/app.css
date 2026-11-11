@@ -1660,3 +1660,8 @@ label.check.garantie-check .gc-head b { font-size: 1.08rem; line-height: 1.15; c
 label.check.garantie-check .gc-txt { display: block; font-size: .92rem; line-height: 1.45; color: #1F2A44; }
 label.check.garantie-check:has(input:checked) { background: #DCE9FD; box-shadow: 0 0 0 3px rgba(37, 99, 235, .25); }
 @media (max-width: 380px) { label.check.garantie-check .gc-head b { font-size: .98rem; } label.check.garantie-check .gc-shield { width: 38px; height: 38px; } }
+
+/* Paiement : changer de moyen sur la page */
+.pm-switch { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 4px 0 14px; }
+.pm-switch a { padding: 6px 12px; border-radius: 999px; border: 1.5px solid #E2E8F0; font-size: .82rem; font-weight: 600; color: #334155; text-decoration: none; }
+.pm-switch a.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, #fff); color: #0E1B33; }

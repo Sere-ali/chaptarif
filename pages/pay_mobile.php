@@ -10,7 +10,16 @@ if (!$b) not_found();
 if ($b['status'] !== 'EN_ATTENTE_PAIEMENT') redirect('/compte?ref=' . urlencode($b['ref']) . ($b['status'] === 'BLOQUE' ? '&paid=1' : ''));
 
 $method = (string) $b['payment_method'];
-if (!isset(payment_methods()[$method])) redirect('/compte');
+// Le client peut changer de moyen de paiement ici ; un moyen retiré du site bascule sur Wave.
+$want = (string) ($_GET['m'] ?? '');
+if ($want !== '' && isset(payment_methods()[$want]) && $want !== $method && !in_array($want, ['carte', 'djamo'], true)) {
+    q('UPDATE bookings SET payment_method = ? WHERE id = ?', [$want, $b['id']]);
+    redirect('/paiement/mobile?ref=' . urlencode($b['ref']));
+}
+if (!isset(payment_methods()[$method]) || in_array($method, ['carte', 'djamo'], true)) {
+    q("UPDATE bookings SET payment_method = 'wave' WHERE id = ?", [$b['id']]);
+    redirect('/paiement/mobile?ref=' . urlencode($b['ref']));
+}
 [$label, $color] = payment_methods()[$method];
 $token = (string) $b['payment_ref'];
 $mine = preg_replace('/\D+/', '', (string) ($u['phone'] ?? ''));
@@ -61,6 +70,7 @@ view('layout/header', compact('title'));
     <?php $lg = pay_logo($method); ?><div class="pm-big<?= $lg ? ' has-img' : '' ?>"><?= $lg ? '<img src="' . e($lg) . '" alt="' . e($label) . '">' : e(mb_substr($label, 0, 1)) ?></div>
     <h1 class="h3"><?= e($label) ?></h1>
     <p class="muted"><?= e($b['title']) ?> · <b><?= fcfa($b['total']) ?></b></p>
+    <?php if (!$waiting): ?><div class="pm-switch"><?php foreach (payment_methods() as $mk => [$ml, $mc]): if (in_array($mk, ['carte', 'djamo'], true)) continue; ?><a href="?ref=<?= urlencode($b['ref']) ?>&amp;m=<?= e($mk) ?>" class="<?= $mk === $method ? 'on' : '' ?>" style="--c:<?= e($mc) ?>"><?= e($ml) ?></a><?php endforeach; ?></div><?php endif; ?>
 
     <?php if ($waiting): ?>
       <div class="alert alert-warn" id="wait">

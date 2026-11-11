@@ -126,7 +126,8 @@ function payment_init(array $b, array $user): array
         if (($res['response_code'] ?? '') === '00' && !empty($res['response_text']) && !empty($res['token'])) {
             q('UPDATE bookings SET payment_ref = ? WHERE id = ?', [$res['token'], $b['id']]);
             // Carte bancaire / Djamo : page de paiement sécurisée PayDunya (saisie de la carte).
-            if (in_array($b['payment_method'], ['carte', 'djamo'], true)) return ['ok' => true, 'url' => (string) $res['response_text']];
+            // Carte / Djamo (page sécurisée PayDunya) uniquement si ces moyens sont réactivés ; sinon tout se passe sur ChapTarif.
+            if (in_array($b['payment_method'], ['carte', 'djamo'], true) && isset(payment_methods()[$b['payment_method']])) return ['ok' => true, 'url' => (string) $res['response_text']];
             return ['ok' => true, 'url' => '/paiement/mobile?ref=' . urlencode($b['ref'])];
         }
         error_log('PayDunya init error: ' . json_encode($res));
