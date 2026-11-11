@@ -30,7 +30,7 @@ $checks = [
     ['Site', 'HTTPS forcé + HSTS (navigateur obligé d\'utiliser HTTPS)', $https],
     ['Site', 'En-têtes de sécurité (CSP, anti-clickjacking, anti-sniffing, permissions)', true],
     ['Site', 'Protection CSRF sur tous les formulaires, requêtes SQL préparées, échappement anti-XSS', true],
-    ['Site', 'Pare-feu applicatif (WAF) + anti-DDoS', null, 'À activer : Cloudflare (gratuit) devant chaptarif.com'],
+    ['Site', 'Pare-feu applicatif (WAF) + anti-DDoS (Cloudflare) · IP réelle des visiteurs', via_cloudflare() ? true : null, via_cloudflare() ? 'Actif — votre IP vue par le site : ' . client_ip() : 'Pas encore actif : cette page n\'est pas passée par Cloudflare'],
     ['Comptes', 'Mots de passe hachés (bcrypt)', true],
     ['Comptes', 'Double authentification obligatoire pour les admins', !$no2fa, $no2fa ? count($no2fa) . ' admin(s) ne l\'ont pas encore activée' : ''],
     ['Comptes', 'Blocage après tentatives de connexion échouées', true],

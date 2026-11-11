@@ -48,9 +48,23 @@ function input(string $k, $default = null)
 
 function client_ip(): string
 {
+    // Derrière Cloudflare : l'IP réelle (CF-Connecting-IP) n'est crue que si la requête porte
+    // l'en-tête secret ajouté par Cloudflare (règle de transformation) — impossible à falsifier.
+    $sec = (string) env('CF_EDGE_SECRET', '');
+    if ($sec !== '' && hash_equals($sec, (string) ($_SERVER['HTTP_X_CT_EDGE'] ?? ''))) {
+        $cf = trim((string) ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''));
+        if (filter_var($cf, FILTER_VALIDATE_IP)) return $cf;
+    }
     $f = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
     if ($f) return trim(explode(',', $f)[0]);
     return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+}
+
+/** La requête est-elle passée par le pare-feu Cloudflare de ChapTarif ? */
+function via_cloudflare(): bool
+{
+    $sec = (string) env('CF_EDGE_SECRET', '');
+    return $sec !== '' && hash_equals($sec, (string) ($_SERVER['HTTP_X_CT_EDGE'] ?? ''));
 }
 
 // ---- CSRF --------------------------------------------------------------------
