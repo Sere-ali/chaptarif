@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 28;
+const SCHEMA_VERSION = 29;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -363,6 +363,25 @@ function db_migrate(): void
             try { db()->exec($sql); } catch (Throwable $e) { /* table absente */ }
         }
         try { audit('purge.donnees_test', 'back-office', ['schema' => 27]); } catch (Throwable $e) { }
+    }
+
+    // v29 : suppression des comptes clients de test (demande du propriétaire, une seule fois).
+    // Les comptes des prestataires (même numéro qu'un prestataire) et les administrateurs sont conservés.
+    if ($v > 0 && $v < 29) {
+        $sub = "SELECT id FROM users WHERE role = 'client' AND phone NOT IN (SELECT phone FROM providers WHERE phone IS NOT NULL)";
+        foreach ([
+            "DELETE FROM transactions WHERE booking_id IN (SELECT id FROM bookings WHERE user_id IN ($sub))",
+            "DELETE FROM tasks WHERE booking_ref IN (SELECT ref FROM bookings WHERE user_id IN ($sub))",
+            "DELETE FROM bookings WHERE user_id IN ($sub)",
+            "DELETE FROM chat_messages WHERE user_id IN ($sub)",
+            "DELETE FROM visit_requests WHERE user_id IN ($sub)",
+            "DELETE FROM login_devices WHERE user_id IN ($sub)",
+            "DELETE FROM otp_codes WHERE phone IN (SELECT phone FROM users WHERE id IN ($sub))",
+            "DELETE FROM users WHERE id IN ($sub)",
+        ] as $sql) {
+            try { db()->exec($sql); } catch (Throwable $e) { error_log('purge clients: ' . $e->getMessage()); }
+        }
+        try { audit('purge.clients_test', 'comptes clients', ['schema' => 29]); } catch (Throwable $e) { }
     }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");
