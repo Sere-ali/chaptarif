@@ -40,7 +40,8 @@ $w = ['1=1']; $pp = [];
 if ($svc !== null) { $w[] = 'universe IN (' . implode(',', array_fill(0, count($SERVICES[$svc][1]), '?')) . ')'; array_push($pp, ...$SERVICES[$svc][1]); }
 if ($uk !== '') { $w[] = 'universe = ?'; $pp[] = $uk; }
 if ($kyc !== '') { $w[] = 'kyc_status = ?'; $pp[] = $kyc; }
-if ($s !== '') { $w[] = '(name LIKE ? OR phone LIKE ?)'; $pp[] = "%$s%"; $pp[] = '%' . preg_replace('/\D/', '', $s) . '%'; }
+if ($s !== '' && ($mc = parse_member_code($s)) && $mc[0] === 'P') { $w[] = 'provider_no = ?'; $pp[] = $mc[1]; }
+elseif ($s !== '') { $w[] = '(name LIKE ? OR phone LIKE ?)'; $pp[] = "%$s%"; $pp[] = '%' . preg_replace('/\D/', '', $s) . '%'; }
 $rows = all('SELECT * FROM providers WHERE ' . implode(' AND ', $w) . " ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC", $pp);
 $page = 'Prestataires & KYC';
 $nav = 'providers';
@@ -83,7 +84,7 @@ if ($landing): ?>
     <tbody>
     <?php foreach ($rows as $p): $x = universe($p['universe']); ?>
       <tr>
-        <td><div class="prov-mini" style="padding:0;border:0"><?= avatar($p) ?><div><a href="/admin/prestataire/voir?id=<?= (int) $p['id'] ?>"><b><?= e($p['name']) ?></b></a><small><?= e(fmt_phone($p['phone'])) ?><?= $p['source'] === 'candidature' ? ' · candidature web' : '' ?></small></div></div></td>
+        <td><div class="prov-mini" style="padding:0;border:0"><?= avatar($p) ?><div><span class="mcode"><?= e(provider_code($p)) ?></span> <a href="/admin/prestataire/voir?id=<?= (int) $p['id'] ?>"><b><?= e($p['name']) ?></b></a><small><?= e(fmt_phone($p['phone'])) ?><?= $p['source'] === 'candidature' ? ' · candidature web' : '' ?></small></div></div></td>
         <td><span class="uni-dot" style="--c:<?= $x['color'] ?>"><i></i><?= e($x['short']) ?></span></td>
         <td><?= e($p['commune']) ?></td>
         <td><?= $p['rating'] > 0 ? stars((float) $p['rating']) : '—' ?><small><?= (int) $p['missions'] ?> missions</small></td>

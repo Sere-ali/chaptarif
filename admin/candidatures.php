@@ -47,7 +47,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
   <div class="cd-row" role="row" data-cd="<?= e($search) ?>">
     <div class="cd-who">
       <?= avatar($p) ?>
-      <div><b><?= e($p['name']) ?></b><small><span class="uni-dot" style="--c:<?= $x['color'] ?>"><i></i><?= e($x['name']) ?></span></small><small class="muted">Reçue le <?= fmt_date(substr((string) $p['created_at'], 0, 10)) ?></small></div>
+      <div><span class="mcode"><?= e(provider_code($p)) ?></span> <b><?= e($p['name']) ?></b><small><span class="uni-dot" style="--c:<?= $x['color'] ?>"><i></i><?= e($x['name']) ?></span></small><small class="muted">Reçue le <?= fmt_date(substr((string) $p['created_at'], 0, 10)) ?></small></div>
     </div>
     <div class="cd-contact" data-l="Contact">
       <a href="tel:<?= e($p['phone']) ?>"><?= e(fmt_phone($p['phone'])) ?></a>

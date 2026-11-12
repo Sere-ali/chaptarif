@@ -1672,3 +1672,6 @@ label.check.garantie-check:has(input:checked) { background: #DCE9FD; box-shadow:
 .om-code ol { margin: 10px 0 0; padding-left: 20px; font-size: .86rem; color: #5A3A1A; line-height: 1.5; }
 
 .prov-mini-r { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+
+/* Numéro client / prestataire */
+.mcode { display: inline-block; font: 700 .72rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em; color: #1E5BD8; background: #EAF1FE; border-radius: 6px; padding: 1px 6px; vertical-align: middle; }

@@ -108,7 +108,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         $pub = '/' . str_replace('_', '-', $p['universe']);
     ?>
     <div class="card mt" id="p<?= (int) $p['id'] ?>">
-      <div class="ps-head"><?= avatar($p, 'lg') ?><div><h2 class="h3" style="margin:0"><?= e($p['name']) ?></h2><small class="muted"><?= $x['emoji'] ?> <?= e($x['name']) ?> ·  <?= e($p['commune']) ?> · <?= e(fmt_phone($p['phone'])) ?></small></div></div>
+      <div class="ps-head"><?= avatar($p, 'lg') ?><div><h2 class="h3" style="margin:0"><?= e($p['name']) ?></h2><?php if (provider_code($p)): ?><span class="mcode">N° prestataire <?= e(provider_code($p)) ?></span><?php endif; ?><small class="muted"><?= $x['emoji'] ?> <?= e($x['name']) ?> ·  <?= e($p['commune']) ?> · <?= e(fmt_phone($p['phone'])) ?></small></div></div>
 
       <?php if ($live): ?>
         <div class="alert alert-success"> Votre profil est <b>validé et en ligne</b>. <a href="/profil-prestataire?id=<?= (int) $p['id'] ?>">Voir ma page publique →</a></div>

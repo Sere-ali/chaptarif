@@ -11,7 +11,8 @@ if (is_post()) {
 }
 $s = trim((string) ($_GET['q'] ?? ''));
 $w = "u.role = 'client'"; $p = [];
-if ($s !== '') { $w .= ' AND (u.name LIKE ? OR u.phone LIKE ?)'; $p = ["%$s%", '%' . preg_replace('/\D/', '', $s) . '%']; }
+if ($s !== '' && ($mc = parse_member_code($s)) && $mc[0] === 'C') { $w .= ' AND u.client_no = ?'; $p = [$mc[1]]; }
+elseif ($s !== '') { $w .= ' AND (u.name LIKE ? OR u.phone LIKE ?)'; $p = ["%$s%", '%' . preg_replace('/\D/', '', $s) . '%']; }
 $total = (int) val("SELECT COUNT(*) FROM users u WHERE $w", $p);
 [$pg, $pages, $off, $per] = paginate($total, 30);
 $rows = all("SELECT u.*, (SELECT COUNT(*) FROM bookings b WHERE b.user_id = u.id AND b.status IN ('BLOQUE','VALIDE','EN_LITIGE')) AS nb, (SELECT COALESCE(SUM(total),0) FROM bookings b WHERE b.user_id = u.id AND b.status IN ('BLOQUE','VALIDE','EN_LITIGE')) AS spent FROM users u WHERE $w ORDER BY u.id DESC LIMIT $per OFFSET $off", $p);
@@ -26,7 +27,7 @@ view('admin/header', compact('page', 'nav'));
     <thead><tr><th>Client</th><th>Inscrit le</th><th>Dernière connexion</th><th class="num">Réservations</th><th class="num">Dépensé</th><th>Statut</th><th></th></tr></thead>
     <tbody>
     <?php foreach ($rows as $u): ?>
-      <tr><td><b><?= e($u['name'] ?: '—') ?></b><small><?= e(fmt_phone($u['phone'])) ?></small></td>
+      <tr><td><span class="mcode"><?= e(client_code($u)) ?></span> <b><?= e($u['name'] ?: '—') ?></b><small><?= e(fmt_phone($u['phone'])) ?></small></td>
       <td><?= fmt_date($u['created_at']) ?></td><td><?= fmt_date($u['last_login_at'], true) ?></td>
       <td class="num"><a href="/admin/reservations?q=<?= urlencode(substr((string) $u['phone'], -10)) ?>"><?= (int) $u['nb'] ?></a></td>
       <td class="num"><?= fcfa($u['spent']) ?></td>

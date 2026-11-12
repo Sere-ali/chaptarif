@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 30;
+const SCHEMA_VERSION = 31;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -89,6 +89,11 @@ function val(string $sql, array $params = [])
 
 function insert(string $table, array $data): int
 {
+    // Numérotation automatique : C-0001 pour les clients, P-0001 pour les prestataires.
+    try {
+        if ($table === 'users' && ($data['role'] ?? 'client') === 'client' && empty($data['client_no'])) $data['client_no'] = (int) val('SELECT COALESCE(MAX(client_no), 0) FROM users') + 1;
+        if ($table === 'providers' && empty($data['provider_no'])) $data['provider_no'] = (int) val('SELECT COALESCE(MAX(provider_no), 0) FROM providers') + 1;
+    } catch (Throwable $e) { unset($data['client_no'], $data['provider_no']); } // colonnes pas encore créées
     $cols = array_keys($data);
     $sql = sprintf(
         'INSERT INTO %s (%s) VALUES (%s)',
@@ -253,6 +258,8 @@ function db_migrate(): void
         "ALTER TABLE chat_messages ADD COLUMN reply_to INTEGER",
         "ALTER TABLE users ADD COLUMN totp_secret TEXT",
         "ALTER TABLE chat_messages ADD COLUMN about TEXT",
+        "ALTER TABLE users ADD COLUMN client_no INTEGER",
+        "ALTER TABLE providers ADD COLUMN provider_no INTEGER",
         "ALTER TABLE users ADD COLUMN totp_enabled INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE users ADD COLUMN totp_last INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE users ADD COLUMN totp_recovery TEXT",
@@ -383,6 +390,14 @@ function db_migrate(): void
             try { db()->exec($sql); } catch (Throwable $e) { error_log('purge clients: ' . $e->getMessage()); }
         }
         try { audit('purge.clients_test', 'comptes clients', ['schema' => 29]); } catch (Throwable $e) { }
+    }
+
+    // v31 : numéros client (C-0001) et prestataire (P-0001) pour les comptes existants, par ordre d'inscription.
+    if ($v < 31) {
+        $n = (int) val("SELECT COALESCE(MAX(client_no), 0) FROM users");
+        foreach (all("SELECT id FROM users WHERE role = 'client' AND client_no IS NULL ORDER BY id") as $r) q('UPDATE users SET client_no = ? WHERE id = ?', [++$n, $r['id']]);
+        $n = (int) val("SELECT COALESCE(MAX(provider_no), 0) FROM providers");
+        foreach (all("SELECT id FROM providers WHERE provider_no IS NULL ORDER BY id") as $r) q('UPDATE providers SET provider_no = ? WHERE id = ?', [++$n, $r['id']]);
     }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");

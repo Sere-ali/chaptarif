@@ -18,6 +18,23 @@ function now(): string
     return date('Y-m-d H:i:s');
 }
 
+/** Numéro client « C-0001 » / prestataire « P-0001 ». */
+function client_code(?array $u): string
+{
+    return !empty($u['client_no']) ? 'C-' . str_pad((string) $u['client_no'], 4, '0', STR_PAD_LEFT) : '';
+}
+
+function provider_code(?array $p): string
+{
+    return !empty($p['provider_no']) ? 'P-' . str_pad((string) $p['provider_no'], 4, '0', STR_PAD_LEFT) : '';
+}
+
+/** Recherche par numéro : « C-12 », « c0012 », « P-0003 »… → [type, n] */
+function parse_member_code(string $s): ?array
+{
+    return preg_match('/^\s*([CP])\s*-?\s*0*(\d{1,7})\s*$/i', $s, $m) ? [strtoupper($m[1]), (int) $m[2]] : null;
+}
+
 /** Chemin interne sûr (anti redirection ouverte : refuse //, \\, schémas et caractères de contrôle). */
 function safe_path(string $p, string $default = '/'): string
 {
