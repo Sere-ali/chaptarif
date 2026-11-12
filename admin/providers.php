@@ -33,13 +33,15 @@ $landing = $svc === null && $uk === '' && $kyc === '' && $s === '' && !isset($_G
 $svcCount = []; $svcWait = [];
 foreach ($SERVICES as $sk => $sv) {
     $ph = implode(',', array_fill(0, count($sv[1]), '?'));
-    $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE universe IN ($ph)", $sv[1]);
+    $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected' AND universe IN ($ph)", $sv[1]);
     $svcWait[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending' AND universe IN ($ph)", $sv[1]);
 }
 $w = ['1=1']; $pp = [];
 if ($svc !== null) { $w[] = 'universe IN (' . implode(',', array_fill(0, count($SERVICES[$svc][1]), '?')) . ')'; array_push($pp, ...$SERVICES[$svc][1]); }
 if ($uk !== '') { $w[] = 'universe = ?'; $pp[] = $uk; }
 if ($kyc !== '') { $w[] = 'kyc_status = ?'; $pp[] = $kyc; }
+else $w[] = "kyc_status <> 'rejected'"; // les dossiers refusés ont leur propre onglet
+$nRej = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'rejected'");
 if ($s !== '' && ($mc = parse_member_code($s)) && $mc[0] === 'P') { $w[] = 'provider_no = ?'; $pp[] = $mc[1]; }
 elseif ($s !== '') { $w[] = '(name LIKE ? OR phone LIKE ?)'; $pp[] = "%$s%"; $pp[] = '%' . preg_replace('/\D/', '', $s) . '%'; }
 $rows = all('SELECT * FROM providers WHERE ' . implode(' AND ', $w) . " ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC", $pp);
@@ -59,7 +61,7 @@ if ($landing): ?>
     </a>
   <?php endforeach; ?>
 </nav>
-<p style="margin-top:14px"><a class="btn btn-soft" href="?tous=1">Voir tous les prestataires (<?= array_sum($svcCount) ?>)</a> <a class="btn btn-primary" href="/admin/prestataire">+ Nouveau prestataire</a></p>
+<p style="margin-top:14px"><a class="btn btn-soft" href="?tous=1">Voir tous les prestataires (<?= array_sum($svcCount) ?>)</a> <a class="btn btn-ghost" href="?kyc=rejected">✕ Refusés (<?= $nRej ?>)</a> <a class="btn btn-primary" href="/admin/prestataire">+ Nouveau prestataire</a></p>
 <?php view('admin/footer'); return; endif; ?>
 <?php if ($svc !== null): ?>
 <div class="svc-bar" style="--c:<?= $SERVICES[$svc][2] ?>">
@@ -67,7 +69,7 @@ if ($landing): ?>
   <span class="svc-badge"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $SERVICES[$svc][3] ?></svg></i><?= e($SERVICES[$svc][0]) ?> · <?= count($rows) ?> prestataire<?= count($rows) > 1 ? 's' : '' ?></span>
 </div>
 <?php else: ?>
-<p><a class="btn btn-ghost btn-sm" href="/admin/prestataires">← Retour</a></p>
+<p><a class="btn btn-ghost btn-sm" href="/admin/prestataires">← Retour</a> <?php if ($kyc !== 'rejected'): ?><a class="btn btn-ghost btn-sm" href="?kyc=rejected">✕ Refusés (<?= $nRej ?>)</a><?php else: ?><b style="margin-left:6px">Dossiers refusés</b><?php endif; ?></p>
 <?php endif; ?>
 <div class="panel">
   <div class="panel-h">

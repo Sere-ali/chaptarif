@@ -7,7 +7,7 @@ $escrow = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN
 $disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'");
 $nbPaid = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN $paid");
 $clients = (int) val("SELECT COUNT(*) FROM users WHERE role = 'client'");
-$provTot = (int) val('SELECT COUNT(*) FROM providers');
+$provTot = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected'");
 $provOk = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'verified' AND active = 1");
 $provWait = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'");
 $toPay = (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE status = 'A_VIRER'");
