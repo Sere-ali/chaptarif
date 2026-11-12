@@ -80,6 +80,7 @@ $routes = [
     '/admin/bien'           => 'admin/property_edit.php',
     '/admin/zones'          => 'admin/zones.php',
     '/admin/clients'        => 'admin/clients.php',
+    '/admin/reservations-non-abouties' => 'admin/abandoned.php',
     '/admin/client'         => 'admin/client_view.php',
     '/admin/finances'       => 'admin/finances.php',
     '/admin/controle'       => 'admin/control.php',

@@ -15,6 +15,7 @@ $p = [];
 $claim = isset($_GET['claim']);
 if ($claim) { $where[] = "b.status = 'EN_ATTENTE_PAIEMENT' AND b.payment_ref = 'EN_ATTENTE_VALIDATION'"; }
 elseif ($status !== '' && isset(statuses()[$status])) { $where[] = 'b.status = ?'; $p[] = $status; }
+else $where[] = "NOT ((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL))"; // les réservations jamais payées sont dans « Non abouties »
 if ($uk !== '' && in_array($uk, $svcKeys, true)) { $where[] = 'b.universe = ?'; $p[] = $uk; }
 else { $where[] = 'b.universe IN (' . implode(',', array_fill(0, count($svcKeys), '?')) . ')'; array_push($p, ...$svcKeys); }
 if ($s !== '') { $where[] = '(b.ref LIKE ? OR b.title LIKE ? OR u.phone LIKE ? OR u.name LIKE ?)'; array_push($p, "%$s%", "%$s%", '%' . preg_replace('/\D/', '', $s) . '%', "%$s%"); }
@@ -40,7 +41,7 @@ $claimCount = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_ATTENT
 $svcCount = []; $svcAlert = [];
 foreach ($SERVICES as $sk => $sv) {
     $ph = implode(',', array_fill(0, count($sv[1]), '?'));
-    $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM bookings WHERE universe IN ($ph)" . ($isDisputes ? " AND status = 'EN_LITIGE'" : ''), $sv[1]);
+    $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM bookings b WHERE universe IN ($ph) AND NOT ((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL))" . ($isDisputes ? " AND status = 'EN_LITIGE'" : ''), $sv[1]);
     $svcAlert[$sk] = (int) val("SELECT COUNT(*) FROM bookings WHERE universe IN ($ph) AND (status = 'EN_LITIGE' OR (status = 'EN_ATTENTE_PAIEMENT' AND payment_ref = 'EN_ATTENTE_VALIDATION'))", $sv[1]);
 }
 $page = ($isDisputes ? 'Litiges à arbitrer' : 'Réservations') . ' · ' . ($uk !== '' && in_array($uk, $svcKeys, true) ? universe($uk)['name'] : $SERVICES[$svc][0]);

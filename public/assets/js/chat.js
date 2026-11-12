@@ -87,6 +87,7 @@
     ta.style.height = 'auto'; ta.style.height = Math.min(120, ta.scrollHeight) + 'px';
   };
   ta.addEventListener('input', sync);
+  if (ta.value.trim() !== '') sync(); // message pré-rempli
   var submitText = function () {
     var v = ta.value.trim(); if (!v) return;
     var d = base(); d.append('body', v); ta.value = ''; sync(); panel.hidden = true;

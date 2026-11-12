@@ -20,7 +20,7 @@ foreach (all("SELECT substr(paid_at,1,10) AS d, COUNT(*) AS n, SUM(total) AS v F
 $byU = [];
 foreach (all("SELECT universe, COUNT(*) AS n, COALESCE(SUM(total),0) AS v FROM bookings WHERE status IN $paid GROUP BY universe") as $r) $byU[$r['universe']] = $r;
 $maxU = max([1, ...array_values(array_map(fn($r) => (int) $r['v'], $byU))]);
-$recent = all('SELECT b.*, u.name AS uname, u.phone AS uphone FROM bookings b LEFT JOIN users u ON u.id = b.user_id ORDER BY b.id DESC LIMIT 8');
+$recent = all("SELECT b.*, u.name AS uname, u.phone AS uphone FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE NOT ((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL)) ORDER BY b.id DESC LIMIT 8");
 $kyc = all("SELECT * FROM providers WHERE kyc_status = 'pending' ORDER BY id DESC LIMIT 5");
 $myTasks = all("SELECT * FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule') ORDER BY CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date, id DESC LIMIT 5", [$me['id']]);
 

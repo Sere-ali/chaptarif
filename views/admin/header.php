@@ -16,6 +16,7 @@ $items = [
     ['tasks', '/admin/taches', '', 'Mes tâches', $myOpenTasks],
     ['candidatures', '/admin/candidatures', '', 'Candidatures prestataires', $pendingCandidatures],
     ['bookings', '/admin/reservations', '', 'Réservations', 0],
+    ['abandoned', '/admin/reservations-non-abouties', '', 'Non abouties', 0],
     ['disputes', '/admin/litiges', '', 'Litiges', $disputes],
     ['finances', '/admin/finances', '', 'Finances & séquestre', 0],
     ['control', '/admin/controle', '', 'Contrôle billets', 0],

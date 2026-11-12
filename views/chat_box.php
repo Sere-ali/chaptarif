@@ -21,7 +21,7 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <div class="wa-row">
       <div class="wa-pill">
         <button type="button" class="wa-ic" data-emoji-btn aria-label="Émojis">😊</button>
-        <textarea name="body" rows="1" maxlength="1000" placeholder="Message" aria-label="Votre message"></textarea>
+        <textarea name="body" rows="1" maxlength="1000" placeholder="Message" aria-label="Votre message"><?= e($draft ?? '') ?></textarea>
         <button type="button" class="wa-ic" data-chat-attach aria-label="Joindre un fichier">📎</button>
         <button type="button" class="wa-ic" data-chat-cam aria-label="Prendre une photo">📷</button>
       </div>
@@ -33,4 +33,4 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
   </form>
 </div>
 <link rel="stylesheet" href="/assets/css/chat.css?v=3">
-<script src="/assets/js/chat.js?v=4" defer></script>
+<script src="/assets/js/chat.js?v=5" defer></script>

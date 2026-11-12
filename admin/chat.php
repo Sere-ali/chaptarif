@@ -61,7 +61,7 @@ if ($uid):
     <?php foreach ($cl as $c): ?><a class="btn btn-soft btn-sm" href="/admin/chat?u=<?= (int) $c['id'] ?>">✉️ <?= e($c['name'] ?: fmt_phone($c['phone'])) ?></a><?php endforeach; ?></div>
 <?php endif; endif; ?>
 <div class="wa-admin">
-<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => trim(($prov ? provider_code($prov) : client_code($u)) . ' · ' . ($prov['name'] ?? ($u['name'] ?: 'Sans nom')), ' ·'), 'name_href' => $prov ? '/admin/prestataire/voir?id=' . (int) $prov['id'] : '/admin/client?id=' . (int) $u['id'], 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => $isPro ? '/admin/chat?type=pro' : '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
+<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => trim(($prov ? provider_code($prov) : client_code($u)) . ' · ' . ($prov['name'] ?? ($u['name'] ?: 'Sans nom')), ' ·'), 'draft' => mb_substr((string) ($_GET['draft'] ?? ''), 0, 600), 'name_href' => $prov ? '/admin/prestataire/voir?id=' . (int) $prov['id'] : '/admin/client?id=' . (int) $u['id'], 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => $isPro ? '/admin/chat?type=pro' : '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
 </div>
 <?php else:
     $provCond = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
