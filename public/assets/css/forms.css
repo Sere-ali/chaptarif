@@ -208,3 +208,10 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
 .pa-otp b { display: block; margin-bottom: 2px; }
 .pa-otp-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .pa-otp-row input { flex: 1 1 160px; letter-spacing: .2em; text-align: center; font-size: 1.1rem; }
+
+/* Sélecteur de langue (page prestataire) + aide sous le téléphone */
+.pv-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.lang-sw { display: inline-flex; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.3); }
+.lang-sw button { border: 0; background: none; color: inherit; font: inherit; font-size: .8rem; font-weight: 800; padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+.lang-sw button.on { background: #fff; color: #1F5C3E; }
+.pa-hint { margin: -6px 0 14px; padding: 10px 12px; border-radius: 12px; background: #EEF7F1; color: #1F5C3E; font-size: .86rem; line-height: 1.45; }

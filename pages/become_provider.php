@@ -66,7 +66,8 @@ view('layout/header', compact('title', 'desc', 'active'));
 <section class="pv">
   <div class="pv-in">
     <aside class="pv-side">
-      <span class="pv-tag">Espace partenaires</span>
+      <div class="pv-top"><span class="pv-tag">Espace partenaires</span>
+        <div class="lang-sw" role="group" aria-label="Langue / Language"><button type="button" data-lang="fr" class="on">🇫🇷 FR</button><button type="button" data-lang="en">🇬🇧 EN</button></div></div>
       <h1>Rejoignez le réseau <span>ChapTarif</span></h1>
       <p class="pv-lead">Plus de missions, plus de clients, plus de DJÈ !</p>
       <ul class="pv-perks">
@@ -120,11 +121,10 @@ view('layout/header', compact('title', 'desc', 'active'));
             </div>
             <div hidden><label class="fld"><span>Activité</span><select name="universe" id="proUniverse" required><option value="">Choisir…</option><?php foreach ($U as $k => $x): ?><option value="<?= $k ?>" data-transport="<?= in_array($k, $transportKeys, true) ? '1' : '0' ?>"><?= $x['emoji'] ?> <?= e($x['name']) ?></option><?php endforeach; ?></select></label></div>
           </div>
-          <label class="fld"><span>Nom complet / Entreprise</span><input name="name" required maxlength="80" placeholder="Ex. Koné Aminata ou Clean Services CI"></label>
-          <div class="row2">
-            <label class="fld"><span>Téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
-            <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
-          </div>
+          <label class="fld"><span>Nom complet ou nom de l'entreprise</span><input name="name" required maxlength="80" placeholder="Ex. Koné Aminata ou Clean Services CI"></label>
+          <label class="fld"><span>Téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
+          <p class="pa-hint">📱 Indiquez un numéro sur lequel on peut vous joindre : vous y recevrez le <b>code de confirmation par SMS</b> et les nouvelles réservations.</p>
+          <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <label class="fld" id="vehicleFld" hidden><span>Véhicule</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>
           <label class="fld"><span>Présentez votre activité</span><textarea name="bio" rows="3" maxlength="400" placeholder="Expérience, spécialités, horaires…"></textarea></label>
         </fieldset>
@@ -250,4 +250,5 @@ view('layout/header', compact('title', 'desc', 'active'));
   vw.addEventListener('click', function (e) { if (e.target === vw) closeV(); });
 })();
 </script>
+<script src="/assets/js/i18n-pro.js?v=1" defer></script>
 <?php view('layout/footer', compact('active'));
