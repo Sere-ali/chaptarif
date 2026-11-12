@@ -69,7 +69,7 @@ if (!isset($mode)) not_found();
 ?><!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
 <title>Double authentification · ChapTarif</title><link rel="icon" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/app.css?v=3"><link rel="stylesheet" href="/assets/css/admin.css?v=29"></head>
+<link rel="stylesheet" href="/assets/css/app.css?v=3"><link rel="stylesheet" href="/assets/css/admin.css?v=30"></head>
 <body class="adm">
 <div class="login-adm">
   <div class="auth-card card tfa">

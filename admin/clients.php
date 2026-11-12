@@ -27,7 +27,7 @@ view('admin/header', compact('page', 'nav'));
     <thead><tr><th>Client</th><th>Inscrit le</th><th>Dernière connexion</th><th class="num">Réservations</th><th class="num">Dépensé</th><th>Statut</th><th></th></tr></thead>
     <tbody>
     <?php foreach ($rows as $u): ?>
-      <tr><td><span class="mcode"><?= e(client_code($u)) ?></span> <b><?= e($u['name'] ?: '—') ?></b><small><?= e(fmt_phone($u['phone'])) ?></small></td>
+      <tr><td><span class="mcode"><?= e(client_code($u)) ?></span> <a href="/admin/client?id=<?= (int) $u['id'] ?>"><b><?= e($u['name'] ?: '—') ?></b></a><small><?= e(fmt_phone($u['phone'])) ?></small></td>
       <td><?= fmt_date($u['created_at']) ?></td><td><?= fmt_date($u['last_login_at'], true) ?></td>
       <td class="num"><a href="/admin/reservations?q=<?= urlencode(substr((string) $u['phone'], -10)) ?>"><?= (int) $u['nb'] ?></a></td>
       <td class="num"><?= fcfa($u['spent']) ?></td>

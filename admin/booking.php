@@ -96,7 +96,7 @@ view('admin/header', compact('page', 'nav'));
     </div>
     <div class="panel">
       <h2 class="h4">Client</h2>
-      <p><span class="mcode"><?= e(client_code($u)) ?></span> <b><?= e($u['name'] ?? '—') ?></b><br><a href="tel:<?= e($u['phone'] ?? '') ?>"><?= e(fmt_phone($u['phone'] ?? '')) ?></a></p>
+      <p><span class="mcode"><?= e(client_code($u)) ?></span> <?php if (!empty($u['id'])): ?><a href="/admin/client?id=<?= (int) $u['id'] ?>"><b><?= e($u['name'] ?? '—') ?></b></a><?php else: ?><b>—</b><?php endif; ?><br><a href="tel:<?= e($u['phone'] ?? '') ?>"><?= e(fmt_phone($u['phone'] ?? '')) ?></a></p>
       <?php if (!empty($u['id'])): ?><p><a class="btn btn-soft btn-sm" href="/admin/chat?u=<?= (int) $u['id'] ?>">✉️ Écrire au client</a></p><?php endif; ?>
       <?php if ($prov): ?><h2 class="h4">Prestataire</h2><p><span class="mcode"><?= e(provider_code($prov)) ?></span> <a href="/admin/prestataire?id=<?= (int) $prov['id'] ?>"><b><?= e($prov['name']) ?></b></a><br><?= e(fmt_phone($prov['phone'])) ?> · versement <?= e($prov['payout_method']) ?> <?= e(fmt_phone($prov['payout_number'])) ?></p><?php endif; ?>
       <?php if ($prov && ($pu = one('SELECT id FROM users WHERE phone = ?', [$prov['phone']]))): ?><p><a class="btn btn-soft btn-sm" href="/admin/chat?u=<?= (int) $pu['id'] ?>">✉️ Écrire au prestataire</a></p><?php endif; ?>

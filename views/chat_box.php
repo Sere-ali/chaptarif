@@ -6,7 +6,7 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
   <header class="wa-head">
     <a class="wa-back" href="<?= e($back) ?>" aria-label="Retour"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
     <span class="wa-av"><?php if (!empty($avatar)): ?><?= e($avatar) ?><?php else: ?><img src="/assets/img/logo.svg" alt="" width="40" height="40"><?php endif; ?></span>
-    <div class="wa-who"><b><?= e($name) ?></b><small><?= e($sub) ?></small></div>
+    <div class="wa-who"><?php if (!empty($name_href)): ?><a class="wa-who-link" href="<?= e($name_href) ?>" title="Voir le profil"><b><?= e($name) ?> ›</b></a><?php else: ?><b><?= e($name) ?></b><?php endif; ?><small><?= e($sub) ?></small></div>
   </header>
   <div class="wa-log" data-chat-log>
     <?php if (!empty($notice)): ?><div class="chat-pour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7.5v.5"/></svg><span><?= $notice ?></span></div><?php endif; ?>

@@ -36,7 +36,7 @@ if ($uid):
     q("UPDATE chat_messages SET read_by_admin = 1 WHERE user_id = ? AND sender = 'user' AND read_by_admin = 0", [$uid]);
     $msgs = chat_decorate(array_reverse(all('SELECT * FROM chat_messages WHERE user_id = ? ORDER BY id DESC LIMIT 200', [$uid])), true, $u['name'] ?: 'Client');
     $last = $msgs ? (int) end($msgs)['id'] : 0;
-    $prov = $u ? one('SELECT name, universe FROM providers WHERE phone = ? LIMIT 1', [$u['phone'] ?? '']) : null;
+    $prov = $u ? one('SELECT id, name, universe, provider_no FROM providers WHERE phone = ? LIMIT 1', [$u['phone'] ?? '']) : null;
 ?>
 <?php if (!$isPro && $u):
     $rel = all('SELECT DISTINCT p.id, p.name, p.phone FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE b.user_id = ? ORDER BY p.name LIMIT 10', [$uid]);
@@ -61,7 +61,7 @@ if ($uid):
     <?php foreach ($cl as $c): ?><a class="btn btn-soft btn-sm" href="/admin/chat?u=<?= (int) $c['id'] ?>">✉️ <?= e($c['name'] ?: fmt_phone($c['phone'])) ?></a><?php endforeach; ?></div>
 <?php endif; endif; ?>
 <div class="wa-admin">
-<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => ($prov ? provider_code($prov) : client_code($u)) . ' · ' . ($u['name'] ?: 'Sans nom'), 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => $isPro ? '/admin/chat?type=pro' : '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
+<?php view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => '/admin/chat?u=' . $uid, 'name' => trim(($prov ? provider_code($prov) : client_code($u)) . ' · ' . ($prov['name'] ?? ($u['name'] ?: 'Sans nom')), ' ·'), 'name_href' => $prov ? '/admin/prestataire/voir?id=' . (int) $prov['id'] : '/admin/client?id=' . (int) $u['id'], 'sub' => ($u['phone'] ?? '') . ($prov ? ' · prestataire : ' . $prov['name'] : ''), 'back' => $isPro ? '/admin/chat?type=pro' : '/admin/chat', 'admin' => true, 'avatar' => mb_strtoupper(mb_substr($u['name'] ?: '?', 0, 1))]); ?>
 </div>
 <?php else:
     $provCond = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
