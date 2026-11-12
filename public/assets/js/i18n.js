@@ -20,6 +20,19 @@
     if ((m = k.match(/^(.+) : document obligatoire\.$/))) return (look(m[1]) || m[1]) + ': required document.';
     if ((m = k.match(/^(.+) · ChapTarif$/)) && (m = look(m[1]))) return m + ' · ChapTarif';
     if ((m = k.match(/^(.*?)\s*:$/)) && m[1] && Object.prototype.hasOwnProperty.call(d, m[1])) return d[m[1]] + ':';
+    if ((m = k.match(/^Code appliqué : vous économisez (.+)\.?$/))) return 'Code applied: you save ' + m[1].replace(/\.$/, '') + '.';
+    if ((m = k.match(/^Indiquez le nombre de personnes pour « (.+) »\.$/))) return 'Enter the number of people for “' + (look(m[1]) || m[1]) + '”.';
+    if ((m = k.match(/^Un code à (\d) chiffres vient d'être envoyé au (.+?)\.?$/))) return 'A ' + m[1] + '-digit code has just been sent to ' + m[2] + '.';
+    if ((m = k.match(/^N° client (.+)$/))) return 'Client No. ' + m[1];
+    if ((m = k.match(/^N° prestataire (.+)$/))) return 'Provider No. ' + m[1];
+    if ((m = k.match(/^Motif : (.+)$/))) return 'Reason: ' + m[1];
+    if ((m = k.match(/^Gare (.+)$/))) return m[1] + ' station';
+    if ((m = k.match(/^E-billet (.+)$/))) return 'E-ticket ' + m[1];
+    if ((m = k.match(/^le (\d{1,2}\/\d{1,2}\/\d{4})(?: à (.+))?$/))) return 'on ' + m[1] + (m[2] ? ' at ' + m[2] : '');
+    if ((m = k.match(/^Paiement déclaré : notre équipe vérifie la réception sur (.+) et confirmera votre réservation très bientôt\.$/))) return 'Payment declared: our team is checking receipt on ' + m[1] + ' and will confirm your booking very soon.';
+    if ((m = k.match(/^Réclamation en cours d'examen : « (.+) »\. Le paiement reste gelé jusqu'à la décision de notre équipe\.$/))) return 'Claim under review: “' + m[1] + '”. The payment stays frozen until our team decides.';
+    if ((m = k.match(/^(.+) ·$/)) && (m = look(m[1]))) return m + ' ·';
+    if ((m = k.match(/^· (.+)$/)) && (m = look(m[1]))) return '· ' + m;
     // texte composé « A · B · C » : chaque morceau traduit séparément
     if (k.indexOf(' · ') > 0) {
       var parts = k.split(' · '), hit = false;
