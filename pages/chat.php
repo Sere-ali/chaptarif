@@ -13,7 +13,7 @@ if (!$providerMode && !empty($_GET['pour'])) {
     if ($pp) { $about = 'Pour le prestataire ' . $pp['name']; $pourQ = '?prestataire=' . (int) $pp['id']; }
 } elseif ($providerMode && !empty($_GET['client'])) {
     $cb = one('SELECT b.id, b.ref, u.name, u.phone FROM bookings b JOIN providers p ON p.id = b.provider_id JOIN users u ON u.id = b.user_id WHERE b.id = ? AND p.phone = ?', [(int) $_GET['client'], $me['phone']]);
-    if ($cb) { $about = 'Pour le client ' . ($cb['name'] ?: fmt_phone($cb['phone'])) . ' (réservation ' . $cb['ref'] . ')'; $pourQ = '&client=' . (int) $cb['id']; }
+    if ($cb) { $about = 'Pour le client ' . ($cb['name'] ?: 'client') . ' (réservation ' . $cb['ref'] . ')'; $pourQ = '&client=' . (int) $cb['id']; }
 }
 
 if (is_post()) {

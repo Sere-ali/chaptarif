@@ -104,7 +104,8 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         $nRej = count(array_filter($svcs, fn($s) => $s['status'] === 'rejected'));
         $isTransport = in_array($p['universe'], domaine('transport')['keys'], true);
         $edit = $editId ? one('SELECT * FROM provider_services WHERE id = ? AND provider_id = ?', [$editId, $p['id']]) : null;
-        $recent = all('SELECT b.id, b.ref, b.title, b.status, b.created_at FROM bookings b WHERE b.provider_id = ? AND b.paid_at IS NOT NULL ORDER BY b.id DESC LIMIT 5', [$p['id']]); // seules les réservations payées
+        // Seules les réservations payées par le client ; du client, le prestataire ne voit que le nom et l'adresse.
+        $recent = all('SELECT b.id, b.ref, b.title, b.status, b.created_at, b.service_date, b.details, b.provider_amount, u.name AS cname FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE b.provider_id = ? AND b.paid_at IS NOT NULL ORDER BY b.id DESC LIMIT 20', [$p['id']]);
         $pub = '/' . str_replace('_', '-', $p['universe']);
     ?>
     <div class="card mt" id="p<?= (int) $p['id'] ?>">
@@ -127,10 +128,10 @@ view('layout/header', compact('title', 'active', 'providerMode'));
       </div>
 
       <?php if ($p['universe'] === 'immobilier'):
-        $visits = all("SELECT v.*, u.name AS uname, u.phone AS uphone, ps.title AS stitle FROM visit_requests v JOIN users u ON u.id = v.user_id JOIN provider_services ps ON ps.id = v.service_id WHERE v.provider_id = ? ORDER BY v.id DESC LIMIT 30", [$p['id']]); ?>
+        $visits = all("SELECT v.*, u.name AS uname, ps.title AS stitle FROM visit_requests v JOIN users u ON u.id = v.user_id JOIN provider_services ps ON ps.id = v.service_id WHERE v.provider_id = ? ORDER BY v.id DESC LIMIT 30", [$p['id']]); ?>
       <h3 class="h4 mt" id="visites">Demandes de visite</h3>
       <?php if (!$visits): ?><p class="muted">Aucune demande pour le moment.</p><?php else: foreach ($visits as $v): ?>
-        <div class="ps-ad"><b><?= e($v['stitle']) ?></b><br><?= e(date('d/m/Y', strtotime($v['visit_date']))) ?> à <?= e($v['visit_time']) ?> · <?= e($v['uname']) ?> · <a href="tel:<?= e($v['uphone']) ?>"><?= e(fmt_phone($v['uphone'])) ?></a><?php if ($v['message']): ?><br><small class="muted"><?= e($v['message']) ?></small><?php endif; ?></div>
+        <div class="ps-ad"><b><?= e($v['stitle']) ?></b><br><?= e(date('d/m/Y', strtotime($v['visit_date']))) ?> à <?= e($v['visit_time']) ?> · <?= e($v['uname']) ?><?php if ($v['message']): ?><br><small class="muted"><?= e($v['message']) ?></small><?php endif; ?></div>
       <?php endforeach; endif; endif; ?>
 
       <h3 class="h4 mt" id="annonces"> Mes annonces</h3>
@@ -183,8 +184,11 @@ view('layout/header', compact('title', 'active', 'providerMode'));
       </form>
 
       <?php if ($recent): ?>
-        <h3 class="h4 mt"> Mes dernières réservations</h3>
-        <?php foreach ($recent as $b): ?><div class="prov-mini"><div><b><?= e($b['title']) ?></b><small><?= e($b['ref']) ?> · <?= fmt_date($b['created_at']) ?></small></div><div class="prov-mini-r"><?= status_badge($b['status']) ?><?php if ($b['status'] !== 'EN_ATTENTE_PAIEMENT'): ?><a class="btn btn-soft btn-xs" href="/chat?pro=1&amp;client=<?= (int) $b['id'] ?>">✉️ Écrire au client</a><?php endif; ?></div></div><?php endforeach; ?>
+        <h3 class="h4 mt"> Mes missions</h3>
+        <?php foreach ($recent as $b): $d = json_decode((string) ($b['details'] ?? ''), true) ?: []; ?><div class="prov-mini"><div><b><?= e($b['title']) ?></b>
+          <small><?= e($b['ref']) ?><?= $b['service_date'] ? ' · le ' . e(date('d/m/Y', strtotime((string) $b['service_date']))) . (!empty($d['time']) ? ' à ' . e($d['time']) : '') : '' ?></small>
+          <small class="pm-client">👤 <?= e($b['cname'] ?: 'Client') ?><?php if (!empty($d['address']) || !empty($d['zone'])): ?> · 📍 <?= e(trim(($d['address'] ?? '') . (!empty($d['zone']) && empty($d['address']) ? $d['zone'] : ''))) ?><?php endif; ?></small>
+          <small>Pour vous : <b><?= fcfa($b['provider_amount']) ?></b></small></div><div class="prov-mini-r"><?= status_badge($b['status']) ?><?php if ($b['status'] !== 'EN_ATTENTE_PAIEMENT'): ?><a class="btn btn-soft btn-xs" href="/chat?pro=1&amp;client=<?= (int) $b['id'] ?>">✉️ Écrire au client</a><?php endif; ?></div></div><?php endforeach; ?>
       <?php endif; ?>
 
       <?php endif; ?>
