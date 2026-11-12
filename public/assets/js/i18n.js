@@ -94,7 +94,7 @@
   function ui() {
     document.querySelectorAll('[data-lang]').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === lang); });
     document.querySelectorAll('[data-lang-toggle]').forEach(function (b) {
-      b.textContent = lang === 'en' ? 'FR' : 'EN';
+      b.textContent = lang === 'en' ? 'EN' : 'FR'; // langue affichée = langue du site
       b.setAttribute('aria-label', lang === 'en' ? 'Passer en français' : 'Switch to English');
       b.title = b.getAttribute('aria-label');
     });

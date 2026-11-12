@@ -31,7 +31,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <link rel="stylesheet" href="/assets/css/forms.css?v=8">
 <?php if ($__en): ?><style>.i18n-wait body{visibility:hidden}</style><script>setTimeout(function(){document.documentElement.classList.remove('i18n-wait')},2500)</script>
 <script src="/assets/js/i18n-en.js?v=1" defer></script><?php endif; ?>
-<script src="/assets/js/i18n.js?v=1" defer></script>
+<script src="/assets/js/i18n.js?v=2" defer></script>
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <?php endif; ?>
@@ -50,7 +50,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
       <a class="btn btn-ghost btn-sm" href="/espace-prestataire?vue=profil"> Mon profil</a>
       <a class="btn btn-ghost btn-sm" href="/chat?pro=1"> Chat</a>
       <form method="post" action="/deconnexion" style="display:inline"><?= csrf_field() ?><button class="btn btn-soft btn-sm">Se déconnecter</button></form>
-      <button class="lang-btn" type="button" data-lang-toggle aria-label="Switch to English" title="Switch to English">EN</button>
+      <button class="lang-btn" type="button" data-lang-toggle aria-label="<?= $__en ? 'Passer en français' : 'Switch to English' ?>" title="<?= $__en ? 'Passer en français' : 'Switch to English' ?>"><?= $__en ? 'EN' : 'FR' ?></button>
     </div>
   </div>
 </header>
@@ -90,7 +90,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
       <?php else: ?>
         <a class="btn btn-primary btn-sm" href="/connexion">Se connecter</a>
       <?php endif; ?>
-      <button class="lang-btn" type="button" data-lang-toggle aria-label="Switch to English" title="Switch to English">EN</button>
+      <button class="lang-btn" type="button" data-lang-toggle aria-label="<?= $__en ? 'Passer en français' : 'Switch to English' ?>" title="<?= $__en ? 'Passer en français' : 'Switch to English' ?>"><?= $__en ? 'EN' : 'FR' ?></button>
       <button class="burger" aria-label="Menu" aria-expanded="false" data-burger><span></span><span></span><span></span></button>
     </div>
   </div>
