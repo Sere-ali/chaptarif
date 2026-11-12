@@ -37,6 +37,7 @@ $routes = [
     '/webhook/cinetpay'     => 'pages/webhook_cinetpay.php',
     '/webhook/paydunya'     => 'pages/webhook_paydunya.php',
     '/connexion'            => 'pages/login.php',
+    '/otp/envoyer'          => 'pages/otp_send.php',
     '/deconnexion'          => 'pages/logout.php',
     '/compte'               => 'pages/account.php',
     '/billet'               => 'pages/ticket.php',

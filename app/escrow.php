@@ -64,6 +64,13 @@ function booking_mark_paid(array $b, string $paymentRef): array
     if ($u && $u['phone']) {
         sms_send($u['phone'], "ChapTarif : paiement de {$b['total']} F reçu pour {$b['ref']}. Fonds sécurisés jusqu'à la fin du service. Code de validation à remettre au prestataire : {$b['release_code']}");
     }
+    // Le prestataire est prévenu de la nouvelle réservation (sans les coordonnées du client).
+    if (!empty($b['provider_id']) && ($pv = one('SELECT phone FROM providers WHERE id = ?', [$b['provider_id']])) && !empty($pv['phone'])) {
+        $d = json_decode((string) ($b['details'] ?? ''), true) ?: [];
+        $when = $b['service_date'] ? ' le ' . date('d/m', strtotime((string) $b['service_date'])) . (!empty($d['heure']) ? ' à ' . $d['heure'] : '') : '';
+        $where = !empty($d['commune']) ? ', ' . $d['commune'] : (!empty($d['adresse']) ? ', ' . mb_substr((string) $d['adresse'], 0, 40) : '');
+        sms_send($pv['phone'], 'ChapTarif : nouvelle réservation ' . $b['ref'] . ' — ' . mb_substr((string) $b['title'], 0, 50) . $when . $where . '. Montant pour vous : ' . (int) $b['provider_amount'] . ' F. Détails dans votre espace prestataire.');
+    }
     return $b;
 }
 

@@ -14,6 +14,11 @@ if (is_post()) {
     if (strlen($pw) < 8) $errors[] = 'Choisissez un mot de passe d\'au moins 8 caractères.';
     elseif ($pw !== (string) ($_POST['password2'] ?? '')) $errors[] = 'Les deux mots de passe ne sont pas identiques.';
     if (too_many_attempts('apply:' . client_ip(), 5, 60)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
+    // Vérification du numéro par SMS dès qu'une passerelle d'envoi est active.
+    if (!$errors && $phone && (infobip_configured() || whatsapp_configured())) {
+        $oc = preg_replace('/\D/', '', (string) ($_POST['otp'] ?? ''));
+        if (too_many_attempts('otp:' . $phone, 8, 15, false) || !otp_verify($phone, $oc)) { record_attempt('otp:' . $phone); $errors[] = 'Code de vérification SMS incorrect ou expiré.'; }
+    }
     $need = isset($U[$uk]) ? kyc_docs_required($uk) : [];
     $DL = kyc_doc_labels();
     foreach ($need as $nk) if (empty($_FILES[$nk]['name'])) $errors[] = $DL[$nk][0] . ' : document obligatoire.';
@@ -134,6 +139,14 @@ view('layout/header', compact('title', 'desc', 'active'));
             <label class="fld"><span>Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
             <label class="fld"><span>Confirmer le mot de passe</span><input type="password" name="password2" minlength="8" required autocomplete="new-password"></label>
           </div>
+          <?php if (infobip_configured() || whatsapp_configured()): ?>
+          <div class="pa-otp" data-otp>
+            <b>Vérification de votre numéro</b>
+            <p class="fine">Nous envoyons un code par SMS au numéro indiqué à l'étape 1.</p>
+            <div class="pa-otp-row"><button type="button" class="btn btn-soft" data-otp-send>Recevoir le code</button><input name="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="\d{6}" placeholder="Code à 6 chiffres" required></div>
+            <p class="fine" data-otp-msg hidden></p>
+          </div>
+          <?php endif; ?>
         </fieldset>
 
         <fieldset class="pa-step" data-step="3" hidden>
@@ -195,6 +208,15 @@ view('layout/header', compact('title', 'desc', 'active'));
     return true;
   }
   f.password2.addEventListener('input', function () { f.password2.setCustomValidity(''); });
+  var ob = f.querySelector('[data-otp-send]'), om = f.querySelector('[data-otp-msg]');
+  if (ob) ob.addEventListener('click', function () {
+    var fd = new FormData(); fd.append('_csrf', f.querySelector('input[name=_csrf]').value); fd.append('phone', f.phone.value); fd.append('cc', f.cc ? f.cc.value : '225');
+    ob.disabled = true; ob.textContent = 'Envoi…';
+    fetch('/otp/envoyer', { method: 'POST', body: fd, credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (j) {
+      om.hidden = false; om.textContent = j.ok ? j.msg : j.error; om.style.color = j.ok ? '#1F7A4F' : '#B42318';
+      var t = j.ok ? 60 : 0; (function tick() { if (t > 0) { ob.textContent = 'Renvoyer (' + t + ' s)'; t--; setTimeout(tick, 1000); } else { ob.disabled = false; ob.textContent = 'Renvoyer le code'; } })();
+    }).catch(function () { ob.disabled = false; ob.textContent = 'Recevoir le code'; });
+  });
   next.addEventListener('click', function () { if (valid(cur)) go(cur + 1); });
   prev.addEventListener('click', function () { go(cur - 1); });
   dots.forEach(function (d, i) { d.addEventListener('click', function () { if (i + 1 < cur || (i + 1 === cur + 1 && valid(cur))) go(i + 1); }); });

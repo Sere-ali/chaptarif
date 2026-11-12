@@ -202,3 +202,9 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
 .kyc-view-box iframe { width: min(680px, 86vw); height: 78vh; border: 0; border-radius: 12px; }
 .kyc-view-x { position: absolute; top: -14px; right: -14px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: #fff; color: #0E1B33; font-size: 1.5rem; line-height: 1; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
 @keyframes kvIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Vérification SMS (inscription prestataire) */
+.pa-otp { margin-top: 14px; padding: 14px; border-radius: 14px; background: #EAF1FE; }
+.pa-otp b { display: block; margin-bottom: 2px; }
+.pa-otp-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.pa-otp-row input { flex: 1 1 160px; letter-spacing: .2em; text-align: center; font-size: 1.1rem; }
