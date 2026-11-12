@@ -1675,3 +1675,6 @@ label.check.garantie-check:has(input:checked) { background: #DCE9FD; box-shadow:
 
 /* Numéro client / prestataire */
 .mcode { display: inline-block; font: 700 .72rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .03em; color: #1E5BD8; background: #EAF1FE; border-radius: 6px; padding: 1px 6px; vertical-align: middle; }
+
+.acc-no { margin: 4px 0 2px; }
+.acc-name { margin: 0; font-weight: 700; font-size: 1.05rem; color: #0E1B33; }
