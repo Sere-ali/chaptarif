@@ -6,9 +6,10 @@ $u = current_user();
 $U = nav_entries();
 $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 ?><!doctype html>
-<html lang="<?= $__en ? 'en' : 'fr' ?>"<?= $__en ? ' class="i18n-wait"' : '' ?> data-i18n="3" data-v="<?= e(data_version()) ?>">
+<html translate="no" lang="<?= $__en ? 'en' : 'fr' ?>"<?= $__en ? ' class="i18n-wait"' : '' ?> data-i18n="3" data-v="<?= e(data_version()) ?>">
 <head>
 <meta charset="utf-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>(function(h){try{var sw=screen&&screen.width?screen.width:0;if(sw&&sw<700&&window.innerWidth>900)h.className+=' force-mobile';}catch(e){}})(document.documentElement);</script>
 <title><?= e($title === 'ChapTarif' ? 'ChapTarif : comparez, réservez et payez en toute sécurité' : $title . ' · ChapTarif') ?></title>
@@ -28,10 +29,10 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <link rel="stylesheet" href="/assets/css/app.css?v=131">
 <link rel="stylesheet" href="/assets/css/polish.css?v=9">
 <link rel="stylesheet" href="/assets/css/motion.css?v=2">
-<link rel="stylesheet" href="/assets/css/forms.css?v=9">
+<link rel="stylesheet" href="/assets/css/forms.css?v=10">
 <?php if ($__en): ?><style>.i18n-wait body{visibility:hidden}</style><script>setTimeout(function(){document.documentElement.classList.remove('i18n-wait')},2500)</script>
 <script src="/assets/js/i18n-en.js?v=3" defer></script><?php endif; ?>
-<script src="/assets/js/i18n.js?v=5" defer></script>
+<script src="/assets/js/i18n.js?v=6" defer></script>
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <?php endif; ?>

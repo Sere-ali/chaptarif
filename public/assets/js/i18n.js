@@ -114,6 +114,7 @@
   }
   function apply() {
     root.lang = lang;
+    document.querySelectorAll('img[data-src-en]').forEach(function (im) { var u = lang === 'en' ? im.dataset.srcEn : im.dataset.srcFr; if (u && im.getAttribute('src') !== u) im.setAttribute('src', u); });
     if (lang === 'en') {
       walk(document.body); doTitle();
       obs.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTR });

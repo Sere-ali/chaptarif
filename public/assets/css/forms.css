@@ -238,3 +238,12 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
 .lang-menu button.on { background: #EEF7F1; color: #1F5C3E; }
 .lang-menu .lm-flag { font-size: 1.15rem; }
 .lang-menu i { margin-left: auto; font-style: normal; color: #2E7D5B; }
+/* Bouton de langue dans l'en-tête des pages univers (mobile) */
+.d-lang { height: 36px; min-width: 36px; padding: 0 9px; border-radius: 999px; font-size: .78rem; }
+.d-top-title { min-width: 0; }
+@media (max-width: 440px) {
+  .d-top { gap: 8px; }
+  .d-top .d-home-link .dh-t { display: none; }
+  .d-top .d-home-link { width: 36px; height: 36px; padding: 0 !important; justify-content: center; border-radius: 999px; }
+  .d-top-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}

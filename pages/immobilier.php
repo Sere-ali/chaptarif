@@ -188,7 +188,8 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
   <div class="container d-top">
     <a href="/" class="d-back" aria-label="Retour à l'accueil"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
     <h1 class="d-top-title">Immobilier</h1>
-    <a href="/" class="d-home-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg> Chez vous</a>
+    <a href="/" class="d-home-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="dh-t"> Chez vous</span></a>
+    <button class="lang-btn d-lang" type="button" data-lang-toggle aria-label="Langue / Language"><?= ($_COOKIE['ct_lang'] ?? '') === 'en' ? 'EN' : 'FR' ?></button>
   </div>
   <div class="immo-land">
     <div class="il-banner">
