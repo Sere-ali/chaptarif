@@ -27,7 +27,12 @@ view('admin/header', compact('page', 'nav'));
     <thead><tr><th>Réf.</th><th>Commencée le</th><th>Arrêtée le</th><th>Client</th><th>Service</th><th class="num">Total</th><th>Statut</th><th></th></tr></thead>
     <tbody><?php foreach ($rows as $b):
       $x = universe($b['universe']);
-      $msg = 'Bonjour' . ($b['uname'] ? ' ' . explode(' ', trim($b['uname']))[0] : '') . ', nous avons vu que votre réservation ' . $b['ref'] . ' (' . $b['title'] . ') n\'a pas été finalisée. Avez-vous rencontré un problème ? Nous sommes là pour vous aider.';
+      $isTrip = in_array($b['universe'], domaine('transport')['keys'], true);
+      $msg = 'Bonjour' . ($b['uname'] ? ' ' . trim($b['uname']) : '') . ",\n\n"
+        . 'Vous étiez tout près de finaliser votre réservation ' . $b['title'] . " !\n"
+        . "Un petit imprévu vous a arrêté en chemin ?\n"
+        . ($isTrip ? 'Votre trajet' : 'Votre prestation') . " vous attend sur ChapTarif. Retrouvez votre réservation et finalisez-la en quelques clics.\n\n"
+        . 'ChapTarif 😊';
     ?>
       <tr>
         <td><a class="mono" href="/admin/reservation?id=<?= (int) $b['id'] ?>"><?= e($b['ref']) ?></a></td>
