@@ -104,7 +104,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         $nRej = count(array_filter($svcs, fn($s) => $s['status'] === 'rejected'));
         $isTransport = in_array($p['universe'], domaine('transport')['keys'], true);
         $edit = $editId ? one('SELECT * FROM provider_services WHERE id = ? AND provider_id = ?', [$editId, $p['id']]) : null;
-        $recent = all('SELECT id, ref, title, status, created_at FROM bookings WHERE provider_id = ? ORDER BY id DESC LIMIT 5', [$p['id']]);
+        $recent = all('SELECT b.id, b.ref, b.title, b.status, b.created_at FROM bookings b WHERE b.provider_id = ? AND b.paid_at IS NOT NULL ORDER BY b.id DESC LIMIT 5', [$p['id']]); // seules les réservations payées
         $pub = '/' . str_replace('_', '-', $p['universe']);
     ?>
     <div class="card mt" id="p<?= (int) $p['id'] ?>">

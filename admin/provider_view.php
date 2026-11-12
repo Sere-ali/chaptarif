@@ -7,7 +7,7 @@ if (!$p) { flash('error', 'Prestataire introuvable.'); redirect('/admin/prestata
 $x = universe($p['universe']);
 $u = $p['phone'] ? one('SELECT * FROM users WHERE phone = ?', [$p['phone']]) : null;
 $ads = all('SELECT * FROM provider_services WHERE provider_id = ? ORDER BY id DESC', [$id]);
-$bk = all('SELECT b.*, us.name AS cname, us.phone AS cphone FROM bookings b LEFT JOIN users us ON us.id = b.user_id WHERE b.provider_id = ? ORDER BY b.id DESC LIMIT 100', [$id]);
+$bk = all("SELECT b.*, us.name AS cname, us.phone AS cphone FROM bookings b LEFT JOIN users us ON us.id = b.user_id WHERE b.provider_id = ? AND NOT ((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL)) ORDER BY b.id DESC LIMIT 100", [$id]); // réservations payées uniquement
 $visits = all('SELECT v.*, us.name AS cname, us.phone AS cphone, s.title AS stitle FROM visit_requests v LEFT JOIN users us ON us.id = v.user_id LEFT JOIN provider_services s ON s.id = v.service_id WHERE v.provider_id = ? ORDER BY v.id DESC LIMIT 50', [$id]);
 $sum = fn (array $st, string $col) => array_sum(array_map(fn ($b) => in_array($b['status'], $st, true) ? (int) $b[$col] : 0, $bk));
 $earned = $sum(['VALIDE'], 'provider_amount');
