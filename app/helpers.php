@@ -548,6 +548,7 @@ function chat_decorate(array $rows, bool $admin, string $otherName): array
     foreach ($rows as &$r) {
         $r['mine'] = $r['sender'] === $mineSender;
         $r['about_admin'] = $admin ? ($r['about'] ?? null) : null; // mention réservée à l'équipe
+        $r['about_uid'] = $r['about_admin'] ? chat_about_uid((string) $r['about_admin']) : null;
         $r['read'] = $r['mine'] && (int) ($admin ? $r['read_by_user'] : $r['read_by_admin']) === 1;
         $r['quote'] = null;
         if (!empty($r['reply_to']) && isset($quoted[(int) $r['reply_to']])) {
@@ -563,7 +564,9 @@ function chat_decorate(array $rows, bool $admin, string $otherName): array
 function chat_msg_html(array $m): string
 {
     $h = '<div class="wa-msg ' . ($m['mine'] ? 'me' : 'them') . '" data-id="' . (int) $m['id'] . '">';
-    if (!empty($m['about_admin'])) $h .= '<div class="wa-about">✉️ ' . e($m['about_admin']) . '</div>';
+    if (!empty($m['about_admin'])) $h .= !empty($m['about_uid'])
+        ? '<a class="wa-about" href="/admin/chat?u=' . (int) $m['about_uid'] . '" title="Ouvrir la conversation">✉️ ' . e($m['about_admin']) . ' →</a>'
+        : '<div class="wa-about">✉️ ' . e($m['about_admin']) . '</div>';
     if (!empty($m['quote'])) $h .= '<div class="wa-quote"><b>' . e($m['quote']['who']) . '</b><span>' . e($m['quote']['text']) . '</span></div>';
     if (!empty($m['att_url'])) {
         $u = e($m['att_url']);
@@ -580,8 +583,25 @@ function chat_msg_html(array $m): string
 
 function chat_json(array $r): array
 {
-    return ['id' => (int) $r['id'], 'me' => $r['mine'], 'read' => $r['read'], 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5), 'quote' => $r['quote'], 'about' => $r['about_admin'] ?? null,
+    return ['id' => (int) $r['id'], 'me' => $r['mine'], 'read' => $r['read'], 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5), 'quote' => $r['quote'], 'about' => $r['about_admin'] ?? null, 'about_uid' => $r['about_uid'] ?? null,
         'att' => empty($r['att_url']) ? null : ['type' => $r['att_type'], 'url' => $r['att_url'], 'name' => $r['att_name'], 'img' => $r['att_type'] === 'image' ? cld($r['att_url'], 'w_480,q_auto,f_auto') : null]];
+}
+
+/** Mention « Pour le prestataire / Pour le client … » → compte de la personne visée (pour ouvrir son chat). */
+function chat_about_uid(string $about): ?int
+{
+    static $cache = [];
+    if (array_key_exists($about, $cache)) return $cache[$about];
+    $uid = null;
+    $ref = preg_match('/\(réservation ([^)]+)\)/u', $about, $m) ? $m[1] : null;
+    if (str_starts_with($about, 'Pour le client') && $ref) {
+        $uid = (int) val('SELECT user_id FROM bookings WHERE ref = ?', [$ref]) ?: null;
+    } elseif (str_starts_with($about, 'Pour le prestataire')) {
+        $phone = $ref ? val('SELECT p.phone FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE b.ref = ?', [$ref]) : null;
+        if (!$phone && preg_match('/^Pour le prestataire (.+?)(?: \(réservation [^)]*\))?$/u', $about, $n)) $phone = val('SELECT phone FROM providers WHERE name = ? ORDER BY id LIMIT 1', [$n[1]]);
+        if ($phone) $uid = (int) val('SELECT id FROM users WHERE phone = ?', [$phone]) ?: null;
+    }
+    return $cache[$about] = $uid;
 }
 
 /** Valide l'identifiant du message auquel on répond (même conversation). */

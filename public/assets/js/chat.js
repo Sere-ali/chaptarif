@@ -18,7 +18,7 @@
     if (seen[m.id]) return; seen[m.id] = 1;
     var emp = q('[data-chat-empty]'); if (emp) emp.remove();
     var d = el('div', 'wa-msg ' + (m.me ? 'me' : 'them')); d.dataset.id = m.id;
-    if (m.about) d.appendChild(el('div', 'wa-about', '✉️ ' + m.about));
+    if (m.about) { var ab = el(m.about_uid ? 'a' : 'div', 'wa-about', '✉️ ' + m.about + (m.about_uid ? ' →' : '')); if (m.about_uid) ab.href = '/admin/chat?u=' + m.about_uid; d.appendChild(ab); }
     if (m.quote) { var qq = el('div', 'wa-quote'); qq.dataset.goto = m.quote.id; qq.appendChild(el('b', '', m.quote.who)); qq.appendChild(el('span', '', m.quote.text)); d.appendChild(qq); }
     if (m.att) {
       if (m.att.type === 'image') { var a = el('a'); a.href = m.att.url; a.target = '_blank'; a.rel = 'noopener'; var im = el('img', 'wa-img'); im.src = m.att.img || m.att.url; a.appendChild(im); d.appendChild(a); }

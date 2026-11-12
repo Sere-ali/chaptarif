@@ -69,3 +69,5 @@
 }
 
 .wa-about { font-size: .74rem; font-weight: 700; color: #1E5BD8; background: #EAF1FE; border-radius: 8px; padding: 3px 8px; margin-bottom: 4px; }
+a.wa-about { display: block; text-decoration: none; cursor: pointer; }
+a.wa-about:hover { background: #DCE8FD; }
