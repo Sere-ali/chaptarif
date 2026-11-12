@@ -229,3 +229,12 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
   .m-lang { height: 38px; min-width: 38px; padding: 0 8px; margin-left: 6px; font-size: .78rem; }
   .m-home-top .m-burger { width: 42px; height: 42px; }
 }
+
+/* Menu de choix de la langue */
+.lang-menu { position: fixed; z-index: 3000; min-width: 170px; padding: 6px; border-radius: 16px; background: #fff; box-shadow: 0 14px 40px rgba(15, 27, 45, .18); border: 1px solid #E3E8EF; animation: lmIn .14s ease-out; }
+@keyframes lmIn { from { opacity: 0; transform: translateY(-4px); } }
+.lang-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 12px; border: 0; border-radius: 11px; background: none; font: inherit; font-size: .95rem; font-weight: 700; color: #1E2A3A; cursor: pointer; text-align: left; }
+.lang-menu button:hover { background: #F2F6F4; }
+.lang-menu button.on { background: #EEF7F1; color: #1F5C3E; }
+.lang-menu .lm-flag { font-size: 1.15rem; }
+.lang-menu i { margin-left: auto; font-style: normal; color: #2E7D5B; }

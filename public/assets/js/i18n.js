@@ -95,7 +95,7 @@
     document.querySelectorAll('[data-lang]').forEach(function (b) { b.classList.toggle('on', b.dataset.lang === lang); });
     document.querySelectorAll('[data-lang-toggle]').forEach(function (b) {
       b.textContent = lang === 'en' ? 'EN' : 'FR'; // langue affichée = langue du site
-      b.setAttribute('aria-label', lang === 'en' ? 'Passer en français' : 'Switch to English');
+      b.setAttribute('aria-label', 'Langue / Language'); b.setAttribute('aria-haspopup', 'menu');
       b.title = b.getAttribute('aria-label');
     });
   }
@@ -119,11 +119,37 @@
     try { localStorage.setItem('ct_lang', lang); } catch (e) {}
     if (lang === 'en') load(apply); else apply();
   }
+  // Menu de choix de la langue (s'ouvre sous le bouton FR / EN)
+  var menu = null;
+  function closeMenu() { if (menu) { menu.remove(); menu = null; document.querySelectorAll('[data-lang-toggle]').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); }); } }
+  function openMenu(btn) {
+    closeMenu();
+    menu = document.createElement('div'); menu.className = 'lang-menu'; menu.setAttribute('role', 'menu'); menu.setAttribute('data-no-tr', '');
+    [['fr', '🇫🇷', 'Français'], ['en', '🇬🇧', 'English']].forEach(function (o) {
+      var it = document.createElement('button'); it.type = 'button'; it.setAttribute('role', 'menuitemradio');
+      it.setAttribute('aria-checked', o[0] === lang ? 'true' : 'false'); it.dataset.pick = o[0];
+      it.innerHTML = '<span class="lm-flag">' + o[1] + '</span><span>' + o[2] + '</span><i>' + (o[0] === lang ? '✓' : '') + '</i>';
+      if (o[0] === lang) it.className = 'on';
+      menu.appendChild(it);
+    });
+    document.body.appendChild(menu);
+    var r = btn.getBoundingClientRect(), w = menu.offsetWidth;
+    menu.style.top = (r.bottom + 8) + 'px';
+    menu.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.right - w)) + 'px';
+    btn.setAttribute('aria-expanded', 'true');
+  }
   document.addEventListener('click', function (e) {
-    var b = e.target.closest('[data-lang],[data-lang-toggle]'); if (!b) return;
-    e.preventDefault();
-    set(b.hasAttribute('data-lang-toggle') ? (lang === 'en' ? 'fr' : 'en') : b.dataset.lang);
+    var p = e.target.closest('.lang-menu [data-pick]');
+    if (p) { e.preventDefault(); var l = p.dataset.pick; closeMenu(); if (l !== lang) set(l); return; }
+    var t = e.target.closest('[data-lang-toggle]');
+    if (t) { e.preventDefault(); e.stopPropagation(); if (menu) closeMenu(); else openMenu(t); return; }
+    if (menu && !e.target.closest('.lang-menu')) closeMenu();
+    var b = e.target.closest('[data-lang]'); if (!b) return;
+    e.preventDefault(); set(b.dataset.lang);
   });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+  window.addEventListener('scroll', closeMenu, { passive: true });
+  window.addEventListener('resize', closeMenu);
   var start = function () {
     var c = document.cookie.match(/(?:^|; )ct_lang=(\w+)/);
     if (c && c[1] === 'en') { lang = 'en'; load(apply); } else { ui(); root.classList.remove('i18n-wait'); }
