@@ -250,5 +250,4 @@ view('layout/header', compact('title', 'desc', 'active'));
   vw.addEventListener('click', function (e) { if (e.target === vw) closeV(); });
 })();
 </script>
-<script src="/assets/js/i18n-pro.js?v=1" defer></script>
 <?php view('layout/footer', compact('active'));

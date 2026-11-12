@@ -42,7 +42,8 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <img src="/assets/img/logo.svg" alt="" width="34" height="34">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
-    <span class="m-loc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Côte d'Ivoire<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    <span class="m-loc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span class="m-loc-t">Côte d'Ivoire</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    <button class="lang-btn m-lang" type="button" data-lang-toggle aria-label="Switch to English" title="Switch to English">EN</button>
     <button class="m-burger" type="button" aria-label="Ouvrir le menu" aria-controls="m-drawer" aria-expanded="false" data-drawer-open><span></span><span></span><span></span></button>
   </div>
   <div class="container m-hero-in">

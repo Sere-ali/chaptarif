@@ -215,3 +215,17 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
 .lang-sw button { border: 0; background: none; color: inherit; font: inherit; font-size: .8rem; font-weight: 800; padding: 6px 12px; border-radius: 999px; cursor: pointer; }
 .lang-sw button.on { background: #fff; color: #1F5C3E; }
 .pa-hint { margin: -6px 0 14px; padding: 10px 12px; border-radius: 12px; background: #EEF7F1; color: #1F5C3E; font-size: .86rem; line-height: 1.45; }
+
+/* Bouton de langue dans l'en-tête */
+.lang-btn { flex: none; min-width: 40px; height: 40px; padding: 0 10px; border-radius: 12px; border: 1px solid var(--line, #E3E8EF); background: #fff; color: #1F5C3E; font: inherit; font-size: .82rem; font-weight: 800; letter-spacing: .02em; cursor: pointer; }
+.lang-btn:hover { background: #EEF7F1; }
+.m-lang { height: 42px; min-width: 42px; border: 0; border-radius: 999px; box-shadow: 0 6px 18px rgba(15, 27, 45, .1); margin-left: 8px; }
+.m-home-top .m-brand { flex: none; }
+@media (max-width: 440px) {
+  .m-home-top .m-brand { gap: 6px; } .m-home-top .m-brand img { width: 36px; height: 36px; } .m-home-top .m-brand .brand-txt { font-size: 1.3rem; }
+  .m-home-top .m-loc { padding: 8px 10px; font-size: .85rem; gap: 3px; }
+  .m-home-top .m-loc svg { width: 15px; height: 15px; }
+  .m-home-top .m-loc-t { font-size: 0; } .m-home-top .m-loc-t::after { content: "CI"; font-size: .85rem; }
+  .m-lang { height: 38px; min-width: 38px; padding: 0 8px; margin-left: 6px; font-size: .78rem; }
+  .m-home-top .m-burger { width: 42px; height: 42px; }
+}
