@@ -137,18 +137,24 @@ view('admin/header', compact('page', 'nav'));
       <?php if ($id): ?><p class="muted"><?= (int) $p['missions'] ?> missions · <?= fcfa($earned) ?> reversés</p><?php endif; ?>
       <?php if (!empty($p['photo_url'])): ?><form method="post"><?= csrf_field() ?><button class="linklike" name="action" value="remove_photo">Retirer la photo</button></form><?php endif; ?>
     </div>
-    <?php $pdx = provider_docs($p); $DLx = kyc_doc_labels(); $shown = array_values(array_filter(array_keys($DLx), fn($k) => !empty($pdx[$k]))); ?>
-    <?php if ($shown): ?>
-    <div class="panel"><h2 class="h4">Documents (<?= count($shown) ?>)</h2>
-      <div class="pe-docs">
-      <?php foreach ($shown as $xk): $xl = $DLx[$xk][0]; $isPdf = str_ends_with(strtolower((string) $pdx[$xk]), '.pdf'); ?>
-        <a class="pe-doc" data-doc-view="<?= $isPdf ? 'pdf' : 'img' ?>" data-doc-title="<?= e($xl . ' · ' . ($p['name'] ?? '')) ?>" href="<?= e(doc_url($p, $xk)) ?>" title="Voir le document">
-          <?php if ($isPdf): ?><span class="pe-pdf">PDF</span><?php else: ?><img src="<?= e(doc_url($p, $xk, true)) ?>" alt="" loading="lazy"><?php endif; ?>
-          <span class="pe-doc-t"><?= e($xl) ?></span><span class="pe-eye"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
-        </a>
-      <?php endforeach; ?>
-      </div>
-      <p class="fine">Documents privés, visibles uniquement dans le back-office. Chaque consultation est journalisée.</p>
+    <?php $pdx = provider_docs($p); foreach (['cni_recto' => 'Pièce d\'identité — recto', 'cni_verso' => 'Pièce d\'identité — verso'] as $xk => $xl): if (empty($pdx[$xk])) continue; ?>
+    <div class="panel"><h2 class="h4"><?= e($xl) ?></h2>
+      <?php if (str_ends_with((string) $pdx[$xk], '.pdf')): ?>
+        <a class="btn btn-soft" data-doc-view="pdf" data-doc-title="<?= e($xl) ?>" href="<?= e(doc_url($p, $xk)) ?>"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> Voir le PDF</a>
+      <?php else: ?>
+        <a data-doc-view="img" data-doc-title="<?= e($xl) ?>" href="<?= e(doc_url($p, $xk)) ?>" title="Voir en grand"><img class="cni-thumb" src="<?= e(doc_url($p, $xk, true)) ?>" alt="<?= e($xl) ?>"></a>
+      <?php endif; ?>
+      <p class="fine">Document privé (lien signé Cloudinary). Consultation journalisée.</p>
+    </div>
+    <?php endforeach; ?>
+    <?php if (!empty($p['casier_public_id'])): ?>
+    <div class="panel"><h2 class="h4">Casier judiciaire</h2>
+      <?php if (str_ends_with((string) $p['casier_public_id'], '.pdf')): ?>
+        <a class="btn btn-soft" data-doc-view="pdf" data-doc-title="Casier judiciaire" href="<?= e(doc_url($p, 'casier')) ?>">Voir le PDF</a>
+      <?php else: ?>
+        <a data-doc-view="img" data-doc-title="Casier judiciaire" href="<?= e(doc_url($p, 'casier')) ?>"><img class="cni-thumb" src="<?= e(doc_url($p, 'casier', true)) ?>" alt="Casier judiciaire"></a>
+      <?php endif; ?>
+      <p class="fine">Document privé (lien signé Cloudinary). Consultation journalisée.</p>
     </div>
     <?php endif; ?>
     <?php if ($history): ?>
