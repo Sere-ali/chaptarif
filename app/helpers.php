@@ -545,7 +545,13 @@ function chat_decorate(array $rows, bool $admin, string $otherName): array
     if ($ids) {
         foreach (all('SELECT id, sender, body, att_type, att_name FROM chat_messages WHERE id IN (' . implode(',', array_map('intval', $ids)) . ')') as $q) $quoted[(int) $q['id']] = $q;
     }
+    $viewer = current_user();
+    $allIds = array_map(fn($r) => (int) $r['id'], $rows);
+    $rx = reactions_for('chat', $allIds, (int) ($viewer['id'] ?? 0), $admin ? 'admin' : 'user');
+    $rc = chat_reply_counts($allIds);
     foreach ($rows as &$r) {
+        $r['rx'] = $rx[(int) $r['id']] ?? [];
+        $r['rc'] = $rc[(int) $r['id']] ?? 0;
         $r['mine'] = $r['sender'] === $mineSender;
         $r['about_admin'] = $admin ? ($r['about'] ?? null) : null; // mention réservée à l'équipe
         $r['about_uid'] = $r['about_admin'] ? chat_about_uid((string) $r['about_admin']) : null;
@@ -561,9 +567,28 @@ function chat_decorate(array $rows, bool $admin, string $otherName): array
 }
 
 /** Rendu HTML d'un message de chat (déjà décoré). */
+/** Nombre de réponses (messages qui citent ce message) : [id => n]. */
+function chat_reply_counts(array $ids): array
+{
+    $ids = array_values(array_filter(array_map('intval', $ids)));
+    if (!$ids) return [];
+    $o = [];
+    foreach (all('SELECT reply_to, COUNT(*) AS n FROM chat_messages WHERE reply_to IN (' . implode(',', $ids) . ') GROUP BY reply_to') as $r) $o[(int) $r['reply_to']] = (int) $r['n'];
+    return $o;
+}
+
+/** Réactions et nombres de réponses des derniers messages d'une conversation (pour la mise à jour en direct). */
+function chat_meta(int $userId, bool $admin): array
+{
+    $ids = array_map('intval', array_column(all('SELECT id FROM chat_messages WHERE user_id = ? ORDER BY id DESC LIMIT 200', [$userId]), 'id'));
+    $viewer = current_user();
+    $rx = reactions_for('chat', $ids, (int) ($viewer['id'] ?? 0), $admin ? 'admin' : 'user');
+    return ['rx' => (object) $rx, 'rc' => (object) chat_reply_counts($ids)];
+}
+
 function chat_msg_html(array $m): string
 {
-    $h = '<div class="wa-msg ' . ($m['mine'] ? 'me' : 'them') . '" data-id="' . (int) $m['id'] . '">';
+    $h = '<div class="wa-msg ' . ($m['mine'] ? 'me' : 'them') . '" data-id="' . (int) $m['id'] . '"' . (!empty($m['reply_to']) ? ' data-reply-to="' . (int) $m['reply_to'] . '"' : '') . '>';
     if (!empty($m['about_admin'])) $h .= !empty($m['about_uid'])
         ? '<a class="wa-about" href="/admin/chat?u=' . (int) $m['about_uid'] . '" title="Ouvrir la conversation">✉️ ' . e($m['about_admin']) . ' →</a>'
         : '<div class="wa-about">✉️ ' . e($m['about_admin']) . '</div>';
@@ -578,12 +603,14 @@ function chat_msg_html(array $m): string
     }
     if ($m['body'] !== '') $h .= '<span class="wa-txt">' . nl2br(e($m['body'])) . '</span>';
     $h .= '<span class="wa-meta">' . e(substr($m['created_at'], 11, 5)) . ($m['mine'] ? ' <i class="wa-tick' . ($m['read'] ? ' read' : '') . '">✓✓</i>' : '') . '</span>';
-    return $h . '<button type="button" class="wa-reply" aria-label="Répondre" title="Répondre"></button></div>';
+    $h .= reactions_html($m['rx'] ?? [], (int) $m['id']);
+    $h .= '<button type="button" class="wa-thread" data-thread="' . (int) $m['id'] . '"' . (empty($m['rc']) ? ' hidden' : '') . '>🧵 <span>' . (int) ($m['rc'] ?? 0) . '</span> réponse' . (($m['rc'] ?? 0) > 1 ? 's' : '') . '</button>';
+    return $h . '<button type="button" class="wa-reply" aria-label="Répondre" title="Répondre">↩</button></div>';
 }
 
 function chat_json(array $r): array
 {
-    return ['id' => (int) $r['id'], 'me' => $r['mine'], 'read' => $r['read'], 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5), 'quote' => $r['quote'], 'about' => $r['about_admin'] ?? null, 'about_uid' => $r['about_uid'] ?? null,
+    return ['id' => (int) $r['id'], 'reply_to' => (int) ($r['reply_to'] ?? 0), 'rx' => $r['rx'] ?? [], 'rc' => (int) ($r['rc'] ?? 0), 'me' => $r['mine'], 'read' => $r['read'], 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5), 'quote' => $r['quote'], 'about' => $r['about_admin'] ?? null, 'about_uid' => $r['about_uid'] ?? null,
         'att' => empty($r['att_url']) ? null : ['type' => $r['att_type'], 'url' => $r['att_url'], 'name' => $r['att_name'], 'img' => $r['att_type'] === 'image' ? cld($r['att_url'], 'w_480,q_auto,f_auto') : null]];
 }
 

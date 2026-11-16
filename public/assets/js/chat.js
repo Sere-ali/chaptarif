@@ -12,12 +12,81 @@
   log.querySelectorAll('.wa-msg').forEach(function (m) { seen[m.dataset.id] = 1; });
   var down = function () { log.scrollTop = log.scrollHeight; };
 
+  // --- réactions et fils
+  var csrf = form.elements._csrf.value, thId = 0, rxCache = {};
+  var th = q('[data-th]'), thLog = q('[data-th-log]'), thForm = q('[data-th-form]'), pick = q('[data-rx-pick]'), pickFor = 0;
+  var setRx = function (box, list) {
+    box.textContent = '';
+    (list || []).forEach(function (r) {
+      var b = el('button', 'rx-chip' + (r.mine ? ' mine' : '')); b.type = 'button'; b.dataset.react = r.e; b.title = (r.who || []).join(', ');
+      b.appendChild(document.createTextNode(r.e + ' ')); b.appendChild(el('b', '', String(r.n))); box.appendChild(b);
+    });
+    var a = el('button', 'rx-add', '☺︎+'); a.type = 'button'; a.dataset.rxAdd = '1'; a.setAttribute('aria-label', 'Ajouter une réaction'); box.appendChild(a);
+  };
+  var setRc = function (b, n) {
+    b.hidden = !n; b.textContent = '🧵 ' + n + ' réponse' + (n > 1 ? 's' : '');
+  };
+  var applyMeta = function (j) {
+    var rx = j.rx || {}, rc = j.rc || {};
+    box.querySelectorAll('.wa-log .wa-msg[data-id]').forEach(function (m) {
+      var id = m.dataset.id, key = JSON.stringify(rx[id] || []);
+      if (rxCache[id] !== key) { rxCache[id] = key; box.querySelectorAll('[data-rx="' + id + '"]').forEach(function (x) { setRx(x, rx[id] || []); }); }
+      var tb = m.querySelector('.wa-thread'); if (tb) { var n = rc[id] || 0; if (tb.dataset.n !== String(n)) { tb.dataset.n = n; setRc(tb, n); } }
+    });
+  };
+  var clean = function (n) { var c = n.cloneNode(true); c.classList.remove('flash'); c.querySelectorAll('.wa-reply,.wa-thread' + (n.dataset.replyTo ? ',.wa-quote' : '')).forEach(function (x) { x.remove(); }); return c; };
+  var showThread = function (id, keepBottom) {
+    var p = log.querySelector('.wa-msg[data-id="' + id + '"]'); if (!p) return;
+    thId = +id; thLog.textContent = '';
+    var pc = clean(p); pc.classList.add('wa-th-parent'); thLog.appendChild(pc);
+    var reps = log.querySelectorAll('.wa-msg[data-reply-to="' + id + '"]');
+    thLog.appendChild(el('div', 'wa-th-sep', reps.length ? reps.length + ' réponse' + (reps.length > 1 ? 's' : '') : 'Aucune réponse pour l\'instant'));
+    reps.forEach(function (r) { thLog.appendChild(clean(r)); });
+    th.hidden = false; box.classList.add('th-open');
+    thLog.scrollTop = keepBottom || reps.length ? thLog.scrollHeight : 0;
+  };
+  var hideThread = function () { thId = 0; th.hidden = true; box.classList.remove('th-open'); };
+  var react = function (id, emoji) {
+    var d = new FormData(); d.append('_csrf', csrf); d.append('action', 'react'); d.append('id', id); d.append('emoji', emoji);
+    fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: d }).then(function () { poll(true); }).catch(function () {});
+  };
+  var openPick = function (id, anchor) {
+    pickFor = +id; pick.hidden = false;
+    var r = anchor.getBoundingClientRect(), bx = box.getBoundingClientRect();
+    var left = Math.max(6, Math.min(bx.width - pick.offsetWidth - 6, r.left - bx.left));
+    var top = r.top - bx.top - pick.offsetHeight - 6; if (top < 60) top = r.bottom - bx.top + 6;
+    pick.style.left = left + 'px'; pick.style.top = top + 'px';
+  };
+  box.addEventListener('click', function (e) {
+    var t;
+    if ((t = e.target.closest('.rx-chip'))) { react(t.closest('[data-rx]').dataset.rx, t.dataset.react); return; }
+    if ((t = e.target.closest('[data-rx-add]'))) { e.stopPropagation(); openPick(t.closest('[data-rx]').dataset.rx, t); return; }
+    if ((t = e.target.closest('[data-pick]'))) { if (pickFor) react(pickFor, t.dataset.pick); pick.hidden = true; return; }
+    if (e.target.closest('[data-pk-reply]')) { var m = log.querySelector('.wa-msg[data-id="' + pickFor + '"]'); pick.hidden = true; if (m) setReply(m); return; }
+    if (e.target.closest('[data-pk-thread]')) { pick.hidden = true; showThread(pickFor); thForm.elements[0].focus(); return; }
+    if ((t = e.target.closest('[data-thread]'))) { showThread(t.dataset.thread); return; }
+    if (e.target.closest('[data-th-x]')) { hideThread(); return; }
+    if (!e.target.closest('[data-rx-pick]')) pick.hidden = true;
+  });
+  // appui long (mobile) ou clic droit : réactions
+  var lp = null;
+  log.addEventListener('touchstart', function (e) { var m = e.target.closest('.wa-msg'); if (!m || e.target.closest('a,button,audio')) return; lp = setTimeout(function () { lp = null; if (navigator.vibrate) navigator.vibrate(15); openPick(m.dataset.id, m); }, 480); }, { passive: true });
+  ['touchend', 'touchmove', 'touchcancel'].forEach(function (ev) { log.addEventListener(ev, function () { if (lp) { clearTimeout(lp); lp = null; } }, { passive: true }); });
+  log.addEventListener('contextmenu', function (e) { var m = e.target.closest('.wa-msg'); if (!m || e.target.closest('a,img,audio')) return; e.preventDefault(); openPick(m.dataset.id, m); });
+  // réponse dans le fil
+  thForm.addEventListener('submit', function (e) {
+    e.preventDefault(); var ta = thForm.elements[0], v = ta.value.trim(); if (!v || !thId) return;
+    var d = new FormData(); d.append('_csrf', csrf); d.append('body', v); d.append('reply_to', thId); ta.value = '';
+    send(d, function () { ta.value = v; });
+  });
+  thForm.elements[0].addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 900) { e.preventDefault(); thForm.requestSubmit(); } });
+
   // --- affichage d'un message reçu
   var el = function (tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt) n.textContent = txt; return n; };
   var add = function (m) {
     if (seen[m.id]) return; seen[m.id] = 1;
     var emp = q('[data-chat-empty]'); if (emp) emp.remove();
-    var d = el('div', 'wa-msg ' + (m.me ? 'me' : 'them')); d.dataset.id = m.id;
+    var d = el('div', 'wa-msg ' + (m.me ? 'me' : 'them')); d.dataset.id = m.id; if (m.reply_to) d.dataset.replyTo = m.reply_to;
     if (m.about) { var ab = el(m.about_uid ? 'a' : 'div', 'wa-about', '✉️ ' + m.about + (m.about_uid ? ' →' : '')); if (m.about_uid) ab.href = '/admin/chat?u=' + m.about_uid; d.appendChild(ab); }
     if (m.quote) { var qq = el('div', 'wa-quote'); qq.dataset.goto = m.quote.id; qq.appendChild(el('b', '', m.quote.who)); qq.appendChild(el('span', '', m.quote.text)); d.appendChild(qq); }
     if (m.att) {
@@ -29,15 +98,19 @@
     var meta = el('span', 'wa-meta', m.time);
     if (m.me) { var t = el('i', 'wa-tick' + (m.read ? ' read' : ''), '✓✓'); meta.appendChild(document.createTextNode(' ')); meta.appendChild(t); }
     d.appendChild(meta);
+    var rxd = el('div', 'rx'); rxd.dataset.rx = m.id; d.appendChild(rxd); setRx(rxd, m.rx || []);
+    var tb = el('button', 'wa-thread'); tb.type = 'button'; tb.dataset.thread = m.id; d.appendChild(tb); setRc(tb, m.rc || 0);
     var rb = el('button', 'wa-reply', '↩'); rb.type = 'button'; rb.title = 'Répondre'; d.appendChild(rb);
     log.appendChild(d); last = Math.max(last, m.id); down();
+    if (m.reply_to && m.reply_to === thId) showThread(thId, true);
   };
-  var poll = function () {
-    if (document.hidden) return;
+  var poll = function (force) {
+    if (document.hidden && force !== true) return;
     fetch(url + sep + 'poll=1&after=' + last, { credentials: 'same-origin' }).then(function (r) { return r.json(); })
       .then(function (j) {
         (j.messages || []).forEach(add);
         (j.reads || []).forEach(function (id) { var t = log.querySelector('.wa-msg[data-id="' + id + '"] .wa-tick'); if (t) t.classList.add('read'); });
+        applyMeta(j);
       }).catch(function () {});
   };
   var send = function (data, onFail) {
@@ -47,7 +120,8 @@
       .catch(function () { alert('Connexion perdue : message non envoyé.'); if (onFail) onFail(); });
   };
   var base = function () { var d = new FormData(); d.append('_csrf', form.elements._csrf.value); if (replyId.value) d.append('reply_to', replyId.value); return d; };
-  down(); setInterval(poll, 1000); document.addEventListener('visibilitychange', poll);
+  down(); setInterval(poll, 1000);
+  log.querySelectorAll('.wa-thread').forEach(function (b) { b.dataset.n = (b.querySelector('span') || {}).textContent || '0'; }); document.addEventListener('visibilitychange', poll);
 
   // --- répondre à un message
   var setReply = function (msg) {

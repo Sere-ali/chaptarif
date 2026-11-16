@@ -3,6 +3,11 @@ $me = require_admin();
 $uid = (int) ($_GET['u'] ?? 0);
 $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch';
 
+if (is_post() && $uid && ($_POST['action'] ?? '') === 'react') {
+    $mid = (int) ($_POST['id'] ?? 0);
+    $ok = one('SELECT id FROM chat_messages WHERE id = ? AND user_id = ?', [$mid, $uid]) && reaction_toggle('chat', $mid, (int) $me['id'], 'admin', (string) ($_POST['emoji'] ?? ''));
+    header('Content-Type: application/json'); echo json_encode(['ok' => (bool) $ok]); exit;
+}
 if (is_post() && $uid) {
     $body = trim(mb_substr((string) ($_POST['body'] ?? ''), 0, 1000));
     $att = chat_attachment();
@@ -23,7 +28,7 @@ if ($uid && isset($_GET['poll'])) {
     q("UPDATE chat_messages SET read_by_admin = 1 WHERE user_id = ? AND sender = 'user' AND read_by_admin = 0", [$uid]);
     $reads = array_map('intval', array_column(all("SELECT id FROM chat_messages WHERE user_id = ? AND sender = 'admin' AND read_by_user = 1 ORDER BY id DESC LIMIT 60", [$uid]), 'id'));
     header('Content-Type: application/json');
-    echo json_encode(['messages' => array_map('chat_json', $rows), 'reads' => $reads]);
+    echo json_encode(['messages' => array_map('chat_json', $rows), 'reads' => $reads] + chat_meta($uid, true));
     exit;
 }
 

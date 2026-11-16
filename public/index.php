@@ -45,6 +45,7 @@ $routes = [
     '/espace-prestataire'   => 'pages/provider_space.php',
     '/chat'                 => 'pages/chat.php',
     '/admin/chat'           => 'admin/chat.php',
+    '/admin/equipe'         => 'admin/team.php',
     '/profil-prestataire'   => 'pages/provider_public.php',
     '/admin/annonces'       => 'admin/listings.php',
     '/prestataire/valider'  => 'pages/provider_validate.php',

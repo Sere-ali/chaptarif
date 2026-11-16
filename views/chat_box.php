@@ -13,6 +13,12 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <?php if (!$msgs): ?><p class="wa-empty" data-chat-empty>👋 Bonjour ! Comment pouvons-nous vous aider ?</p><?php endif; ?>
     <?php foreach ($msgs as $m) echo chat_msg_html($m); ?>
   </div>
+  <div class="wa-th" data-th hidden>
+    <header class="wa-th-h"><button type="button" class="wa-back" data-th-x aria-label="Fermer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div><b>Fil de discussion</b><small><?= e($name) ?></small></div></header>
+    <div class="wa-th-log" data-th-log></div>
+    <form class="wa-th-form" data-th-form><textarea rows="1" maxlength="1000" placeholder="Répondre dans le fil" aria-label="Répondre dans le fil"></textarea><button class="wa-main" aria-label="Envoyer">➤</button></form>
+  </div>
+  <div class="rx-pick" data-rx-pick hidden><?php foreach (REACTIONS as $r): ?><button type="button" data-pick="<?= $r ?>"><?= $r ?></button><?php endforeach; ?><button type="button" class="pk-act" data-pk-reply title="Répondre">↩</button><button type="button" class="pk-act" data-pk-thread title="Répondre dans un fil">🧵</button></div>
   <form class="wa-form" method="post" action="<?= e($url) ?>" data-chat-form>
     <?= csrf_field() ?>
     <input type="hidden" name="reply_to" value="" data-reply-id>
@@ -32,5 +38,5 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <div class="wa-rec" data-chat-rec hidden><span class="rec-dot"></span> <b data-rec-time>0:00</b> <button type="button" data-rec-cancel>✕ Annuler</button><button type="button" class="wa-main" data-rec-send aria-label="Envoyer le vocal">➤</button></div>
   </form>
 </div>
-<link rel="stylesheet" href="/assets/css/chat.css?v=3">
-<script src="/assets/js/chat.js?v=5" defer></script>
+<link rel="stylesheet" href="/assets/css/chat.css?v=4">
+<script src="/assets/js/chat.js?v=6" defer></script>

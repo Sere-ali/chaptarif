@@ -9,10 +9,13 @@ $pendingListings = (int) val("SELECT COUNT(*) FROM provider_services WHERE statu
 $PROV_SQL = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
 $chatUnreadPro = (int) val("SELECT COUNT(*) FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE c.sender = 'user' AND c.read_by_admin = 0 AND $PROV_SQL");
 $chatUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0") - $chatUnreadPro;
+$teamLast = $me ? (int) val('SELECT last_id FROM team_reads WHERE user_id = ?', [$me['id']]) : 0;
+$teamUnread = $me ? (int) val('SELECT COUNT(*) FROM team_messages WHERE id > ? AND user_id <> ? AND deleted = 0', [$teamLast, $me['id']]) : 0;
 $myOpenTasks = $me ? (int) val("SELECT COUNT(*) FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule')", [$me['id']]) : 0;
 $items = [
     ['Pilotage', null],
     ['dashboard', '/admin', '', 'Tableau de bord', 0],
+    ['team', '/admin/equipe', '', 'Discussion d\'équipe', $teamUnread],
     ['tasks', '/admin/taches', '', 'Mes tâches', $myOpenTasks],
     ['candidatures', '/admin/candidatures', '', 'Candidatures prestataires', $pendingCandidatures],
     ['bookings', '/admin/reservations', '', 'Réservations', 0],
@@ -54,7 +57,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=30">
+<link rel="stylesheet" href="/assets/css/admin.css?v=32">
 </head>
 <body class="adm">
 <div class="main" data-live>

@@ -16,6 +16,11 @@ if (!$providerMode && !empty($_GET['pour'])) {
     if ($cb) { $about = 'Pour le client ' . ($cb['name'] ?: 'client') . ' (réservation ' . $cb['ref'] . ')'; $pourQ = '&client=' . (int) $cb['id']; }
 }
 
+if (is_post() && ($_POST['action'] ?? '') === 'react') {
+    $mid = (int) ($_POST['id'] ?? 0);
+    $ok = one('SELECT id FROM chat_messages WHERE id = ? AND user_id = ?', [$mid, $me['id']]) && reaction_toggle('chat', $mid, (int) $me['id'], 'user', (string) ($_POST['emoji'] ?? ''));
+    header('Content-Type: application/json'); echo json_encode(['ok' => (bool) $ok]); exit;
+}
 if (is_post()) {
     $body = trim(mb_substr((string) ($_POST['body'] ?? ''), 0, 1000));
     $recent = (int) val('SELECT COUNT(*) FROM chat_messages WHERE user_id = ? AND sender = ? AND created_at > ?', [$me['id'], 'user', date('Y-m-d H:i:s', time() - 60)]);
@@ -36,7 +41,7 @@ if (isset($_GET['poll'])) {
     q("UPDATE chat_messages SET read_by_user = 1 WHERE user_id = ? AND sender = 'admin' AND read_by_user = 0", [$me['id']]);
     $reads = array_map('intval', array_column(all("SELECT id FROM chat_messages WHERE user_id = ? AND sender = 'user' AND read_by_admin = 1 ORDER BY id DESC LIMIT 60", [$me['id']]), 'id'));
     header('Content-Type: application/json');
-    echo json_encode(['messages' => array_map('chat_json', $rows), 'reads' => $reads]);
+    echo json_encode(['messages' => array_map('chat_json', $rows), 'reads' => $reads] + chat_meta((int) $me['id'], false));
     exit;
 }
 

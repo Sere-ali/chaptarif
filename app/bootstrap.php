@@ -89,6 +89,7 @@ require APP . '/escrow.php';
 require APP . '/payment.php';
 require APP . '/sms.php';
 require APP . '/security.php';
+require APP . '/team.php';
 
 db_migrate();
 if (PHP_SAPI !== 'cli') maintenance_maybe();
