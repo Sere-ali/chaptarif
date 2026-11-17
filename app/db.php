@@ -44,7 +44,7 @@ function q(string $sql, array $params = []): PDOStatement
     $st = db()->prepare($sql);
     $st->execute($params);
     if (preg_match('/^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+(\w+)/i', $sql, $m)
-        && !in_array(strtolower($m[1]), ['login_attempts', 'otp_codes', 'audit_logs'], true) && $st->rowCount() > 0) {
+        && !in_array(strtolower($m[1]), ['login_attempts', 'otp_codes', 'audit_logs', 'translations', 'team_reads'], true) && $st->rowCount() > 0) {
         data_changed();
     }
     return $st;

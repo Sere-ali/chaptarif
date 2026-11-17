@@ -27,29 +27,35 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !v.hidden) close(); });
 })();
 </script>
-<script>
-/* 🌐 Traduire les textes écrits par les clients / prestataires (messages de contact, devis, réclamations, présentations…) */
+<script data-live-rerun>
+/* 🌐 Traduire les textes écrits par les clients / prestataires (messages de contact, devis, réclamations, présentations…).
+   Relancé après chaque mise à jour en direct ; les traductions déjà affichées sont conservées. */
 (function () {
-  var els = document.querySelectorAll('[data-tr-text]'); if (!els.length) return;
-  var csrf = (document.querySelector('input[name=_csrf]') || {}).value || '';
-  els.forEach(function (el) {
-    if (!el.textContent.trim()) return;
+  window.ctTrShown = window.ctTrShown || {};
+  var shown = window.ctTrShown, csrf = (document.querySelector('input[name=_csrf]') || {}).value || '';
+  var put = function (el, b, j) {
+    var box = document.createElement('div'); box.className = 'tr-box';
+    var sm = document.createElement('small'); sm.textContent = 'Traduit de l\'' + j.from + ' vers le ' + j.into; box.appendChild(sm);
+    var sp = document.createElement('div'); sp.textContent = j.text; box.appendChild(sp);
+    b.insertAdjacentElement('beforebegin', box); b.textContent = '🌐 Masquer la traduction'; return box;
+  };
+  document.querySelectorAll('[data-tr-text]').forEach(function (el) {
+    if (el.dataset.trDone || !el.textContent.trim()) return; el.dataset.trDone = '1';
+    var key = el.innerText.trim();
     var b = document.createElement('button'); b.type = 'button'; b.className = 'tr-btn'; b.textContent = '🌐 Traduire';
     el.insertAdjacentElement('afterend', b);
-    var box = null;
+    var box = shown[key] ? put(el, b, shown[key]) : null;
     b.addEventListener('click', function () {
-      if (box) { box.hidden = !box.hidden; b.textContent = box.hidden ? '🌐 Traduire' : '🌐 Masquer la traduction'; return; }
+      if (box) { box.hidden = !box.hidden; b.textContent = box.hidden ? '🌐 Traduire' : '🌐 Masquer la traduction'; if (box.hidden) delete shown[key]; else shown[key] = box._j; return; }
       b.disabled = true; b.textContent = '🌐 Traduction…';
       var d = new FormData(); d.append('_csrf', csrf); d.append('kind', 'text'); d.append('text', el.innerText);
       fetch('/admin/traduire', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: d }).then(function (r) { return r.json(); }).then(function (j) {
         b.disabled = false;
         if (!j.ok) { b.textContent = '🌐 Traduire'; alert(j.error || 'Traduction impossible.'); return; }
-        box = document.createElement('div'); box.className = 'tr-box';
-        var sm = document.createElement('small'); sm.textContent = 'Traduit de l\'' + j.from + ' vers le ' + j.into; box.appendChild(sm);
-        var sp = document.createElement('div'); sp.textContent = j.text; box.appendChild(sp);
-        b.insertAdjacentElement('beforebegin', box); b.textContent = '🌐 Masquer la traduction';
+        shown[key] = j; box = put(el, b, j); box._j = j;
       }).catch(function () { b.disabled = false; b.textContent = '🌐 Traduire'; alert('Connexion perdue.'); });
     });
+    if (box) box._j = shown[key];
   });
 })();
 </script>
