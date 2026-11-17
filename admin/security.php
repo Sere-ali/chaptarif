@@ -4,7 +4,13 @@ $me = require_super();
 
 if (is_post()) {
     $act = (string) ($_POST['action'] ?? '');
-    if ($act === 'seen') {
+    if ($act === 'del_event' || $act === 'del_all') {
+        if (!is_owner($me)) { flash('error', 'Seul le super admin principal peut supprimer les alertes.'); redirect('/admin/securite'); }
+        stepup_require($me, '/admin/securite');
+        if ($act === 'del_event') { q('DELETE FROM security_events WHERE id = ?', [(int) ($_POST['id'] ?? 0)]); flash('success', 'Alerte supprimée.'); }
+        else { $n = (int) val('SELECT COUNT(*) FROM security_events'); q('DELETE FROM security_events'); flash('success', $n . ' alerte(s) supprimée(s).'); }
+        audit('securite.alertes_supprimees', $act === 'del_all' ? 'toutes' : (string) ($_POST['id'] ?? ''));
+    } elseif ($act === 'seen') {
         q("UPDATE security_events SET seen = 1 WHERE seen = 0");
         flash('success', 'Alertes marquées comme lues.');
     } elseif ($act === 'backup') {
@@ -29,6 +35,9 @@ if (is_post()) {
 }
 
 $ev = all('SELECT e.*, u.email, u.phone FROM security_events e LEFT JOIN users u ON u.id = e.user_id ORDER BY e.id DESC LIMIT 60');
+// Ouvrir le centre de sécurité vaut lecture : la pastille rouge du menu disparaît (les nouvelles restent surlignées sur cette page).
+q('UPDATE security_events SET seen = 1 WHERE seen = 0');
+$owner = is_owner($me);
 $admins = all("SELECT name, email, totp_enabled, active FROM users WHERE role IN ('admin','super_admin') ORDER BY id");
 $no2fa = array_filter($admins, fn($a) => (int) $a['active'] && empty($a['totp_enabled']));
 $lastBk = (string) setting('backup_last', '');
@@ -107,12 +116,12 @@ view('admin/header', compact('page', 'nav'));
 </div>
 
 <div class="panel">
-  <div class="panel-h"><h2>Alertes de sécurité</h2><?php if ($ev): ?><form method="post"><?= csrf_field() ?><button class="btn btn-ghost btn-sm" name="action" value="seen">Tout marquer comme lu</button></form><?php endif; ?></div>
+  <div class="panel-h"><h2>Alertes de sécurité</h2><?php if ($ev && $owner): ?><form method="post" data-stepup onsubmit="return confirm('Supprimer toutes les alertes de sécurité ?')"><?= csrf_field() ?><button class="btn btn-ghost btn-sm sec-del-all" name="action" value="del_all">🗑 Tout supprimer</button></form><?php endif; ?></div>
   <?php if (!$ev): ?><p class="muted">Aucune alerte pour le moment.</p><?php else: ?>
   <div class="tbl-wrap"><table class="tbl">
-    <thead><tr><th>Date</th><th>Niveau</th><th>Événement</th><th>Détail</th><th>IP</th></tr></thead>
+    <thead><tr><th>Date</th><th>Niveau</th><th>Événement</th><th>Détail</th><th>IP</th><?php if ($owner): ?><th></th><?php endif; ?></tr></thead>
     <tbody><?php foreach ($ev as $x): [$ll, $lc] = $lvl[$x['level']] ?? [$x['level'], 'badge-gray']; ?>
-      <tr class="<?= (int) $x['seen'] ? '' : 'sec-new' ?>"><td><?= fmt_date($x['created_at'], true) ?></td><td><span class="badge <?= $lc ?>"><?= e($ll) ?></span></td><td><b><?= e($x['kind']) ?></b></td><td><?= e($x['detail']) ?></td><td class="mono small"><?= e($x['ip']) ?></td></tr>
+      <tr class="<?= (int) $x['seen'] ? '' : 'sec-new' ?>"><td><?= fmt_date($x['created_at'], true) ?></td><td><span class="badge <?= $lc ?>"><?= e($ll) ?></span></td><td><b><?= e($x['kind']) ?></b></td><td><?= e($x['detail']) ?></td><td class="mono small"><?= e($x['ip']) ?></td><?php if ($owner): ?><td><form method="post" data-stepup onsubmit="return confirm('Supprimer cette alerte ?')"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $x['id'] ?>"><button class="sec-del" name="action" value="del_event" title="Supprimer l'alerte" aria-label="Supprimer l'alerte">🗑</button></form></td><?php endif; ?></tr>
     <?php endforeach; ?></tbody>
   </table></div>
   <?php endif; ?>

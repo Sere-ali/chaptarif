@@ -498,3 +498,5 @@ tr.sec-new td { background: #FFF8E6; }
 .tm-at-h { display: block; padding: 4px 8px 2px; color: #667085; font-size: .74rem; font-weight: 700; }
 .tm-atlist { max-width: calc(100vw - 16px); }
 .tm-atlist button { min-height: 42px; }
+.sec-del { border: 1px solid #E3E8EF; background: #fff; border-radius: 999px; width: 34px; height: 34px; cursor: pointer; }
+.sec-del:hover, .sec-del-all:hover { background: #FEECEC; border-color: #F04438; }

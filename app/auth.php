@@ -53,6 +53,15 @@ function is_super(?array $u = null): bool
     return $u && $u['role'] === 'super_admin';
 }
 
+/** Super admin principal : le premier super admin du site (le compte fondateur). */
+function is_owner(?array $u = null): bool
+{
+    $u ??= current_user();
+    if (!$u || $u['role'] !== 'super_admin') return false;
+    $own = (int) (setting('owner_user_id', '') ?: val("SELECT MIN(id) FROM users WHERE role = 'super_admin' AND active = 1"));
+    return (int) $u['id'] === $own;
+}
+
 function require_client(string $next = ''): array
 {
     $u = current_user();
