@@ -7,7 +7,7 @@ $json = function (array $d) { header('Content-Type: application/json'); echo jso
 $markRead = function () use ($myId) {
     $mx = (int) val('SELECT COALESCE(MAX(id), 0) FROM team_messages');
     if (one('SELECT user_id FROM team_reads WHERE user_id = ?', [$myId])) q('UPDATE team_reads SET last_id = ? WHERE user_id = ?', [$mx, $myId]);
-    else insert('team_reads', ['user_id' => $myId, 'last_id' => $mx]);
+    else q('INSERT INTO team_reads (user_id, last_id) VALUES (?, ?)', [$myId, $mx]);
 };
 
 if (is_post()) {
