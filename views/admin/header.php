@@ -57,7 +57,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=39">
+<link rel="stylesheet" href="/assets/css/admin.css?v=40">
 </head>
 <body class="adm">
 <div class="main" data-live>
@@ -83,4 +83,5 @@ if (is_super($me)) {
   </nav>
   <h1 class="adm-title"><?= e($page ?? '') ?></h1>
   <div class="adm-content">
+  <?php if (setting('maintenance') === '1'): ?><div class="mt-bar"><span>🔴 <b>Le site est fermé au public</b> (mode maintenance). Les visiteurs voient « On revient très vite ».</span><?php if (is_super($me)): ?><form method="post" action="/admin/parametres"><?= csrf_field() ?><input type="hidden" name="quick" value="open"><input type="hidden" name="back" value="<?= e($_SERVER['REQUEST_URI'] ?? '/admin') ?>"><button class="btn btn-sm mt-open">🟢 Rouvrir le site</button></form><?php endif; ?></div><?php endif; ?>
   <?php foreach (flashes() as [$t, $m]): ?><div class="alert alert-<?= e($t) ?>"><?= e($m) ?></div><?php endforeach; ?>

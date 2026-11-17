@@ -1,5 +1,13 @@
 <?php
 $me = require_super();
+// Bouton rapide (bandeau du back-office) : ouvrir / fermer le site
+if (is_post() && in_array($_POST['quick'] ?? '', ['open', 'close'], true)) {
+    $m = $_POST['quick'] === 'close' ? '1' : '0';
+    if (setting('maintenance') !== $m) { setting_set('maintenance', $m); audit('parametres.modification', '', ['maintenance' => [$m === '1' ? '0' : '1', $m]]); }
+    flash('success', $m === '1' ? 'Site fermé au public (maintenance). Le back-office reste accessible.' : 'Site rouvert : il est de nouveau accessible à tous.');
+    $back = (string) ($_POST['back'] ?? '/admin');
+    redirect(str_starts_with($back, '/admin') ? $back : '/admin');
+}
 $groups = [
     'Commissions (%)' => [
         'commission_menage' => 'Ménage & Aide', 'commission_pressing' => 'Pressing & Linge',
@@ -34,7 +42,7 @@ if (is_post()) {
             if ((string) setting($k) !== $v) { $changes[$k] = [setting($k), $v]; setting_set($k, $v); }
         }
     }
-    $m = isset($_POST['maintenance']) ? '1' : '0';
+    $m = ($_POST['site_state'] ?? 'open') === 'closed' ? '1' : '0';
     if (setting('maintenance') !== $m) { $changes['maintenance'] = [setting('maintenance'), $m]; setting_set('maintenance', $m); }
     if ($changes) audit('parametres.modification', '', $changes);
     flash('success', $changes ? count($changes) . ' paramètre(s) mis à jour.' : 'Aucune modification.');
@@ -55,7 +63,9 @@ view('admin/header', compact('page', 'nav'));
       </div>
     <?php endforeach; ?>
     <div class="panel"><h2 class="h4">Environnement</h2>
-      <label class="check"><input type="checkbox" name="maintenance" <?= setting('maintenance') === '1' ? 'checked' : '' ?>> Mode maintenance (site public fermé, back-office accessible)</label>
+      <p class="h5" style="margin:0 0 .5rem">État du site public</p>
+      <label class="check"><input type="radio" name="site_state" value="open" <?= setting('maintenance') !== '1' ? 'checked' : '' ?>> 🟢 <b>Site ouvert</b> — accessible à tous</label>
+      <label class="check"><input type="radio" name="site_state" value="closed" <?= setting('maintenance') === '1' ? 'checked' : '' ?>> 🔴 <b>Site fermé</b> (maintenance) — les visiteurs voient « On revient très vite », le back-office reste accessible</label>
       <dl class="kv mt">
         <dt>Base de données</dt><dd><?= e(db_driver() === 'pgsql' ? 'PostgreSQL' : 'SQLite (local)') ?></dd>
         <dt>Paiements</dt><dd><?= payment_mode() === 'paydunya' ? '<span class="badge badge-green">PayDunya (réel)</span>' : (payment_mode() === 'cinetpay' ? '<span class="badge badge-green">CinetPay (réel)</span>' : (payment_mode() === 'manuel' ? '<span class="badge badge-green">Manuel · validation admin</span>' : '<span class="badge badge-amber">Simulation</span>')) ?></dd>
