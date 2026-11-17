@@ -6,7 +6,7 @@ $D = domaines();
 $d = $D[$dk] ?? null;
 if (!$d) not_found();
 $title = $d['name'] . ' à Abidjan';
-$desc = $d['pitch'];
+$desc = rtrim($d['pitch'], '. ') . '. Réservez en ligne à Abidjan sur ChapTarif : prix affichés à l\'avance, paiement sécurisé par Wave ou Orange Money, argent bloqué jusqu\'à la fin du service.';
 $active = $dk;
 $bodyClass = 'domaine-m' . ($dk === 'beaute' ? ' theme-beaute' : '') . ($dk === 'transport' ? ' dom-transport' : '') . ($dk === 'service-a-la-personne' ? ' dom-sap' : '') . ($dk === 'beaute' ? ' dom-sap dom-bea' : '');
 $subs = array_map(fn ($k) => universe($k), $d['keys']);
