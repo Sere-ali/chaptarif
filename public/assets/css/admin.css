@@ -490,3 +490,7 @@ tr.sec-new td { background: #FFF8E6; }
 @media (max-width: 900px) { .tm-acts { opacity: 1; } .tm-acts button { width: 30px; height: 30px; } }
 .tm-quote { width: fit-content; min-width: 180px; }
 @media (min-width: 901px) { .tm-msg .rx:not(:has(.rx-chip)) { height: 0; margin: 0; } }
+.tm-acts .tm-x { margin-left: 0; opacity: 1; }
+.tm-acts .tm-x:hover { background: #FEECEC; border-color: #F04438; }
+.tm-meta { padding-right: 116px; }
+@media (max-width: 900px) { .tm-meta { padding-right: 104px; flex-wrap: wrap; column-gap: 8px; row-gap: 0; } }

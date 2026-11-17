@@ -50,7 +50,7 @@ $renderMsg = function (array $m, array $rx, array $counts, bool $inThread) use (
     $h = '<div class="tm-msg' . ($ment ? ' tm-mention' : '') . ((int) $m['deleted'] ? ' tm-del' : '') . '" data-id="' . (int) $m['id'] . '">';
     $h .= '<span class="tm-av" style="background:hsl(' . (crc32($name) % 360) . ',45%,42%)">' . e(mb_strtoupper(mb_substr($name, 0, 1))) . '</span><div class="tm-b">';
     $h .= '<div class="tm-meta"><b>' . e($name) . '</b><time title="' . e(fmt_date($m['created_at'], true)) . '">' . e(time_rel($m['created_at'])) . '</time>';
-    if (!(int) $m['deleted'] && ($mine || is_super($me))) $h .= '<button type="button" class="tm-x" data-tm-del="' . (int) $m['id'] . '" title="Supprimer le message" aria-label="Supprimer">🗑</button>';
+
     $h .= '</div>';
     if ((int) $m['deleted']) return $h . '<div class="tm-txt muted"><i>Message supprimé</i></div></div></div>';
     if (!empty($m['reply_to'])) {
@@ -74,6 +74,7 @@ $renderMsg = function (array $m, array $rx, array $counts, bool $inThread) use (
     $snip = mb_strimwidth((string) $m['body'], 0, 120, '…') ?: (($m['att_type'] ?? '') === 'image' ? '📷 Photo' : '📎 Fichier');
     $h .= '<div class="tm-acts"><button type="button" data-tm-quote="' . (int) $m['id'] . '" data-who="' . e($name) . '" data-snip="' . e($snip) . '" title="Répondre" aria-label="Répondre">↩</button>';
     if (!$inThread && empty($m['parent_id'])) $h .= '<button type="button" data-open-thread="' . (int) $m['id'] . '" title="Répondre dans un fil" aria-label="Répondre dans un fil">🧵</button>';
+    if ($mine || is_super($me)) $h .= '<button type="button" class="tm-x" data-tm-del="' . (int) $m['id'] . '" title="Supprimer le message" aria-label="Supprimer">🗑</button>';
     return $h . '</div></div></div>';
 };
 $SEL = 'SELECT t.*, u.name AS uname FROM team_messages t LEFT JOIN users u ON u.id = t.user_id';
