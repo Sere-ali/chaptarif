@@ -494,3 +494,7 @@ tr.sec-new td { background: #FFF8E6; }
 .tm-acts .tm-x:hover { background: #FEECEC; border-color: #F04438; }
 .tm-meta { padding-right: 116px; }
 @media (max-width: 900px) { .tm-meta { padding-right: 104px; flex-wrap: wrap; column-gap: 8px; row-gap: 0; } }
+.tm-atbtn { border: 0; background: none; font: inherit; font-size: 1.2rem; font-weight: 800; color: #1F5C3E; }
+.tm-at-h { display: block; padding: 4px 8px 2px; color: #667085; font-size: .74rem; font-weight: 700; }
+.tm-atlist { max-width: calc(100vw - 16px); }
+.tm-atlist button { min-height: 42px; }

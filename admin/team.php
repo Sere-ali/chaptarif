@@ -133,7 +133,7 @@ $open = (int) ($_GET['fil'] ?? 0);
       <?= csrf_field() ?><input type="hidden" name="action" value="send"><input type="hidden" name="reply_to" value="" data-tm-rt>
       <div class="tm-rbar" data-tm-rbar hidden><div><b data-tm-rwho></b><span data-tm-rsnip></span></div><button type="button" data-tm-rx aria-label="Annuler">✕</button></div>
       <textarea name="body" rows="1" maxlength="3000" placeholder="Écrire à l'équipe…  (@ pour mentionner un collègue)" data-tm-input></textarea>
-      <label class="tm-ic" title="Joindre un fichier">📎<input type="file" name="file" hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" data-tm-file></label>
+      <button type="button" class="tm-ic tm-atbtn" data-tm-atbtn title="Mentionner un gestionnaire" aria-label="Mentionner un gestionnaire">@</button><label class="tm-ic" title="Joindre un fichier">📎<input type="file" name="file" hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" data-tm-file></label>
       <button class="tm-send" aria-label="Envoyer">➤</button>
       <small class="tm-filename" data-tm-filename hidden></small>
     </form>
@@ -145,7 +145,7 @@ $open = (int) ($_GET['fil'] ?? 0);
       <?= csrf_field() ?><input type="hidden" name="action" value="send"><input type="hidden" name="parent_id" value="" data-tm-parent><input type="hidden" name="reply_to" value="" data-tm-rt>
       <div class="tm-rbar" data-tm-rbar hidden><div><b data-tm-rwho></b><span data-tm-rsnip></span></div><button type="button" data-tm-rx aria-label="Annuler">✕</button></div>
       <textarea name="body" rows="1" maxlength="3000" placeholder="Répondre" data-tm-input></textarea>
-      <label class="tm-ic" title="Joindre un fichier">📎<input type="file" name="file" hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" data-tm-file></label>
+      <button type="button" class="tm-ic tm-atbtn" data-tm-atbtn title="Mentionner un gestionnaire" aria-label="Mentionner un gestionnaire">@</button><label class="tm-ic" title="Joindre un fichier">📎<input type="file" name="file" hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" data-tm-file></label>
       <button class="tm-send" aria-label="Envoyer">➤</button>
       <small class="tm-filename" data-tm-filename hidden></small>
     </form>
@@ -205,31 +205,45 @@ $open = (int) ($_GET['fil'] ?? 0);
     };
     f.addEventListener('submit', function (e) { e.preventDefault(); send(); });
     ta.addEventListener('keydown', function (e) {
-      if (!atList.hidden && (e.key === 'Enter' || e.key === 'Tab')) { var b = atList.querySelector('button'); if (b) { e.preventDefault(); b.click(); return; } }
+      if (!atList.hidden && (e.key === 'Enter' || e.key === 'Tab')) { var b = atList.querySelector('button'); if (b) { e.preventDefault(); b.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true })); return; } }
       if (e.key === 'Escape') atList.hidden = true;
       if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 900) { e.preventDefault(); send(); }
     });
-    // @mentions : liste des collègues
-    ta.addEventListener('input', function () {
-      var before = ta.value.slice(0, ta.selectionStart), m = before.match(/(^|\s)@([^\s@]{0,20}(?: [^\s@]{0,20})?)$/);
+    // @mentions : liste des collègues (tape « @ » ou bouton @)
+    var atBusy = false;
+    var showAt = function () {
+      var caret = ta.selectionStart == null ? ta.value.length : ta.selectionStart;
+      var before = ta.value.slice(0, caret), m = before.match(/(^|\s)@([^\s@]{0,20}(?: [^\s@]{0,20})?)$/);
       if (!m) { atList.hidden = true; return; }
-      var q = m[2].toLowerCase(), list = ADMINS.filter(function (a) { return a.label.toLowerCase().indexOf(q) === 0 || a.label.toLowerCase().indexOf(' ' + q) > -1; }).slice(0, 6);
+      var q = m[2].toLowerCase(), list = ADMINS.filter(function (a) { var l = a.label.toLowerCase(); return q === '' || l.indexOf(q) === 0 || l.indexOf(' ' + q) > -1; }).slice(0, 8);
       if (!list.length) { atList.hidden = true; return; }
-      atList.innerHTML = '';
+      atList.innerHTML = '<small class="tm-at-h">Mentionner un gestionnaire</small>';
       list.forEach(function (a) {
         var b = document.createElement('button'); b.type = 'button'; b.innerHTML = '<span class="tm-av" style="background:#2E7D5B">' + a.label.charAt(0).toUpperCase() + '</span>'; b.appendChild(document.createTextNode(a.label));
-        b.addEventListener('mousedown', function (e) { e.preventDefault(); });
-        b.addEventListener('click', function () {
+        var pickIt = function (e) {
+          e.preventDefault(); atBusy = true;
           var start = before.length - m[2].length - 1;
-          ta.value = ta.value.slice(0, start) + '@' + a.label + ' ' + ta.value.slice(ta.selectionStart);
-          var pos = start + a.label.length + 2; ta.focus(); ta.setSelectionRange(pos, pos); atList.hidden = true; grow();
-        });
+          ta.value = ta.value.slice(0, start) + '@' + a.label + ' ' + ta.value.slice(caret);
+          var pos = start + a.label.length + 2; ta.focus(); try { ta.setSelectionRange(pos, pos); } catch (x) {}
+          atList.hidden = true; grow(); setTimeout(function () { atBusy = false; }, 300);
+        };
+        b.addEventListener('pointerdown', pickIt);
+        b.addEventListener('click', function (e) { e.preventDefault(); });
         atList.appendChild(b);
       });
       var r = ta.getBoundingClientRect(); atList.hidden = false;
-      atList.style.left = Math.max(8, r.left) + 'px'; atList.style.top = Math.max(8, Math.min(window.innerHeight - atList.offsetHeight - 8, r.top - atList.offsetHeight - 6)) + 'px';
+      atList.style.left = Math.max(8, Math.min(window.innerWidth - atList.offsetWidth - 8, r.left)) + 'px';
+      atList.style.top = Math.max(8, Math.min(window.innerHeight - atList.offsetHeight - 8, r.top - atList.offsetHeight - 6)) + 'px';
+    };
+    ta.addEventListener('input', showAt);
+    ta.addEventListener('blur', function () { setTimeout(function () { if (!atBusy && document.activeElement !== ta) atList.hidden = true; }, 400); });
+    var atBtn = f.querySelector('[data-tm-atbtn]');
+    if (atBtn) atBtn.addEventListener('click', function () {
+      var c = ta.selectionStart == null ? ta.value.length : ta.selectionStart, pre = ta.value.slice(0, c);
+      var ins = (pre === '' || /\s$/.test(pre) ? '' : ' ') + '@';
+      ta.value = pre + ins + ta.value.slice(c); ta.focus(); try { ta.setSelectionRange(c + ins.length, c + ins.length); } catch (x) {}
+      grow(); showAt();
     });
-    ta.addEventListener('blur', function () { setTimeout(function () { atList.hidden = true; }, 150); });
   });
 
   // ↩ réponse citée (comme dans le chat client)
