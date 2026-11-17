@@ -2,7 +2,8 @@
 /** Fenêtre de discussion façon messagerie. Variables : $msgs (décorés), $last, $url, $name, $sub, $back, $admin, $avatar */
 $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍','👌','👏','🙌','💪','🔥','❤️','💙','💚','😢','😭','😅','🤔','😮','😡','🎉','✅','❌','⭐','📍','📞','🚗','🏠','🧹','💇‍♀️','💄','💅'];
 ?>
-<div class="wa" data-chat data-url="<?= e($url) ?>" data-last="<?= (int) $last ?>">
+<?php $trOn = str_starts_with((string) $url, '/admin/'); ?>
+<div class="wa" data-chat data-url="<?= e($url) ?>" data-last="<?= (int) $last ?>"<?= $trOn ? ' data-tr="1"' : '' ?>>
   <header class="wa-head">
     <a class="wa-back" href="<?= e($back) ?>" aria-label="Retour"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
     <span class="wa-av"><?php if (!empty($avatar)): ?><?= e($avatar) ?><?php else: ?><img src="/assets/img/logo.svg" alt="" width="40" height="40"><?php endif; ?></span>
@@ -18,6 +19,7 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <div class="wa-th-log" data-th-log></div>
     <form class="wa-th-form" data-th-form><textarea rows="1" maxlength="1000" placeholder="Répondre dans le fil" aria-label="Répondre dans le fil"></textarea><button class="wa-main" aria-label="Envoyer">➤</button></form>
   </div>
+  <?php if ($trOn): ?><div class="tr-menu" data-tr-menu hidden><small>Traduire mon message en :</small><?php foreach (['en' => '🇬🇧 Anglais', 'fr' => '🇫🇷 Français', 'es' => '🇪🇸 Espagnol', 'pt' => '🇵🇹 Portugais', 'ar' => '🇸🇦 Arabe', 'zh-CN' => '🇨🇳 Chinois'] as $lc => $ll): ?><button type="button" data-tr-to="<?= $lc ?>"><?= $ll ?></button><?php endforeach; ?></div><?php endif; ?>
   <div class="rx-pick" data-rx-pick hidden><?php foreach (REACTIONS as $r): ?><button type="button" data-pick="<?= $r ?>"><?= $r ?></button><?php endforeach; ?><button type="button" class="pk-act" data-pk-reply title="Répondre">↩</button><button type="button" class="pk-act" data-pk-thread title="Répondre dans un fil">🧵</button></div>
   <form class="wa-form" method="post" action="<?= e($url) ?>" data-chat-form>
     <?= csrf_field() ?>
@@ -28,6 +30,7 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
       <div class="wa-pill">
         <button type="button" class="wa-ic" data-emoji-btn aria-label="Émojis">😊</button>
         <textarea name="body" rows="1" maxlength="1000" placeholder="Message" aria-label="Votre message"><?= e($draft ?? '') ?></textarea>
+        <?php if ($trOn): ?><button type="button" class="wa-ic" data-tr-draft aria-label="Traduire mon message" title="Traduire mon message">🌐</button><?php endif; ?>
         <button type="button" class="wa-ic" data-chat-attach aria-label="Joindre un fichier">📎</button>
         <button type="button" class="wa-ic" data-chat-cam aria-label="Prendre une photo">📷</button>
       </div>
@@ -38,5 +41,5 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <div class="wa-rec" data-chat-rec hidden><span class="rec-dot"></span> <b data-rec-time>0:00</b> <button type="button" data-rec-cancel>✕ Annuler</button><button type="button" class="wa-main" data-rec-send aria-label="Envoyer le vocal">➤</button></div>
   </form>
 </div>
-<link rel="stylesheet" href="/assets/css/chat.css?v=4">
-<script src="/assets/js/chat.js?v=6" defer></script>
+<link rel="stylesheet" href="/assets/css/chat.css?v=5">
+<script src="/assets/js/chat.js?v=7" defer></script>

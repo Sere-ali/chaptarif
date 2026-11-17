@@ -81,6 +81,47 @@
   });
   thForm.elements[0].addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 900) { e.preventDefault(); thForm.requestSubmit(); } });
 
+  // --- traduction (back-office uniquement)
+  var trOn = box.dataset.tr === '1';
+  var trPost = function (data) { data.append('_csrf', csrf); return fetch('/admin/traduire', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: data }).then(function (r) { return r.json(); }); };
+  var addTrBtn = function (msg) {
+    if (!trOn || !msg.querySelector('.wa-txt') || msg.querySelector('.wa-trb')) return;
+    var b = el('button', 'wa-trb', '🌐 Traduire'); b.type = 'button';
+    var meta = msg.querySelector('.wa-meta'); msg.insertBefore(b, meta);
+  };
+  if (trOn) {
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('.wa-trb'); if (!b) return;
+      var msg = b.closest('.wa-msg'), ex = msg.querySelector('.wa-trans');
+      if (ex) { ex.hidden = !ex.hidden; b.textContent = ex.hidden ? '🌐 Traduire' : '🌐 Masquer la traduction'; return; }
+      b.disabled = true; b.textContent = '🌐 Traduction…';
+      var d = new FormData(); d.append('kind', 'chat'); d.append('id', msg.dataset.id);
+      trPost(d).then(function (j) {
+        b.disabled = false;
+        if (!j.ok) { b.textContent = '🌐 Traduire'; alert(j.error || 'Traduction impossible.'); return; }
+        var t = el('div', 'wa-trans'); t.appendChild(el('small', '', 'Traduit de l\'' + j.from + ' vers le ' + j.into)); t.appendChild(el('span', '', j.text));
+        msg.insertBefore(t, b); b.textContent = '🌐 Masquer la traduction';
+      }).catch(function () { b.disabled = false; b.textContent = '🌐 Traduire'; alert('Connexion perdue.'); });
+    });
+    var trMenu = q('[data-tr-menu]'), trBtn = q('[data-tr-draft]');
+    trBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (!ta.value.trim()) { alert('Écrivez d\'abord votre message, puis touchez 🌐 pour le traduire.'); ta.focus(); return; }
+      trMenu.hidden = !trMenu.hidden;
+    });
+    document.addEventListener('click', function (e) { if (!e.target.closest('[data-tr-menu]')) trMenu.hidden = true; });
+    trMenu.addEventListener('click', function (e) {
+      var o = e.target.closest('[data-tr-to]'); if (!o) return;
+      trMenu.hidden = true; var orig = ta.value, d = new FormData(); d.append('kind', 'text'); d.append('text', orig); d.append('to', o.dataset.trTo);
+      trBtn.disabled = true; trBtn.textContent = '⏳';
+      trPost(d).then(function (j) {
+        trBtn.disabled = false; trBtn.textContent = '🌐';
+        if (!j.ok) { alert(j.error || 'Traduction impossible.'); return; }
+        ta.value = j.text; sync(); ta.focus();
+      }).catch(function () { trBtn.disabled = false; trBtn.textContent = '🌐'; alert('Connexion perdue.'); });
+    });
+  }
+
   // --- affichage d'un message reçu
   var el = function (tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt) n.textContent = txt; return n; };
   var add = function (m) {
@@ -101,7 +142,7 @@
     var rxd = el('div', 'rx'); rxd.dataset.rx = m.id; d.appendChild(rxd); setRx(rxd, m.rx || []);
     var tb = el('button', 'wa-thread'); tb.type = 'button'; tb.dataset.thread = m.id; d.appendChild(tb); setRc(tb, m.rc || 0);
     var rb = el('button', 'wa-reply', '↩'); rb.type = 'button'; rb.title = 'Répondre'; d.appendChild(rb);
-    log.appendChild(d); last = Math.max(last, m.id); down();
+    log.appendChild(d); addTrBtn(d); last = Math.max(last, m.id); down();
     if (m.reply_to && m.reply_to === thId) showThread(thId, true);
   };
   var poll = function (force) {
@@ -120,6 +161,7 @@
       .catch(function () { alert('Connexion perdue : message non envoyé.'); if (onFail) onFail(); });
   };
   var base = function () { var d = new FormData(); d.append('_csrf', form.elements._csrf.value); if (replyId.value) d.append('reply_to', replyId.value); return d; };
+  if (trOn) log.querySelectorAll('.wa-msg').forEach(addTrBtn);
   down(); setInterval(poll, 1000);
   log.querySelectorAll('.wa-thread').forEach(function (b) { b.dataset.n = (b.querySelector('span') || {}).textContent || '0'; }); document.addEventListener('visibilitychange', poll);
 

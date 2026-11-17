@@ -106,3 +106,15 @@ a.wa-about:hover { background: #DCE8FD; }
 @media (max-width: 900px) { .wa-msg .rx-add { display: none; } }
 .wa-pill textarea, .wa-th-form textarea { min-height: 0; }
 @media (max-width: 440px) { .rx-pick { gap: 0; padding: 4px; flex-wrap: nowrap; } .rx-pick button { width: 33px; height: 36px; font-size: 1.15rem; } }
+
+/* Traduction (back-office) */
+.wa-trb { display: block; border: 0; background: none; padding: 2px 0 0; color: #1E5BD8; font: inherit; font-size: .76rem; font-weight: 700; cursor: pointer; }
+.wa-trb:disabled { opacity: .6; }
+.wa-trans { margin-top: 6px; padding: 6px 9px; border-left: 3px solid #1E5BD8; background: rgba(30,91,216,.07); border-radius: 6px; display: grid; gap: 2px; }
+.wa-trans small { color: #1E5BD8; font-size: .72rem; font-weight: 700; }
+.wa-trans span { white-space: pre-wrap; word-break: break-word; }
+.tr-menu { position: absolute; z-index: 30; left: 10px; bottom: 74px; display: grid; min-width: 210px; padding: 6px; background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(11,20,26,.22); }
+.tr-menu[hidden] { display: none; }
+.tr-menu small { color: #667781; font-size: .76rem; font-weight: 700; padding: 4px 8px; }
+.tr-menu button { border: 0; background: none; text-align: left; padding: 9px 10px; border-radius: 8px; font: inherit; font-size: .92rem; cursor: pointer; }
+.tr-menu button:hover { background: #F0F2F5; }

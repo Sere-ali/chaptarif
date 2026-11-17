@@ -46,6 +46,7 @@ $routes = [
     '/chat'                 => 'pages/chat.php',
     '/admin/chat'           => 'admin/chat.php',
     '/admin/equipe'         => 'admin/team.php',
+    '/admin/traduire'       => 'admin/translate.php',
     '/profil-prestataire'   => 'pages/provider_public.php',
     '/admin/annonces'       => 'admin/listings.php',
     '/prestataire/valider'  => 'pages/provider_validate.php',

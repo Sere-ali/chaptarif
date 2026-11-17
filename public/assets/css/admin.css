@@ -500,3 +500,8 @@ tr.sec-new td { background: #FFF8E6; }
 .tm-atlist button { min-height: 42px; }
 .sec-del { border: 1px solid #E3E8EF; background: #fff; border-radius: 999px; width: 34px; height: 34px; cursor: pointer; }
 .sec-del:hover, .sec-del-all:hover { background: #FEECEC; border-color: #F04438; }
+.tm-trans { margin-top: 5px; padding: 6px 10px; border-left: 3px solid #1E5BD8; background: #EEF3FD; border-radius: 6px; display: grid; gap: 2px; max-width: 100%; width: fit-content; }
+.tm-trans small { color: #1E5BD8; font-size: .74rem; font-weight: 700; }
+.tm-trans span { white-space: pre-wrap; word-break: break-word; font-size: .93rem; }
+.tm-meta { padding-right: 150px; }
+@media (max-width: 900px) { .tm-meta { padding-right: 138px; } }

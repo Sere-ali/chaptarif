@@ -74,6 +74,7 @@ $renderMsg = function (array $m, array $rx, array $counts, bool $inThread) use (
     $snip = mb_strimwidth((string) $m['body'], 0, 120, '…') ?: (($m['att_type'] ?? '') === 'image' ? '📷 Photo' : '📎 Fichier');
     $h .= '<div class="tm-acts"><button type="button" data-tm-quote="' . (int) $m['id'] . '" data-who="' . e($name) . '" data-snip="' . e($snip) . '" title="Répondre" aria-label="Répondre">↩</button>';
     if (!$inThread && empty($m['parent_id'])) $h .= '<button type="button" data-open-thread="' . (int) $m['id'] . '" title="Répondre dans un fil" aria-label="Répondre dans un fil">🧵</button>';
+    if (trim((string) $m['body']) !== '') $h .= '<button type="button" data-tm-tr="' . (int) $m['id'] . '" title="Traduire" aria-label="Traduire">🌐</button>';
     if ($mine || is_super($me)) $h .= '<button type="button" class="tm-x" data-tm-del="' . (int) $m['id'] . '" title="Supprimer le message" aria-label="Supprimer">🗑</button>';
     return $h . '</div></div></div>';
 };
@@ -165,8 +166,18 @@ $open = (int) ($_GET['fil'] ?? 0);
   var post = function (data) { data.append('_csrf', csrf); return fetch('/admin/equipe', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: data }).then(function (r) { return r.json(); }); };
   var load = function (el, url, keepBottom) {
     var stick = keepBottom || nearBottom(el), top = el.scrollTop;
-    return fetch(url, { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (h) { el.innerHTML = h; if (stick) bottom(el); else el.scrollTop = top; });
+    return fetch(url, { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (h) { el.innerHTML = h; reTr(el); if (stick) bottom(el); else el.scrollTop = top; });
   };
+  // 🌐 traduction des messages (gardée à l'écran malgré les mises à jour en direct)
+  var trShown = {};
+  var showTr = function (msg, j) {
+    var old = msg.querySelector('.tm-trans'); if (old) old.remove();
+    var d = document.createElement('div'); d.className = 'tm-trans';
+    var sm = document.createElement('small'); sm.textContent = '🌐 Traduit de l\'' + j.from + ' vers le ' + j.into; d.appendChild(sm);
+    var sp = document.createElement('span'); sp.textContent = j.text; d.appendChild(sp);
+    var tx = msg.querySelector('.tm-txt'); if (tx) tx.insertAdjacentElement('afterend', d);
+  };
+  var reTr = function (el) { el.querySelectorAll('.tm-msg[data-id]').forEach(function (m) { var j = trShown[m.dataset.id]; if (j) showTr(m, j); }); };
   var refresh = function (force) {
     if (busy) return; busy = true;
     var ps = [load(feed, '/admin/equipe?part=feed', force === 'feed')];
@@ -270,6 +281,16 @@ $open = (int) ($_GET['fil'] ?? 0);
   document.addEventListener('click', function (e) {
     var t;
     if ((t = e.target.closest('[data-tm-quote]'))) { setQuote(t); return; }
+    if ((t = e.target.closest('[data-tm-tr]'))) {
+      var tid = t.dataset.tmTr;
+      if (trShown[tid]) { delete trShown[tid]; root.querySelectorAll('.tm-msg[data-id="' + tid + '"] .tm-trans').forEach(function (x) { x.remove(); }); return; }
+      t.disabled = true; var dt = new FormData(); dt.append('kind', 'team'); dt.append('id', tid); dt.append('_csrf', csrf);
+      fetch('/admin/traduire', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: dt }).then(function (r) { return r.json(); }).then(function (j) {
+        t.disabled = false; if (!j.ok) { alert(j.error || 'Traduction impossible.'); return; }
+        trShown[tid] = j; root.querySelectorAll('.tm-msg[data-id="' + tid + '"]').forEach(function (m) { showTr(m, j); });
+      }).catch(function () { t.disabled = false; alert('Connexion perdue.'); });
+      return;
+    }
     if ((t = e.target.closest('[data-tm-rx]'))) { clearQuote(t.closest('[data-tm-form]')); return; }
     if ((t = e.target.closest('.tm-quote[data-goto]'))) { var g = t.closest('.tm-feed').querySelector('.tm-msg[data-id="' + t.dataset.goto + '"]'); if (g) { g.scrollIntoView({ block: 'center', behavior: 'smooth' }); g.classList.add('flash'); setTimeout(function () { g.classList.remove('flash'); }, 1300); } return; }
     if (e.target.closest('[data-pk-quote]') && pickMsg) { pick.hidden = true; var qb = pickMsg.querySelector('[data-tm-quote]'); if (qb) setQuote(qb); return; }
