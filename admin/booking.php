@@ -67,7 +67,7 @@ view('admin/header', compact('page', 'nav'));
         <dt>Payée le</dt><dd><?= fmt_date($b['paid_at'], true) ?></dd>
         <dt>Clôturée le</dt><dd><?= fmt_date($b['validated_at'], true) ?></dd>
       </dl>
-      <?php if ($b['dispute_reason']): ?><div class="alert alert-error mt"><b>Réclamation du client :</b> « <?= e($b['dispute_reason']) ?> »<?php if (!empty($d['garantie_dommage'])): ?><br><span class="badge badge-amber mt"> Garantie Dommage souscrite (<?= fcfa($d['garantie_dommage_montant'] ?? 0) ?>) : indemnisation ou nouvelle prestation possible</span><?php endif; ?></div><?php endif; ?>
+      <?php if ($b['dispute_reason']): ?><div class="alert alert-error mt"><b>Réclamation du client :</b> « <span data-tr-text><?= e($b['dispute_reason']) ?></span> »<?php if (!empty($d['garantie_dommage'])): ?><br><span class="badge badge-amber mt"> Garantie Dommage souscrite (<?= fcfa($d['garantie_dommage_montant'] ?? 0) ?>) : indemnisation ou nouvelle prestation possible</span><?php endif; ?></div><?php endif; ?>
     </div>
     <div class="panel">
       <div class="panel-h"><h2>Mouvements financiers</h2></div>

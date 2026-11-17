@@ -49,7 +49,7 @@ view('admin/header', compact('page', 'nav'));
 <div class="grid2">
   <div class="panel">
     <h3 class="h4">Présentation</h3>
-    <p class="muted"><?= $p['bio'] ? nl2br(e($p['bio'])) : 'Aucune présentation.' ?></p>
+    <p class="muted"<?= $p['bio'] ? ' data-tr-text' : '' ?>><?= $p['bio'] ? nl2br(e($p['bio'])) : 'Aucune présentation.' ?></p>
     <?php if ($p['vehicle']): ?><div class="sum-row"><span>Véhicule / bien</span><b><?= e($p['vehicle']) ?></b></div><?php endif; ?>
     <div class="sum-row"><span>Compte de connexion</span><b><?= $u ? 'Oui · dernière connexion ' . e($u['last_login_at'] ? fmt_date($u['last_login_at'], true) : 'jamais') : 'Aucun compte' ?></b></div>
   </div>

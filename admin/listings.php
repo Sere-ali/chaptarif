@@ -33,7 +33,7 @@ view('admin/header', compact('page', 'nav'));
     <div style="flex:1;min-width:220px">
       <b><?= e($a['title']) ?></b> <?= $a['price'] ? '· ' . fcfa($a['price']) . ($a['unit'] ? ' / ' . e($a['unit']) : '') : '' ?>
       <small style="display:block"><?= $x['emoji'] ?> <?= e($x['short'] ?? $x['name']) ?> · <a href="/admin/prestataire?id=<?= (int) $a['provider_id'] ?>"><?= e($a['pname']) ?></a> · <?= e($a['commune']) ?> · <?= fmt_date($a['updated_at'] ?: $a['created_at']) ?></small>
-      <p><?= nl2br(e((string) $a['description'])) ?></p>
+      <p data-tr-text><?= nl2br(e((string) $a['description'])) ?></p>
       <?php if ($a['reject_reason']): ?><p class="muted">Motif de refus : <?= e($a['reject_reason']) ?></p><?php endif; ?>
       <form method="post" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $a['id'] ?>">
         <?php if ($a['status'] !== 'approved'): ?><button class="btn btn-primary btn-sm" name="action" value="approve"> Approuver</button><?php endif; ?>

@@ -24,7 +24,7 @@ function translate_http(string $url): ?string
  */
 function translate_text(string $text, string $target = 'auto'): array
 {
-    $text = trim(mb_substr($text, 0, 3000));
+    $text = trim(mb_substr(str_replace("\r\n", "\n", $text), 0, 3000));
     if ($text === '') return ['ok' => false, 'error' => 'Rien à traduire.'];
     $key = sha1($target . '|' . $text);
     try { $c = one('SELECT src, dst, body FROM translations WHERE hash = ?', [$key]); } catch (Throwable $e) { $c = null; }

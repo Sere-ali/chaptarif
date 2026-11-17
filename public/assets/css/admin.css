@@ -505,3 +505,7 @@ tr.sec-new td { background: #FFF8E6; }
 .tm-trans span { white-space: pre-wrap; word-break: break-word; font-size: .93rem; }
 .tm-meta { padding-right: 150px; }
 @media (max-width: 900px) { .tm-meta { padding-right: 138px; } }
+.tr-btn { display: inline-block; margin-top: 6px; border: 0; background: none; padding: 2px 0; color: #1E5BD8; font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
+.tr-btn:disabled { opacity: .6; }
+.tr-box { margin-top: 8px; padding: 8px 12px; border-left: 3px solid #1E5BD8; background: #EEF3FD; border-radius: 8px; white-space: pre-wrap; word-break: break-word; color: #1D2939; }
+.tr-box small { display: block; color: #1E5BD8; font-size: .76rem; font-weight: 700; margin-bottom: 3px; white-space: normal; }

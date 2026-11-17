@@ -27,6 +27,32 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !v.hidden) close(); });
 })();
 </script>
+<script>
+/* 🌐 Traduire les textes écrits par les clients / prestataires (messages de contact, devis, réclamations, présentations…) */
+(function () {
+  var els = document.querySelectorAll('[data-tr-text]'); if (!els.length) return;
+  var csrf = (document.querySelector('input[name=_csrf]') || {}).value || '';
+  els.forEach(function (el) {
+    if (!el.textContent.trim()) return;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'tr-btn'; b.textContent = '🌐 Traduire';
+    el.insertAdjacentElement('afterend', b);
+    var box = null;
+    b.addEventListener('click', function () {
+      if (box) { box.hidden = !box.hidden; b.textContent = box.hidden ? '🌐 Traduire' : '🌐 Masquer la traduction'; return; }
+      b.disabled = true; b.textContent = '🌐 Traduction…';
+      var d = new FormData(); d.append('_csrf', csrf); d.append('kind', 'text'); d.append('text', el.innerText);
+      fetch('/admin/traduire', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: d }).then(function (r) { return r.json(); }).then(function (j) {
+        b.disabled = false;
+        if (!j.ok) { b.textContent = '🌐 Traduire'; alert(j.error || 'Traduction impossible.'); return; }
+        box = document.createElement('div'); box.className = 'tr-box';
+        var sm = document.createElement('small'); sm.textContent = 'Traduit de l\'' + j.from + ' vers le ' + j.into; box.appendChild(sm);
+        var sp = document.createElement('div'); sp.textContent = j.text; box.appendChild(sp);
+        b.insertAdjacentElement('beforebegin', box); b.textContent = '🌐 Masquer la traduction';
+      }).catch(function () { b.disabled = false; b.textContent = '🌐 Traduire'; alert('Connexion perdue.'); });
+    });
+  });
+})();
+</script>
 <div class="su" data-su hidden><form class="su-box" data-su-form><div class="su-ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
 <h3>Action sensible</h3><p>Pour confirmer, saisissez le code à 6 chiffres de votre application d'authentification.</p>
 <input data-su-code inputmode="numeric" autocomplete="one-time-code" maxlength="9" placeholder="000 000" required>

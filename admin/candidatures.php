@@ -80,7 +80,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
       <summary>Plus d’infos</summary>
       <div class="sum-row"><span>Versement</span><b><?= e($p['payout_method']) ?> · <?= e(fmt_phone($p['payout_number'])) ?></b></div>
       <?php if ($p['vehicle']): ?><div class="sum-row"><span>Véhicule / bien</span><b><?= e($p['vehicle']) ?></b></div><?php endif; ?>
-      <?php if ($p['bio']): ?><p class="muted" style="margin:.4rem 0 0"><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
+      <?php if ($p['bio']): ?><p class="muted" style="margin:.4rem 0 0" data-tr-text><?= nl2br(e($p['bio'])) ?></p><?php endif; ?>
     </details>
   </div>
   <?php endforeach; ?>
