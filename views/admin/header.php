@@ -15,7 +15,7 @@ $myOpenTasks = $me ? (int) val("SELECT COUNT(*) FROM tasks WHERE assigned_to = ?
 $items = [
     ['Pilotage', null],
     ['dashboard', '/admin', '', 'Tableau de bord', 0],
-    ['team', '/admin/equipe', '', 'Discussion d\'équipe', $teamUnread],
+    ['team', '/admin/equipe', '', '💬 Chat gestionnaires', $teamUnread],
     ['tasks', '/admin/taches', '', 'Mes tâches', $myOpenTasks],
     ['candidatures', '/admin/candidatures', '', 'Candidatures prestataires', $pendingCandidatures],
     ['bookings', '/admin/reservations', '', 'Réservations', 0],
@@ -57,7 +57,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=32">
+<link rel="stylesheet" href="/assets/css/admin.css?v=34">
 </head>
 <body class="adm">
 <div class="main" data-live>

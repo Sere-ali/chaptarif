@@ -21,7 +21,9 @@ if (is_post()) {
         if (!$att['ok']) $err = $att['error'];
         elseif ($body === '' && !$att['data']) $err = 'Message vide.';
         else {
-            insert('team_messages', ['user_id' => $myId, 'parent_id' => $pid ?: null, 'body' => $body, 'mentions' => json_encode(team_mentions_in($body)), 'created_at' => now()] + $att['data']);
+            $rt = (int) ($_POST['reply_to'] ?? 0);
+            if ($rt && !one('SELECT id FROM team_messages WHERE id = ?', [$rt])) $rt = 0;
+            insert('team_messages', ['user_id' => $myId, 'parent_id' => $pid ?: null, 'reply_to' => $rt ?: null, 'body' => $body, 'mentions' => json_encode(team_mentions_in($body)), 'created_at' => now()] + $att['data']);
             $ok = true;
         }
     } elseif ($act === 'react') {
@@ -51,6 +53,10 @@ $renderMsg = function (array $m, array $rx, array $counts, bool $inThread) use (
     if (!(int) $m['deleted'] && ($mine || is_super($me))) $h .= '<button type="button" class="tm-x" data-tm-del="' . (int) $m['id'] . '" title="Supprimer le message" aria-label="Supprimer">🗑</button>';
     $h .= '</div>';
     if ((int) $m['deleted']) return $h . '<div class="tm-txt muted"><i>Message supprimé</i></div></div></div>';
+    if (!empty($m['reply_to'])) {
+        $qm = one('SELECT t.body, t.deleted, t.att_type, u.name FROM team_messages t LEFT JOIN users u ON u.id = t.user_id WHERE t.id = ?', [(int) $m['reply_to']]);
+        if ($qm) $h .= '<div class="tm-quote" data-goto="' . (int) $m['reply_to'] . '"><b>' . e($qm['name'] ?: 'Admin') . '</b><span>' . e((int) $qm['deleted'] ? 'Message supprimé' : (mb_strimwidth((string) $qm['body'], 0, 120, '…') ?: ($qm['att_type'] === 'image' ? '📷 Photo' : '📎 Fichier'))) . '</span></div>';
+    }
     if ($m['body'] !== '') $h .= '<div class="tm-txt">' . team_body_html($m['body'], $myId) . '</div>';
     if (!empty($m['att_url'])) {
         $u = e($m['att_url']);
@@ -63,10 +69,12 @@ $renderMsg = function (array $m, array $rx, array $counts, bool $inThread) use (
     $h .= reactions_html($rx[(int) $m['id']] ?? [], (int) $m['id']);
     if (!$inThread && empty($m['parent_id'])) {
         $c = $counts[(int) $m['id']] ?? null;
-        $h .= $c ? '<button type="button" class="tm-replies" data-open-thread="' . (int) $m['id'] . '">' . $c['n'] . ' réponse' . ($c['n'] > 1 ? 's' : '') . ' <span>' . e(time_rel($c['last'])) . '</span></button>'
-                 : '<button type="button" class="tm-reply" data-open-thread="' . (int) $m['id'] . '">↩ Répondre</button>';
+        if ($c) $h .= '<button type="button" class="tm-replies" data-open-thread="' . (int) $m['id'] . '">🧵 ' . $c['n'] . ' réponse' . ($c['n'] > 1 ? 's' : '') . ' <span>' . e(time_rel($c['last'])) . '</span></button>';
     }
-    return $h . '</div></div>';
+    $snip = mb_strimwidth((string) $m['body'], 0, 120, '…') ?: (($m['att_type'] ?? '') === 'image' ? '📷 Photo' : '📎 Fichier');
+    $h .= '<div class="tm-acts"><button type="button" data-tm-quote="' . (int) $m['id'] . '" data-who="' . e($name) . '" data-snip="' . e($snip) . '" title="Répondre" aria-label="Répondre">↩</button>';
+    if (!$inThread && empty($m['parent_id'])) $h .= '<button type="button" data-open-thread="' . (int) $m['id'] . '" title="Répondre dans un fil" aria-label="Répondre dans un fil">🧵</button>';
+    return $h . '</div></div></div>';
 };
 $SEL = 'SELECT t.*, u.name AS uname FROM team_messages t LEFT JOIN users u ON u.id = t.user_id';
 $counts = function (array $ids): array {
@@ -110,7 +118,7 @@ if (($_GET['part'] ?? '') === 'feed') { header('Content-Type: text/html; charset
 if (($_GET['part'] ?? '') === 'thread') { header('Content-Type: text/html; charset=utf-8'); echo $threadHtml((int) ($_GET['id'] ?? 0)); exit; }
 
 $markRead();
-$page = 'Discussion d\'équipe';
+$page = 'Chat gestionnaires';
 $nav = 'team';
 view('admin/header', compact('page', 'nav'));
 $admins = array_map(fn($a) => ['id' => (int) $a['id'], 'label' => $a['label']], team_admins());
@@ -118,10 +126,11 @@ $open = (int) ($_GET['fil'] ?? 0);
 ?>
 <div class="tm" data-team data-chat data-open="<?= $open ?>">
   <section class="tm-main">
-    <header class="tm-head"><div><b># Équipe ChapTarif</b><small>Visible uniquement par l'équipe ChapTarif · <?= count($admins) ?> membre<?= count($admins) > 1 ? 's' : '' ?></small></div></header>
+    <header class="tm-head"><div><b>💬 Chat gestionnaires</b><small>Visible uniquement par l'équipe ChapTarif · <?= count($admins) ?> membre<?= count($admins) > 1 ? 's' : '' ?></small></div></header>
     <div class="tm-feed" data-tm-feed><?= $feedHtml() ?></div>
     <form class="tm-form" data-tm-form>
-      <?= csrf_field() ?><input type="hidden" name="action" value="send">
+      <?= csrf_field() ?><input type="hidden" name="action" value="send"><input type="hidden" name="reply_to" value="" data-tm-rt>
+      <div class="tm-rbar" data-tm-rbar hidden><div><b data-tm-rwho></b><span data-tm-rsnip></span></div><button type="button" data-tm-rx aria-label="Annuler">✕</button></div>
       <textarea name="body" rows="1" maxlength="3000" placeholder="Écrire à l'équipe…  (@ pour mentionner un collègue)" data-tm-input></textarea>
       <label class="tm-ic" title="Joindre un fichier">📎<input type="file" name="file" hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" data-tm-file></label>
       <button class="tm-send" aria-label="Envoyer">➤</button>
@@ -129,10 +138,11 @@ $open = (int) ($_GET['fil'] ?? 0);
     </form>
   </section>
   <aside class="tm-thread" data-tm-thread hidden>
-    <header class="tm-head"><button type="button" class="tm-close" data-tm-close aria-label="Fermer">←</button><div><b>Fil de discussion</b><small>Discussion d'équipe</small></div><button type="button" class="tm-close tm-close-x" data-tm-close aria-label="Fermer">✕</button></header>
+    <header class="tm-head"><button type="button" class="tm-close" data-tm-close aria-label="Fermer">←</button><div><b>Fil de discussion</b><small>Chat gestionnaires</small></div><button type="button" class="tm-close tm-close-x" data-tm-close aria-label="Fermer">✕</button></header>
     <div class="tm-feed" data-tm-thread-body></div>
     <form class="tm-form" data-tm-form>
-      <?= csrf_field() ?><input type="hidden" name="action" value="send"><input type="hidden" name="parent_id" value="" data-tm-parent>
+      <?= csrf_field() ?><input type="hidden" name="action" value="send"><input type="hidden" name="parent_id" value="" data-tm-parent><input type="hidden" name="reply_to" value="" data-tm-rt>
+      <div class="tm-rbar" data-tm-rbar hidden><div><b data-tm-rwho></b><span data-tm-rsnip></span></div><button type="button" data-tm-rx aria-label="Annuler">✕</button></div>
       <textarea name="body" rows="1" maxlength="3000" placeholder="Répondre" data-tm-input></textarea>
       <label class="tm-ic" title="Joindre un fichier">📎<input type="file" name="file" hidden accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" data-tm-file></label>
       <button class="tm-send" aria-label="Envoyer">➤</button>
@@ -140,7 +150,7 @@ $open = (int) ($_GET['fil'] ?? 0);
     </form>
   </aside>
   <div class="tm-atlist" data-tm-at hidden></div>
-  <div class="rx-pick" data-rx-pick hidden><?php foreach (REACTIONS as $r): ?><button type="button" data-pick="<?= $r ?>"><?= $r ?></button><?php endforeach; ?></div>
+  <div class="rx-pick" data-rx-pick hidden><?php foreach (REACTIONS as $r): ?><button type="button" data-pick="<?= $r ?>"><?= $r ?></button><?php endforeach; ?><button type="button" class="pk-act" data-pk-quote title="Répondre">↩</button><button type="button" class="pk-act" data-pk-thread title="Répondre dans un fil">🧵</button></div>
 </div>
 <script>
 (function () {
@@ -188,7 +198,7 @@ $open = (int) ($_GET['fil'] ?? 0);
     var send = function () {
       if (!ta.value.trim() && !fi.files.length) return;
       if (fi.files.length && fi.files[0].size > 8 * 1024 * 1024) { alert('Fichier trop lourd (8 Mo maximum).'); return; }
-      var d = new FormData(f), keep = ta.value; ta.value = ''; grow(); fi.value = ''; fn.hidden = true; atList.hidden = true;
+      var d = new FormData(f), keep = ta.value; ta.value = ''; grow(); fi.value = ''; fn.hidden = true; atList.hidden = true; clearQuote(f);
       post(d).then(function (j) { if (!j.ok) { alert(j.error || 'Message non envoyé.'); ta.value = keep; grow(); } refresh(f.closest('[data-tm-thread]') ? 'thread' : 'feed'); })
         .catch(function () { alert('Connexion perdue : message non envoyé.'); ta.value = keep; });
     };
@@ -221,16 +231,40 @@ $open = (int) ($_GET['fil'] ?? 0);
     ta.addEventListener('blur', function () { setTimeout(function () { atList.hidden = true; }, 150); });
   });
 
+  // ↩ réponse citée (comme dans le chat client)
+  var setQuote = function (btn) {
+    var f = btn.closest('[data-tm-thread]') ? th.querySelector('[data-tm-form]') : root.querySelector('.tm-main [data-tm-form]');
+    f.querySelector('[data-tm-rt]').value = btn.dataset.tmQuote;
+    f.querySelector('[data-tm-rwho]').textContent = btn.dataset.who; f.querySelector('[data-tm-rsnip]').textContent = btn.dataset.snip;
+    f.querySelector('[data-tm-rbar]').hidden = false; f.querySelector('[data-tm-input]').focus();
+  };
+  var clearQuote = function (f) { f.querySelector('[data-tm-rt]').value = ''; f.querySelector('[data-tm-rbar]').hidden = true; };
+  // appui long (mobile) ou clic droit : réactions + ↩ + 🧵
+  var lp = null, pickMsg = null;
+  var openPickAt = function (msg, anchor) {
+    pickFor = +msg.dataset.id; pickMsg = msg; pick.hidden = false;
+    pick.querySelector('[data-pk-thread]').hidden = !!msg.closest('[data-tm-thread]');
+    var r = anchor.getBoundingClientRect(); pick.style.left = Math.max(8, Math.min(window.innerWidth - pick.offsetWidth - 8, r.left)) + 'px'; pick.style.top = (r.top - pick.offsetHeight - 6 < 8 ? r.bottom + 6 : r.top - pick.offsetHeight - 6) + 'px';
+  };
+  root.addEventListener('touchstart', function (e) { var m = e.target.closest('.tm-msg'); if (!m || e.target.closest('a,button,audio,textarea')) return; lp = setTimeout(function () { lp = null; if (navigator.vibrate) navigator.vibrate(15); openPickAt(m, m.querySelector('.tm-b') || m); }, 480); }, { passive: true });
+  ['touchend', 'touchmove', 'touchcancel'].forEach(function (ev) { root.addEventListener(ev, function () { if (lp) { clearTimeout(lp); lp = null; } }, { passive: true }); });
+  root.addEventListener('contextmenu', function (e) { var m = e.target.closest('.tm-msg'); if (!m || e.target.closest('a,img,audio,textarea')) return; e.preventDefault(); openPickAt(m, m.querySelector('.tm-b') || m); });
+
   // clics : fil, réactions, suppression
   var pickFor = 0;
   document.addEventListener('click', function (e) {
     var t;
+    if ((t = e.target.closest('[data-tm-quote]'))) { setQuote(t); return; }
+    if ((t = e.target.closest('[data-tm-rx]'))) { clearQuote(t.closest('[data-tm-form]')); return; }
+    if ((t = e.target.closest('.tm-quote[data-goto]'))) { var g = t.closest('.tm-feed').querySelector('.tm-msg[data-id="' + t.dataset.goto + '"]'); if (g) { g.scrollIntoView({ block: 'center', behavior: 'smooth' }); g.classList.add('flash'); setTimeout(function () { g.classList.remove('flash'); }, 1300); } return; }
+    if (e.target.closest('[data-pk-quote]') && pickMsg) { pick.hidden = true; var qb = pickMsg.querySelector('[data-tm-quote]'); if (qb) setQuote(qb); return; }
+    if (e.target.closest('[data-pk-thread]') && pickFor) { pick.hidden = true; openThread(pickFor); return; }
     if ((t = e.target.closest('[data-open-thread]'))) { openThread(+t.dataset.openThread); return; }
     if ((t = e.target.closest('[data-tm-close]'))) { closeThread(); return; }
     if ((t = e.target.closest('[data-tm-del]'))) { if (!confirm('Supprimer ce message ?')) return; var d = new FormData(); d.append('action', 'delete'); d.append('id', t.dataset.tmDel); post(d).then(function () { refresh(); }); return; }
     if ((t = e.target.closest('.rx-chip'))) { var d2 = new FormData(); d2.append('action', 'react'); d2.append('id', t.closest('[data-rx]').dataset.rx); d2.append('emoji', t.dataset.react); post(d2).then(function () { refresh(); }); return; }
     if ((t = e.target.closest('[data-rx-add]'))) {
-      pickFor = +t.closest('[data-rx]').dataset.rx; pick.hidden = false;
+      pickFor = +t.closest('[data-rx]').dataset.rx; pickMsg = t.closest('.tm-msg'); pick.querySelector('[data-pk-thread]').hidden = !!t.closest('[data-tm-thread]'); pick.hidden = false;
       var r = t.getBoundingClientRect(); pick.style.left = Math.max(8, Math.min(window.innerWidth - pick.offsetWidth - 8, r.left)) + 'px'; pick.style.top = (r.top - pick.offsetHeight - 6 < 8 ? r.bottom + 6 : r.top - pick.offsetHeight - 6) + 'px';
       e.stopPropagation(); return;
     }

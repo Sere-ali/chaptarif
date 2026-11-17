@@ -464,3 +464,29 @@ tr.sec-new td { background: #FFF8E6; }
   .rx-add, .tm-reply { opacity: 1; }
   .tm-x { opacity: .5; }
 }
+
+/* Chat gestionnaires : ↩ réponse citée et 🧵 fil, comme le chat client */
+.tm-acts { position: absolute; top: 4px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: opacity .12s; }
+.tm-msg:hover .tm-acts { opacity: 1; }
+.tm-acts button { width: 32px; height: 32px; border: 1px solid #E3E8EF; background: #fff; border-radius: 999px; cursor: pointer; font-size: .95rem; box-shadow: 0 1px 3px rgba(15,27,45,.08); }
+.tm-acts button:hover { background: #EEF7F1; border-color: #2E7D5B; }
+.tm-meta { padding-right: 84px; }
+.tm-quote { margin-top: 4px; padding: 6px 10px; border-left: 4px solid #2E7D5B; background: #F0F4F2; border-radius: 6px; cursor: pointer; display: grid; max-width: 100%; font-size: .84rem; }
+.tm-quote b { color: #1F5C3E; font-size: .8rem; }
+.tm-quote span { color: #475467; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tm-replies { display: inline-flex; align-items: center; gap: 4px; background: rgba(31,157,107,.1); color: #1f6b4c; border-radius: 999px; padding: 4px 12px; }
+.tm-replies:hover { background: rgba(31,157,107,.18); }
+.tm-rbar { flex-basis: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-left: 4px solid #2E7D5B; background: #F0F4F2; border-radius: 8px; }
+.tm-rbar[hidden] { display: none; }
+.tm-rbar div { display: grid; flex: 1; min-width: 0; font-size: .84rem; }
+.tm-rbar b { color: #1F5C3E; }
+.tm-rbar span { color: #475467; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tm-rbar button { border: 0; background: none; cursor: pointer; font-size: 1rem; color: #667085; }
+.tm-msg.flash { animation: tmFlash 1.3s ease; }
+@keyframes tmFlash { 0%, 60% { background: #DDF3E8; } }
+.rx-pick .pk-act { font-size: 1.1rem; border-left: 1px solid #EEF1F3; border-radius: 0 999px 999px 0; }
+.rx-pick .pk-act + .pk-act { border-left: 0; border-radius: 999px; }
+.rx-pick .pk-act[hidden] { display: none; }
+@media (max-width: 900px) { .tm-acts { opacity: 1; } .tm-acts button { width: 30px; height: 30px; } }
+.tm-quote { width: fit-content; min-width: 180px; }
+@media (min-width: 901px) { .tm-msg .rx:not(:has(.rx-chip)) { height: 0; margin: 0; } }
