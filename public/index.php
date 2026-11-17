@@ -96,7 +96,7 @@ $routes = [
 if (!isset($routes[$path])) not_found();
 
 // Mode maintenance (le back-office reste accessible)
-if (setting('maintenance') === '1' && !str_starts_with($path, '/admin') && !is_admin() && $path !== '/sante') {
+if (setting('maintenance') === '1' && !str_starts_with($path, '/admin') && !is_admin() && !in_array($path, ['/sante', '/webhook/cinetpay', '/webhook/paydunya', '/pulse.php'], true)) {
     http_response_code(503);
     require ROOT . '/views/maintenance.php';
     exit;
