@@ -520,3 +520,6 @@ tr.sec-new td { background: #FFF8E6; }
 .tr-box { margin-top: 6px; padding: 5px 10px; border-left-width: 2px; font-size: .92em; cursor: pointer; }
 .tr-box small { font-size: .66rem; font-weight: 800; letter-spacing: .03em; }
 .tm-trans small { font-size: .66rem; font-weight: 800; letter-spacing: .03em; }
+.tm-atlist .tm-at-all span:last-child { display: grid; line-height: 1.2; }
+.tm-atlist .tm-at-all small { color: #667085; font-weight: 600; font-size: .74rem; }
+.tm-atlist .tm-at-all { border-bottom: 1px solid #EEF1F5; border-radius: 8px 8px 0 0; }

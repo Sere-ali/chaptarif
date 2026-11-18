@@ -227,10 +227,13 @@ $open = (int) ($_GET['fil'] ?? 0);
       var before = ta.value.slice(0, caret), m = before.match(/(^|\s)@([^\s@]{0,20}(?: [^\s@]{0,20})?)$/);
       if (!m) { atList.hidden = true; return; }
       var q = m[2].toLowerCase(), list = ADMINS.filter(function (a) { var l = a.label.toLowerCase(); return q === '' || l.indexOf(q) === 0 || l.indexOf(' ' + q) > -1; }).slice(0, 8);
+      if (q === '' || 'tous'.indexOf(q) === 0 || 'all'.indexOf(q) === 0) list.unshift({ id: 0, label: 'tous', all: true });
       if (!list.length) { atList.hidden = true; return; }
       atList.innerHTML = '<small class="tm-at-h">Mentionner un gestionnaire</small>';
       list.forEach(function (a) {
-        var b = document.createElement('button'); b.type = 'button'; b.innerHTML = '<span class="tm-av" style="background:#2E7D5B">' + a.label.charAt(0).toUpperCase() + '</span>'; b.appendChild(document.createTextNode(a.label));
+        var b = document.createElement('button'); b.type = 'button';
+        if (a.all) { b.className = 'tm-at-all'; b.innerHTML = '<span class="tm-av" style="background:#E8A317">👥</span><span><b>@tous</b><small>Prévenir toute l\'équipe</small></span>'; }
+        else { b.innerHTML = '<span class="tm-av" style="background:#2E7D5B">' + a.label.charAt(0).toUpperCase() + '</span>'; b.appendChild(document.createTextNode(a.label)); }
         var pickIt = function (e) {
           e.preventDefault(); atBusy = true;
           var start = before.length - m[2].length - 1;

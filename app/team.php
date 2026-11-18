@@ -19,6 +19,8 @@ function team_admins(): array
 /** Ids des admins mentionnés dans un texte (@Prénom Nom). */
 function team_mentions_in(string $body): array
 {
+    // @tous / @all : toute l'équipe est prévenue
+    if (preg_match('~@(tous|all|everyone)(?![\p{L}])~iu', $body)) return array_map(fn($a) => (int) $a['id'], team_admins());
     $ids = [];
     foreach (team_admins() as $a) if ($a['label'] !== '' && mb_stripos($body, '@' . $a['label']) !== false) $ids[] = (int) $a['id'];
     return $ids;
@@ -37,6 +39,7 @@ function team_body_html(string $body, int $meId = 0): string
         $lab = e($a['label']);
         $h = preg_replace('~@' . preg_quote($lab, '~') . '(?![\p{L}])~u', '<span class="tm-at' . ((int) $a['id'] === $meId ? ' me' : '') . '">@' . $lab . '</span>', $h);
     }
+    $h = preg_replace('~@(tous|all|everyone)(?![\p{L}])~iu', '<span class="tm-at me">@$1</span>', $h);
     // références de réservation
     $h = preg_replace_callback('~(?<![\w/-])(CT-[A-Z0-9]{4,12})(?![\w-])~', function ($m) {
         $id = (int) val('SELECT id FROM bookings WHERE ref = ?', [$m[1]]);
