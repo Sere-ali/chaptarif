@@ -512,3 +512,11 @@ tr.sec-new td { background: #FFF8E6; }
 .mt-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; margin-bottom: 14px; border-radius: 14px; background: #FEECEC; border: 1px solid #F9B4AE; color: #8A1C12; }
 .mt-bar form { margin: 0; }
 .mt-open { background: #1F7A4D !important; color: #fff !important; border: 0; font-weight: 800; }
+/* Traduction discrète : petite icône */
+.tr-btn { display: inline-block; margin: 4px 0 0; padding: 0 2px; font-size: .85rem; opacity: .35; filter: grayscale(1); transition: opacity .15s, filter .15s; }
+.tr-btn:hover, .tr-btn.on { opacity: 1; filter: none; }
+.tr-btn.busy { animation: trSpin 1s linear infinite; opacity: 1; }
+@keyframes trSpin { to { transform: rotate(360deg); } }
+.tr-box { margin-top: 6px; padding: 5px 10px; border-left-width: 2px; font-size: .92em; cursor: pointer; }
+.tr-box small { font-size: .66rem; font-weight: 800; letter-spacing: .03em; }
+.tm-trans small { font-size: .66rem; font-weight: 800; letter-spacing: .03em; }

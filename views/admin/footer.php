@@ -35,25 +35,25 @@
   var shown = window.ctTrShown, csrf = (document.querySelector('input[name=_csrf]') || {}).value || '';
   var put = function (el, b, j) {
     var box = document.createElement('div'); box.className = 'tr-box';
-    var sm = document.createElement('small'); sm.textContent = 'Traduit de l\'' + j.from + ' vers le ' + j.into; box.appendChild(sm);
+    var sm = document.createElement('small'); var LC = { 'français': 'FR', 'anglais': 'EN' }; sm.textContent = (LC[j.from] || j.from) + ' → ' + (LC[j.into] || j.into); box.appendChild(sm);
     var sp = document.createElement('div'); sp.textContent = j.text; box.appendChild(sp);
-    b.insertAdjacentElement('beforebegin', box); b.textContent = '🌐 Masquer la traduction'; return box;
+    b.insertAdjacentElement('beforebegin', box); b.classList.add('on'); box.title = 'Toucher pour masquer'; box.addEventListener('click', function () { b.click(); }); return box;
   };
   document.querySelectorAll('[data-tr-text]').forEach(function (el) {
     if (el.dataset.trDone || !el.textContent.trim()) return; el.dataset.trDone = '1';
     var key = el.innerText.trim();
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'tr-btn'; b.textContent = '🌐 Traduire';
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'tr-btn'; b.textContent = '🌐'; b.title = 'Traduire (français ↔ anglais)'; b.setAttribute('aria-label', 'Traduire');
     el.insertAdjacentElement('afterend', b);
     var box = shown[key] ? put(el, b, shown[key]) : null;
     b.addEventListener('click', function () {
-      if (box) { box.hidden = !box.hidden; b.textContent = box.hidden ? '🌐 Traduire' : '🌐 Masquer la traduction'; if (box.hidden) delete shown[key]; else shown[key] = box._j; return; }
-      b.disabled = true; b.textContent = '🌐 Traduction…';
+      if (box) { box.hidden = !box.hidden; b.classList.toggle('on', !box.hidden); if (box.hidden) delete shown[key]; else shown[key] = box._j; return; }
+      b.disabled = true; b.classList.add('busy');
       var d = new FormData(); d.append('_csrf', csrf); d.append('kind', 'text'); d.append('text', el.innerText);
       fetch('/admin/traduire', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: d }).then(function (r) { return r.json(); }).then(function (j) {
-        b.disabled = false;
-        if (!j.ok) { b.textContent = '🌐 Traduire'; alert(j.error || 'Traduction impossible.'); return; }
+        b.disabled = false; b.classList.remove('busy');
+        if (!j.ok) { alert(j.error || 'Traduction impossible.'); return; }
         shown[key] = j; box = put(el, b, j); box._j = j;
-      }).catch(function () { b.disabled = false; b.textContent = '🌐 Traduire'; alert('Connexion perdue.'); });
+      }).catch(function () { b.disabled = false; b.classList.remove('busy'); alert('Connexion perdue.'); });
     });
     if (box) box._j = shown[key];
   });

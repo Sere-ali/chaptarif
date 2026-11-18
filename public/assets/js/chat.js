@@ -84,24 +84,28 @@
   // --- traduction (back-office uniquement)
   var trOn = box.dataset.tr === '1';
   var trPost = function (data) { data.append('_csrf', csrf); return fetch('/admin/traduire', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' }, body: data }).then(function (r) { return r.json(); }); };
+  var LC = { 'français': 'FR', 'anglais': 'EN', 'espagnol': 'ES', 'portugais': 'PT', 'arabe': 'AR', 'chinois': 'ZH', 'allemand': 'DE', 'italien': 'IT' };
+  var lc = function (n) { return LC[n] || String(n || '').slice(0, 2).toUpperCase(); };
+  // petite icône 🌐 discrète, dans la ligne de l'heure
   var addTrBtn = function (msg) {
     if (!trOn || !msg.querySelector('.wa-txt') || msg.querySelector('.wa-trb')) return;
-    var b = el('button', 'wa-trb', '🌐 Traduire'); b.type = 'button';
-    var meta = msg.querySelector('.wa-meta'); msg.insertBefore(b, meta);
+    var b = el('button', 'wa-trb', '🌐'); b.type = 'button'; b.title = 'Traduire (français ↔ anglais)'; b.setAttribute('aria-label', 'Traduire');
+    var meta = msg.querySelector('.wa-meta'); if (meta) meta.insertBefore(b, meta.firstChild); else msg.appendChild(b);
   };
   if (trOn) {
     box.addEventListener('click', function (e) {
-      var b = e.target.closest('.wa-trb'); if (!b) return;
-      var msg = b.closest('.wa-msg'), ex = msg.querySelector('.wa-trans');
-      if (ex) { ex.hidden = !ex.hidden; b.textContent = ex.hidden ? '🌐 Traduire' : '🌐 Masquer la traduction'; return; }
-      b.disabled = true; b.textContent = '🌐 Traduction…';
+      var b = e.target.closest('.wa-trb, .wa-trans'); if (!b) return;
+      var msg = b.closest('.wa-msg'), ex = msg.querySelector('.wa-trans'), ic = msg.querySelector('.wa-trb');
+      if (ex) { ex.hidden = !ex.hidden; ic.classList.toggle('on', !ex.hidden); return; }
+      ic.disabled = true; ic.classList.add('busy');
       var d = new FormData(); d.append('kind', 'chat'); d.append('id', msg.dataset.id);
       trPost(d).then(function (j) {
-        b.disabled = false;
-        if (!j.ok) { b.textContent = '🌐 Traduire'; alert(j.error || 'Traduction impossible.'); return; }
-        var t = el('div', 'wa-trans'); t.appendChild(el('small', '', 'Traduit de l\'' + j.from + ' vers le ' + j.into)); t.appendChild(el('span', '', j.text));
-        msg.insertBefore(t, b); b.textContent = '🌐 Masquer la traduction';
-      }).catch(function () { b.disabled = false; b.textContent = '🌐 Traduire'; alert('Connexion perdue.'); });
+        ic.disabled = false; ic.classList.remove('busy');
+        if (!j.ok) { alert(j.error || 'Traduction impossible.'); return; }
+        var t = el('div', 'wa-trans'); t.title = 'Toucher pour masquer la traduction';
+        t.appendChild(el('small', '', lc(j.from) + ' → ' + lc(j.into))); t.appendChild(el('span', '', j.text));
+        var tx = msg.querySelector('.wa-txt'); tx.insertAdjacentElement('afterend', t); ic.classList.add('on');
+      }).catch(function () { ic.disabled = false; ic.classList.remove('busy'); alert('Connexion perdue.'); });
     });
     var trMenu = q('[data-tr-menu]'), trBtn = q('[data-tr-draft]');
     trBtn.addEventListener('click', function (e) {

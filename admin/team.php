@@ -173,7 +173,7 @@ $open = (int) ($_GET['fil'] ?? 0);
   var showTr = function (msg, j) {
     var old = msg.querySelector('.tm-trans'); if (old) old.remove();
     var d = document.createElement('div'); d.className = 'tm-trans';
-    var sm = document.createElement('small'); sm.textContent = '🌐 Traduit de l\'' + j.from + ' vers le ' + j.into; d.appendChild(sm);
+    var sm = document.createElement('small'); var LC = { 'français': 'FR', 'anglais': 'EN' }; sm.textContent = (LC[j.from] || j.from) + ' → ' + (LC[j.into] || j.into); d.appendChild(sm);
     var sp = document.createElement('span'); sp.textContent = j.text; d.appendChild(sp);
     var tx = msg.querySelector('.tm-txt'); if (tx) tx.insertAdjacentElement('afterend', d);
   };

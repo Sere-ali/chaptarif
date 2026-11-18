@@ -41,5 +41,5 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <div class="wa-rec" data-chat-rec hidden><span class="rec-dot"></span> <b data-rec-time>0:00</b> <button type="button" data-rec-cancel>✕ Annuler</button><button type="button" class="wa-main" data-rec-send aria-label="Envoyer le vocal">➤</button></div>
   </form>
 </div>
-<link rel="stylesheet" href="/assets/css/chat.css?v=5">
-<script src="/assets/js/chat.js?v=7" defer></script>
+<link rel="stylesheet" href="/assets/css/chat.css?v=6">
+<script src="/assets/js/chat.js?v=8" defer></script>
