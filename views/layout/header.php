@@ -14,6 +14,14 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <script>(function(h){try{var sw=screen&&screen.width?screen.width:0;if(sw&&sw<700&&window.innerWidth>900)h.className+=' force-mobile';}catch(e){}})(document.documentElement);</script>
 <title><?= e($title === 'ChapTarif' ? 'ChapTarif : comparez, réservez et payez en toute sécurité' : $title . ' · ChapTarif') ?></title>
 <meta name="description" content="<?= e($desc) ?>">
+<?php if (($active ?? '') === 'home' || ($_SERVER['REQUEST_URI'] ?? '') === '/contact'): $__org = ['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => 'ChapTarif', 'url' => 'https://chaptarif.com', 'logo' => 'https://chaptarif.com/assets/img/logo.svg',
+  'address' => ['@type' => 'PostalAddress', 'addressLocality' => 'Abidjan', 'addressCountry' => 'CI']];
+  $__cp = ['@type' => 'ContactPoint', 'contactType' => 'customer service', 'areaServed' => 'CI', 'availableLanguage' => ['French', 'English']];
+  if (trim((string) setting('support_email')) !== '') { $__org['email'] = trim((string) setting('support_email')); $__cp['email'] = $__org['email']; }
+  if (trim((string) setting('support_phone')) !== '') { $__org['telephone'] = trim((string) setting('support_phone')); $__cp['telephone'] = $__org['telephone']; }
+  $__org['contactPoint'] = [$__cp]; ?>
+<script type="application/ld+json"><?= json_encode($__org, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?></script>
+<?php endif; ?>
 <?php if (!empty($noindex)): ?><meta name="robots" content="noindex, nofollow, noarchive"><?php endif; ?>
 <meta name="theme-color" content="#2E7D5B">
 <meta property="og:title" content="<?= e($title) ?> · ChapTarif">
