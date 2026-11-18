@@ -209,7 +209,7 @@ function domaines(): array
             'select_h2' => 'Sélectionnez votre prestation', 'select_sub' => 'La prestataire se déplace directement à votre adresse.',
             'trust_title' => 'Paiement débloqué après prestation :', 'trust_text' => 'Vous validez sur votre téléphone une fois votre coiffure, maquillage ou manucure terminée.',
             'keys' => ['coiffeuse', 'maquilleuse', 'onglerie']],
-        'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'title_m' => 'Service à la personne', 'emoji' => '', 'sub' => 'Ménage & pressing', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/service-a-la-personne', 'group' => 'Service à la personne',
+        'service-a-la-personne' => ['name' => 'Service à la personne', 'short' => 'Service à la personne', 'title_m' => 'Service à la personne', 'emoji' => '', 'sub' => 'Ménage & pressing', 'color' => '#7A4FB5', 'bg' => '#F3EEFB', 'img' => 'univers-menage', 'url' => '/services-a-domicile', 'group' => 'Service à la personne',
             'pitch' => 'Ménage à domicile et pressing & repassage de linge, prestataires vérifiés, tarif fixe.',
             'tagline' => 'Un intérieur propre, un quotidien plus serein !',
             'select_h2' => 'Sélectionnez votre besoin', 'select_sub' => 'Trouvez le service idéal, en quelques clics.',

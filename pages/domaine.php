@@ -2,6 +2,7 @@
 // Page "domaine" : regroupe plusieurs univers derrière un seul bouton de navigation
 // (ex. /transport → Cars, Covoiturage, Location de car, Location de camion).
 $dk = trim($path, '/'); // transport | beaute
+if ($dk === 'services-a-domicile') $dk = 'service-a-la-personne';
 $D = domaines();
 $d = $D[$dk] ?? null;
 if (!$d) not_found();

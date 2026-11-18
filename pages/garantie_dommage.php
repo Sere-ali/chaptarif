@@ -57,7 +57,7 @@ $ck = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="curre
       </div>
     </div>
 
-    <div class="gd-cta"><a class="btn btn-primary btn-lg" href="/service-a-la-personne">Réserver un service</a></div>
+    <div class="gd-cta"><a class="btn btn-primary btn-lg" href="/services-a-domicile">Réserver un service</a></div>
   </div>
 </section>
 <?php view('layout/footer', compact('active'));
