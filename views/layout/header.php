@@ -14,6 +14,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <script>(function(h){try{var sw=screen&&screen.width?screen.width:0;if(sw&&sw<700&&window.innerWidth>900)h.className+=' force-mobile';}catch(e){}})(document.documentElement);</script>
 <title><?= e($title === 'ChapTarif' ? 'ChapTarif : comparez, réservez et payez en toute sécurité' : $title . ' · ChapTarif') ?></title>
 <meta name="description" content="<?= e($desc) ?>">
+<?php if (!empty($noindex)): ?><meta name="robots" content="noindex, nofollow, noarchive"><?php endif; ?>
 <meta name="theme-color" content="#2E7D5B">
 <meta property="og:title" content="<?= e($title) ?> · ChapTarif">
 <meta property="og:description" content="<?= e($desc) ?>">
