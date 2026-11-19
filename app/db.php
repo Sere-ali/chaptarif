@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 35;
+const SCHEMA_VERSION = 36;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -210,6 +210,10 @@ function db_migrate(): void
             id $PK, user_id INTEGER NOT NULL, sender TEXT NOT NULL, admin_id INTEGER, body TEXT NOT NULL,
             read_by_user INTEGER NOT NULL DEFAULT 0, read_by_admin INTEGER NOT NULL DEFAULT 0, created_at TEXT)",
         "CREATE INDEX IF NOT EXISTS idx_chat_user ON chat_messages(user_id, id)",
+        "CREATE TABLE IF NOT EXISTS conversations (
+            id $PK, user_id INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'question', booking_id INTEGER, ref TEXT UNIQUE,
+            status TEXT NOT NULL DEFAULT 'en_cours', subject TEXT, about TEXT, created_at TEXT, updated_at TEXT, last_msg_at TEXT)",
+        "CREATE INDEX IF NOT EXISTS idx_conv_user ON conversations(user_id, last_msg_at)",
         "CREATE TABLE IF NOT EXISTS team_messages (
             id $PK, user_id INTEGER NOT NULL, parent_id INTEGER, body TEXT NOT NULL DEFAULT '', mentions TEXT,
             att_url TEXT, att_type TEXT, att_name TEXT, created_at TEXT, deleted INTEGER NOT NULL DEFAULT 0)",
@@ -278,6 +282,8 @@ function db_migrate(): void
         "ALTER TABLE users ADD COLUMN totp_recovery TEXT",
         "ALTER TABLE team_messages ADD COLUMN reply_to INTEGER",
         "ALTER TABLE users ADD COLUMN admin_scope TEXT",
+        "ALTER TABLE chat_messages ADD COLUMN conversation_id INTEGER",
+        "CREATE INDEX IF NOT EXISTS idx_chat_conv ON chat_messages(conversation_id, id)",
     ] as $alter) {
         try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }
     }
@@ -413,6 +419,18 @@ function db_migrate(): void
         foreach (all("SELECT id FROM users WHERE role = 'client' AND client_no IS NULL ORDER BY id") as $r) q('UPDATE users SET client_no = ? WHERE id = ?', [++$n, $r['id']]);
         $n = (int) val("SELECT COALESCE(MAX(provider_no), 0) FROM providers");
         foreach (all("SELECT id FROM providers WHERE provider_no IS NULL ORDER BY id") as $r) q('UPDATE providers SET provider_no = ? WHERE id = ?', [++$n, $r['id']]);
+    }
+
+    // v36 : chat par conversations (dossiers). Les anciens échanges d'un client deviennent sa conversation « Assistance ChapTarif ».
+    if ($v > 0 && $v < 36) {
+        try {
+            foreach (all("SELECT c.user_id, MIN(c.created_at) AS f, MAX(c.created_at) AS l FROM chat_messages c JOIN users u ON u.id = c.user_id
+                WHERE c.conversation_id IS NULL AND NOT EXISTS (SELECT 1 FROM providers p WHERE p.phone = u.phone) GROUP BY c.user_id") as $r) {
+                $cid = conv_create((int) $r['user_id'], 'assistance', null, 'Assistance ChapTarif', null, $r['f'] ?: now());
+                q('UPDATE conversations SET last_msg_at = ?, status = ? WHERE id = ?', [$r['l'] ?: now(), 'resolu', $cid]);
+                q('UPDATE chat_messages SET conversation_id = ? WHERE user_id = ? AND conversation_id IS NULL', [$cid, $r['user_id']]);
+            }
+        } catch (Throwable $e) { error_log('migration conversations: ' . $e->getMessage()); }
     }
 
     q("DELETE FROM settings WHERE key = 'schema_version'");

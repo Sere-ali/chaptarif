@@ -156,6 +156,7 @@
         (j.messages || []).forEach(add);
         (j.reads || []).forEach(function (id) { var t = log.querySelector('.wa-msg[data-id="' + id + '"] .wa-tick'); if (t) t.classList.add('read'); });
         applyMeta(j);
+        try { box.dispatchEvent(new CustomEvent('chat:poll', { detail: j })); } catch (e) {}
       }).catch(function () {});
   };
   var send = function (data, onFail) {

@@ -44,6 +44,7 @@ switch ($type) {
         $u = one("SELECT * FROM users WHERE id = ? AND role = 'client'", [$id]) ?: $stop('Client introuvable.');
         if ($used('SELECT COUNT(*) FROM bookings WHERE user_id = ?', [$id])) $stop('Ce client a un historique de réservations (obligation comptable) : suspendez-le plutôt.');
         q('DELETE FROM chat_messages WHERE user_id = ?', [$id]);
+        q('DELETE FROM conversations WHERE user_id = ?', [$id]);
         q('DELETE FROM visit_requests WHERE user_id = ?', [$id]);
         q('DELETE FROM users WHERE id = ?', [$id]);
         $label = 'Client « ' . ($u['name'] ?: $u['phone']) . ' »';
@@ -52,8 +53,15 @@ switch ($type) {
         q('DELETE FROM contact_messages WHERE id = ?', [$id]);
         $label = 'Message #' . $id;
         break;
+    case 'conversation':
+        $cv = one('SELECT ref FROM conversations WHERE id = ?', [$id]) ?: $stop('Dossier introuvable.');
+        q('DELETE FROM chat_messages WHERE conversation_id = ?', [$id]);
+        q('DELETE FROM conversations WHERE id = ?', [$id]);
+        $label = 'Dossier ' . $cv['ref'];
+        break;
     case 'chat':
         q('DELETE FROM chat_messages WHERE user_id = ?', [$id]);
+        q('DELETE FROM conversations WHERE user_id = ?', [$id]);
         $label = 'Conversation #' . $id;
         break;
     case 'trip':

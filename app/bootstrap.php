@@ -91,6 +91,7 @@ require APP . '/sms.php';
 require APP . '/security.php';
 require APP . '/team.php';
 require APP . '/translate.php';
+require APP . '/conversations.php';
 
 db_migrate();
 if (PHP_SAPI !== 'cli') maintenance_maybe();

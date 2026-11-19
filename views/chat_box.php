@@ -10,8 +10,9 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <div class="wa-who"><?php if (!empty($name_href)): ?><a class="wa-who-link" href="<?= e($name_href) ?>" title="Voir le profil"><b><?= e($name) ?> ›</b></a><?php else: ?><b><?= e($name) ?></b><?php endif; ?><small><?= e($sub) ?></small></div>
   </header>
   <div class="wa-log" data-chat-log>
+    <?= $top ?? '' ?>
     <?php if (!empty($notice)): ?><div class="chat-pour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7.5v.5"/></svg><span><?= $notice ?></span></div><?php endif; ?>
-    <?php if (!$msgs): ?><p class="wa-empty" data-chat-empty>👋 Bonjour ! Comment pouvons-nous vous aider ?</p><?php endif; ?>
+    <?php if (!$msgs && empty($top)): ?><p class="wa-empty" data-chat-empty>👋 Bonjour ! Comment pouvons-nous vous aider ?</p><?php endif; ?>
     <?php foreach ($msgs as $m) echo chat_msg_html($m); ?>
   </div>
   <div class="wa-th" data-th hidden>
@@ -21,6 +22,7 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
   </div>
   <?php if ($trOn): ?><div class="tr-menu" data-tr-menu hidden><small>Traduire mon message en :</small><?php foreach (['en' => '🇬🇧 Anglais', 'fr' => '🇫🇷 Français', 'es' => '🇪🇸 Espagnol', 'pt' => '🇵🇹 Portugais', 'ar' => '🇸🇦 Arabe', 'zh-CN' => '🇨🇳 Chinois'] as $lc => $ll): ?><button type="button" data-tr-to="<?= $lc ?>"><?= $ll ?></button><?php endforeach; ?></div><?php endif; ?>
   <div class="rx-pick" data-rx-pick hidden><?php foreach (REACTIONS as $r): ?><button type="button" data-pick="<?= $r ?>"><?= $r ?></button><?php endforeach; ?><button type="button" class="pk-act" data-pk-reply title="Répondre">↩</button><button type="button" class="pk-act" data-pk-thread title="Répondre dans un fil">🧵</button></div>
+  <?php if (!empty($footnote)): ?><p class="wa-foot-note"><?= e($footnote) ?></p><?php endif; ?>
   <form class="wa-form" method="post" action="<?= e($url) ?>" data-chat-form>
     <?= csrf_field() ?>
     <input type="hidden" name="reply_to" value="" data-reply-id>
@@ -41,5 +43,5 @@ $emojis = ['😀','😂','🤣','😊','😍','😘','😉','😎','🙏','👍'
     <div class="wa-rec" data-chat-rec hidden><span class="rec-dot"></span> <b data-rec-time>0:00</b> <button type="button" data-rec-cancel>✕ Annuler</button><button type="button" class="wa-main" data-rec-send aria-label="Envoyer le vocal">➤</button></div>
   </form>
 </div>
-<link rel="stylesheet" href="/assets/css/chat.css?v=6">
-<script src="/assets/js/chat.js?v=8" defer></script>
+<link rel="stylesheet" href="/assets/css/chat.css?v=7">
+<script src="/assets/js/chat.js?v=9" defer></script>

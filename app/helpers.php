@@ -578,9 +578,9 @@ function chat_reply_counts(array $ids): array
 }
 
 /** Réactions et nombres de réponses des derniers messages d'une conversation (pour la mise à jour en direct). */
-function chat_meta(int $userId, bool $admin): array
+function chat_meta(int $userId, bool $admin, ?string $scope = null): array
 {
-    $ids = array_map('intval', array_column(all('SELECT id FROM chat_messages WHERE user_id = ? ORDER BY id DESC LIMIT 200', [$userId]), 'id'));
+    $ids = array_map('intval', array_column(all('SELECT id FROM chat_messages WHERE user_id = ?' . ($scope ? ' AND ' . $scope : '') . ' ORDER BY id DESC LIMIT 200', [$userId]), 'id'));
     $viewer = current_user();
     $rx = reactions_for('chat', $ids, (int) ($viewer['id'] ?? 0), $admin ? 'admin' : 'user');
     return ['rx' => (object) $rx, 'rc' => (object) chat_reply_counts($ids)];
