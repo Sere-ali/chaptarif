@@ -92,7 +92,7 @@
 </script>
 <script src="/assets/js/pw-eye.js?v=1"></script>
 <script src="/assets/js/live.js?v=1" defer></script>
-<script src="/assets/js/prefetch.js?v=1" defer></script>
+<script src="/assets/js/prefetch.js?v=2" defer></script>
 <?= $scripts ?? '' ?>
 </body>
 </html>

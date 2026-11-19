@@ -18,7 +18,8 @@
 <script src="/assets/js/polish.js?v=1" defer></script>
 <script src="/assets/js/motion.js?v=2" defer></script>
 <script src="/assets/js/live.js?v=1" defer></script>
-<script src="/assets/js/prefetch.js?v=1" defer></script>
+<script src="/assets/js/prefetch.js?v=2" defer></script>
+<script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/deconnexion*","/admin*","/paiement*","/chat*","/pulse.php*","/otp*","/webhook*","/billet*","/sante*"]}},{"not":{"selector_matches":"[target=_blank],[download],[data-confirm]"}}]},"eagerness":"moderate"}]}</script>
 <?php if (!empty($leaflet)): ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
 <?php endif; ?>

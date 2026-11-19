@@ -23,7 +23,8 @@ COPY . /var/www/html
 RUN chmod +x /usr/local/bin/entrypoint.sh \
  && mkdir -p storage && chown -R www-data:www-data storage \
  && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
- && echo "ServerTokens Prod\nServerSignature Off" >> /etc/apache2/conf-available/security.conf
+ && echo "ServerTokens Prod\nServerSignature Off" >> /etc/apache2/conf-available/security.conf \
+ && printf '<IfModule mpm_prefork_module>\n  StartServers 4\n  MinSpareServers 4\n  MaxSpareServers 10\n  MaxRequestWorkers 40\n  MaxConnectionsPerChild 2000\n</IfModule>\n' > /etc/apache2/conf-enabled/zz-workers.conf
 
 ENV PORT=10000
 EXPOSE 10000

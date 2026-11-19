@@ -1,15 +1,25 @@
 <?php
 $me = current_user();
 $nav = $nav ?? '';
-$disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'" . scope_sql('universe'));
-$pendingKyc = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'" . scope_sql('universe'));
-$pendingCandidatures = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'" . scope_sql('universe'));
-$unread = (int) val('SELECT COUNT(*) FROM contact_messages WHERE handled = 0');
-$pendingListings = (int) val("SELECT COUNT(*) FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.status = 'pending'" . scope_sql('p.universe'));
+// Tous les compteurs du menu en une seule requête (le menu s'affiche plus vite)
 $PROV_SQL = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
-$chatUnreadPro = (int) val("SELECT COUNT(*) FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE c.sender = 'user' AND c.read_by_admin = 0 AND $PROV_SQL");
-$chatUnreadProMine = admin_scope() === '' ? $chatUnreadPro : (int) val("SELECT COUNT(*) FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE c.sender = 'user' AND c.read_by_admin = 0 AND EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone" . scope_sql('pp.universe') . ")");
-$chatUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0") - $chatUnreadPro;
+$__c = one("SELECT
+  (SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'" . scope_sql('universe') . ") AS disputes,
+  (SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'" . scope_sql('universe') . ") AS kyc,
+  (SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'" . scope_sql('universe') . ") AS cand,
+  (SELECT COUNT(*) FROM contact_messages WHERE handled = 0) AS unread,
+  (SELECT COUNT(*) FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.status = 'pending'" . scope_sql('p.universe') . ") AS listings,
+  (SELECT COUNT(*) FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE c.sender = 'user' AND c.read_by_admin = 0 AND $PROV_SQL) AS chatpro,
+  (SELECT COUNT(*) FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE c.sender = 'user' AND c.read_by_admin = 0 AND EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone" . scope_sql('pp.universe') . ")) AS chatpromine,
+  (SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0) AS chatall") ?: [];
+$disputes = (int) ($__c['disputes'] ?? 0);
+$pendingKyc = (int) ($__c['kyc'] ?? 0);
+$pendingCandidatures = (int) ($__c['cand'] ?? 0);
+$unread = (int) ($__c['unread'] ?? 0);
+$pendingListings = (int) ($__c['listings'] ?? 0);
+$chatUnreadPro = (int) ($__c['chatpro'] ?? 0);
+$chatUnreadProMine = (int) ($__c['chatpromine'] ?? 0);
+$chatUnread = (int) ($__c['chatall'] ?? 0) - $chatUnreadPro;
 $teamLast = $me ? (int) val('SELECT last_id FROM team_reads WHERE user_id = ?', [$me['id']]) : 0;
 $teamUnread = $me ? (int) val('SELECT COUNT(*) FROM team_messages WHERE id > ? AND user_id <> ? AND deleted = 0', [$teamLast, $me['id']]) : 0;
 $myOpenTasks = $me ? (int) val("SELECT COUNT(*) FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule')", [$me['id']]) : 0;

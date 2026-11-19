@@ -21,7 +21,9 @@ function db(): PDO
             ltrim($p['path'], '/'),
             env('DB_SSLMODE', 'prefer')
         );
-        $pdo = new PDO($dsn, urldecode($p['user'] ?? ''), urldecode($p['pass'] ?? ''));
+        // Connexion persistante : réutilisée d'une page à l'autre (évite ~20-50 ms de connexion à chaque page).
+        $pdo = new PDO($dsn, urldecode($p['user'] ?? ''), urldecode($p['pass'] ?? ''), [PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', '1') === '1']);
+        register_shutdown_function(function () use ($pdo) { try { if ($pdo->inTransaction()) $pdo->rollBack(); } catch (Throwable $e) {} });
     } else {
         $file = env('SQLITE_PATH', ROOT . '/storage/chaptarif.sqlite');
         if (!is_dir(dirname($file))) mkdir(dirname($file), 0775, true);
