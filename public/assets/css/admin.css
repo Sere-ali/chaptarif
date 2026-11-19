@@ -539,3 +539,11 @@ tr.sec-new td { background: #FFF8E6; }
 .delc-box .delc-warn { color: #B42318; font-weight: 700; font-size: .85rem; }
 .delc-acts { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
 .delc-acts .btn { flex: 1; }
+
+/* Visionneuse : la page entière tient dans l'écran ; toucher la page pour l'agrandir */
+.docv-box { width: min(1100px, 100%); max-height: 94vh; }
+.docv-body { padding: 10px; }
+.docv-body img { max-height: calc(94vh - 80px); }
+.docv-body .pdfv { max-height: calc(94vh - 80px); justify-items: center; }
+.pdfv .pdfv-page { width: auto; height: auto; max-width: 100%; max-height: calc(94vh - 100px); cursor: zoom-in; }
+.pdfv.pdfv-zoom .pdfv-page { width: 100%; max-height: none; cursor: zoom-out; }

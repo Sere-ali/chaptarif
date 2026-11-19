@@ -271,5 +271,5 @@ view('layout/header', compact('title', 'desc', 'active'));
   vw.addEventListener('click', function (e) { if (e.target === vw) closeV(); });
 })();
 </script>
-<script src="/assets/js/pdfview.js?v=1" defer></script>
+<script src="/assets/js/pdfview.js?v=2" defer></script>
 <?php view('layout/footer', compact('active'));

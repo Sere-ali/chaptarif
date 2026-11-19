@@ -253,3 +253,6 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
 .pdfv-page { display: block; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
 .pdfv-load { margin: 8px 4px 0; color: #5B6878; font-size: .9rem; text-align: center; }
 .pa-self { background: #EAF6EF; border: 1px solid #BFE3CC; color: #1E5E3B; border-radius: 14px; padding: 12px 14px; font-size: .92rem; line-height: 1.45; margin: 4px 0 12px; }
+.kyc-view-box .pdfv { justify-items: center; }
+.kyc-view-box .pdfv .pdfv-page { width: auto; height: auto; max-width: 100%; max-height: calc(88vh - 44px); cursor: zoom-in; }
+.kyc-view-box .pdfv.pdfv-zoom .pdfv-page { width: 100%; max-height: none; cursor: zoom-out; }

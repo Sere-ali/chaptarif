@@ -8,7 +8,7 @@
   document.querySelectorAll('[data-toggle]').forEach(function(b){b.addEventListener('click',function(){var x=document.querySelector(b.dataset.toggle);if(x)x.hidden=!x.hidden;});});
 })();
 </script>
-<script src="/assets/js/pdfview.js?v=1" defer></script>
+<script src="/assets/js/pdfview.js?v=2" defer></script>
 <div class="delc" data-delc hidden><div class="delc-box" role="dialog" aria-modal="true" aria-labelledby="delc-t">
   <div class="delc-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></div>
   <b id="delc-t">Vous êtes sur le point de supprimer quelque chose</b>
