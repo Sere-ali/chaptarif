@@ -42,7 +42,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <img src="/assets/img/logo.svg" alt="" width="34" height="34">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
-    <span class="m-loc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span class="m-loc-t">Côte d'Ivoire</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
     <button class="lang-btn m-lang" type="button" data-lang-toggle aria-label="<?= ($_COOKIE['ct_lang'] ?? '') === 'en' ? 'Passer en français' : 'Switch to English' ?>"><?= ($_COOKIE['ct_lang'] ?? '') === 'en' ? 'EN' : 'FR' ?></button>
     <button class="m-burger" type="button" aria-label="Ouvrir le menu" aria-controls="m-drawer" aria-expanded="false" data-drawer-open><span></span><span></span><span></span></button>
   </div>
@@ -124,7 +123,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
         </a>
       <?php endforeach; ?>
     </div>
-    <button class="m-install" type="button" data-install hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 8v6M9.5 11.8 12 14.3l2.5-2.5"/></svg>Télécharger l'application</button>
   </div>
   <div class="m-overlay" data-drawer-close hidden></div>
   <aside class="m-drawer" id="m-drawer" aria-label="Menu" hidden>

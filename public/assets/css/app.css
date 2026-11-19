@@ -1678,3 +1678,4 @@ label.check.garantie-check:has(input:checked) { background: #DCE9FD; box-shadow:
 
 .acc-no { margin: 4px 0 2px; }
 .acc-name { margin: 0; font-weight: 700; font-size: 1.05rem; color: #0E1B33; }
+.m-home-top .m-lang { margin-left: auto; }
