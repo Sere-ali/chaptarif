@@ -1024,3 +1024,10 @@ function del_btn(string $type, int $id, string $what = 'cet élément', array $e
         . csrf_field() . '<input type="hidden" name="type" value="' . e($type) . '"><input type="hidden" name="id" value="' . $id . '"><input type="hidden" name="back" value="' . e($back) . '">' . implode('', array_map(fn($k, $v) => '<input type="hidden" name="' . e((string) $k) . '" value="' . e((string) $v) . '">', array_keys($extra), $extra))
         . '<button class="btn btn-danger btn-xs del-btn del-ico" title="Supprimer" aria-label="Supprimer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button></form>';
 }
+
+/** Condition SQL : une candidature non validée n'apparaît ni dans Prestataires/KYC ni dans les compteurs (elle reste dans Candidatures). */
+function prov_listed_sql(string $a = ''): string
+{
+    $p = $a === '' ? '' : $a . '.';
+    return " AND (COALESCE({$p}source, '') <> 'candidature' OR {$p}kyc_status = 'verified')";
+}

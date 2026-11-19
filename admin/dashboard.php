@@ -9,9 +9,9 @@ $escrow = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN
 $disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'$SB");
 $nbPaid = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN $paid$SB");
 $clients = (int) val("SELECT COUNT(*) FROM users WHERE role = 'client'");
-$provTot = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected'$SP");
-$provOk = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'verified' AND active = 1$SP");
-$provWait = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'$SP");
+$provTot = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected'$SP" . prov_listed_sql());
+$provOk = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'verified' AND active = 1$SP" . prov_listed_sql());
+$provWait = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'$SP" . prov_listed_sql());
 $toPay = $scoped ? 0 : (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE status = 'A_VIRER'");
 
 $days = [];
@@ -23,7 +23,7 @@ $byU = [];
 foreach (all("SELECT universe, COUNT(*) AS n, COALESCE(SUM(total),0) AS v FROM bookings WHERE status IN $paid$SB GROUP BY universe") as $r) $byU[$r['universe']] = $r;
 $maxU = max([1, ...array_values(array_map(fn($r) => (int) $r['v'], $byU))]);
 $recent = all("SELECT b.*, u.name AS uname, u.phone AS uphone FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE NOT ((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL))$SBb ORDER BY b.id DESC LIMIT 8");
-$kyc = all("SELECT * FROM providers WHERE kyc_status = 'pending'$SP ORDER BY id DESC LIMIT 5");
+$kyc = all("SELECT * FROM providers WHERE kyc_status = 'pending'$SP" . prov_listed_sql() . " ORDER BY id DESC LIMIT 5");
 $myTasks = all("SELECT * FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule') ORDER BY CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date, id DESC LIMIT 5", [$me['id']]);
 
 $page = 'Tableau de bord';

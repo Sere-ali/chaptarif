@@ -33,18 +33,18 @@ $landing = $svc === null && $uk === '' && $kyc === '' && $s === '' && !isset($_G
 $svcCount = []; $svcWait = [];
 foreach ($SERVICES as $sk => $sv) {
     $ph = implode(',', array_fill(0, count($sv[1]), '?'));
-    $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected' AND universe IN ($ph)", $sv[1]);
-    $svcWait[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending' AND universe IN ($ph)", $sv[1]);
+    $svcCount[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected' AND universe IN ($ph)" . prov_listed_sql(), $sv[1]);
+    $svcWait[$sk] = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending' AND universe IN ($ph)" . prov_listed_sql(), $sv[1]);
 }
 $w = ['1=1']; $pp = [];
 if ($svc !== null) { $w[] = 'universe IN (' . implode(',', array_fill(0, count($SERVICES[$svc][1]), '?')) . ')'; array_push($pp, ...$SERVICES[$svc][1]); }
 if ($uk !== '') { $w[] = 'universe = ?'; $pp[] = $uk; }
 if ($kyc !== '') { $w[] = 'kyc_status = ?'; $pp[] = $kyc; }
 else $w[] = "kyc_status <> 'rejected'"; // les dossiers refusés ont leur propre onglet
-$nRej = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'rejected'" . scope_sql('universe'));
+$nRej = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'rejected'" . scope_sql('universe') . prov_listed_sql());
 if ($s !== '' && ($mc = parse_member_code($s)) && $mc[0] === 'P') { $w[] = 'provider_no = ?'; $pp[] = $mc[1]; }
 elseif ($s !== '') { $w[] = '(name LIKE ? OR phone LIKE ?)'; $pp[] = "%$s%"; $pp[] = '%' . preg_replace('/\D/', '', $s) . '%'; }
-$rows = all('SELECT * FROM providers WHERE ' . implode(' AND ', $w) . scope_sql('universe') . " ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC", $pp);
+$rows = all('SELECT * FROM providers WHERE ' . implode(' AND ', $w) . scope_sql('universe') . prov_listed_sql() . " ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC", $pp);
 $page = 'Prestataires & KYC';
 $nav = 'providers';
 if ($svc !== null) $page = 'Prestataires · ' . $SERVICES[$svc][0];

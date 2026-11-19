@@ -5,7 +5,7 @@ $nav = $nav ?? '';
 $PROV_SQL = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
 $__c = one("SELECT
   (SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'" . scope_sql('universe') . ") AS disputes,
-  (SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'" . scope_sql('universe') . ") AS kyc,
+  (SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'" . scope_sql('universe') . prov_listed_sql() . ") AS kyc,
   (SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'" . scope_sql('universe') . ") AS cand,
   (SELECT COUNT(*) FROM contact_messages WHERE handled = 0) AS unread,
   (SELECT COUNT(*) FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.status = 'pending'" . scope_sql('p.universe') . ") AS listings,
