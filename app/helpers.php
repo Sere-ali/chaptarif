@@ -349,7 +349,7 @@ function avatar(array $p, string $cls = ''): string
     if (empty($p['photo_url']) && !empty($p['docs'])) {
         $pd = json_decode((string) $p['docs'], true) ?: [];
         if (!empty($pd['photo']) && !str_ends_with((string) $pd['photo'], '.pdf')) {
-            return '<img class="avatar ' . $cls . '" src="' . e(cld_private_url($pd['photo'])) . '" alt="' . e($p['name']) . '" loading="lazy" style="object-fit:cover">';
+            return '<img class="avatar ' . $cls . '" src="' . e(cld_doc_url($pd['photo'], 'c_fill,g_face,h_200,w_200/q_auto')) . '" alt="' . e($p['name']) . '" loading="lazy" style="object-fit:cover">';
         }
     }
     if (!empty($p['photo_url'])) {
@@ -1016,11 +1016,11 @@ function beaute_prestations(string $uk): array
 
 
 /** Bouton « Supprimer » des listes de l'admin : affiché uniquement au Super Administrateur. */
-function del_btn(string $type, int $id, string $what = 'cet élément'): string
+function del_btn(string $type, int $id, string $what = 'cet élément', array $extra = []): string
 {
     if (!is_super()) return '';
     $back = $_SERVER['REQUEST_URI'] ?? '/admin';
     return '<form method="post" action="/admin/supprimer" class="del-form" data-stepup data-del-what="' . e($what) . '">'
-        . csrf_field() . '<input type="hidden" name="type" value="' . e($type) . '"><input type="hidden" name="id" value="' . $id . '"><input type="hidden" name="back" value="' . e($back) . '">'
+        . csrf_field() . '<input type="hidden" name="type" value="' . e($type) . '"><input type="hidden" name="id" value="' . $id . '"><input type="hidden" name="back" value="' . e($back) . '">' . implode('', array_map(fn($k, $v) => '<input type="hidden" name="' . e((string) $k) . '" value="' . e((string) $v) . '">', array_keys($extra), $extra))
         . '<button class="btn btn-danger btn-xs del-btn del-ico" title="Supprimer" aria-label="Supprimer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button></form>';
 }

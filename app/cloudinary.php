@@ -81,6 +81,15 @@ function cld_upload_many(array $files, string $folder): array
 }
 
 /** URL signée pour un document privé (pièce d'identité KYC stockée en "authenticated"). */
+/** Adresse d'un document de prestataire : la photo d'identité est stockée en public, les autres pièces en privé. */
+function cld_doc_url(string $publicIdWithFormat, string $transform = ''): string
+{
+    if (str_starts_with($publicIdWithFormat, 'chaptarif/prestataires/') && ($c = cld_config())) {
+        return 'https://res.cloudinary.com/' . $c['cloud'] . '/image/upload/' . ($transform !== '' ? $transform . '/' : '') . $publicIdWithFormat;
+    }
+    return cld_private_url($publicIdWithFormat, $transform);
+}
+
 function cld_private_url(string $publicIdWithFormat, string $transform = ''): string
 {
     $c = cld_config();

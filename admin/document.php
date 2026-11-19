@@ -17,10 +17,17 @@ $get = function (string $url): array {
 // Photos : version allégée (les photos de téléphone font souvent 5 à 10 Mo). ?full=1 pour l'original.
 $body = false; $code = 0; $type = '';
 if (!$pdf && empty($_GET['full'])) {
-    [$body, $code, $type] = $get(cld_private_url(preg_replace('/\.[a-z0-9]+$/i', '', $docs[$k]) . '.jpg', 'c_limit,h_1800,w_1800/q_auto:good'));
+    [$body, $code, $type] = $get(cld_doc_url(preg_replace('/\.[a-z0-9]+$/i', '', $docs[$k]) . '.jpg', 'c_limit,h_1800,w_1800/q_auto:good'));
     if ($body === false || $code !== 200 || !str_starts_with($type, 'image/')) $body = false;
 }
-if ($body === false) [$body, $code, $type] = $get(cld_private_url($docs[$k]));
+if ($body === false) [$body, $code, $type] = $get(cld_doc_url($docs[$k]));
+// Ancien stockage différent (public / privé) : on essaie l'autre adresse.
+if ($body === false || $code !== 200) {
+    $c = cld_config();
+    $alt = str_contains(cld_doc_url($docs[$k]), '/authenticated/') ? 'https://res.cloudinary.com/' . $c['cloud'] . '/image/upload/' . $docs[$k] : cld_private_url($docs[$k]);
+    [$b2, $c2, $t2] = $get($alt);
+    if ($b2 !== false && $c2 === 200) [$body, $code, $type] = [$b2, $c2, $t2];
+}
 if ($body === false || $code !== 200) { http_response_code(502); exit('Document momentanément indisponible.'); }
 if (!isset($_GET['t'])) audit('document.consultation', $p['name'] . ' #' . $p['id'], ['document' => $k]);
 header('Content-Type: ' . ($pdf ? 'application/pdf' : ($type ?: 'image/jpeg')));

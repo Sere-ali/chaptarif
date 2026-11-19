@@ -21,6 +21,20 @@ stepup_require($me, $back);
 $label = '';
 
 switch ($type) {
+    case 'doc':
+        // Retirer une pièce du dossier d'un prestataire (il peut en renvoyer une depuis son espace).
+        $p = one('SELECT * FROM providers WHERE id = ?', [$id]) ?: $stop('Prestataire introuvable.');
+        $k = (string) ($_POST['key'] ?? '');
+        $pd = provider_docs($p);
+        if (!preg_match('/^[a-z_]{2,30}$/', $k) || empty($pd[$k])) $stop('Document introuvable.');
+        unset($pd[$k]);
+        if ($k === 'cni_recto') unset($pd['cni']);
+        $upd = ['docs' => json_encode($pd, JSON_UNESCAPED_SLASHES)];
+        foreach (['cni_recto' => 'cni_public_id', 'cni_rep_recto' => 'cni_public_id', 'cni_proprio_recto' => 'cni_public_id', 'casier' => 'casier_public_id', 'permis' => 'permis_public_id', 'carte_grise' => 'vehicule_public_id'] as $dk => $col) if ($k === $dk) $upd[$col] = null;
+        if ($k === 'photo') $upd['photo_url'] = null;
+        update('providers', $id, $upd);
+        $label = 'Document « ' . (kyc_doc_labels()[$k][0] ?? $k) . ' » de ' . $p['name'];
+        break;
     case 'provider':
         $p = one('SELECT * FROM providers WHERE id = ?', [$id]) ?: $stop('Prestataire introuvable.');
         if ($used("SELECT COUNT(*) FROM bookings WHERE provider_id = ? AND $live", [$id])) $stop('Ce prestataire a de l’argent bloqué sur des réservations payées.' . $blocking('provider_id = ?', [$id]));
