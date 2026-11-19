@@ -64,7 +64,7 @@ if (($providerMode || $conv) && is_post()) {
     if ($att['ok'] && ($body !== '' || $att['data']) && $recent < 15) {
         $rt = chat_reply_id($uid);
         if ($rt && !val("SELECT 1 FROM chat_messages WHERE id = ? AND $scope", [$rt])) $rt = null;
-        insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $conv ? $cid : null, 'sender' => 'user', 'body' => $body, 'about' => $about, 'read_by_user' => 1, 'read_by_admin' => 0, 'reply_to' => $rt, 'created_at' => now()] + $att['data']);
+        insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $conv ? $cid : null, 'sender' => 'user', 'body' => $body, 'about' => $about, 'read_by_user' => 1, 'read_by_admin' => 0, 'reply_to' => $rt, 'in_thread' => ($rt && !empty($_POST['thread'])) ? 1 : 0, 'created_at' => now()] + $att['data']);
         if ($conv) conv_touch($cid, true);
         $ok = true;
     } elseif ($att['ok'] && $recent >= 15) $err = 'Trop de messages : patientez une minute.';
@@ -236,5 +236,5 @@ else:
 })();
 </script>
 <?php endif; ?>
-<link rel="stylesheet" href="/assets/css/chat.css?v=9">
+<link rel="stylesheet" href="/assets/css/chat.css?v=10">
 <?php view('layout/footer', compact('active', 'providerMode'));

@@ -44,7 +44,7 @@ if (is_post() && $uid) {
     if ($att['ok'] && ($body !== '' || $att['data']) && one('SELECT id FROM users WHERE id = ?', [$uid])) {
         $rt = chat_reply_id($uid);
         if ($rt && !val("SELECT 1 FROM chat_messages WHERE id = ? AND $scope", [$rt])) $rt = null;
-        insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $conv ? $cid : null, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => $body, 'read_by_user' => 0, 'read_by_admin' => 1, 'reply_to' => $rt, 'created_at' => now()] + $att['data']);
+        insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $conv ? $cid : null, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => $body, 'read_by_user' => 0, 'read_by_admin' => 1, 'reply_to' => $rt, 'in_thread' => ($rt && !empty($_POST['thread'])) ? 1 : 0, 'created_at' => now()] + $att['data']);
         if ($conv) conv_touch($cid, false);
         $ok = true;
     }
@@ -145,7 +145,7 @@ if ($uid):
   <?php foreach (CONV_STATUSES as $sk => [$sl, $sc]): ?><a href="/admin/chat?st=<?= $sk ?>" class="<?= $st === $sk ? 'on' : '' ?>"><?= e($sl) ?> <b><?= (int) ($cnt[$sk] ?? 0) ?></b></a><?php endforeach; ?>
 </nav>
 <?php endif; ?>
-<link rel="stylesheet" href="/assets/css/chat.css?v=9">
+<link rel="stylesheet" href="/assets/css/chat.css?v=10">
 <input type="search" class="cd-search" style="max-width:none;width:100%;margin-bottom:12px" placeholder="Rechercher un nom, un numéro ou un dossier…" data-cd-search>
 <div class="panel chat-list">
   <?php if (!$threads && empty($convs) && !$others): ?><p class="muted" style="padding:16px">Aucune conversation pour le moment.</p><?php endif; ?>

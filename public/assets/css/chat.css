@@ -243,3 +243,4 @@ a.wa-about:hover { background: #DCE8FD; }
 .wa-msg .wa-reply, .wa-msg .wa-thr { position: static; opacity: 1; display: inline-grid; place-items: center; width: 26px; height: 26px; padding: 0; margin: 4px 4px 0 0; border: 0; border-radius: 50%; background: rgba(11,20,26,.06); box-shadow: none; color: #54656F; font-size: .82rem; cursor: pointer; vertical-align: middle; }
 .wa-msg .wa-reply:hover, .wa-msg .wa-thr:hover { background: rgba(31,157,107,.15); }
 .wa-th-log .wa-reply, .wa-th-log .wa-thr { display: none; }
+.wa-log > .wa-msg.wa-in-thread { display: none; }

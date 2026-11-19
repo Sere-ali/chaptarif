@@ -34,12 +34,12 @@
       var tb = m.querySelector('.wa-thread'); if (tb) { var n = rc[id] || 0; if (tb.dataset.n !== String(n)) { tb.dataset.n = n; setRc(tb, n); } }
     });
   };
-  var clean = function (n) { var c = n.cloneNode(true); c.classList.remove('flash'); c.querySelectorAll('.wa-reply,.wa-thr,.wa-thread' + (n.dataset.replyTo ? ',.wa-quote' : '')).forEach(function (x) { x.remove(); }); return c; };
+  var clean = function (n) { var c = n.cloneNode(true); c.classList.remove('flash', 'wa-in-thread'); c.querySelectorAll('.wa-reply,.wa-thr,.wa-thread' + (n.dataset.replyTo ? ',.wa-quote' : '')).forEach(function (x) { x.remove(); }); return c; };
   var showThread = function (id, keepBottom) {
     var p = log.querySelector('.wa-msg[data-id="' + id + '"]'); if (!p) return;
     thId = +id; thLog.textContent = '';
     var pc = clean(p); pc.classList.add('wa-th-parent'); thLog.appendChild(pc);
-    var reps = log.querySelectorAll('.wa-msg[data-reply-to="' + id + '"]');
+    var reps = log.querySelectorAll('.wa-msg.wa-in-thread[data-reply-to="' + id + '"]');
     thLog.appendChild(el('div', 'wa-th-sep', reps.length ? reps.length + ' réponse' + (reps.length > 1 ? 's' : '') : 'Aucune réponse pour l\'instant'));
     reps.forEach(function (r) { thLog.appendChild(clean(r)); });
     th.hidden = false; box.classList.add('th-open');
@@ -76,7 +76,7 @@
   // réponse dans le fil
   thForm.addEventListener('submit', function (e) {
     e.preventDefault(); var ta = thForm.elements[0], v = ta.value.trim(); if (!v || !thId) return;
-    var d = new FormData(); d.append('_csrf', csrf); d.append('body', v); d.append('reply_to', thId); ta.value = '';
+    var d = new FormData(); d.append('_csrf', csrf); d.append('body', v); d.append('reply_to', thId); d.append('thread', '1'); ta.value = '';
     send(d, function () { ta.value = v; });
   });
   thForm.elements[0].addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 900) { e.preventDefault(); thForm.requestSubmit(); } });
@@ -131,7 +131,7 @@
   var add = function (m) {
     if (seen[m.id]) return; seen[m.id] = 1;
     var emp = q('[data-chat-empty]'); if (emp) emp.remove();
-    var d = el('div', 'wa-msg ' + (m.me ? 'me' : 'them')); d.dataset.id = m.id; if (m.reply_to) d.dataset.replyTo = m.reply_to;
+    var d = el('div', 'wa-msg ' + (m.me ? 'me' : 'them')); d.dataset.id = m.id; if (m.reply_to) d.dataset.replyTo = m.reply_to; if (m.th) d.classList.add('wa-in-thread');
     if (m.about) { var ab = el(m.about_uid ? 'a' : 'div', 'wa-about', '✉️ ' + m.about + (m.about_uid ? ' →' : '')); if (m.about_uid) ab.href = '/admin/chat?u=' + m.about_uid; d.appendChild(ab); }
     if (m.quote) { var qq = el('div', 'wa-quote'); qq.dataset.goto = m.quote.id; qq.appendChild(el('b', '', m.quote.who)); qq.appendChild(el('span', '', m.quote.text)); d.appendChild(qq); }
     if (m.att) {

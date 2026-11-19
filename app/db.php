@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 36;
+const SCHEMA_VERSION = 37;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -283,6 +283,7 @@ function db_migrate(): void
         "ALTER TABLE team_messages ADD COLUMN reply_to INTEGER",
         "ALTER TABLE users ADD COLUMN admin_scope TEXT",
         "ALTER TABLE chat_messages ADD COLUMN conversation_id INTEGER",
+        "ALTER TABLE chat_messages ADD COLUMN in_thread INTEGER NOT NULL DEFAULT 0",
         "CREATE INDEX IF NOT EXISTS idx_chat_conv ON chat_messages(conversation_id, id)",
     ] as $alter) {
         try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }

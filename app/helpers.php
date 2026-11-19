@@ -573,7 +573,7 @@ function chat_reply_counts(array $ids): array
     $ids = array_values(array_filter(array_map('intval', $ids)));
     if (!$ids) return [];
     $o = [];
-    foreach (all('SELECT reply_to, COUNT(*) AS n FROM chat_messages WHERE reply_to IN (' . implode(',', $ids) . ') GROUP BY reply_to') as $r) $o[(int) $r['reply_to']] = (int) $r['n'];
+    foreach (all('SELECT reply_to, COUNT(*) AS n FROM chat_messages WHERE in_thread = 1 AND reply_to IN (' . implode(',', $ids) . ') GROUP BY reply_to') as $r) $o[(int) $r['reply_to']] = (int) $r['n'];
     return $o;
 }
 
@@ -588,7 +588,7 @@ function chat_meta(int $userId, bool $admin, ?string $scope = null): array
 
 function chat_msg_html(array $m): string
 {
-    $h = '<div class="wa-msg ' . ($m['mine'] ? 'me' : 'them') . '" data-id="' . (int) $m['id'] . '"' . (!empty($m['reply_to']) ? ' data-reply-to="' . (int) $m['reply_to'] . '"' : '') . '>';
+    $h = '<div class="wa-msg ' . ($m['mine'] ? 'me' : 'them') . (!empty($m['in_thread']) ? ' wa-in-thread' : '') . '" data-id="' . (int) $m['id'] . '"' . (!empty($m['reply_to']) ? ' data-reply-to="' . (int) $m['reply_to'] . '"' : '') . '>';
     if (!empty($m['about_admin'])) $h .= !empty($m['about_uid'])
         ? '<a class="wa-about" href="/admin/chat?u=' . (int) $m['about_uid'] . '" title="Ouvrir la conversation">✉️ ' . e($m['about_admin']) . ' →</a>'
         : '<div class="wa-about">✉️ ' . e($m['about_admin']) . '</div>';
@@ -610,7 +610,7 @@ function chat_msg_html(array $m): string
 
 function chat_json(array $r): array
 {
-    return ['id' => (int) $r['id'], 'reply_to' => (int) ($r['reply_to'] ?? 0), 'rx' => $r['rx'] ?? [], 'rc' => (int) ($r['rc'] ?? 0), 'me' => $r['mine'], 'read' => $r['read'], 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5), 'quote' => $r['quote'], 'about' => $r['about_admin'] ?? null, 'about_uid' => $r['about_uid'] ?? null,
+    return ['id' => (int) $r['id'], 'reply_to' => (int) ($r['reply_to'] ?? 0), 'th' => (int) ($r['in_thread'] ?? 0), 'rx' => $r['rx'] ?? [], 'rc' => (int) ($r['rc'] ?? 0), 'me' => $r['mine'], 'read' => $r['read'], 'body' => (string) $r['body'], 'time' => substr($r['created_at'], 11, 5), 'quote' => $r['quote'], 'about' => $r['about_admin'] ?? null, 'about_uid' => $r['about_uid'] ?? null,
         'att' => empty($r['att_url']) ? null : ['type' => $r['att_type'], 'url' => $r['att_url'], 'name' => $r['att_name'], 'img' => $r['att_type'] === 'image' ? cld($r['att_url'], 'w_480,q_auto,f_auto') : null]];
 }
 
