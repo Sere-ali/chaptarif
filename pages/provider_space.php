@@ -134,7 +134,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
     ?>
     <?php if ($vue === ''): ?>
     <div class="pm-banner" id="p<?= (int) $p['id'] ?>">
-      <div><h1>Bonjour <?= e($p['name']) ?> 👋</h1><p>Votre espace <?= e($x['short'] ?? $x['name']) ?> sur ChapTarif.</p></div>
+      <div><h1>Bonjour <?= e($p['name']) ?> 👋</h1><p>Votre espace <?= e($x['short'] ?? $x['name']) ?> sur ChapTarif.</p><a class="pm-cli" href="/compte">🛍️ Espace client →</a></div>
       <?php if ($uImg): ?><img src="<?= e($uImg) ?>" alt="" loading="lazy"><?php else: ?><span class="pm-emo"><?= $x['emoji'] ?></span><?php endif; ?>
     </div>
 
@@ -259,6 +259,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <p class="fine">Cette photo apparaît sur votre profil : une photo de vous, de face et bien éclairée (ou le logo de votre entreprise).</p>
         <button class="btn btn-soft">Enregistrer mon profil</button>
       </form>
+      <a class="pm-switch" href="/compte"><span>🛍️</span><b>Passer à mon espace client<small>Réserver un service, voir mes commandes</small></b><em>›</em></a>
       <div class="pm-acct"><button class="lang-btn" type="button" data-lang-toggle>FR</button><form method="post" action="/deconnexion"><?= csrf_field() ?><button class="btn btn-soft">Se déconnecter</button></form></div>
       <p class="fine">Pour votre sécurité, le numéro de paiement et les commissions sont gérés par l'équipe ChapTarif. Pour les modifier, <a href="/contact">contactez-nous</a>.</p>
       <?php $pdocs = provider_docs($p); $DLb = kyc_doc_labels(); $reqd = kyc_docs_required($p['universe']); ?>
