@@ -107,16 +107,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
 ?>
 <section class="section-tight ps">
   <div class="container" style="max-width:900px">
-    <h1 class="h2"> Mon espace prestataire</h1>
-    <p class="muted">Gérez vos annonces et votre profil. Elles sont publiées après validation par l'équipe.</p>
-    <?php if ($mine): $proUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE user_id = ? AND sender = 'admin' AND read_by_user = 0", [$me['id']]); ?>
-      <a class="ps-chat card" href="/chat?pro=1">
-        <span class="ps-chat-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><?php if ($proUnread): ?><i><?= $proUnread ?></i><?php endif; ?></span>
-        <span><b>Messagerie avec l’équipe ChapTarif</b><small><?= $proUnread ? $proUnread . ' nouveau' . ($proUnread > 1 ? 'x' : '') . ' message' . ($proUnread > 1 ? 's' : '') : 'Une question sur votre dossier, une annonce ou un paiement ? Écrivez-nous.' ?></small></span>
-        <em>Ouvrir →</em>
-      </a>
-    <?php endif; ?>
-
+    <?php $proUnread = $mine ? (int) val("SELECT COUNT(*) FROM chat_messages WHERE user_id = ? AND sender = 'admin' AND read_by_user = 0", [$me['id']]) : 0; ?>
     <?php if (!$mine): ?>
       <div class="card"><h2 class="h3">Vous n'êtes pas encore prestataire</h2>
         <p>Aucun dossier n'est associé au numéro <b><?= e(fmt_phone($me['phone'])) ?></b>. Déposez votre candidature (gratuite), puis revenez ici.</p>
@@ -136,23 +127,49 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         $recent = all('SELECT b.id, b.ref, b.title, b.status, b.created_at, b.service_date, b.details, b.provider_amount, u.name AS cname FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE b.provider_id = ? AND b.paid_at IS NOT NULL ORDER BY b.id DESC LIMIT 20', [$p['id']]);
         $pub = '/' . str_replace('_', '-', $p['universe']);
     ?>
-    <div class="card mt" id="p<?= (int) $p['id'] ?>">
-      <div class="ps-head"><?= avatar($p, 'lg') ?><div><h2 class="h3" style="margin:0"><?= e($p['name']) ?></h2><?php if (provider_code($p)): ?><span class="mcode">N° prestataire <?= e(provider_code($p)) ?></span><?php endif; ?><small class="muted"><?= $x['emoji'] ?> <?= e($x['name']) ?> ·  <?= e($p['commune']) ?> · <?= e(fmt_phone($p['phone'])) ?></small></div></div>
+    <?php $first = trim(explode(' ', trim((string) ($me['name'] ?: $p['name'])))[0]); $hasAds = count($svcs) > 0; ?>
+    <div class="pro-hero <?= $live ? 'is-live' : '' ?>" id="p<?= (int) $p['id'] ?>">
+      <div class="pro-hero-top"><?= avatar($p, 'lg') ?><div class="pro-hero-id">
+        <small>Bonjour 👋</small><h1><?= e($first ?: $p['name']) ?></h1>
+        <span class="pro-chips"><?php if (provider_code($p)): ?><i><?= e(provider_code($p)) ?></i><?php endif; ?><i><?= $x['emoji'] ?> <?= e($x['name']) ?></i><i>📍 <?= e($p['commune']) ?></i></span></div></div>
+      <div class="pro-state <?= $live ? 'ok' : ($p['kyc_status'] === 'rejected' ? 'ko' : 'wait') ?>">
+        <?php if ($live): ?><b>✅ Votre profil est en ligne</b><span>Les clients peuvent vous trouver et vous réserver.</span>
+        <?php elseif ($p['kyc_status'] === 'rejected'): ?><b>⚠️ Dossier à corriger</b><span>Votre dossier n'a pas été retenu : corrigez vos pièces ou écrivez-nous.</span>
+        <?php else: ?><b>⏳ Dossier en cours de vérification</b><span>Notre équipe l'examine. En attendant, préparez vos annonces.</span><?php endif; ?>
+      </div>
+      <div class="pro-acts">
+        <a class="pro-btn main" href="#form<?= (int) $p['id'] ?>">＋ Publier une annonce</a>
+        <?php if ($live): ?><a class="pro-btn" href="/profil-prestataire?id=<?= (int) $p['id'] ?>">👁️ Ma page publique</a>
+        <?php else: ?><a class="pro-btn" href="/espace-prestataire?vue=profil#dossier">✏️ Mon dossier</a><?php endif; ?>
+      </div>
+    </div>
 
-      <?php if ($live): ?>
-        <div class="alert alert-success"> Votre profil est <b>validé et en ligne</b>. <a href="/profil-prestataire?id=<?= (int) $p['id'] ?>">Voir ma page publique →</a></div>
-      <?php elseif ($p['kyc_status'] === 'rejected'): ?>
-        <div class="alert alert-error">Votre dossier n'a pas été retenu. Vous pouvez <a href="/espace-prestataire?vue=profil#dossier">corriger vos pièces</a> ou nous écrire via le <a href="/chat?pro=1">chat</a>.</div>
-      <?php else: ?>
-        <div class="alert alert-warn"> <b>Dossier en vérification.</b> Préparez vos annonces dès maintenant : elles seront publiées après la validation de votre dossier.<br><a class="ps-dos-link" href="/espace-prestataire?vue=profil#dossier">✏️ Modifier mon dossier (photo d’identité, pièces…) →</a></div>
-      <?php endif; ?>
+    <?php if (!$live && $p['kyc_status'] !== 'rejected'): ?>
+    <ol class="pro-steps">
+      <li class="done"><i>✓</i><span><b>Inscription envoyée</b><small>Merci de votre confiance</small></span></li>
+      <li class="now"><i>2</i><span><b>Vérification</b><small>Sous 24 à 48 h</small></span></li>
+      <li class="<?= $hasAds ? 'done' : '' ?>"><i><?= $hasAds ? '✓' : '3' ?></i><span><b>Première annonce</b><small><?= $hasAds ? 'Prête, en attente de validation' : 'À préparer dès maintenant' ?></small></span></li>
+      <li><i>4</i><span><b>Vos premiers clients</b><small>Recevez des réservations</small></span></li>
+    </ol>
+    <?php elseif ($p['kyc_status'] === 'rejected'): ?>
+      <div class="alert alert-error">Vous pouvez <a href="/espace-prestataire?vue=profil#dossier">corriger vos pièces</a> ou nous écrire via le <a href="/chat?pro=1">chat</a>.</div>
+    <?php endif; ?>
 
+    <?php if (true): ?>
+      <a class="ps-chat card" href="/chat?pro=1">
+        <span class="ps-chat-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><?php if ($proUnread): ?><i><?= $proUnread ?></i><?php endif; ?></span>
+        <span><b>Messagerie avec l’équipe ChapTarif</b><small><?= $proUnread ? $proUnread . ' nouveau' . ($proUnread > 1 ? 'x' : '') . ' message' . ($proUnread > 1 ? 's' : '') : 'Une question sur votre dossier, une annonce ou un paiement ? Écrivez-nous.' ?></small></span>
+        <em>Ouvrir →</em>
+      </a>
+    <?php endif; ?>
+
+    <div class="card pro-card mt">
       <?php if ($vue !== 'profil'): ?>
-      <div class="ps-kpis">
-        <div><b><?= $nOn ?></b><small>Annonces en ligne</small></div>
-        <div><b><?= $nPend ?></b><small>En attente de validation</small></div>
-        <div><b><?= (int) $p['missions'] ?></b><small>Missions réalisées</small></div>
-        <div><b><?= (float) $p['rating'] > 0 ? number_format((float) $p['rating'], 1, ',', '') . ' ★' : '—' ?></b><small>Note clients</small></div>
+      <div class="pro-kpis">
+        <div class="k1"><em>📢</em><b><?= $nOn ?></b><small>Annonces en ligne</small></div>
+        <div class="k2"><em>⏳</em><b><?= $nPend ?></b><small>En validation</small></div>
+        <div class="k3"><em>✅</em><b><?= (int) $p['missions'] ?></b><small>Missions réalisées</small></div>
+        <div class="k4"><em>⭐</em><b><?= (float) $p['rating'] > 0 ? number_format((float) $p['rating'], 1, ',', '') : '—' ?></b><small>Note clients</small></div>
       </div>
 
       <?php if ($p['universe'] === 'immobilier'):

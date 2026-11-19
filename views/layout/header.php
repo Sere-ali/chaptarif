@@ -35,7 +35,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/app.css?v=133">
+<link rel="stylesheet" href="/assets/css/app.css?v=135">
 <link rel="stylesheet" href="/assets/css/polish.css?v=9">
 <link rel="stylesheet" href="/assets/css/motion.css?v=2">
 <link rel="stylesheet" href="/assets/css/forms.css?v=13">
@@ -55,14 +55,17 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
       <img src="/assets/img/logo.svg" alt="" width="40" height="40">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span><span class="ps-tag">Espace prestataire</span>
     </a>
-    <div class="top-actions">
-      <a class="btn btn-ghost btn-sm" href="/espace-prestataire#annonces"> Mes annonces</a>
-      <a class="btn btn-ghost btn-sm" href="/espace-prestataire?vue=profil"> Mon profil</a>
-      <a class="btn btn-ghost btn-sm" href="/chat?pro=1"> Chat</a>
-      <form method="post" action="/deconnexion" style="display:inline"><?= csrf_field() ?><button class="btn btn-soft btn-sm">Se déconnecter</button></form>
+    <div class="top-actions ps-top-r">
       <button class="lang-btn" type="button" data-lang-toggle aria-label="<?= $__en ? 'Passer en français' : 'Switch to English' ?>" title="<?= $__en ? 'Passer en français' : 'Switch to English' ?>"><?= $__en ? 'EN' : 'FR' ?></button>
+      <form method="post" action="/deconnexion" style="display:inline"><?= csrf_field() ?><button class="ps-out" title="Se déconnecter" aria-label="Se déconnecter"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></button></form>
     </div>
   </div>
+  <nav class="ps-nav container">
+    <a href="/espace-prestataire" class="<?= empty($_GET['vue']) ? 'on' : '' ?>">🏠 Accueil</a>
+    <a href="/espace-prestataire#annonces">📢 Annonces</a>
+    <a href="/chat?pro=1">💬 Messages</a>
+    <a href="/espace-prestataire?vue=profil" class="<?= ($_GET['vue'] ?? '') === 'profil' ? 'on' : '' ?>">👤 Profil</a>
+  </nav>
 </header>
 <?php else: ?>
 <header class="topbar" id="top">
