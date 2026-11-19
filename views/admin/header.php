@@ -1,13 +1,14 @@
 <?php
 $me = current_user();
 $nav = $nav ?? '';
-$disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'");
-$pendingKyc = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'");
-$pendingCandidatures = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'");
+$disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'" . scope_sql('universe'));
+$pendingKyc = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'" . scope_sql('universe'));
+$pendingCandidatures = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'" . scope_sql('universe'));
 $unread = (int) val('SELECT COUNT(*) FROM contact_messages WHERE handled = 0');
-$pendingListings = (int) val("SELECT COUNT(*) FROM provider_services WHERE status = 'pending'");
+$pendingListings = (int) val("SELECT COUNT(*) FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.status = 'pending'" . scope_sql('p.universe'));
 $PROV_SQL = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
 $chatUnreadPro = (int) val("SELECT COUNT(*) FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE c.sender = 'user' AND c.read_by_admin = 0 AND $PROV_SQL");
+$chatUnreadProMine = admin_scope() === '' ? $chatUnreadPro : (int) val("SELECT COUNT(*) FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE c.sender = 'user' AND c.read_by_admin = 0 AND EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone" . scope_sql('pp.universe') . ")");
 $chatUnread = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0") - $chatUnreadPro;
 $teamLast = $me ? (int) val('SELECT last_id FROM team_reads WHERE user_id = ?', [$me['id']]) : 0;
 $teamUnread = $me ? (int) val('SELECT COUNT(*) FROM team_messages WHERE id > ? AND user_id <> ? AND deleted = 0', [$teamLast, $me['id']]) : 0;
@@ -34,9 +35,18 @@ $items = [
     ['Relation client', null],
     ['clients', '/admin/clients', '', 'Clients', 0],
     ['chat', '/admin/chat', '', 'Chat service client', $chatUnread],
-    ['chatpro', '/admin/chat?type=pro', '', 'Chat prestataires', $chatUnreadPro],
+    ['chatpro', '/admin/chat?type=pro', '', 'Chat prestataires', $chatUnreadProMine],
     ['messages', '/admin/messages', '', 'Messages', $unread],
 ];
+// Administrateur spécialisé : seules les pages de son service
+if (($__sc = admin_scope($me)) !== '') {
+    $__hide = ['finances'];
+    if ($__sc !== 'transport') array_push($__hide, 'control', 'trips', 'covoiturage');
+    if ($__sc !== 'immobilier') $__hide[] = 'properties';
+    if ($__sc === 'immobilier') $__hide[] = 'offers';
+    if (!in_array($__sc, ['service-a-la-personne', 'beaute'], true)) $__hide[] = 'zones';
+    $items = array_values(array_filter($items, fn($it) => $it[1] === null || !in_array($it[0], $__hide, true)));
+}
 if (is_super($me)) {
     $items[] = ['Super admin', null];
     $items[] = ['admins', '/admin/administrateurs', '', 'Admins', 0];
@@ -63,7 +73,7 @@ if (is_super($me)) {
 <div class="main" data-live>
   <header class="adm-top">
     <a class="brand" href="/admin"><img src="/assets/img/logo.svg" width="34" alt=""><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></a>
-    <span class="role-tag <?= is_super($me) ? 'super' : '' ?>"><?= is_super($me) ? ' Super Admin' : ' Administrateur' ?></span>
+    <span class="role-tag <?= is_super($me) ? 'super' : '' ?>"><?= e(admin_role_label($me)) ?></span>
     <div class="adm-user">
       <?php if (payment_mode() === 'simulation'): ?><span class="badge badge-amber" title="PAYMENT_MODE=simulation">Paiements : test</span><?php endif; ?>
       <a class="adm-site" href="/" target="_blank"> Voir le site</a>

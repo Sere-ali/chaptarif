@@ -27,7 +27,7 @@ if (is_post()) {
     if ($act === 'create') {
         $email = strtolower(trim((string) ($_POST['email'] ?? '')));
         $name = mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 80);
-        $role = ($_POST['role'] ?? '') === 'super_admin' ? 'super_admin' : 'admin';
+        [$role, $scope] = parse_role_choice((string) ($_POST['role'] ?? ''));
         $pw = (string) ($_POST['password'] ?? '');
         $err = null;
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !$name) $err = 'Nom et e-mail valides obligatoires.';
@@ -35,14 +35,14 @@ if (is_post()) {
         else $err = admin_pw_error($pw, (string) ($_POST['password_confirm'] ?? ''));
         if ($err) {
             flash('error', $err);
-            $_SESSION['admin_form'] = ['name' => $name, 'email' => $email, 'role' => $role];
+            $_SESSION['admin_form'] = ['name' => $name, 'email' => $email, 'role' => $role . ($scope !== '' ? ':' . $scope : '')];
             redirect('/admin/administrateurs');
         }
         insert('users', [
-            'role' => $role, 'name' => $name, 'email' => $email, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT),
+            'role' => $role, 'admin_scope' => $scope !== '' ? $scope : null, 'name' => $name, 'email' => $email, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT),
             'must_change_password' => isset($_POST['force_change']) ? 1 : 0, 'active' => 1, 'created_at' => now(),
         ]);
-        audit('admin.creation', $email, ['role' => $role]);
+        audit('admin.creation', $email, ['role' => admin_role_label(['role' => $role, 'admin_scope' => $scope])]);
         flash('success', "Compte créé pour $email avec le mot de passe que vous avez choisi.");
         redirect('/admin/administrateurs');
     }
@@ -56,15 +56,15 @@ if (is_post()) {
         $back = '/admin/administrateurs?id=' . $u['id'];
         $email = strtolower(trim((string) ($_POST['email'] ?? '')));
         $name = mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 80);
-        $role = ($_POST['role'] ?? '') === 'super_admin' ? 'super_admin' : 'admin';
+        [$role, $scope] = parse_role_choice((string) ($_POST['role'] ?? ''));
         $active = isset($_POST['active']) ? 1 : 0;
-        if ($self) { $role = $u['role']; $active = 1; }
+        if ($self) { $role = $u['role']; $scope = (string) ($u['admin_scope'] ?? ''); $active = 1; }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !$name) { flash('error', 'Nom et e-mail valides obligatoires.'); redirect($back); }
         if (val('SELECT 1 FROM users WHERE email = ? AND id <> ?', [$email, $u['id']])) { flash('error', 'Cet e-mail est déjà utilisé par un autre compte.'); redirect($back); }
         $losesSuper = $u['role'] === 'super_admin' && (int) $u['active'] === 1 && ($role !== 'super_admin' || !$active);
         if ($losesSuper && $supers <= 1) { flash('error', 'Il doit rester au moins un Super Admin actif.'); redirect($back); }
 
-        $data = ['name' => $name, 'email' => $email, 'role' => $role, 'active' => $active];
+        $data = ['name' => $name, 'email' => $email, 'role' => $role, 'admin_scope' => $scope !== '' ? $scope : null, 'active' => $active];
         $changes = [];
         foreach ($data as $k => $v) if ((string) $u[$k] !== (string) $v) $changes[$k] = [$u[$k], $v];
 
@@ -124,14 +124,18 @@ $pwFields = function (bool $required, bool $showForce) {
     <?php endif;
 };
 $roleCards = function (string $cur, bool $disabled = false) {
+    $opts = [
+        'super_admin' => ['Super Administrateur', 'Tous les droits, plus la gestion de l’équipe, des tarifs, des suppressions et du journal d’audit.', 'ad-gold', '<path d="M3 8l4 4 5-7 5 7 4-4-2 11H5L3 8z"/>'],
+        'admin' => ['Administrateur (tous les services)', 'Réservations, litiges, prestataires, catalogue et finances de tous les services.', 'ad-blue', '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'],
+    ];
+    foreach (admin_services(true) as $sk => $sv) $opts['admin:' . $sk] = ['Administrateur ' . $sv[0], 'Gère uniquement le ' . mb_strtolower($sv[0]) . ' : réservations, litiges, prestataires, candidatures, annonces et chat prestataires de ce service.', 'ad-svc', $sv[3], $sv[2]];
     ?>
     <div class="ad-roles" role="radiogroup">
-      <label class="ad-role"><input type="radio" name="role" value="admin" <?= $cur !== 'super_admin' ? 'checked' : '' ?> <?= $disabled ? 'disabled' : '' ?>>
-        <span class="ad-role-ic ad-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-        <span><b>Administrateur</b><small>Réservations, litiges, prestataires, catalogue et finances.</small></span><em></em></label>
-      <label class="ad-role"><input type="radio" name="role" value="super_admin" <?= $cur === 'super_admin' ? 'checked' : '' ?> <?= $disabled ? 'disabled' : '' ?>>
-        <span class="ad-role-ic ad-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5L3 8z"/></svg></span>
-        <span><b>Super Administrateur</b><small>Tous les droits, plus la gestion de l’équipe, des tarifs, des suppressions et du journal d’audit.</small></span><em></em></label>
+      <?php foreach ($opts as $v => $o): ?>
+      <label class="ad-role"><input type="radio" name="role" value="<?= e($v) ?>" <?= $cur === $v ? 'checked' : '' ?> <?= $disabled ? 'disabled' : '' ?>>
+        <span class="ad-role-ic <?= $o[2] ?>"<?= isset($o[4]) ? ' style="background:' . e($o[4]) . '1A;color:' . e($o[4]) . '"' : '' ?>><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $o[3] ?></svg></span>
+        <span><b><?= e($o[0]) ?></b><small><?= e($o[1]) ?></small></span><em></em></label>
+      <?php endforeach; ?>
     </div>
     <?php
 };
@@ -149,7 +153,7 @@ $roleCards = function (string $cur, bool $disabled = false) {
         <label class="fld"><span>E-mail de connexion</span><input type="email" name="email" value="<?= e($edit['email']) ?>" required></label>
       </div>
       <div class="ad-sec"><b>2</b>Rôle et accès</div>
-      <?php $roleCards($edit['role'], $self); ?>
+      <?php $roleCards($edit['role'] === 'admin' && !empty($edit['admin_scope']) ? 'admin:' . $edit['admin_scope'] : $edit['role'], $self); ?>
       <label class="ad-switch"><input type="checkbox" name="active" <?= (int) $edit['active'] ? 'checked' : '' ?> <?= $self ? 'disabled' : '' ?>><i></i><span><b>Compte actif</b><small>Désactivé, l’administrateur ne peut plus se connecter.</small></span></label>
       <?php if ($self): ?><p class="ad-hint">Vous ne pouvez pas changer votre propre rôle ni désactiver votre compte.</p><?php endif; ?>
       <div class="ad-sec"><b>3</b>Nouveau mot de passe</div>
@@ -167,7 +171,7 @@ $roleCards = function (string $cur, bool $disabled = false) {
       <tbody>
       <?php foreach ($rows as $u): $self = (int) $u['id'] === (int) $me['id']; ?>
         <tr><td><b><?= e($u['name']) ?></b><?= $self ? ' <span class="badge badge-blue">Vous</span>' : '' ?><small><?= e($u['email']) ?></small></td>
-        <td><?= $u['role'] === 'super_admin' ? '<span class="badge badge-gold"> Super Admin</span>' : '<span class="badge badge-blue">Admin</span>' ?></td>
+        <td><?= $u['role'] === 'super_admin' ? '<span class="badge badge-gold"> Super Admin</span>' : '<span class="badge badge-blue">' . e(admin_role_label($u)) . '</span>' ?></td>
         <td><?= fmt_date($u['last_login_at'], true) ?></td>
         <td><?= (int) $u['active'] ? '<span class="badge badge-green">Actif</span>' : '<span class="badge badge-gray">Désactivé</span>' ?> <?= !empty($u['totp_enabled']) ? '<span class="badge badge-green">2FA ✓</span>' : '<span class="badge badge-amber">2FA à activer</span>' ?></td>
         <td><div class="acts">
@@ -197,14 +201,16 @@ $roleCards = function (string $cur, bool $disabled = false) {
   </form>
   <div class="panel">
     <h3 class="h4">Qui peut faire quoi ?</h3>
-    <table class="tbl small"><thead><tr><th>Permission</th><th>Admin</th><th>Super</th></tr></thead><tbody>
-      <tr><td>Réservations, litiges, séquestre</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Prestataires, KYC, badges</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Catalogue (formules, cars, immobilier, zones)</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Finances & virements</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Gérer les administrateurs</td><td>—</td><td>✓</td></tr>
-      <tr><td>Commissions, tarifs, maintenance</td><td>—</td><td>✓</td></tr>
-      <tr><td>Journal d'audit</td><td>—</td><td>✓</td></tr>
+    <table class="tbl small"><thead><tr><th>Permission</th><th>Admin d'un service</th><th>Admin</th><th>Super</th></tr></thead><tbody>
+      <tr><td>Réservations, litiges, non abouties</td><td>Son service</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Candidatures, prestataires, KYC, annonces</td><td>Son service</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Chat prestataires</td><td>Son service</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Chat clients, messages, Chat gestionnaires</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Catalogue (formules, cars, immobilier, zones)</td><td>Son service</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Finances & virements</td><td>—</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Gérer les administrateurs</td><td>—</td><td>—</td><td>✓</td></tr>
+      <tr><td>Commissions, tarifs, maintenance</td><td>—</td><td>—</td><td>✓</td></tr>
+      <tr><td>Journal d'audit</td><td>—</td><td>—</td><td>✓</td></tr>
     </tbody></table>
   </div>
   </div>

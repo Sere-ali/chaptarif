@@ -3,8 +3,8 @@
 require_admin();
 $u = one("SELECT * FROM users WHERE id = ? AND role = 'client'", [(int) ($_GET['id'] ?? 0)]);
 if (!$u) { flash('error', 'Client introuvable.'); redirect('/admin/clients'); }
-$bk = all('SELECT b.*, p.name AS pname FROM bookings b LEFT JOIN providers p ON p.id = b.provider_id WHERE b.user_id = ? ORDER BY b.id DESC LIMIT 50', [$u['id']]);
-$spent = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE user_id = ? AND status IN ('BLOQUE','VALIDE','EN_LITIGE')", [$u['id']]);
+$bk = all('SELECT b.*, p.name AS pname FROM bookings b LEFT JOIN providers p ON p.id = b.provider_id WHERE b.user_id = ?' . scope_sql('b.universe') . ' ORDER BY b.id DESC LIMIT 50', [$u['id']]);
+$spent = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE user_id = ? AND status IN ('BLOQUE','VALIDE','EN_LITIGE')" . scope_sql('universe'), [$u['id']]);
 $prov = one('SELECT id, name FROM providers WHERE phone = ? LIMIT 1', [$u['phone']]);
 $page = 'Fiche client';
 $nav = 'clients';

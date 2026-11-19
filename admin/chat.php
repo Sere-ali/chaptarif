@@ -1,6 +1,8 @@
 <?php
 $me = require_admin();
 $uid = (int) ($_GET['u'] ?? 0);
+// Un administrateur spécialisé n'écrit qu'aux prestataires de son service (les clients restent accessibles à tous).
+if ($uid && admin_scope() !== '' && ($pu = one('SELECT p.universe FROM providers p JOIN users u ON u.phone = p.phone WHERE u.id = ? LIMIT 1', [$uid])) && !scope_allows($pu['universe'])) scope_guard($pu['universe']);
 $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch';
 
 if (is_post() && $uid && ($_POST['action'] ?? '') === 'react') {
@@ -72,9 +74,9 @@ if ($uid):
     $provCond = "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone)";
     $threads = all("SELECT u.id, u.name, u.phone, MAX(c.id) AS last_id, SUM(CASE WHEN c.sender = 'user' AND c.read_by_admin = 0 THEN 1 ELSE 0 END) AS unread,
         (SELECT pp.name FROM providers pp WHERE pp.phone = u.phone ORDER BY pp.id LIMIT 1) AS pname, (SELECT pp.universe FROM providers pp WHERE pp.phone = u.phone ORDER BY pp.id LIMIT 1) AS puni
-        FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE " . ($isPro ? $provCond : "NOT $provCond") . " GROUP BY u.id, u.name, u.phone ORDER BY unread DESC, last_id DESC LIMIT 150");
+        FROM chat_messages c JOIN users u ON u.id = c.user_id WHERE " . ($isPro ? "EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone" . scope_sql('pp.universe') . ")" : "NOT $provCond") . " GROUP BY u.id, u.name, u.phone ORDER BY unread DESC, last_id DESC LIMIT 150");
     $withChat = array_map('intval', array_column($threads, 'id'));
-    $others = $isPro ? all("SELECT u.id, u.name, u.phone, p.name AS pname, p.universe AS puni, p.kyc_status FROM providers p JOIN users u ON u.phone = p.phone ORDER BY CASE p.kyc_status WHEN 'verified' THEN 0 ELSE 1 END, p.name LIMIT 400")
+    $others = $isPro ? all("SELECT u.id, u.name, u.phone, p.name AS pname, p.universe AS puni, p.kyc_status FROM providers p JOIN users u ON u.phone = p.phone WHERE 1=1" . scope_sql('p.universe') . " ORDER BY CASE p.kyc_status WHEN 'verified' THEN 0 ELSE 1 END, p.name LIMIT 400")
         : all("SELECT u.id, u.name, u.phone, NULL AS pname, NULL AS puni, NULL AS kyc_status FROM users u WHERE u.role = 'client' AND u.active = 1 AND NOT EXISTS (SELECT 1 FROM providers pp WHERE pp.phone = u.phone) ORDER BY u.id DESC LIMIT 400");
     $others = array_values(array_filter($others, fn ($o) => !in_array((int) $o['id'], $withChat, true)));
 ?>

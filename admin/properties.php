@@ -1,5 +1,6 @@
 <?php
 require_admin();
+scope_page(['immobilier']);
 if (is_post()) {
     $p = one('SELECT * FROM properties WHERE id = ?', [(int) ($_POST['id'] ?? 0)]);
     if ($p) {

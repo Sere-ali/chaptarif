@@ -5,6 +5,7 @@ $me = require_admin();
 $p = one('SELECT * FROM providers WHERE id = ?', [(int) ($_GET['id'] ?? 0)]);
 $k = (string) ($_GET['k'] ?? '');
 $docs = $p ? provider_docs($p) : [];
+if ($p && !scope_allows($p['universe'])) { http_response_code(403); exit('Hors de votre périmètre.'); }
 if (!$p || !preg_match('/^[a-z_]{2,30}$/', $k) || empty($docs[$k]) || !cld_config()) { http_response_code(404); exit('Document introuvable.'); }
 $ch = curl_init(cld_private_url($docs[$k]));
 curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true, CURLOPT_TIMEOUT => 20, CURLOPT_CONNECTTIMEOUT => 6]);

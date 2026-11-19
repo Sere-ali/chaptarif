@@ -1,5 +1,6 @@
 <?php
 require_admin();
+scope_page(['immobilier']);
 $id = (int) ($_GET['id'] ?? 0);
 $p = $id ? one('SELECT * FROM properties WHERE id = ?', [$id]) : null;
 if ($id && !$p) not_found();

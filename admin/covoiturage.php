@@ -1,5 +1,6 @@
 <?php
 require_admin();
+scope_page(['transport']);
 $drivers = all("SELECT * FROM providers WHERE universe = 'covoiturage' AND active = 1 AND kyc_status = 'verified' ORDER BY name");
 if (is_post()) {
     $act = $_POST['action'] ?? '';

@@ -53,6 +53,73 @@ function is_super(?array $u = null): bool
     return $u && $u['role'] === 'super_admin';
 }
 
+/** Périmètres possibles d'un administrateur : '' = tous les services, sinon un des 4 grands services. */
+function admin_scopes(): array
+{
+    return ['' => 'Tous les services', 'transport' => 'Transport', 'immobilier' => 'Immobilier', 'service-a-la-personne' => 'Service à la personne', 'beaute' => 'Beauté'];
+}
+
+/** Périmètre de l'administrateur connecté ('' = tout). Le super admin voit toujours tout. */
+function admin_scope(?array $u = null): string
+{
+    $u ??= current_user();
+    if (!$u || ($u['role'] ?? '') !== 'admin') return '';
+    $sc = (string) ($u['admin_scope'] ?? '');
+    return isset(admin_scopes()[$sc]) ? $sc : '';
+}
+
+/** Univers gérés par l'administrateur connecté, ou null s'il gère tout. */
+function admin_scope_keys(?array $u = null): ?array
+{
+    $sc = admin_scope($u);
+    if ($sc === '') return null;
+    return $sc === 'immobilier' ? ['immobilier'] : domaine($sc)['keys'];
+}
+
+/** Fragment SQL « AND colonne IN (...) » limitant au périmètre (vide si l'admin gère tout). */
+function scope_sql(string $col): string
+{
+    $k = admin_scope_keys();
+    if ($k === null) return '';
+    return ' AND ' . $col . " IN ('" . implode("','", array_map(fn($x) => preg_replace('/[^a-z_]/', '', $x), $k)) . "')";
+}
+
+/** L'admin connecté peut-il gérer cet univers ? */
+function scope_allows(?string $universe): bool
+{
+    $k = admin_scope_keys();
+    return $k === null || in_array((string) $universe, $k, true);
+}
+
+/** Bloque la page si l'univers n'est pas dans le périmètre de l'admin. */
+function scope_guard(?string $universe): void
+{
+    if (!scope_allows($universe)) { flash('error', 'Ce dossier ne fait pas partie de votre périmètre (' . admin_scopes()[admin_scope()] . ').'); redirect('/admin'); }
+}
+
+/** Bloque une page réservée à certains périmètres (ex. Départs cars = transport). */
+function scope_page(array $allowed): void
+{
+    $sc = admin_scope();
+    if ($sc !== '' && !in_array($sc, $allowed, true)) { flash('error', 'Cette page ne fait pas partie de votre périmètre (' . admin_scopes()[$sc] . ').'); redirect('/admin'); }
+}
+
+/** Choix du formulaire « rôle » → [rôle, périmètre]. Ex. 'admin:transport' → ['admin', 'transport']. */
+function parse_role_choice(string $v): array
+{
+    if ($v === 'super_admin') return ['super_admin', ''];
+    $sc = str_starts_with($v, 'admin:') ? substr($v, 6) : '';
+    return ['admin', ($sc !== '' && isset(admin_scopes()[$sc])) ? $sc : ''];
+}
+
+/** Libellé du rôle affiché (ex. « Administrateur Transport »). */
+function admin_role_label(array $u): string
+{
+    if (($u['role'] ?? '') === 'super_admin') return 'Super Admin';
+    $sc = admin_scope($u);
+    return $sc === '' ? 'Administrateur' : 'Administrateur ' . admin_scopes()[$sc];
+}
+
 /** Super admin principal : le premier super admin du site (le compte fondateur). */
 function is_owner(?array $u = null): bool
 {

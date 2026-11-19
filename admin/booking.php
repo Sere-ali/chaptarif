@@ -2,6 +2,7 @@
 $me = require_admin();
 $b = one('SELECT * FROM bookings WHERE id = ?', [(int) ($_GET['id'] ?? $_POST['id'] ?? 0)]);
 if (!$b) not_found();
+scope_guard($b['universe']);
 
 if (is_post()) {
     $act = $_POST['action'] ?? '';

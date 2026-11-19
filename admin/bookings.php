@@ -7,7 +7,7 @@ $uk = (string) ($_GET['universe'] ?? '');
 $SERVICES = admin_services();
 $svc = isset($SERVICES[$_GET['service'] ?? '']) ? $_GET['service'] : null;
 $landing = $svc === null && !isset($_GET['claim']) && trim((string) ($_GET['q'] ?? '')) === '';
-if ($svc === null) $svc = 'transport';
+if ($svc === null) $svc = isset($SERVICES['transport']) ? 'transport' : (string) array_key_first($SERVICES);
 $svcKeys = $SERVICES[$svc][1];
 $s = trim((string) ($_GET['q'] ?? ''));
 $where = ['1=1'];

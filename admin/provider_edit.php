@@ -3,6 +3,8 @@ $me = require_admin();
 $id = (int) ($_GET['id'] ?? 0);
 $p = $id ? one('SELECT * FROM providers WHERE id = ?', [$id]) : null;
 if ($id && !$p) not_found();
+if ($p) scope_guard($p['universe']);
+if (!$p && is_post() && isset($_POST['universe'])) scope_guard((string) $_POST['universe']);
 
 if (is_post()) {
     if (($_POST['action'] ?? '') === 'delete' && $p && is_super()) {

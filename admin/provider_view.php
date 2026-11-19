@@ -4,6 +4,7 @@ $me = require_admin();
 $id = (int) ($_GET['id'] ?? 0);
 $p = one('SELECT * FROM providers WHERE id = ?', [$id]);
 if (!$p) { flash('error', 'Prestataire introuvable.'); redirect('/admin/prestataires'); }
+scope_guard($p['universe']);
 $x = universe($p['universe']);
 $u = $p['phone'] ? one('SELECT * FROM users WHERE phone = ?', [$p['phone']]) : null;
 $ads = all('SELECT * FROM provider_services WHERE provider_id = ? ORDER BY id DESC', [$id]);

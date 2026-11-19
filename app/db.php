@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 34;
+const SCHEMA_VERSION = 35;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -275,6 +275,7 @@ function db_migrate(): void
         "ALTER TABLE users ADD COLUMN totp_last INTEGER NOT NULL DEFAULT 0",
         "ALTER TABLE users ADD COLUMN totp_recovery TEXT",
         "ALTER TABLE team_messages ADD COLUMN reply_to INTEGER",
+        "ALTER TABLE users ADD COLUMN admin_scope TEXT",
     ] as $alter) {
         try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }
     }

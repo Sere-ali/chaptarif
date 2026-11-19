@@ -1,5 +1,6 @@
 <?php
 $me = require_admin();
+scope_page([]);
 if (is_post() && ($_POST['action'] ?? '') === 'reconcile') {
     $r = reconcile_run();
     audit('finances.rapprochement', '', ['anomalies' => count($r['anomalies']), 'verifies_paydunya' => $r['checked']]);

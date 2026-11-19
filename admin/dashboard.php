@@ -1,27 +1,29 @@
 <?php
 $me = require_admin();
 $paid = "('BLOQUE','VALIDE','EN_LITIGE')";
-$gmv = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN $paid");
-$revenue = (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE type IN ('COMMISSION','ABONNEMENT')");
-$escrow = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN ('BLOQUE','EN_LITIGE')");
-$disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'");
-$nbPaid = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN $paid");
+$SB = scope_sql('universe'); $SBb = scope_sql('b.universe'); $SP = scope_sql('universe'); $scoped = admin_scope() !== '';
+$gmv = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN $paid$SB");
+$revenue = $scoped ? (int) val("SELECT COALESCE(SUM(t.amount),0) FROM transactions t JOIN bookings b ON b.id = t.booking_id WHERE t.type IN ('COMMISSION','ABONNEMENT')$SBb")
+    : (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE type IN ('COMMISSION','ABONNEMENT')");
+$escrow = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN ('BLOQUE','EN_LITIGE')$SB");
+$disputes = (int) val("SELECT COUNT(*) FROM bookings WHERE status = 'EN_LITIGE'$SB");
+$nbPaid = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN $paid$SB");
 $clients = (int) val("SELECT COUNT(*) FROM users WHERE role = 'client'");
-$provTot = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected'");
-$provOk = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'verified' AND active = 1");
-$provWait = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'");
-$toPay = (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE status = 'A_VIRER'");
+$provTot = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected'$SP");
+$provOk = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'verified' AND active = 1$SP");
+$provWait = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'$SP");
+$toPay = $scoped ? 0 : (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE status = 'A_VIRER'");
 
 $days = [];
 for ($i = 13; $i >= 0; $i--) $days[date('Y-m-d', strtotime("-$i days"))] = ['n' => 0, 'v' => 0];
-foreach (all("SELECT substr(paid_at,1,10) AS d, COUNT(*) AS n, SUM(total) AS v FROM bookings WHERE status IN $paid AND paid_at >= ? GROUP BY substr(paid_at,1,10)", [array_key_first($days)]) as $r) {
+foreach (all("SELECT substr(paid_at,1,10) AS d, COUNT(*) AS n, SUM(total) AS v FROM bookings WHERE status IN $paid$SB AND paid_at >= ? GROUP BY substr(paid_at,1,10)", [array_key_first($days)]) as $r) {
     if (isset($days[$r['d']])) $days[$r['d']] = ['n' => (int) $r['n'], 'v' => (int) $r['v']];
 }
 $byU = [];
-foreach (all("SELECT universe, COUNT(*) AS n, COALESCE(SUM(total),0) AS v FROM bookings WHERE status IN $paid GROUP BY universe") as $r) $byU[$r['universe']] = $r;
+foreach (all("SELECT universe, COUNT(*) AS n, COALESCE(SUM(total),0) AS v FROM bookings WHERE status IN $paid$SB GROUP BY universe") as $r) $byU[$r['universe']] = $r;
 $maxU = max([1, ...array_values(array_map(fn($r) => (int) $r['v'], $byU))]);
-$recent = all("SELECT b.*, u.name AS uname, u.phone AS uphone FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE NOT ((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL)) ORDER BY b.id DESC LIMIT 8");
-$kyc = all("SELECT * FROM providers WHERE kyc_status = 'pending' ORDER BY id DESC LIMIT 5");
+$recent = all("SELECT b.*, u.name AS uname, u.phone AS uphone FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE NOT ((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL))$SBb ORDER BY b.id DESC LIMIT 8");
+$kyc = all("SELECT * FROM providers WHERE kyc_status = 'pending'$SP ORDER BY id DESC LIMIT 5");
 $myTasks = all("SELECT * FROM tasks WHERE assigned_to = ? AND status NOT IN ('termine','annule') ORDER BY CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date, id DESC LIMIT 5", [$me['id']]);
 
 $page = 'Tableau de bord';

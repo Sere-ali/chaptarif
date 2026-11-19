@@ -4,7 +4,7 @@
 // de la gestion générale des prestataires déjà actifs.
 $me = require_admin();
 if (is_post()) {
-    $p = one("SELECT * FROM providers WHERE id = ? AND source = 'candidature'", [(int) ($_POST['id'] ?? 0)]);
+    $p = one("SELECT * FROM providers WHERE id = ? AND source = 'candidature'" . scope_sql('universe'), [(int) ($_POST['id'] ?? 0)]);
     if ($p) {
         $act = $_POST['action'] ?? '';
         if ($act === 'verify') { q("UPDATE providers SET kyc_status = 'verified', active = 1 WHERE id = ?", [$p['id']]); flash('success', "{$p['name']} vérifié et activé."); }
@@ -13,7 +13,7 @@ if (is_post()) {
     }
     redirect('/admin/candidatures');
 }
-$rows = all("SELECT * FROM providers WHERE source = 'candidature' ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC");
+$rows = all("SELECT * FROM providers WHERE source = 'candidature'" . scope_sql('universe') . " ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC");
 $counts = ['pending' => 0, 'verified' => 0, 'rejected' => 0];
 foreach ($rows as $r0) if (isset($counts[$r0['kyc_status']])) $counts[$r0['kyc_status']]++;
 $tab = in_array($_GET['statut'] ?? '', ['pending', 'verified', 'rejected', 'all'], true) ? $_GET['statut'] : ($counts['pending'] ? 'pending' : 'all');

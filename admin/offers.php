@@ -1,6 +1,8 @@
 <?php
 require_admin();
+scope_page(['transport', 'service-a-la-personne', 'beaute']);
 $U = array_intersect_key(universes(), ['menage' => 1, 'pressing' => 1, 'location_car' => 1, 'location_camion' => 1, 'location_vehicule' => 1, 'chauffeur' => 1, 'coiffeuse' => 1, 'maquilleuse' => 1, 'onglerie' => 1]);
+if (admin_scope_keys() !== null) $U = array_intersect_key($U, array_flip(admin_scope_keys()));
 $UNITS = ['séance', 'forfait', 'pièce', 'heure', 'jour', 'mois', 'année'];
 if (is_post()) {
     $act = $_POST['action'] ?? '';
@@ -15,13 +17,15 @@ if (is_post()) {
         'active' => isset($_POST['active']) ? 1 : 0,
         'sort' => (int) ($_POST['sort'] ?? 0),
     ];
+    if ($id && ($ox = one('SELECT universe FROM offers WHERE id = ?', [$id]))) scope_guard($ox['universe']);
+    scope_guard($data['universe']);
     if ($act === 'delete' && $id) { q('UPDATE offers SET active = 0 WHERE id = ?', [$id]); audit('offre.desactivation', "#$id"); flash('success', 'Formule désactivée.'); }
     elseif ($data['title'] === '' || $data['price'] <= 0) flash('error', 'Intitulé et prix obligatoires.');
     elseif ($act === 'save' && $id) { update('offers', $id, $data); audit('offre.modification', $data['title'], $data); flash('success', 'Formule mise à jour.'); }
     elseif ($act === 'create') { insert('offers', $data); audit('offre.creation', $data['title'], $data); flash('success', 'Formule ajoutée.'); }
     redirect('/admin/offres');
 }
-$rows = all("SELECT * FROM offers WHERE universe IN ('menage','pressing','location_car','location_camion','location_vehicule','chauffeur','coiffeuse','maquilleuse','onglerie') ORDER BY universe, sort, price");
+$rows = all("SELECT * FROM offers WHERE universe IN ('menage','pressing','location_car','location_camion','location_vehicule','chauffeur','coiffeuse','maquilleuse','onglerie')" . scope_sql('universe') . " ORDER BY universe, sort, price");
 $page = 'Formules & tarifs';
 $nav = 'offers';
 view('admin/header', compact('page', 'nav'));

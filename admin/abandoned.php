@@ -1,7 +1,7 @@
 <?php
 // Réservations non abouties : commencées mais jamais payées (en cours ou abandonnées).
 require_admin();
-$cond = "((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL))";
+$cond = "((b.status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(b.payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (b.status = 'ANNULE' AND b.paid_at IS NULL))" . scope_sql('b.universe');
 $f = (string) ($_GET['f'] ?? '');
 $w = $cond;
 if ($f === 'cours') $w .= " AND b.status = 'EN_ATTENTE_PAIEMENT'";

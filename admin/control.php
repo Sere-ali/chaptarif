@@ -1,5 +1,6 @@
 <?php
 $me = require_admin();
+scope_page(['transport']);
 $result = null;
 $b = null;
 if (is_post()) {

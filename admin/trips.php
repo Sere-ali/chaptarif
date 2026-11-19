@@ -1,5 +1,6 @@
 <?php
 require_admin();
+scope_page(['transport']);
 if (is_post()) {
     $act = $_POST['action'] ?? '';
     $id = (int) ($_POST['id'] ?? 0);

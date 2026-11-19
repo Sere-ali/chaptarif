@@ -2,7 +2,7 @@
 $me = require_admin();
 if (is_post()) {
     $id = (int) ($_POST['id'] ?? 0);
-    $a = one('SELECT s.*, p.name AS pname FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.id = ?', [$id]);
+    $a = one('SELECT s.*, p.name AS pname FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.id = ?' . scope_sql('p.universe'), [$id]);
     $act = (string) ($_POST['action'] ?? '');
     if ($a && $act === 'approve') {
         update('provider_services', $id, ['status' => 'approved', 'reject_reason' => null]);
@@ -16,9 +16,9 @@ if (is_post()) {
     redirect('/admin/annonces?f=' . urlencode((string) ($_GET['f'] ?? 'pending')));
 }
 $f = in_array($_GET['f'] ?? '', ['pending', 'approved', 'rejected'], true) ? $_GET['f'] : 'pending';
-$rows = all('SELECT s.*, p.name AS pname, p.universe, p.commune FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.status = ? ORDER BY s.id DESC LIMIT 100', [$f]);
+$rows = all('SELECT s.*, p.name AS pname, p.universe, p.commune FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.status = ?' . scope_sql('p.universe') . ' ORDER BY s.id DESC LIMIT 100', [$f]);
 $cnt = [];
-foreach (['pending', 'approved', 'rejected'] as $k) $cnt[$k] = (int) val('SELECT COUNT(*) FROM provider_services WHERE status = ?', [$k]);
+foreach (['pending', 'approved', 'rejected'] as $k) $cnt[$k] = (int) val('SELECT COUNT(*) FROM provider_services s JOIN providers p ON p.id = s.provider_id WHERE s.status = ?' . scope_sql('p.universe'), [$k]);
 $page = 'Annonces des prestataires';
 $nav = 'listings';
 view('admin/header', compact('page', 'nav'));
