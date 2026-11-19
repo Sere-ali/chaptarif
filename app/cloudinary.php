@@ -81,10 +81,11 @@ function cld_upload_many(array $files, string $folder): array
 }
 
 /** URL signée pour un document privé (pièce d'identité KYC stockée en "authenticated"). */
-function cld_private_url(string $publicIdWithFormat): string
+function cld_private_url(string $publicIdWithFormat, string $transform = ''): string
 {
     $c = cld_config();
     if (!$c) return '#';
-    $sig = substr(strtr(base64_encode(sha1($publicIdWithFormat . $c['secret'], true)), '+/', '-_'), 0, 8);
-    return 'https://res.cloudinary.com/' . $c['cloud'] . '/image/authenticated/s--' . $sig . '--/' . $publicIdWithFormat;
+    $path = ($transform !== '' ? $transform . '/' : '') . $publicIdWithFormat;
+    $sig = substr(strtr(base64_encode(sha1($path . $c['secret'], true)), '+/', '-_'), 0, 8);
+    return 'https://res.cloudinary.com/' . $c['cloud'] . '/image/authenticated/s--' . $sig . '--/' . $path;
 }
