@@ -130,7 +130,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <span class="m-brand"><img src="/assets/img/logo.svg" alt="" width="38" height="38"><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></span>
       <button type="button" class="m-drawer-x" aria-label="Fermer le menu" data-drawer-close><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
-    <button class="m-drawer-install" type="button" data-install hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 8v6M9.5 11.8 12 14.3l2.5-2.5"/></svg>Télécharger l'application</button>
     <p class="m-install-help" data-install-help hidden></p>
     <nav class="m-drawer-links">
       <?php if (current_user()): ?>

@@ -71,8 +71,6 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
       <img src="/assets/img/logo.svg" alt="" width="40" height="40">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span>
     </a>
-    <button class="btn btn-ghost btn-sm install-btn" id="installBtn" type="button" hidden> Télécharger</button>
-    <span class="top-loc" aria-label="Pays"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Côte d'Ivoire</span>
     <nav class="nav" aria-label="Navigation principale">
       <div class="nav-drop">
         <button class="nav-link" aria-haspopup="true" aria-expanded="false">Services <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>
