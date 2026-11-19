@@ -9,6 +9,28 @@
 })();
 </script>
 <script src="/assets/js/pdfview.js?v=1" defer></script>
+<div class="delc" data-delc hidden><div class="delc-box" role="dialog" aria-modal="true" aria-labelledby="delc-t">
+  <div class="delc-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></div>
+  <b id="delc-t">Vous êtes sur le point de supprimer quelque chose</b>
+  <p data-delc-what></p><p class="delc-warn">Cette action est définitive.</p>
+  <div class="delc-acts"><button type="button" class="btn btn-ghost" data-delc-no>Annuler</button><button type="button" class="btn btn-danger" data-delc-yes>Supprimer</button></div>
+</div></div>
+<script>
+(function () { // confirmation avant toute suppression
+  var m = document.querySelector('[data-delc]'); if (!m) return; var cur = null;
+  document.addEventListener('submit', function (e) {
+    var f = e.target; if (!f.classList || !f.classList.contains('del-form') || f.dataset.delOk) return;
+    e.preventDefault(); e.stopImmediatePropagation(); cur = f;
+    m.querySelector('[data-delc-what]').textContent = 'Élément : ' + (f.dataset.delWhat || 'cet élément');
+    m.hidden = false; m.querySelector('[data-delc-no]').focus();
+  }, true);
+  var close = function () { m.hidden = true; cur = null; };
+  m.querySelector('[data-delc-no]').onclick = close;
+  m.addEventListener('click', function (e) { if (e.target === m) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !m.hidden) close(); });
+  m.querySelector('[data-delc-yes]').onclick = function () { var f = cur; close(); if (!f) return; f.dataset.delOk = '1'; if (f.requestSubmit) f.requestSubmit(); else f.submit(); setTimeout(function () { delete f.dataset.delOk; }, 0); };
+})();
+</script>
 <div class="docv" data-docv hidden><div class="docv-box"><div class="docv-head"><b data-docv-title>Document</b><button type="button" data-docv-x aria-label="Fermer">×</button></div><div class="docv-body"><img alt="" data-docv-img hidden><div class="pdfv" data-docv-pdf hidden></div><p class="muted" data-docv-load>Chargement…</p></div></div></div>
 <script>
 (function () {
