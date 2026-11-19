@@ -34,6 +34,7 @@ if (is_post()) {
         if ($errors) break;
         // La photo d'identité sert aussi de photo de profil : stockée en public, les autres documents restent privés.
         $r = $dk === 'photo' ? cld_upload($_FILES[$dk], 'chaptarif/prestataires') : cld_upload($_FILES[$dk], 'chaptarif/kyc', 'authenticated');
+        if ($r['ok'] && $dk === 'photo' && ($r['format'] ?? '') === 'pdf') { $errors[] = 'Photo d’identité : envoyez une photo (JPG, PNG), pas un PDF.'; break; }
         if ($r['ok'] && $dk === 'photo') $photoUrl = $r['url'];
         if ($r['ok']) $docs[$dk] = $r['public_id'] . '.' . $r['format'];
         else $errors[] = $DL[$dk][0] . ' : ' . $r['error'];
@@ -172,7 +173,7 @@ view('layout/header', compact('title', 'desc', 'active'));
             <b class="kyc-title">Documents à fournir</b>
             <p class="muted small" data-kyc-empty>Choisissez d’abord votre activité à l’étape 1.</p>
             <?php foreach (kyc_doc_labels() as $dk => [$dt, $dp]): ?>
-              <label class="fld file" data-doc="<?= $dk ?>" hidden><span><?= e($dt) ?><?= $dp ? ' <small>(' . e($dp) . ')</small>' : '' ?></span><input type="file" name="<?= $dk ?>" accept="image/*,application/pdf"><button type="button" class="kyc-eye" data-eye hidden aria-label="Voir le document" title="Voir le document"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
+              <label class="fld file" data-doc="<?= $dk ?>" hidden><span><?= e($dt) ?><?= $dp ? ' <small>(' . e($dp) . ')</small>' : '' ?></span><input type="file" name="<?= $dk ?>" accept="<?= $dk === 'photo' ? 'image/*' : 'image/*,application/pdf' ?>"><button type="button" class="kyc-eye" data-eye hidden aria-label="Voir le document" title="Voir le document"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
             <?php endforeach; ?>
             <div class="kyc-view" data-kyc-view hidden><div class="kyc-view-box"><button type="button" class="kyc-view-x" data-kyc-x aria-label="Fermer">×</button><img alt="Aperçu du document" data-kyc-img><div class="pdfv" data-kyc-pdf hidden></div><p class="pdfv-load" data-kyc-load hidden>Chargement…</p></div></div>
             <p class="kyc-retenir">À retenir : les documents doivent être lisibles, valides et à jour (JPG, PNG ou PDF).</p>

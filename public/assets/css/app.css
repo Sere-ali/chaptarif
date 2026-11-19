@@ -1679,3 +1679,9 @@ label.check.garantie-check:has(input:checked) { background: #DCE9FD; box-shadow:
 .acc-no { margin: 4px 0 2px; }
 .acc-name { margin: 0; font-weight: 700; font-size: 1.05rem; color: #0E1B33; }
 .m-home-top .m-lang { margin-left: auto; }
+
+.ps-dos-link { display: inline-block; margin-top: 8px; font-weight: 800; color: #8A5A00; text-decoration: underline; }
+.ps-docs { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
+.ps-docs li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; background: var(--soft, #F4F7FA); border-radius: 12px; font-size: .92rem; }
+.ps-doc b, .ps-docs b { font-size: .8rem; margin-left: 4px; white-space: nowrap; }
+.ps-doc b.ok, .ps-docs b.ok { color: #1E7A4E; } .ps-doc b.ko, .ps-docs b.ko { color: #B42318; }

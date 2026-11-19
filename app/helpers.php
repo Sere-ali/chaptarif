@@ -112,6 +112,12 @@ function flash(string $type, string $msg): void
     $_SESSION['_flash'][] = [$type, $msg];
 }
 
+function has_flash(string $type): bool
+{
+    foreach ($_SESSION['_flash'] ?? [] as $f) if (($f[0] ?? '') === $type) return true;
+    return false;
+}
+
 function flashes(): array
 {
     $f = $_SESSION['_flash'] ?? [];

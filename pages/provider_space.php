@@ -26,11 +26,39 @@ if (is_post() && $mine) {
             $r = cld_upload($_FILES['photo'], 'chaptarif/prestataires');
             if (!$r['ok'] || ($r['format'] ?? '') === 'pdf') { flash('error', 'Photo : ' . ($r['ok'] ? 'format image requis (JPG, PNG, WEBP).' : $r['error'])); redirect($back); }
             $data['photo_url'] = $r['url'];
+            $pd = provider_docs(one('SELECT * FROM providers WHERE id = ?', [$pid]) ?: []);
+            $pd['photo'] = $r['public_id'] . '.' . $r['format'];
+            $data['docs'] = json_encode($pd, JSON_UNESCAPED_SLASHES);
         }
         update('providers', $pid, $data);
         audit('provider.self_update', 'provider#' . $pid);
         flash('success', 'Profil enregistré.');
         redirect('/espace-prestataire?vue=profil');
+    } elseif ($act === 'docs') {
+        // Dossier d'inscription : tant qu'il n'est pas validé, le prestataire peut ajouter ou remplacer ses pièces.
+        $pv = one('SELECT * FROM providers WHERE id = ?', [$pid]);
+        if ($pv['kyc_status'] === 'verified') { flash('error', 'Votre dossier est déjà validé : pour changer une pièce, écrivez-nous via le chat.'); redirect('/espace-prestataire?vue=profil#dossier'); }
+        $pd = provider_docs($pv); $DL = kyc_doc_labels(); $n = 0; $upd = [];
+        foreach (kyc_docs_required($pv['universe']) as $dk) {
+            if (empty($_FILES[$dk]['name'])) continue;
+            $r = $dk === 'photo' ? cld_upload($_FILES[$dk], 'chaptarif/prestataires') : cld_upload($_FILES[$dk], 'chaptarif/kyc', 'authenticated');
+            if (!$r['ok']) { flash('error', $DL[$dk][0] . ' : ' . $r['error']); continue; }
+            if ($dk === 'photo' && ($r['format'] ?? '') === 'pdf') { flash('error', 'Photo d’identité : envoyez une photo (JPG, PNG), pas un PDF.'); continue; }
+            $pd[$dk] = $r['public_id'] . '.' . $r['format']; $n++;
+            if ($dk === 'photo') $upd['photo_url'] = $r['url'];
+            if (in_array($dk, ['cni_recto', 'cni_rep_recto', 'cni_proprio_recto'], true)) $upd['cni_public_id'] = $pd[$dk];
+            if ($dk === 'casier') $upd['casier_public_id'] = $pd[$dk];
+            if ($dk === 'permis') $upd['permis_public_id'] = $pd[$dk];
+            if ($dk === 'carte_grise') $upd['vehicule_public_id'] = $pd[$dk];
+        }
+        if ($n) {
+            $upd['docs'] = json_encode($pd, JSON_UNESCAPED_SLASHES);
+            if ($pv['kyc_status'] === 'rejected') $upd['kyc_status'] = 'pending';
+            update('providers', $pid, $upd);
+            audit('provider.docs_update', $pv['name'] . ' #' . $pid, ['documents' => $n]);
+            flash('success', $n > 1 ? $n . ' documents enregistrés. Notre équipe vérifie votre dossier.' : 'Document enregistré. Notre équipe vérifie votre dossier.');
+        } elseif (!has_flash('error')) flash('error', 'Choisissez au moins un document à envoyer.');
+        redirect('/espace-prestataire?vue=profil#dossier');
     } elseif ($act === 'svc_save') {
         $sid = (int) ($_POST['service_id'] ?? 0);
         $old = $sid ? one('SELECT * FROM provider_services WHERE id = ? AND provider_id = ?', [$sid, $pid]) : null;
@@ -114,9 +142,9 @@ view('layout/header', compact('title', 'active', 'providerMode'));
       <?php if ($live): ?>
         <div class="alert alert-success"> Votre profil est <b>validé et en ligne</b>. <a href="/profil-prestataire?id=<?= (int) $p['id'] ?>">Voir ma page publique →</a></div>
       <?php elseif ($p['kyc_status'] === 'rejected'): ?>
-        <div class="alert alert-error">Votre dossier n'a pas été retenu. Contactez-nous via la page <a href="/contact">Contact</a>.</div>
+        <div class="alert alert-error">Votre dossier n'a pas été retenu. Vous pouvez <a href="/espace-prestataire?vue=profil#dossier">corriger vos pièces</a> ou nous écrire via le <a href="/chat?pro=1">chat</a>.</div>
       <?php else: ?>
-        <div class="alert alert-warn"> <b>Dossier en vérification.</b> Préparez vos annonces dès maintenant : elles seront publiées après la validation de votre dossier.</div>
+        <div class="alert alert-warn"> <b>Dossier en vérification.</b> Préparez vos annonces dès maintenant : elles seront publiées après la validation de votre dossier.<br><a class="ps-dos-link" href="/espace-prestataire?vue=profil#dossier">✏️ Modifier mon dossier (photo d’identité, pièces…) →</a></div>
       <?php endif; ?>
 
       <?php if ($vue !== 'profil'): ?>
@@ -202,10 +230,26 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option <?= $p['commune'] === $c ? 'selected' : '' ?>><?= e($c) ?></option><?php endforeach; ?></select></label>
         <label class="fld"><span>Présentation (400 caractères)</span><textarea name="bio" rows="3" maxlength="400" placeholder="Expérience, spécialités, horaires…"><?= e($p['bio']) ?></textarea></label>
         <?php if ($isTransport): ?><label class="fld"><span>Véhicule</span><input name="vehicle" maxlength="80" value="<?= e($p['vehicle']) ?>"></label><?php endif; ?>
-        <label class="fld file"><span> Ma photo / logo (JPG, PNG, WEBP)</span><input type="file" name="photo" accept="image/*"></label>
+        <label class="fld file"><span>📷 Photo d’identité / photo de profil (JPG, PNG)</span><input type="file" name="photo" accept="image/*"></label>
+        <p class="fine">Cette photo apparaît sur votre profil : une photo de vous, de face et bien éclairée (ou le logo de votre entreprise).</p>
         <button class="btn btn-soft">Enregistrer mon profil</button>
       </form>
       <p class="fine">Pour votre sécurité, le numéro de paiement et les commissions sont gérés par l'équipe ChapTarif. Pour les modifier, <a href="/contact">contactez-nous</a>.</p>
+      <?php $pdocs = provider_docs($p); $DLb = kyc_doc_labels(); $reqd = kyc_docs_required($p['universe']); ?>
+      <h3 class="h4 mt" id="dossier">Mon dossier d’inscription</h3>
+      <?php if ($p['kyc_status'] === 'verified'): ?>
+        <p class="muted">Votre dossier est validé ✅. Pour changer une pièce, écrivez-nous via le <a href="/chat?pro=1">chat</a>.</p>
+        <ul class="ps-docs"><?php foreach ($reqd as $dk): ?><li><span><?= e($DLb[$dk][0] ?? $dk) ?></span><?= !empty($pdocs[$dk]) ? '<b class="ok">✅ Fourni</b>' : '<b class="ko">Manquant</b>' ?></li><?php endforeach; ?></ul>
+      <?php else: ?>
+      <p class="muted">Ajoutez ou remplacez une pièce : choisissez seulement les fichiers à changer, les autres restent tels quels.</p>
+      <form method="post" enctype="multipart/form-data" class="ps-docs-form">
+        <?= csrf_field() ?><input type="hidden" name="provider_id" value="<?= (int) $p['id'] ?>"><input type="hidden" name="action" value="docs">
+        <?php foreach ($reqd as $dk): $has = !empty($pdocs[$dk]); ?>
+          <label class="fld file ps-doc"><span><?= e($DLb[$dk][0] ?? $dk) ?><?= !empty($DLb[$dk][1]) ? ' <small>(' . e($DLb[$dk][1]) . ')</small>' : '' ?> <?= $has ? '<b class="ok">✅ Fourni — remplacer</b>' : '<b class="ko">❗ Manquant</b>' ?></span><input type="file" name="<?= $dk ?>" accept="<?= $dk === 'photo' ? 'image/*' : 'image/*,application/pdf' ?>"></label>
+        <?php endforeach; ?>
+        <button class="btn btn-primary">Envoyer mes documents</button>
+      </form>
+      <?php endif; ?>
       <?php endif; ?>
     </div>
     <?php endforeach; ?>
