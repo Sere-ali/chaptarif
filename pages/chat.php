@@ -156,7 +156,7 @@ if (isset($_GET['new']) || $preBooking || $preProv):
     $preKind = $preBooking || $preProv ? 'question' : '';
 ?>
 <section class="cv-wrap">
-  <header class="cv-top"><h1>Nouvelle conversation</h1></header>
+  <header class="cv-top"><h1>Nouvelle demande</h1></header>
   <form method="post" action="/chat" class="cv-new" data-cv-new>
     <?= csrf_field() ?><input type="hidden" name="action" value="create">
     <?php if ($preProv): ?><input type="hidden" name="prestataire" value="<?= $preProv ?>"><?php endif; ?>
@@ -180,37 +180,61 @@ if (isset($_GET['new']) || $preBooking || $preProv):
 <?php
 else:
 // ---- Client : liste des conversations ----
-    $all = isset($_GET['all']);
-    $convs = all('SELECT c.*, (SELECT COUNT(*) FROM chat_messages m WHERE m.conversation_id = c.id AND m.sender = \'admin\' AND m.read_by_user = 0) AS unread FROM conversations c WHERE c.user_id = ? ORDER BY c.last_msg_at DESC, c.id DESC LIMIT ' . ($all ? 200 : 6), [$uid]);
-    $total = (int) val('SELECT COUNT(*) FROM conversations WHERE user_id = ?', [$uid]);
+    $convs = all('SELECT c.*, (SELECT COUNT(*) FROM chat_messages m WHERE m.conversation_id = c.id AND m.sender = \'admin\' AND m.read_by_user = 0) AS unread,
+        (SELECT MAX(m.id) FROM chat_messages m WHERE m.conversation_id = c.id AND m.sender = \'user\') AS lu, (SELECT MAX(m.id) FROM chat_messages m WHERE m.conversation_id = c.id) AS la
+        FROM conversations c WHERE c.user_id = ? ORDER BY c.last_msg_at DESC, c.id DESC LIMIT 200', [$uid]);
     $bmap = conv_bookings($convs);
+    $pids = array_values(array_filter(array_map(fn($c) => (int) ($c['lu'] ?: $c['la']), $convs)));
+    $prev = [];
+    if ($pids) foreach (all('SELECT id, body, att_type FROM chat_messages WHERE id IN (' . implode(',', $pids) . ')') as $m) $prev[(int) $m['id']] = trim((string) $m['body']) !== '' ? (string) $m['body'] : ($m['att_type'] === 'image' ? '📷 Photo' : ($m['att_type'] === 'audio' ? '🎤 Message vocal' : '📎 Pièce jointe'));
+    $cnt = ['en_cours' => 0, 'en_attente' => 0, 'resolu' => 0];
+    foreach ($convs as $c) if (isset($cnt[$c['status']])) $cnt[$c['status']]++;
+    $when = function (?string $d): string {
+        if (!$d) return '';
+        $t = strtotime($d);
+        if (date('Y-m-d', $t) === date('Y-m-d')) return date('H:i', $t);
+        if (date('Y-m-d', $t) === date('Y-m-d', time() - 86400)) return 'Hier';
+        $mois = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+        return date('j', $t) . ' ' . $mois[(int) date('n', $t) - 1];
+    };
 ?>
 <section class="cv-wrap">
-  <header class="cv-top"><h1>Chat</h1></header>
-  <div class="cv-hero">
-    <span class="cv-hero-ic">💬</span>
-    <div><b>Besoin d'aide ?</b><p>Discutez avec le prestataire ou avec l'équipe ChapTarif.</p></div>
-  </div>
-  <a class="btn btn-primary btn-block cv-newbtn" href="/chat?new=1">＋ Nouvelle conversation</a>
-  <div class="cv-list-h"><h2>Mes conversations</h2><?php if (!$all && $total > count($convs)): ?><a href="/chat?all=1">Voir tout</a><?php elseif ($all): ?><a href="/chat">Réduire</a><?php endif; ?></div>
+  <h1 class="cv-h1">Chat &amp; Assistance</h1>
+  <p class="cv-lead">Une question, un problème, une réclamation ?<br>Notre équipe est là pour vous aider.</p>
+  <a class="cv-newbtn" href="/chat?new=1"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" stroke-width="2.8"/></svg><span>+ Nouvelle demande</span></a>
+  <h2 class="cv-h2">Mes conversations</h2>
   <?php if (!$convs): ?>
-    <p class="cv-empty">Aucune conversation pour le moment. Appuyez sur « Nouvelle conversation » pour nous écrire.</p>
+    <p class="cv-empty">Aucune conversation pour le moment. Appuyez sur « Nouvelle demande » pour nous écrire.</p>
+  <?php else: ?>
+  <nav class="cv-chips" data-cv-chips>
+    <button type="button" class="on" data-f="">Toutes (<?= count($convs) ?>)</button>
+    <button type="button" data-f="en_cours">En cours (<?= $cnt['en_cours'] ?>)</button>
+    <button type="button" data-f="en_attente">En attente (<?= $cnt['en_attente'] ?>)</button>
+    <button type="button" data-f="resolu">Résolues (<?= $cnt['resolu'] ?>)</button>
+  </nav>
   <?php endif; ?>
   <div class="cv-list">
-    <?php foreach ($convs as $c): $b = $c['booking_id'] ? ($bmap[(int) $c['booking_id']] ?? null) : null; ?>
-      <a class="cv-item<?= (int) $c['unread'] > 0 ? ' unread' : '' ?>" href="/chat?c=<?= (int) $c['id'] ?>">
-        <span class="cv-th"><?= conv_thumb($b) ?></span>
-        <span class="cv-it-main"><b><?= e(conv_title($c, $b)) ?></b><?= conv_badge($c['status']) ?><small><?= $b ? 'Réf. <span class="mono">' . e($b['ref']) . '</span>' : e(conv_kind($c['kind'])[3]) ?> · <span class="mono"><?= e($c['ref']) ?></span></small></span>
-        <span class="cv-it-r"><small><?= e(time_rel($c['last_msg_at'])) ?></small><?php if ((int) $c['unread'] > 0): ?><i class="cv-unread"><?= (int) $c['unread'] ?></i><?php endif; ?></span>
+    <?php foreach ($convs as $c): $b = $c['booking_id'] ? ($bmap[(int) $c['booking_id']] ?? null) : null; $pv = $prev[(int) ($c['lu'] ?: $c['la'])] ?? ''; ?>
+      <a class="cv-item<?= (int) $c['unread'] > 0 ? ' unread' : '' ?>" href="/chat?c=<?= (int) $c['id'] ?>" data-st="<?= e($c['status']) ?>">
+        <span class="cv-th<?= $b ? '' : ' cv-th-help' ?>"><?php if ($b): ?><?= conv_thumb($b) ?><?php else: ?><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/><path d="M19.5 19v.5a2.5 2.5 0 0 1-2.5 2.5h-3"/></svg><?php endif; ?></span>
+        <span class="cv-it-main">
+          <b><?= $b ? e($b['title']) : 'Assistance ChapTarif <i class="cv-verif" aria-hidden="true">✓</i>' ?></b>
+          <small><?= $b ? 'Réf. <span>' . e($b['ref']) . '</span>' : 'Dossier <span>' . e($c['ref']) . '</span>' ?></small>
+          <?php if ($pv !== ''): ?><small class="cv-prev" data-no-tr><?= e(mb_strimwidth(preg_replace('/\s+/u', ' ', $pv), 0, 70, '…')) ?></small><?php endif; ?>
+        </span>
+        <span class="cv-it-r"><?= conv_badge($c['status']) ?><small><?= e($when($c['last_msg_at'])) ?></small><?php if ((int) $c['unread'] > 0): ?><i class="cv-unread"><?= (int) $c['unread'] ?></i><?php endif; ?></span>
+        <svg class="cv-chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </a>
     <?php endforeach; ?>
   </div>
-  <ol class="cv-steps">
-    <li><b>Choisissez votre demande</b><span>Question, problème, modification, remboursement…</span></li>
-    <li><b>Associez votre réservation</b><span>Elle vous est proposée automatiquement.</span></li>
-    <li><b>Suivez votre demande en temps réel</b><span>Statut, numéro de dossier et échanges centralisés.</span></li>
-  </ol>
 </section>
+<script data-live-rerun>
+(function () { var n = document.querySelector('[data-cv-chips]'); if (!n) return;
+  n.addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (!b) return;
+    n.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    document.querySelectorAll('.cv-item[data-st]').forEach(function (it) { it.hidden = !!b.dataset.f && it.dataset.st !== b.dataset.f; }); });
+})();
+</script>
 <?php endif; ?>
-<link rel="stylesheet" href="/assets/css/chat.css?v=7">
+<link rel="stylesheet" href="/assets/css/chat.css?v=8">
 <?php view('layout/footer', compact('active', 'providerMode'));

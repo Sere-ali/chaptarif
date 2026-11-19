@@ -136,7 +136,7 @@ a.wa-about:hover { background: #DCE8FD; }
 .cv-hero { display: flex; gap: 14px; align-items: center; background: #EEF8F3; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
 .cv-hero-ic { width: 48px; height: 48px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 1.5rem; flex: 0 0 auto; }
 .cv-hero b { font-size: 1.08rem; } .cv-hero p { margin: 2px 0 0; color: var(--ink-2, #33415C); font-size: .92rem; }
-.cv-newbtn { display: flex; justify-content: center; margin-bottom: 18px; }
+
 .cv-list-h { display: flex; justify-content: space-between; align-items: baseline; margin: 6px 0 8px; }
 .cv-list-h h2 { font-size: 1.05rem; margin: 0; } .cv-list-h a { color: var(--green, #2E7D5B); font-weight: 700; font-size: .9rem; }
 .cv-empty { color: var(--muted, #6B7A90); background: var(--soft, #F4F7FA); border-radius: 14px; padding: 16px; }
@@ -204,3 +204,38 @@ a.wa-about:hover { background: #DCE8FD; }
 .cv-st { border: 1.5px solid transparent; border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: .84rem; cursor: pointer; opacity: .65; }
 .cv-st.on { opacity: 1; border-color: currentColor; }
 .cv-adm-sib { font-size: .84rem; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* Accueil « Chat & Assistance » */
+.cv-h1 { font-size: clamp(1.7rem, 7vw, 2.1rem); line-height: 1.15; margin: 8px 0 8px; letter-spacing: -.02em; }
+.cv-lead { color: var(--ink-2, #33415C); font-size: 1rem; margin: 0 0 18px; }
+.cv-newbtn { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 16px 20px; border-radius: 999px; background: linear-gradient(180deg, #23A04A, #17853A); color: #fff; font-weight: 800; font-size: 1.15rem; text-decoration: none; box-shadow: 0 8px 20px rgba(23,133,58,.28); margin-bottom: 22px; }
+.cv-newbtn:hover { filter: brightness(1.05); }
+.cv-h2 { font-size: 1.3rem; margin: 0 0 12px; padding-top: 16px; border-top: 1px solid var(--line, #E4E9F0); }
+.cv-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 12px; scrollbar-width: none; }
+.cv-chips::-webkit-scrollbar { display: none; }
+.cv-chips button { flex: 0 0 auto; border: 1.5px solid var(--line, #E4E9F0); background: #fff; border-radius: 999px; padding: 7px 14px; font: inherit; font-size: .9rem; font-weight: 600; color: var(--ink, #0F1B2D); cursor: pointer; }
+.cv-chips button.on { background: #17853A; border-color: #17853A; color: #fff; }
+.cv-item { position: relative; padding: 12px 10px 12px 12px; border-radius: 18px; box-shadow: 0 1px 3px rgba(15,27,45,.06); }
+.cv-item[hidden] { display: none; }
+.cv-th { width: 58px; height: 58px; border-radius: 50%; }
+.cv-th-help { background: #E3F5EC; color: #17853A; }
+.cv-it-main { gap: 2px; }
+.cv-it-main b { font-size: 1.02rem; }
+.cv-it-main small { color: var(--ink-2, #33415C); font-size: .84rem; }
+.cv-it-main small.cv-prev { color: var(--muted, #6B7A90); }
+.cv-verif { display: inline-grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; background: #23A04A; color: #fff; font-size: .62rem; font-style: normal; vertical-align: 2px; margin-left: 2px; }
+.cv-it-r { align-self: stretch; align-content: space-between; gap: 8px; }
+.cv-it-r .cv-badge { font-size: .76rem; padding: 3px 11px; }
+.cv-it-r .cv-green { background: #17853A; color: #fff; } .cv-it-r .cv-amber { background: #F7931E; color: #fff; } .cv-it-r .cv-gray { background: #7B8794; color: #fff; }
+.cv-chev { color: var(--ink, #0F1B2D); flex: 0 0 auto; }
+.cv-it-main b, .cv-it-main small { white-space: normal; overflow: visible; text-overflow: clip; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cv-it-main small.cv-prev { -webkit-line-clamp: 1; }
+.cv-item { gap: 10px; }
+.cv-th { width: 52px; height: 52px; }
+.cv-chips { gap: 6px; }
+.cv-chips button { padding: 6px 11px; font-size: .84rem; }
+.cv-it-r small { font-size: .78rem; }
+@media (max-width: 380px) { .cv-chips button { padding: 5px 9px; font-size: .8rem; } }
+.cv-chips { flex-wrap: wrap; overflow: visible; }
+@media (max-width: 480px) { .cv-chips button { padding: 6px 8px; font-size: .8rem; } .cv-it-r .cv-badge { font-size: .7rem; padding: 3px 8px; } }
+@media (max-width: 480px) { .cv-chips { flex-wrap: nowrap; gap: 5px; } .cv-chips button { flex: 1 1 auto; padding: 6px 4px; font-size: .76rem; white-space: nowrap; } }
