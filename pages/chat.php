@@ -236,5 +236,5 @@ else:
 })();
 </script>
 <?php endif; ?>
-<link rel="stylesheet" href="/assets/css/chat.css?v=8">
+<link rel="stylesheet" href="/assets/css/chat.css?v=9">
 <?php view('layout/footer', compact('active', 'providerMode'));

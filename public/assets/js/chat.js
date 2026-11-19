@@ -34,7 +34,7 @@
       var tb = m.querySelector('.wa-thread'); if (tb) { var n = rc[id] || 0; if (tb.dataset.n !== String(n)) { tb.dataset.n = n; setRc(tb, n); } }
     });
   };
-  var clean = function (n) { var c = n.cloneNode(true); c.classList.remove('flash'); c.querySelectorAll('.wa-reply,.wa-thread' + (n.dataset.replyTo ? ',.wa-quote' : '')).forEach(function (x) { x.remove(); }); return c; };
+  var clean = function (n) { var c = n.cloneNode(true); c.classList.remove('flash'); c.querySelectorAll('.wa-reply,.wa-thr,.wa-thread' + (n.dataset.replyTo ? ',.wa-quote' : '')).forEach(function (x) { x.remove(); }); return c; };
   var showThread = function (id, keepBottom) {
     var p = log.querySelector('.wa-msg[data-id="' + id + '"]'); if (!p) return;
     thId = +id; thLog.textContent = '';
@@ -146,6 +146,7 @@
     var rxd = el('div', 'rx'); rxd.dataset.rx = m.id; d.appendChild(rxd); setRx(rxd, m.rx || []);
     var tb = el('button', 'wa-thread'); tb.type = 'button'; tb.dataset.thread = m.id; d.appendChild(tb); setRc(tb, m.rc || 0);
     var rb = el('button', 'wa-reply', '↩'); rb.type = 'button'; rb.title = 'Répondre'; d.appendChild(rb);
+    var hb = el('button', 'wa-thr', '🧵'); hb.type = 'button'; hb.title = 'Répondre dans un fil'; hb.dataset.threadOpen = m.id; d.appendChild(hb);
     log.appendChild(d); addTrBtn(d); last = Math.max(last, m.id); down();
     if (m.reply_to && m.reply_to === thId) showThread(thId, true);
   };
@@ -182,6 +183,7 @@
   q('[data-reply-x]').addEventListener('click', clearReply);
   log.addEventListener('click', function (e) {
     var rb = e.target.closest('.wa-reply'); if (rb) { setReply(rb.parentNode); return; }
+    var ho = e.target.closest('[data-thread-open]'); if (ho) { showThread(ho.dataset.threadOpen); if (thForm && thForm.elements[0]) thForm.elements[0].focus(); return; }
     var qt = e.target.closest('.wa-quote');
     if (qt) { var t = log.querySelector('.wa-msg[data-id="' + qt.dataset.goto + '"]'); if (t) { t.scrollIntoView({ block: 'center', behavior: 'smooth' }); t.classList.add('flash'); setTimeout(function () { t.classList.remove('flash'); }, 1300); } }
   });

@@ -605,7 +605,7 @@ function chat_msg_html(array $m): string
     $h .= '<span class="wa-meta">' . e(substr($m['created_at'], 11, 5)) . ($m['mine'] ? ' <i class="wa-tick' . ($m['read'] ? ' read' : '') . '">✓✓</i>' : '') . '</span>';
     $h .= reactions_html($m['rx'] ?? [], (int) $m['id']);
     $h .= '<button type="button" class="wa-thread" data-thread="' . (int) $m['id'] . '"' . (empty($m['rc']) ? ' hidden' : '') . '>🧵 <span>' . (int) ($m['rc'] ?? 0) . '</span> réponse' . (($m['rc'] ?? 0) > 1 ? 's' : '') . '</button>';
-    return $h . '<button type="button" class="wa-reply" aria-label="Répondre" title="Répondre">↩</button></div>';
+    return $h . '<button type="button" class="wa-reply" aria-label="Répondre" title="Répondre">↩</button><button type="button" class="wa-thr" data-thread-open="' . (int) $m['id'] . '" aria-label="Répondre dans un fil" title="Répondre dans un fil">🧵</button></div>';
 }
 
 function chat_json(array $r): array

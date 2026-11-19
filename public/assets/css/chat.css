@@ -64,8 +64,7 @@
   .chat-page main { padding: 0; }
   .wa-wrap { padding: 0; }
   .chat-page .wa { position: fixed; inset: 0; max-width: none; height: 100dvh; border-radius: 0; border: 0; z-index: 80; }
-  .wa-reply { display: none; }
-  .wa-msg { max-width: 86%; }
+  .wa-msg { max-width: 80%; }
 }
 
 .wa-about { font-size: .74rem; font-weight: 700; color: #1E5BD8; background: #EAF1FE; border-radius: 8px; padding: 3px 8px; margin-bottom: 4px; }
@@ -239,3 +238,8 @@ a.wa-about:hover { background: #DCE8FD; }
 .cv-chips { flex-wrap: wrap; overflow: visible; }
 @media (max-width: 480px) { .cv-chips button { padding: 6px 8px; font-size: .8rem; } .cv-it-r .cv-badge { font-size: .7rem; padding: 3px 8px; } }
 @media (max-width: 480px) { .cv-chips { flex-wrap: nowrap; gap: 5px; } .cv-chips button { flex: 1 1 auto; padding: 6px 4px; font-size: .76rem; white-space: nowrap; } }
+
+/* Flèche ↩ (répondre) et bobine 🧵 (répondre dans un fil) toujours visibles, en bas de chaque message */
+.wa-msg .wa-reply, .wa-msg .wa-thr { position: static; opacity: 1; display: inline-grid; place-items: center; width: 26px; height: 26px; padding: 0; margin: 4px 4px 0 0; border: 0; border-radius: 50%; background: rgba(11,20,26,.06); box-shadow: none; color: #54656F; font-size: .82rem; cursor: pointer; vertical-align: middle; }
+.wa-msg .wa-reply:hover, .wa-msg .wa-thr:hover { background: rgba(31,157,107,.15); }
+.wa-th-log .wa-reply, .wa-th-log .wa-thr { display: none; }
