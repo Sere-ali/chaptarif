@@ -247,3 +247,8 @@ form .btn-primary { box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--f-acc
   .d-top .d-home-link { width: 36px; height: 36px; padding: 0 !important; justify-content: center; border-radius: 999px; }
   .d-top-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
+
+.kyc-view-box .pdfv { width: min(680px, 86vw); max-height: calc(88vh - 24px); overflow: auto; background: #E9EDF2; border-radius: 12px; padding: 8px; display: grid; gap: 8px; }
+.kyc-view-box .pdfv[hidden], .pdfv-load[hidden] { display: none; }
+.pdfv-page { display: block; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+.pdfv-load { margin: 8px 4px 0; color: #5B6878; font-size: .9rem; text-align: center; }

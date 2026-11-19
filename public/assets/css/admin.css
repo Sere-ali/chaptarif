@@ -523,3 +523,8 @@ tr.sec-new td { background: #FFF8E6; }
 .tm-atlist .tm-at-all span:last-child { display: grid; line-height: 1.2; }
 .tm-atlist .tm-at-all small { color: #667085; font-weight: 600; font-size: .74rem; }
 .tm-atlist .tm-at-all { border-bottom: 1px solid #EEF1F5; border-radius: 8px 8px 0 0; }
+
+.docv-body .pdfv { width: 100%; max-height: calc(92vh - 90px); overflow: auto; background: #E9EDF2; border-radius: 10px; padding: 8px; display: grid; gap: 8px; align-self: start; }
+.docv-body .pdfv[hidden] { display: none; }
+.pdfv-page { display: block; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+.pdfv-more { text-align: center; color: #5B6878; font-size: .85rem; }
