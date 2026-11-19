@@ -35,7 +35,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/app.css?v=135">
+<link rel="stylesheet" href="/assets/css/app.css?v=137">
 <link rel="stylesheet" href="/assets/css/polish.css?v=9">
 <link rel="stylesheet" href="/assets/css/motion.css?v=2">
 <link rel="stylesheet" href="/assets/css/forms.css?v=13">
@@ -55,17 +55,12 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
       <img src="/assets/img/logo.svg" alt="" width="40" height="40">
       <span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span><span class="ps-tag">Espace prestataire</span>
     </a>
+    <?php $__pu = current_user(); $__pn = $__pu ? (int) val("SELECT COUNT(*) FROM chat_messages WHERE user_id = ? AND sender = 'admin' AND read_by_user = 0", [$__pu['id']]) : 0; ?>
     <div class="top-actions ps-top-r">
-      <button class="lang-btn" type="button" data-lang-toggle aria-label="<?= $__en ? 'Passer en français' : 'Switch to English' ?>" title="<?= $__en ? 'Passer en français' : 'Switch to English' ?>"><?= $__en ? 'EN' : 'FR' ?></button>
-      <form method="post" action="/deconnexion" style="display:inline"><?= csrf_field() ?><button class="ps-out" title="Se déconnecter" aria-label="Se déconnecter"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></button></form>
+      <a class="ps-bell" href="/chat?pro=1" aria-label="Messages"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><?php if ($__pn): ?><i></i><?php endif; ?></a>
+      <a class="ps-me" href="/espace-prestataire?vue=profil" aria-label="Mon profil"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></a>
     </div>
   </div>
-  <nav class="ps-nav container">
-    <a href="/espace-prestataire" class="<?= empty($_GET['vue']) ? 'on' : '' ?>">🏠 Accueil</a>
-    <a href="/espace-prestataire#annonces">📢 Annonces</a>
-    <a href="/chat?pro=1">💬 Messages</a>
-    <a href="/espace-prestataire?vue=profil" class="<?= ($_GET['vue'] ?? '') === 'profil' ? 'on' : '' ?>">👤 Profil</a>
-  </nav>
 </header>
 <?php else: ?>
 <header class="topbar" id="top">

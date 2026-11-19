@@ -127,20 +127,24 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         $recent = all('SELECT b.id, b.ref, b.title, b.status, b.created_at, b.service_date, b.details, b.provider_amount, u.name AS cname FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE b.provider_id = ? AND b.paid_at IS NOT NULL ORDER BY b.id DESC LIMIT 20', [$p['id']]);
         $pub = '/' . str_replace('_', '-', $p['universe']);
     ?>
-    <?php $first = trim(explode(' ', trim((string) ($me['name'] ?: $p['name'])))[0]); $hasAds = count($svcs) > 0; ?>
-    <div class="pro-hero <?= $live ? 'is-live' : '' ?>" id="p<?= (int) $p['id'] ?>">
-      <div class="pro-hero-top"><?= avatar($p, 'lg') ?><div class="pro-hero-id">
-        <small>Bonjour 👋</small><h1><?= e($first ?: $p['name']) ?></h1>
-        <span class="pro-chips"><?php if (provider_code($p)): ?><i><?= e(provider_code($p)) ?></i><?php endif; ?><i><?= $x['emoji'] ?> <?= e($x['name']) ?></i><i>📍 <?= e($p['commune']) ?></i></span></div></div>
-      <div class="pro-state <?= $live ? 'ok' : ($p['kyc_status'] === 'rejected' ? 'ko' : 'wait') ?>">
-        <?php if ($live): ?><b>✅ Votre profil est en ligne</b><span>Les clients peuvent vous trouver et vous réserver.</span>
-        <?php elseif ($p['kyc_status'] === 'rejected'): ?><b>⚠️ Dossier à corriger</b><span>Votre dossier n'a pas été retenu : corrigez vos pièces ou écrivez-nous.</span>
-        <?php else: ?><b>⏳ Dossier en cours de vérification</b><span>Notre équipe l'examine. En attendant, préparez vos annonces.</span><?php endif; ?>
-      </div>
-      <div class="pro-acts">
-        <a class="pro-btn main" href="#form<?= (int) $p['id'] ?>">＋ Publier une annonce</a>
-        <?php if ($live): ?><a class="pro-btn" href="/profil-prestataire?id=<?= (int) $p['id'] ?>">👁️ Ma page publique</a>
-        <?php else: ?><a class="pro-btn" href="/espace-prestataire?vue=profil#dossier">✏️ Mon dossier</a><?php endif; ?>
+    <?php
+      $uImg = !empty($x['img']) ? img($x['img'], 'w_300,h_240,c_fill,q_auto,f_auto') : '';
+      $hasAds = count($svcs) > 0;
+      $bk = one("SELECT COUNT(*) AS n, COALESCE(SUM(CASE WHEN status = 'VALIDE' THEN 1 ELSE 0 END),0) AS ok FROM bookings WHERE provider_id = ? AND paid_at IS NOT NULL", [$p['id']]);
+    ?>
+    <?php if ($vue === ''): ?>
+    <div class="pm-banner" id="p<?= (int) $p['id'] ?>">
+      <div><h1>Bonjour <?= e($p['name']) ?> 👋</h1><p>Votre espace <?= e($x['short'] ?? $x['name']) ?> sur ChapTarif.</p></div>
+      <?php if ($uImg): ?><img src="<?= e($uImg) ?>" alt="" loading="lazy"><?php else: ?><span class="pm-emo"><?= $x['emoji'] ?></span><?php endif; ?>
+    </div>
+
+    <div class="pm-card pm-me">
+      <?= avatar($p, 'lg') ?>
+      <div class="pm-me-id"><b><?= e($p['name']) ?></b><?php if (provider_code($p)): ?><span class="pm-code">Prestataire <?= e(provider_code($p)) ?></span><?php endif; ?><small><?= e($x['name']) ?> · <?= e($p['commune']) ?></small></div>
+      <div class="pm-me-r">
+        <?php if ($live): ?><span class="pm-ok">✓ Profil validé</span><a href="/profil-prestataire?id=<?= (int) $p['id'] ?>">Voir ma page →</a>
+        <?php elseif ($p['kyc_status'] === 'rejected'): ?><span class="pm-ko">⚠ À corriger</span><a href="/espace-prestataire?vue=profil#dossier">Mon dossier →</a>
+        <?php else: ?><span class="pm-wait">⏳ En vérification</span><a href="/espace-prestataire?vue=profil#dossier">Mon dossier →</a><?php endif; ?>
       </div>
     </div>
 
@@ -151,27 +155,30 @@ view('layout/header', compact('title', 'active', 'providerMode'));
       <li class="<?= $hasAds ? 'done' : '' ?>"><i><?= $hasAds ? '✓' : '3' ?></i><span><b>Première annonce</b><small><?= $hasAds ? 'Prête, en attente de validation' : 'À préparer dès maintenant' ?></small></span></li>
       <li><i>4</i><span><b>Vos premiers clients</b><small>Recevez des réservations</small></span></li>
     </ol>
-    <?php elseif ($p['kyc_status'] === 'rejected'): ?>
-      <div class="alert alert-error">Vous pouvez <a href="/espace-prestataire?vue=profil#dossier">corriger vos pièces</a> ou nous écrire via le <a href="/chat?pro=1">chat</a>.</div>
     <?php endif; ?>
 
-    <?php if (true): ?>
-      <a class="ps-chat card" href="/chat?pro=1">
-        <span class="ps-chat-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><?php if ($proUnread): ?><i><?= $proUnread ?></i><?php endif; ?></span>
-        <span><b>Messagerie avec l’équipe ChapTarif</b><small><?= $proUnread ? $proUnread . ' nouveau' . ($proUnread > 1 ? 'x' : '') . ' message' . ($proUnread > 1 ? 's' : '') : 'Une question sur votre dossier, une annonce ou un paiement ? Écrivez-nous.' ?></small></span>
-        <em>Ouvrir →</em>
-      </a>
+    <div class="pm-card">
+      <h2 class="pm-h"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1F7A4D" stroke-width="2.2" stroke-linecap="round"><path d="M4 20v-5M10 20V9M16 20v-8M21 20V4"/></svg>Mon activité</h2>
+      <div class="pm-stats">
+        <div class="s1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><b><?= (int) $bk['n'] ?></b><small>Réservations</small></div>
+        <div class="s2"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#7C4DDB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><b><?= (int) $bk['ok'] ?></b><small>Prestations terminées</small></div>
+      </div>
+    </div>
+
+    <div class="pm-card">
+      <div class="pm-h2"><h2 class="pm-h"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1F7A4D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Dernières réservations</h2><a href="/espace-prestataire?vue=reservations">Tout voir →</a></div>
+      <?php if (!$recent): ?><p class="muted" style="margin:10px 4px">Pas encore de réservation. Publiez votre première annonce pour recevoir des clients.</p><?php endif; ?>
+      <?php foreach (array_slice($recent, 0, 3) as $b): $d = json_decode((string) ($b['details'] ?? ''), true) ?: []; ?>
+        <a class="pm-bk" href="/espace-prestataire?vue=reservations#b<?= (int) $b['id'] ?>"><i><?= $x['emoji'] ?></i><span><b>N° <?= e($b['ref']) ?></b><small><?= e($b['title']) ?><?= $b['service_date'] ? ' · ' . e(date('d/m/Y', strtotime((string) $b['service_date']))) : '' ?></small></span><?= status_badge($b['status']) ?><em>›</em></a>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+    <p><a class="btn btn-ghost btn-sm" href="/espace-prestataire">← Accueil</a></p>
     <?php endif; ?>
 
     <div class="card pro-card mt">
       <?php if ($vue !== 'profil'): ?>
-      <div class="pro-kpis">
-        <div class="k1"><em>📢</em><b><?= $nOn ?></b><small>Annonces en ligne</small></div>
-        <div class="k2"><em>⏳</em><b><?= $nPend ?></b><small>En validation</small></div>
-        <div class="k3"><em>✅</em><b><?= (int) $p['missions'] ?></b><small>Missions réalisées</small></div>
-        <div class="k4"><em>⭐</em><b><?= (float) $p['rating'] > 0 ? number_format((float) $p['rating'], 1, ',', '') : '—' ?></b><small>Note clients</small></div>
-      </div>
-
+      <?php if ($vue === ''): ?>
       <?php if ($p['universe'] === 'immobilier'):
         $visits = all("SELECT v.*, u.name AS uname, ps.title AS stitle FROM visit_requests v JOIN users u ON u.id = v.user_id JOIN provider_services ps ON ps.id = v.service_id WHERE v.provider_id = ? ORDER BY v.id DESC LIMIT 30", [$p['id']]); ?>
       <h3 class="h4 mt" id="visites">Demandes de visite</h3>
@@ -228,19 +235,20 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <?php if ($edit): ?><a class="btn btn-ghost" href="/espace-prestataire#p<?= (int) $p['id'] ?>">Annuler</a><?php endif; ?>
       </form>
 
+      <?php endif; if ($vue === 'reservations'): ?>
+        <h3 class="h4"> Mes réservations</h3><?php if (!$recent): ?><p class="muted">Aucune réservation pour l'instant.</p><?php endif; ?>
       <?php if ($recent): ?>
-        <h3 class="h4 mt"> Mes missions</h3>
-        <?php foreach ($recent as $b): $d = json_decode((string) ($b['details'] ?? ''), true) ?: []; ?><div class="prov-mini"><div><b><?= e($b['title']) ?></b>
+        <?php foreach ($recent as $b): $d = json_decode((string) ($b['details'] ?? ''), true) ?: []; ?><div class="prov-mini" id="b<?= (int) $b['id'] ?>"><div><b><?= e($b['title']) ?></b>
           <small><?= e($b['ref']) ?><?= $b['service_date'] ? ' · le ' . e(date('d/m/Y', strtotime((string) $b['service_date']))) . (!empty($d['time']) ? ' à ' . e($d['time']) : '') : '' ?></small>
           <small class="pm-client">👤 <?= e($b['cname'] ?: 'Client') ?><?php if (!empty($d['address']) || !empty($d['zone'])): ?> · 📍 <?= e(trim(($d['address'] ?? '') . (!empty($d['zone']) && empty($d['address']) ? $d['zone'] : ''))) ?><?php endif; ?></small>
           <small>Pour vous : <b><?= fcfa($b['provider_amount']) ?></b></small></div><div class="prov-mini-r"><?= status_badge($b['status']) ?><?php if ($b['status'] !== 'EN_ATTENTE_PAIEMENT'): ?><a class="btn btn-soft btn-xs" href="/chat?pro=1&amp;client=<?= (int) $b['id'] ?>">✉️ Écrire au client</a><?php endif; ?></div></div><?php endforeach; ?>
+      <?php endif; ?>
       <?php endif; ?>
 
       <?php endif; ?>
 
       <?php if ($vue === 'profil'): ?>
-      <p><a class="btn btn-ghost btn-sm" href="/espace-prestataire#p<?= (int) $p['id'] ?>">← Retour à mes annonces</a></p>
-      <h3 class="h4 mt" id="profil">Mon profil</h3>
+      <h3 class="h4" id="profil">Mon profil</h3>
       <form method="post" enctype="multipart/form-data">
         <?= csrf_field() ?><input type="hidden" name="provider_id" value="<?= (int) $p['id'] ?>"><input type="hidden" name="action" value="profile">
         <label class="fld"><span>Nom / Entreprise</span><input name="name" required maxlength="80" value="<?= e($p['name']) ?>"></label>
@@ -251,6 +259,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <p class="fine">Cette photo apparaît sur votre profil : une photo de vous, de face et bien éclairée (ou le logo de votre entreprise).</p>
         <button class="btn btn-soft">Enregistrer mon profil</button>
       </form>
+      <div class="pm-acct"><button class="lang-btn" type="button" data-lang-toggle>FR</button><form method="post" action="/deconnexion"><?= csrf_field() ?><button class="btn btn-soft">Se déconnecter</button></form></div>
       <p class="fine">Pour votre sécurité, le numéro de paiement et les commissions sont gérés par l'équipe ChapTarif. Pour les modifier, <a href="/contact">contactez-nous</a>.</p>
       <?php $pdocs = provider_docs($p); $DLb = kyc_doc_labels(); $reqd = kyc_docs_required($p['universe']); ?>
       <h3 class="h4 mt" id="dossier">Mon dossier d’inscription</h3>
@@ -272,4 +281,11 @@ view('layout/header', compact('title', 'active', 'providerMode'));
     <?php endforeach; ?>
   </div>
 </section>
+<?php $tabOn = $vue === 'profil' ? 'p' : ($vue === 'reservations' ? 'r' : 'a'); ?>
+<nav class="ps-tabs" aria-label="Navigation prestataire">
+  <a href="/espace-prestataire" class="<?= $tabOn === 'a' ? 'on' : '' ?>"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Accueil</a>
+  <a href="/espace-prestataire?vue=reservations" class="<?= $tabOn === 'r' ? 'on' : '' ?>"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Réservations</a>
+  <a href="/chat?pro=1"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<?php if ($proUnread): ?><i><?= (int) $proUnread ?></i><?php endif; ?></a>
+  <a href="/espace-prestataire?vue=profil" class="<?= $tabOn === 'p' ? 'on' : '' ?>"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mon profil</a>
+</nav>
 <?php view('layout/footer', compact('active', 'providerMode'));
