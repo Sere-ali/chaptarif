@@ -1,8 +1,12 @@
 <?php
 $U = universes();
+// Client déjà connecté : il devient prestataire avec le même compte (pas de nouveau mot de passe ni de code SMS).
+$cu = current_user();
+$selfMode = $cu && in_array($cu['role'], ['client'], true) && !empty($cu['phone']);
 if (is_post()) {
     $uk = (string) ($_POST['universe'] ?? '');
-    $phone = normalize_phone((string) ($_POST['phone'] ?? ''));
+    $self = $selfMode && !empty($_POST['phone_self']);
+    $phone = $self ? (string) $cu['phone'] : normalize_phone((string) ($_POST['phone'] ?? ''));
     $name = mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 80);
     $payout = normalize_phone((string) ($_POST['payout_number'] ?? ''), '225') ?: $phone;
     $errors = [];
@@ -11,11 +15,14 @@ if (is_post()) {
     if (!$phone) $errors[] = 'Numéro de téléphone invalide.';
     if ($phone && val("SELECT 1 FROM providers WHERE phone = ? AND universe = ?", [$phone, $uk])) $errors[] = 'Une candidature existe déjà pour ce numéro.';
     $pw = (string) ($_POST['password'] ?? '');
-    if (strlen($pw) < 8) $errors[] = 'Choisissez un mot de passe d\'au moins 8 caractères.';
-    elseif ($pw !== (string) ($_POST['password2'] ?? '')) $errors[] = 'Les deux mots de passe ne sont pas identiques.';
-    if (too_many_attempts('apply:' . client_ip(), 5, 60)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
-    // Vérification du numéro par SMS dès qu'une passerelle d'envoi est active.
-    if (!$errors && $phone && (infobip_configured() || whatsapp_configured())) {
+    if (!$self) {
+        if (strlen($pw) < 8) $errors[] = 'Choisissez un mot de passe d\'au moins 8 caractères.';
+        elseif ($pw !== (string) ($_POST['password2'] ?? '')) $errors[] = 'Les deux mots de passe ne sont pas identiques.';
+    }
+    // Limite propre aux candidatures (les essais de connexion ne comptent pas).
+    if (too_many_attempts('apply:' . client_ip(), 5, 60, false)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
+    // Vérification du numéro par SMS dès qu'une passerelle d'envoi est active (inutile pour un client déjà connecté).
+    if (!$self && !$errors && $phone && (infobip_configured() || whatsapp_configured())) {
         $oc = preg_replace('/\D/', '', (string) ($_POST['otp'] ?? ''));
         if (too_many_attempts('otp:' . $phone, 8, 15, false) || !otp_verify($phone, $oc)) { record_attempt('otp:' . $phone); $errors[] = 'Code de vérification SMS incorrect ou expiré.'; }
     }
@@ -49,6 +56,10 @@ if (is_post()) {
         'photo_url' => $photoUrl, 'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
     ]);
     // Compte d'accès : jamais écrasé si le numéro a déjà un compte.
+    if ($self) {
+        flash('success', 'Candidature envoyée ! Votre espace prestataire utilise votre compte actuel. Notre équipe vérifie votre dossier (pièces demandées) et vous appelle sous 30 minutes.');
+        redirect('/espace-prestataire');
+    }
     if (!one('SELECT id FROM users WHERE phone = ?', [$phone])) {
         insert('users', ['role' => 'client', 'name' => $name, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
         flash('success', 'Candidature envoyée ! Connectez-vous juste à côté avec votre numéro et votre mot de passe pour présenter vos services. Notre équipe vérifie votre dossier (pièces demandées) et vous appelle sous 30 minutes.');
@@ -121,9 +132,14 @@ view('layout/header', compact('title', 'desc', 'active'));
             </div>
             <div hidden><label class="fld"><span>Activité</span><select name="universe" id="proUniverse" required><option value="">Choisir…</option><?php foreach ($U as $k => $x): ?><option value="<?= $k ?>" data-transport="<?= in_array($k, $transportKeys, true) ? '1' : '0' ?>"><?= $x['emoji'] ?> <?= e($x['name']) ?></option><?php endforeach; ?></select></label></div>
           </div>
-          <label class="fld"><span>Nom complet ou nom de l'entreprise</span><input name="name" required maxlength="80" placeholder="Ex. Koné Aminata ou Clean Services CI"></label>
+          <label class="fld"><span>Nom complet ou nom de l'entreprise</span><input name="name" required maxlength="80" placeholder="Ex. Koné Aminata ou Clean Services CI" value="<?= e($selfMode ? (string) ($cu['name'] ?? '') : '') ?>"></label>
+          <?php if ($selfMode): ?>
+          <input type="hidden" name="phone_self" value="1">
+          <div class="pa-self">✅ Vous êtes connecté avec votre compte client <b><?= e(fmt_phone($cu['phone'])) ?></b>. Votre espace prestataire utilisera ce même compte : pas besoin de créer un nouveau mot de passe.</div>
+          <?php else: ?>
           <label class="fld"><span>Téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
           <p class="pa-hint">📱 Indiquez un numéro sur lequel on peut vous joindre : vous y recevrez le <b>code de confirmation par SMS</b> et les nouvelles réservations.</p>
+          <?php endif; ?>
           <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <label class="fld" id="vehicleFld" hidden><span>Véhicule</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>
           <label class="fld"><span>Présentez votre activité</span><textarea name="bio" rows="3" maxlength="400" placeholder="Expérience, spécialités, horaires…"></textarea></label>
@@ -135,11 +151,13 @@ view('layout/header', compact('title', 'desc', 'active'));
         <label class="fld"><span>Recevoir mes paiements sur</span><select name="payout_method"><option value="wave">Wave</option><option value="orange">Orange Money</option><option value="mtn">MTN MoMo</option><option value="moov">Moov Money</option></select></label>
             <label class="fld"><span>Numéro de paiement</span><input name="payout_number" inputmode="tel" placeholder="Si différent"></label>
           </div>
+          <?php if (!$selfMode): ?>
           <div class="row2">
             <label class="fld"><span>Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
             <label class="fld"><span>Confirmer le mot de passe</span><input type="password" name="password2" minlength="8" required autocomplete="new-password"></label>
           </div>
-          <?php if (infobip_configured() || whatsapp_configured()): ?>
+          <?php endif; ?>
+          <?php if (!$selfMode && (infobip_configured() || whatsapp_configured())): ?>
           <div class="pa-otp" data-otp>
             <b>Vérification de votre numéro</b>
             <p class="fine">Nous envoyons un code par SMS au numéro indiqué à l'étape 1.</p>
@@ -203,11 +221,11 @@ view('layout/header', compact('title', 'desc', 'active'));
       if (bad || el.closest('[hidden]')) return;
       if (!el.checkValidity()) bad = el;
     });
-    if (!bad && n === 2 && f.password.value !== f.password2.value) { bad = f.password2; bad.setCustomValidity('Les deux mots de passe ne sont pas identiques.'); }
+    if (!bad && n === 2 && f.password && f.password.value !== f.password2.value) { bad = f.password2; bad.setCustomValidity('Les deux mots de passe ne sont pas identiques.'); }
     if (bad) { err.textContent = bad.validationMessage || 'Complétez ce champ.'; err.hidden = false; bad.focus(); bad.closest('.fld') && bad.closest('.fld').classList.add('shake'); setTimeout(function () { var x = bad.closest('.fld'); x && x.classList.remove('shake'); }, 500); return false; }
     return true;
   }
-  f.password2.addEventListener('input', function () { f.password2.setCustomValidity(''); });
+  if (f.password2) f.password2.addEventListener('input', function () { f.password2.setCustomValidity(''); });
   var ob = f.querySelector('[data-otp-send]'), om = f.querySelector('[data-otp-msg]');
   if (ob) ob.addEventListener('click', function () {
     var fd = new FormData(); fd.append('_csrf', f.querySelector('input[name=_csrf]').value); fd.append('phone', f.phone.value); fd.append('cc', f.cc ? f.cc.value : '225');
