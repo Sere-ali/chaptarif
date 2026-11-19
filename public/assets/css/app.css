@@ -1782,3 +1782,4 @@ body:has(.ps-tabs) { padding-bottom: 96px; }
 .pm-switch { display: flex; align-items: center; gap: 12px; margin: 14px 0; padding: 14px; border-radius: 18px; background: #E9F7EE; border: 1px solid #BFE5CD; text-decoration: none; color: #137A3C; }
 .pm-switch span { font-size: 1.6rem; } .pm-switch b { flex: 1; display: flex; flex-direction: column; } .pm-switch small { color: #3B4B57; font-weight: 600; } .pm-switch em { font-style: normal; font-size: 1.6rem; }
 .pm-cli { display: inline-block; margin-top: 10px; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.45); color: #fff; font-weight: 800; font-size: .84rem; padding: 6px 12px; border-radius: 999px; text-decoration: none; }
+.pro-card:not(:has(*)) { display: none; }
