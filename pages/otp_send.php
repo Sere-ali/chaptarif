@@ -6,6 +6,6 @@ $phone = normalize_phone((string) ($_POST['phone'] ?? ''), (string) ($_POST['cc'
 if (!$phone) { echo json_encode(['ok' => false, 'error' => 'Numéro de téléphone invalide.']); exit; }
 if (too_many_attempts('otpsend:' . client_ip(), 8, 30, false)) { echo json_encode(['ok' => false, 'error' => 'Trop de demandes. Réessayez dans 30 minutes.']); exit; }
 record_attempt('otpsend:' . client_ip());
-$r = otp_send($phone);
+$r = otp_send($phone, true);
 if (!$r['ok'] || empty($r['sent'])) { echo json_encode(['ok' => false, 'error' => $r['error'] ?? "Le code n'a pas pu être envoyé. Réessayez plus tard."]); exit; }
-echo json_encode(['ok' => true, 'msg' => 'Code envoyé au ' . fmt_phone($phone) . '.']);
+echo json_encode(['ok' => true, 'msg' => 'Votre code de vérification : ' . $r['demo_code'] . ' (valable 5 minutes).']);

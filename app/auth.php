@@ -202,7 +202,7 @@ function clear_attempts(string $identifier): void
 }
 
 // ---- OTP ---------------------------------------------------------------------
-function otp_send(string $phone): array
+function otp_send(string $phone, bool $onScreen = false): array
 {
     $recent = (int) val('SELECT COUNT(*) FROM otp_codes WHERE phone = ? AND created_at > ?', [$phone, date('Y-m-d H:i:s', time() - 600)]);
     if ($recent >= 4) return ['ok' => false, 'error' => 'Trop de demandes de code. Réessayez dans 10 minutes.'];
@@ -213,6 +213,8 @@ function otp_send(string $phone): array
         'phone' => $phone, 'code_hash' => password_hash($code, PASSWORD_DEFAULT),
         'expires_at' => date('Y-m-d H:i:s', time() + 300), 'attempts' => 0, 'used' => 0, 'created_at' => now(),
     ]);
+    // Inscription : le code est affiché directement sur le site (aucun SMS). Jamais pour la réinitialisation de mot de passe.
+    if ($onScreen) return ['ok' => true, 'demo_code' => $code, 'sent' => true];
     $sent = whatsapp_send_code($phone, $code)
         || sms_send($phone, "ChapTarif : votre code de vérification est $code. Il expire dans 5 minutes. Ne le partagez jamais.");
     // Le code n'est affiché à l'écran qu'en mode démonstration ET si aucun envoi réel n'a réussi.

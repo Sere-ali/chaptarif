@@ -63,11 +63,11 @@ if (is_post()) {
         }
         // Vérification du numéro par code SMS/WhatsApp dès qu'une passerelle d'envoi est active :
         // personne ne peut créer un compte avec le numéro de quelqu'un d'autre.
-        if (infobip_configured() || whatsapp_configured()) {
-            $r = otp_send($phone);
+        if (true) {
+            $r = otp_send($phone, true);
             if (!$r['ok'] || empty($r['sent'])) { flash('error', $r['error'] ?? "L'envoi du code n'est pas disponible pour le moment. Réessayez plus tard."); redirect($qs('signup')); }
             $_SESSION['signup_pending'] = ['name' => $name, 'birth' => $birth, 'phone' => $phone, 'hash' => password_hash($pw, PASSWORD_DEFAULT), 't' => time()];
-            flash('info', 'Un code à 6 chiffres vient d\'être envoyé au ' . fmt_phone($phone) . '.');
+            flash('info', 'Votre code de vérification : ' . $r['demo_code'] . ' (valable 5 minutes). Saisissez-le ci-dessous.');
             redirect('/connexion?mode=signup&step=code&next=' . urlencode($next));
         }
         $id = insert('users', ['role' => 'client', 'name' => $name, 'birthdate' => $birth, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
@@ -174,7 +174,7 @@ view('layout/header', compact('title'));
 
     <?php elseif ($mode === 'signup' && ($_GET['step'] ?? '') === 'code' && !empty($_SESSION['signup_pending'])): ?>
       <h1 class="h2">Vérifiez votre numéro</h1>
-      <p class="muted">Code envoyé au <b><?= e(fmt_phone($_SESSION['signup_pending']['phone'])) ?></b>. <a href="<?= e($qs('signup')) ?>">Modifier</a></p>
+      <p class="muted">Vérification du numéro <b><?= e(fmt_phone($_SESSION['signup_pending']['phone'])) ?></b>. <a href="<?= e($qs('signup')) ?>">Modifier</a></p>
       <form method="post" action="/connexion">
         <?= csrf_field() ?>
         <input type="hidden" name="step" value="signup_verify"><input type="hidden" name="next" value="<?= e($next) ?>">
