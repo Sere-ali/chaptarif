@@ -652,3 +652,10 @@ body.adm-shell { display: flex; background: #F5F6FB; --pu: #5B2BD9; --pu2: #EFE9
   .lit-tiles { grid-template-columns: 1fr; } .lit-tabsbar { grid-template-columns: 1fr; } .lit-top-t h2 { font-size: 1.3rem; } .lit-m > div { max-width: 88%; }
   .lit-acts { grid-template-columns: 1fr; } .lit-acts button { padding: 16px 8px; }
 }
+
+.sh-scroll { flex: 1; min-height: 0; overflow-y: auto; margin: 0 -6px; padding: 0 6px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.25) transparent; }
+.sh-sec { margin-top: 14px; } .sh-sec h4 { margin: 0 0 6px 16px; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: #9AA0D6; font-weight: 800; }
+.sh-sec nav { display: grid; gap: 2px; } .sh-sec nav a { padding: 10px 14px; font-size: .92rem; gap: 12px; } .sh-sec nav svg { width: 22px; height: 22px; }
+.sh-help { margin-top: 12px; flex-shrink: 0; }
+.sh-ico { flex-shrink: 0; }
+@media (max-width: 800px) { .sh-scroll { display: flex; gap: 6px; overflow-x: auto; margin: 0; padding: 0; flex: 1; } .sh-sec { margin: 0; display: contents; } .sh-sec h4 { display: none; } .sh-sec nav { display: flex; } }
