@@ -77,7 +77,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=51">
+<link rel="stylesheet" href="/assets/css/admin.css?v=54">
 </head>
 <?php if (($shell ?? true)):
 if (!function_exists('sh_ico')) {
@@ -125,11 +125,22 @@ $__subs = ['dashboard' => "Vue d'ensemble de l'activité ChapTarif", 'bookings' 
     'offers' => 'Formules, tarifs et services proposés', 'settings' => 'Réglages de la plateforme', 'messages' => 'Messages reçus par le formulaire de contact'];
 $shellSub = $shellSub ?? ($__subs[$nav] ?? '');
 $__ph = (string) setting('support_phone', '');
+$__vc = ['nouveaux' => 0, 'attente' => 0, 'acceptes' => 0, 'refuses' => 0, 'clotures' => 0];
+try {
+    $__r = one("SELECT SUM(CASE WHEN b.status = 'EN_LITIGE' AND COALESCE(b.admin_note,'') = '' THEN 1 ELSE 0 END) a, SUM(CASE WHEN b.status = 'EN_LITIGE' AND COALESCE(b.admin_note,'') <> '' THEN 1 ELSE 0 END) b,
+        SUM(CASE WHEN b.status = 'REMBOURSE' THEN 1 ELSE 0 END) c, SUM(CASE WHEN b.status = 'VALIDE' THEN 1 ELSE 0 END) d FROM bookings b WHERE (b.status = 'EN_LITIGE' OR (COALESCE(b.dispute_reason,'') <> '' AND b.status IN ('REMBOURSE','VALIDE')))" . scope_sql('b.universe'));
+    $__vc = ['nouveaux' => (int) $__r['a'], 'attente' => (int) $__r['b'], 'acceptes' => (int) $__r['c'], 'refuses' => (int) $__r['d'], 'clotures' => (int) $__r['c'] + (int) $__r['d']];
+} catch (Throwable $e) {}
+$__curV = (string) ($_GET['v'] ?? 'nouveaux');
+$__subIco = ['nouveaux' => '<circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/>', 'attente' => '<path d="M6 3h12M6 21h12M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/>', 'acceptes' => '<path d="m5 12.5 4.5 4.5L19 7"/>', 'refuses' => '<path d="M6 6l12 12M18 6 6 18"/>', 'clotures' => '<rect x="4" y="4" width="16" height="5" rx="1"/><path d="M5 9v10h14V9M10 13h4"/>'];
+$__subL = ['nouveaux' => 'Nouveaux sinistres', 'attente' => 'Sinistres en attente', 'acceptes' => 'Sinistres acceptés', 'refuses' => 'Sinistres refusés', 'clotures' => 'Sinistres clôturés'];
 ?><body class="adm adm-shell">
 <aside class="sh-side">
   <a class="sh-brand" href="/admin"><img src="/assets/img/logo.svg" width="40" height="40" alt=""><span><b>Chap</b><i>Tarif</i></span></a>
   <div class="sh-scroll">
-  <nav><?php foreach ($__sh as [$k, $href, $ic, $label]): ?><a href="<?= $href ?>" class="<?= $nav === $k ? 'on' : '' ?>"<?= $k === 'help' ? ' target="_blank" rel="noopener"' : '' ?>><?= sh_ico($ic) ?><span><?= e($label) ?></span><?= $k === 'disputes' && $disputes ? '<em>' . $disputes . '</em>' : '' ?></a><?php endforeach; ?></nav>
+  <nav><?php foreach ($__sh as [$k, $href, $ic, $label]): ?><a href="<?= $href ?>" class="<?= $nav === $k ? 'on' : '' ?>"<?= $k === 'help' ? ' target="_blank" rel="noopener"' : '' ?>><?= sh_ico($ic) ?><span><?= e($label) ?></span><?= $k === 'disputes' && $disputes ? '<em>' . $disputes . '</em>' : '' ?></a>
+    <?php if ($k === 'disputes'): ?><div class="sh-sub"><?php foreach ($__subL as $vk => $vl): ?><a href="/admin/litiges?v=<?= $vk ?>" class="<?= $nav === 'disputes' && $__curV === $vk ? 'on' : '' ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><?= $__subIco[$vk] ?></svg><span><?= e($vl) ?></span><?= $vk === 'nouveaux' && $__vc[$vk] ? '<em>' . $__vc[$vk] . '</em>' : '' ?></a><?php endforeach; ?></div><?php endif; ?>
+    <?php endforeach; ?></nav>
   <?php $__sec = ''; $__buf = ''; foreach ($items as $it) {
       if ($it[1] === null) { if ($__buf !== '') echo '<div class="sh-sec"><h4>' . e($__sec) . '</h4><nav>' . $__buf . '</nav></div>'; $__sec = $it[0]; $__buf = ''; continue; }
       [$k, $href, , $label, $n] = $it;
@@ -144,7 +155,7 @@ $__ph = (string) setting('support_phone', '');
   <header class="sh-top">
     <span class="sh-ico"><?= sh_ico($__icons[$nav] ?? 'home') ?></span>
     <div class="sh-t"><h1><?= e($page ?? '') ?></h1><?php if (!empty($shellSub)): ?><p><?= e($shellSub) ?></p><?php endif; ?></div>
-    <a class="sh-bell" href="/admin/litiges?st=wait" aria-label="Litiges en attente"><?= sh_ico('bell') ?><?= $disputes ? '<em>' . $disputes . '</em>' : '' ?></a>
+    <a class="sh-bell" href="/admin/litiges?v=nouveaux" aria-label="Litiges en attente"><?= sh_ico('bell') ?><?= $disputes ? '<em>' . $disputes . '</em>' : '' ?></a>
     <details class="sh-me"><summary><span class="sh-av"><?= e(initials($me['name'] ?: $me['email'])) ?></span><b><?= e(explode(' ', trim((string) ($me['name'] ?: $me['email'])))[0]) ?></b><i>⌄</i></summary>
       <div><span><?= e($me['email']) ?></span><a href="/admin/mot-de-passe">Changer mon mot de passe</a><a href="/" target="_blank" rel="noopener">Voir le site</a>
       <form method="post" action="/admin/logout"><?= csrf_field() ?><button>Se déconnecter</button></form></div></details>

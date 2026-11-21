@@ -88,6 +88,12 @@ if (is_post()) {
 $uk = (string) ($_GET['u'] ?? '');
 $st = (string) ($_GET['st'] ?? '');
 $s = trim((string) ($_GET['q'] ?? ''));
+$VW = ['nouveaux' => ["b.status = 'EN_LITIGE' AND COALESCE(b.admin_note,'') = ''", 'Nouveaux sinistres à traiter', 'Liste des déclarations récemment reçues et en attente de décision.'],
+    'attente' => ["b.status = 'EN_LITIGE' AND COALESCE(b.admin_note,'') <> ''", 'Sinistres en attente', 'Dossiers pris en charge, en attente de décision.'],
+    'acceptes' => ["b.status = 'REMBOURSE'", 'Sinistres acceptés', 'Réclamations acceptées (client remboursé).'],
+    'refuses' => ["b.status = 'VALIDE'", 'Sinistres refusés', 'Réclamations refusées (somme versée au prestataire).'],
+    'clotures' => ["b.status IN ('REMBOURSE','VALIDE')", 'Sinistres clôturés', 'Tous les dossiers traités.']];
+$vw = isset($VW[$_GET['v'] ?? '']) ? $_GET['v'] : (isset($_GET['id']) || isset($_GET['st']) || isset($_GET['liste']) ? '' : 'nouveaux');
 $tabs = all("SELECT b.universe, COUNT(*) n $base GROUP BY b.universe ORDER BY n DESC");
 $where = ''; $p = [];
 if ($uk !== '' && in_array($uk, array_column($tabs, 'universe'), true)) { $where .= ' AND b.universe = ?'; $p[] = $uk; } else $uk = '';
@@ -98,6 +104,49 @@ $total = (int) val("SELECT COUNT(*) $base$where", $p);
 $rows = all("SELECT b.*, u.name AS uname, u.phone AS uphone $base$where ORDER BY CASE WHEN b.status = 'EN_LITIGE' THEN 0 ELSE 1 END, b.id DESC LIMIT 12 OFFSET " . (($pg - 1) * 12), $p);
 
 $selId = (int) ($_GET['id'] ?? 0);
+if ($vw !== '' && !$selId) {
+    $tabs = all("SELECT b.universe, COUNT(*) n $base AND " . $VW[$vw][0] . " GROUP BY b.universe ORDER BY n DESC");
+    $tw = ' AND ' . $VW[$vw][0]; $tp = [];
+    if ($uk !== '' && in_array($uk, array_column($tabs, 'universe'), true)) { $tw .= ' AND b.universe = ?'; $tp[] = $uk; } else $uk = '';
+    if ($s !== '') { $tw .= ' AND (b.ref LIKE ? OR b.title LIKE ? OR u.name LIKE ? OR pr.name LIKE ?)'; array_push($tp, "%$s%", "%$s%", "%$s%", "%$s%"); }
+    $tj = "FROM bookings b LEFT JOIN users u ON u.id = b.user_id LEFT JOIN providers pr ON pr.id = b.provider_id WHERE (b.status = 'EN_LITIGE' OR (COALESCE(b.dispute_reason, '') <> '' AND b.status IN ('REMBOURSE','VALIDE')))" . $SC . $tw;
+    $total = (int) val("SELECT COUNT(*) $tj", $tp);
+    [$pg, $pages] = paginate($total, 20);
+    $rows = all("SELECT b.*, u.name AS uname, pr.name AS pname $tj ORDER BY b.id DESC LIMIT 20 OFFSET " . (($pg - 1) * 20), $tp);
+    $page = $VW[$vw][1]; $nav = 'disputes'; $shell = true; $shellSub = $VW[$vw][2]; $shellAfter = '';
+    view('admin/header', compact('page', 'nav', 'shell', 'shellSub', 'shellAfter'));
+    $allN = array_sum(array_column($tabs, 'n'));
+    $tq = fn(array $o) => '/admin/litiges?' . http_build_query(array_filter(array_merge(['v' => $vw, 'u' => $uk, 'q' => $s], $o), fn($v) => $v !== '' && $v !== null));
+    ?>
+<div class="lit-wrap">
+  <div class="sn-bar">
+    <div class="sn-chips">
+      <a class="<?= $uk === '' ? 'on' : '' ?>" href="<?= e($tq(['u' => ''])) ?>">Tous (<?= $allN ?>)</a>
+      <?php foreach ($tabs as $t): ?><a class="<?= $uk === $t['universe'] ? 'on' : '' ?>" href="<?= e($tq(['u' => $t['universe']])) ?>"><?= lit_icon($t['universe']) ?><?= e(lit_svc($t['universe'])) ?> (<?= (int) $t['n'] ?>)</a><?php endforeach; ?>
+    </div>
+    <form class="lit-search" method="get"><input type="hidden" name="v" value="<?= e($vw) ?>"><input type="hidden" name="u" value="<?= e($uk) ?>">
+      <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input name="q" value="<?= e($s) ?>" placeholder="Rechercher un sinistre (N°, client, prestataire...)"></label></form>
+  </div>
+  <div class="sn-card">
+    <table class="sn-t"><thead><tr><th></th><th>N° Sinistre</th><th>Service</th><th>Motif de la réclamation</th><th>Client</th><th>Prestataire</th><th>Date de déclaration</th><th>Montant</th><th>Action</th></tr></thead><tbody>
+    <?php foreach ($rows as $r): $ls = lit_state($r); ?>
+      <tr><td><?= $ls[0] === 'wait' && $vw === 'nouveaux' ? '<span class="sn-new">Nouveau</span>' : '<span class="sn-st ' . $ls[0] . '">' . ($ls[0] === 'wait' ? 'En attente' : $ls[1]) . '</span>' ?></td>
+        <td><b><?= e(lit_ref($r)) ?></b></td>
+        <td><span class="sn-svc"><?= lit_icon($r['universe']) ?><?= e(lit_svc($r['universe'])) ?></span></td>
+        <td><?= e(mb_strimwidth((string) $r['dispute_reason'], 0, 40, '…')) ?></td>
+        <td><?= e(lit_short($r['uname'])) ?></td><td><?= e($r['pname'] ?: '—') ?></td>
+        <td class="d"><?= e(lit_when($r['created_at'], true)) ?></td><td><?= e(lit_money($r['total'])) ?></td>
+        <td><a class="sn-go" href="/admin/litiges?id=<?= (int) $r['id'] ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3M3 13h18"/></svg>À traiter</a></td></tr>
+    <?php endforeach; ?>
+    <?php if (!$rows): ?><tr><td colspan="9" style="text-align:center;color:#5A5F80;padding:36px">Aucun sinistre dans cette liste.</td></tr><?php endif; ?>
+    </tbody></table>
+    <div class="sn-foot"><?= $total ?> sinistre(s) <?= $vw === 'nouveaux' ? 'à traiter' : '' ?><?php if ($pages > 1): ?> · page <?= $pg ?>/<?= $pages ?> <?php if ($pg > 1): ?><a href="<?= e($tq(['page' => $pg - 1])) ?>">‹ précédente</a><?php endif; ?> <?php if ($pg < $pages): ?><a href="<?= e($tq(['page' => $pg + 1])) ?>">suivante ›</a><?php endif; ?><?php endif; ?></div>
+  </div>
+</div>
+<?php
+    view('admin/footer');
+    exit;
+}
 $sel = null;
 if ($selId) { $sel = one("SELECT b.*, u.name AS uname, u.phone AS uphone, u.id AS uid $base AND b.id = ?", [$selId]); if ($sel) $sel['user_id'] = $sel['user_id']; }
 if (!$sel && $rows && !$selId && empty($_GET['liste'])) $sel = one("SELECT b.*, u.name AS uname, u.phone AS uphone, u.id AS uid $base AND b.id = ?", [$rows[0]['id']]);
@@ -156,7 +205,7 @@ view('admin/header', compact('page', 'nav', 'shell', 'shellSub', 'shellAfter'));
       $tabUrl = fn($t) => $qs(['id' => $sel['id'], 'tab' => $t]);
       $ini = lit_ini($sel['uname']);
     ?>
-      <a class="lit-back" href="<?= e($qs(['id' => null, 'liste' => 1])) ?>">← Retour à la liste</a>
+      <a class="lit-back" href="/admin/litiges?v=nouveaux">← Retour à la liste</a>
       <div class="lit-card lit-top">
         <span class="lit-av big u-pu"><?= lit_icon($sel['universe']) ?></span>
         <div class="lit-top-t"><h2>Litige n° <?= e(lit_ref($sel)) ?> <?= $badge($sel) ?></h2><small>Service : <?= e(lit_svc($sel['universe'])) ?> <i>•</i> Date : <?= e(lit_when($sel['created_at'], true)) ?></small></div>
