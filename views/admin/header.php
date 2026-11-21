@@ -77,7 +77,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=60">
+<link rel="stylesheet" href="/assets/css/admin.css?v=61">
 </head>
 <?php if (($shell ?? true)):
 if (!function_exists('sh_ico')) {
@@ -144,7 +144,7 @@ $__subL = ['nouveaux' => 'À traiter', 'acceptes' => 'Acceptés', 'refuses' => '
 $__subIco = ['nouveaux' => '<path d="M3 13l3-8h12l3 8v6H3zM3 13h5l1 3h6l1-3h5"/>', 'acceptes' => '<circle cx="12" cy="12" r="9"/><path d="m8 12.500 3 3 5-6"/>', 'refuses' => '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>', 'attente' => '<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>'];
 ?><body class="adm adm-shell">
 <header class="tb">
-  <a class="tb-logo" href="/admin"><b>Chap</b><i>Tarif</i><svg viewBox="0 0 120 14" preserveAspectRatio="none"><path d="M2 3c28 9 66 10 116-3" fill="none" stroke="#16A34A" stroke-width="3.500" stroke-linecap="round"/></svg></a>
+  <a class="brand" href="/admin"><img src="/assets/img/logo.svg" width="44" height="44" alt=""><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></a>
   <h1 class="tb-title"><?= e($__top) ?></h1>
   <a class="sh-bell" href="/admin/litiges?v=nouveaux" aria-label="Litiges à traiter"><?= sh_ico('bell') ?><?= $disputes ? '<em></em>' : '' ?></a>
   <details class="sh-me"><summary><span class="sh-av"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.200"/><path d="M4 21c0-4.200 3.600-6.800 8-6.800s8 2.600 8 6.800z"/></svg></span><b><?= e(admin_role_label($me)) ?></b><i>⌄</i></summary>
