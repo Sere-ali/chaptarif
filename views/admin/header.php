@@ -77,8 +77,49 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=48">
+<link rel="stylesheet" href="/assets/css/admin.css?v=50">
 </head>
+<?php if (!empty($shell)):
+if (!function_exists('sh_ico')) {
+    function sh_ico(string $n): string
+    {
+        $p = ['home' => '<path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+            'scale' => '<path d="M12 3v18M7 21h10M5 7h14"/><path d="m5 7-3 7a3.5 3.5 0 0 0 6 0zM19 7l-3 7a3.5 3.5 0 0 0 6 0z"/>',
+            'users' => '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17 14c2.6 0 4.5 1.8 4.5 4.5"/>',
+            'brief' => '<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8.5 7V5a1.5 1.5 0 0 1 1.5-1.5h4A1.5 1.5 0 0 1 15.5 5v2M3 13h18"/>',
+            'grid' => '<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
+            'card' => '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h4"/>',
+            'gear' => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+            'help' => '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>',
+            'bell' => '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>',
+            'headset' => '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/><path d="M19.5 19c0 1.5-2 2.5-5 2.5"/>'];
+        return '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' . ($p[$n] ?? '') . '</svg>';
+    }
+}
+$__scoped = admin_scope($me) !== '';
+$__sh = [['dashboard', '/admin', 'home', 'Tableau de bord', 0], ['disputes', '/admin/litiges', 'scale', 'Sinistres / Litiges', 0], ['clients', '/admin/clients', 'users', 'Utilisateurs', 0],
+    ['providers', '/admin/prestataires', 'brief', 'Prestataires', 0], ['offers', '/admin/offres', 'grid', 'Services', 0]];
+if (!$__scoped) $__sh[] = ['finances', '/admin/finances', 'card', 'Paiements', 0];
+if (is_super($me)) $__sh[] = ['settings', '/admin/parametres', 'gear', 'Paramètres', 0];
+$__sh[] = ['help', '/contact', 'help', 'Aide', 0];
+$__ph = (string) setting('support_phone', '');
+?><body class="adm adm-shell">
+<aside class="sh-side">
+  <a class="sh-brand" href="/admin"><img src="/assets/img/logo.svg" width="40" height="40" alt=""><span><b>Chap</b><i>Tarif</i></span></a>
+  <nav><?php foreach ($__sh as [$k, $href, $ic, $label]): ?><a href="<?= $href ?>" class="<?= $nav === $k ? 'on' : '' ?>"<?= $k === 'help' ? ' target="_blank" rel="noopener"' : '' ?>><?= sh_ico($ic) ?><span><?= e($label) ?></span><?= $k === 'disputes' && $disputes ? '<em>' . $disputes . '</em>' : '' ?></a><?php endforeach; ?></nav>
+  <a class="sh-help" href="<?= $__ph !== '' ? 'tel:' . e(preg_replace('/[^+\d]/', '', $__ph)) : '/contact' ?>"><?= sh_ico('headset') ?><span><b>Assistance</b><small><?= $__ph !== '' ? e($__ph) : 'Contacter le support' ?></small></span></a>
+</aside>
+<div class="main" data-live>
+  <header class="sh-top">
+    <span class="sh-ico"><?= sh_ico('scale') ?></span>
+    <div class="sh-t"><h1><?= e($page ?? '') ?></h1><?php if (!empty($shellSub)): ?><p><?= e($shellSub) ?></p><?php endif; ?></div>
+    <a class="sh-bell" href="/admin/litiges?st=wait" aria-label="Litiges en attente"><?= sh_ico('bell') ?><?= $disputes ? '<em>' . $disputes . '</em>' : '' ?></a>
+    <details class="sh-me"><summary><span class="sh-av"><?= e(initials($me['name'] ?: $me['email'])) ?></span><b><?= e(explode(' ', trim((string) ($me['name'] ?: $me['email'])))[0]) ?></b><i>⌄</i></summary>
+      <div><span><?= e($me['email']) ?></span><a href="/admin/mot-de-passe">Changer mon mot de passe</a><a href="/" target="_blank" rel="noopener">Voir le site</a>
+      <form method="post" action="/admin/logout"><?= csrf_field() ?><button>Se déconnecter</button></form></div></details>
+  </header>
+  <?= $shellAfter ?? '' ?>
+<?php else: ?>
 <body class="adm">
 <div class="main" data-live>
   <header class="adm-top">
@@ -102,6 +143,7 @@ if (is_super($me)) {
     <?php endif; endforeach; ?>
   </nav>
   <h1 class="adm-title"><?= e($page ?? '') ?></h1>
+<?php endif; ?>
   <div class="adm-content">
   <?php if (setting('maintenance') === '1'): ?><div class="mt-bar"><span>🔴 <b>Le site est fermé au public</b> (mode maintenance). Les visiteurs voient « On revient très vite ».</span><?php if (is_super($me)): ?><form method="post" action="/admin/parametres"><?= csrf_field() ?><input type="hidden" name="quick" value="open"><input type="hidden" name="back" value="<?= e($_SERVER['REQUEST_URI'] ?? '/admin') ?>"><button class="btn btn-sm mt-open">🟢 Rouvrir le site</button></form><?php endif; ?></div><?php endif; ?>
   <?php foreach (flashes() as [$t, $m]): ?><div class="alert alert-<?= e($t) ?>"><?= e($m) ?></div><?php endforeach; ?>
