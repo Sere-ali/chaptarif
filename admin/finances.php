@@ -24,6 +24,8 @@ $range = [$from . ' 00:00:00', $to . ' 23:59:59'];
 $sum = fn(string $type) => (int) val('SELECT COALESCE(SUM(amount),0) FROM transactions WHERE type = ? AND created_at BETWEEN ? AND ?', array_merge([$type], $range));
 $in = $sum('ENCAISSEMENT'); $com = $sum('COMMISSION'); $abo = $sum('ABONNEMENT'); $pay = $sum('REVERSEMENT'); $ref = $sum('REMBOURSEMENT');
 $escrow = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN ('BLOQUE','EN_LITIGE')");
+$gmv = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN ('BLOQUE','VALIDE','EN_LITIGE')");
+$nbPaid = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN ('BLOQUE','VALIDE','EN_LITIGE')");
 
 $type = (string) ($_GET['type'] ?? '');
 $status = (string) ($_GET['status'] ?? '');
@@ -59,6 +61,7 @@ view('admin/header', compact('page', 'nav'));
 <div class="kpis">
   <div class="kpi"><span class="kpi-ico"></span><small>Encaissé (période)</small><b><?= fcfa($in) ?></b><em>Paiements clients</em></div>
   <div class="kpi hl"><span class="kpi-ico"></span><small>Revenus ChapTarif</small><b><?= fcfa($com + $abo) ?></b><em>Commissions <?= fcfa($com) ?> · Abonnements <?= fcfa($abo) ?></em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Volume d'affaires</small><b><?= fcfa($gmv) ?></b><em><?= $nbPaid ?> réservations payées</em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Reversé aux prestataires</small><b><?= fcfa($pay) ?></b><em>Remboursements : <?= fcfa($ref) ?></em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Solde séquestre actuel</small><b><?= fcfa($escrow) ?></b><em>Fonds clients bloqués</em></div>
 </div>

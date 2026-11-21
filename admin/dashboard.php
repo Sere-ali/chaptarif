@@ -12,6 +12,11 @@ $clients = (int) val("SELECT COUNT(*) FROM users WHERE role = 'client'");
 $provTot = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status <> 'rejected'$SP" . prov_listed_sql());
 $provOk = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'verified' AND active = 1$SP" . prov_listed_sql());
 $provWait = (int) val("SELECT COUNT(*) FROM providers WHERE kyc_status = 'pending'$SP" . prov_listed_sql());
+$chatTot = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user'");
+$chatToday = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND created_at >= ?", [date('Y-m-d') . ' 00:00:00']);
+$chatNew = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0");
+$clientsWeek = (int) val("SELECT COUNT(*) FROM users WHERE role = 'client' AND created_at >= ?", [date('Y-m-d', strtotime('-7 days')) . ' 00:00:00']);
+$nbToday = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN $paid$SB AND paid_at >= ?", [date('Y-m-d') . ' 00:00:00']);
 $toPay = $scoped ? 0 : (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE status = 'A_VIRER'");
 
 $days = [];
@@ -44,9 +49,9 @@ view('admin/header', compact('page', 'nav'));
 ?>
 <?php if ((int) $me['must_change_password']): ?><div class="warn-box">Vous utilisez un mot de passe provisoire. <a href="/admin/mot-de-passe">Changez-le maintenant</a>.</div><?php endif; ?>
 <div class="kpis">
-  <div class="kpi hl"><span class="kpi-ico"></span><small>Revenus ChapTarif</small><b><?= fcfa($revenue) ?></b><em>Commissions + frais + abonnements</em></div>
-  <div class="kpi"><span class="kpi-ico"></span><small>Volume d'affaires</small><b><?= fcfa($gmv) ?></b><em><?= $nbPaid ?> réservations payées</em></div>
-  <div class="kpi"><span class="kpi-ico"></span><small>Fonds sous séquestre</small><b><?= fcfa($escrow) ?></b><em>En attente de validation</em></div>
+  <a class="kpi hl kpi-link" href="/admin/chat"><span class="kpi-ico"></span><small>Chats reçus</small><b><?= $chatTot ?></b><em><?= $chatToday ?> aujourd'hui · <?= $chatNew ?> non lu<?= $chatNew > 1 ? 's' : '' ?></em></a>
+  <a class="kpi kpi-link" href="/admin/clients"><span class="kpi-ico"></span><small>Clients inscrits</small><b><?= $clients ?></b><em><?= $clientsWeek ?> cette semaine</em></a>
+  <a class="kpi kpi-link" href="/admin/reservations"><span class="kpi-ico"></span><small>Réservations payées</small><b><?= $nbPaid ?></b><em><?= $nbToday ?> aujourd'hui</em></a>
   <a class="kpi kpi-link" href="/admin/prestataires"><span class="kpi-ico"></span><small>Prestataires</small><b><?= $provTot ?></b><em><?= $provOk ?> validé<?= $provOk > 1 ? 's' : '' ?> · <?= $provWait ?> en attente</em></a>
   <div class="kpi"><span class="kpi-ico"></span><small>Litiges ouverts</small><b><?= $disputes ?></b><em><a href="/admin/litiges">Traiter les litiges →</a></em></div>
 </div>

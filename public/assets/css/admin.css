@@ -685,3 +685,4 @@ body.adm-shell { display: flex; background: #F5F6FB; --pu: #16803C; --pu2: #E3F5
 @media (max-width: 800px) { .sh-side { width: auto; } .sh-sub { display: flex; margin: 0; padding: 0; border: 0; } }
 .sn-t { min-width: 0; } .sn-t th, .sn-t td { padding: 14px 9px; } .sn-t td.d { white-space: normal; min-width: 96px; } .sn-t td:nth-child(8) { white-space: nowrap; } .sn-go { padding: 10px 14px; }
 @media (max-width: 1250px) { .sn-t { min-width: 960px; } }
+.adm-shell .kpi small { white-space: normal; display: block; padding-right: 52px; line-height: 1.25; min-height: 2.5em; }
