@@ -686,3 +686,38 @@ body.adm-shell { display: flex; background: #F5F6FB; --pu: #16803C; --pu2: #E3F5
 .sn-t { min-width: 0; } .sn-t th, .sn-t td { padding: 14px 9px; } .sn-t td.d { white-space: normal; min-width: 96px; } .sn-t td:nth-child(8) { white-space: nowrap; } .sn-go { padding: 10px 14px; }
 @media (max-width: 1250px) { .sn-t { min-width: 960px; } }
 .adm-shell .kpi small { white-space: normal; display: block; padding-right: 52px; line-height: 1.25; min-height: 2.5em; }
+/* dossier de litige */
+.dl svg { width: 24px; height: 24px; flex-shrink: 0; }
+.dl-back { display: inline-flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #DADDE8; border-radius: 999px; padding: 10px 20px; font-weight: 700; color: #1B1F3B; text-decoration: none; margin-bottom: 14px; box-shadow: 0 4px 12px -8px rgba(20,30,70,.3); }
+.dl-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; } .dl-head h2 { margin: 0; font-size: 1.7rem; color: #1B1F3B; }
+.dl-doc { color: #16803C; display: grid; } .dl-doc svg { width: 36px; height: 36px; }
+.dl-st { display: inline-flex; align-items: center; gap: 8px; font-style: normal; font-weight: 800; border-radius: 999px; padding: 9px 20px; font-size: 1.05rem; background: #FFE9A8; color: #7A4B00; box-shadow: 0 6px 14px -8px rgba(200,140,0,.6); }
+.dl-st.wait { background: #FFE9A8; color: #7A4B00; } .dl-st.ok { background: #DDF3E5; color: #137A3C; } .dl-st.ko { background: #FFE1E3; color: #D12B3B; }
+.dl-recu { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; color: #2B2F55; font-weight: 500; } .dl-recu svg { color: #16803C; }
+.dl-tiles { display: grid; grid-template-columns: repeat(4, 1fr); background: #fff; border-radius: 18px; box-shadow: 0 8px 24px -14px rgba(20,30,70,.25); margin-bottom: 18px; }
+.dl-tiles > div { display: flex; align-items: center; gap: 14px; padding: 18px 22px; border-left: 1px solid #EEF0F6; } .dl-tiles > div:first-child { border: 0; }
+.dl-tiles > div.g { background: #E3F5EA; border-radius: 18px 0 0 18px; margin: 8px 0 8px 8px; padding: 10px 18px; }
+.dl-tiles span { width: 46px; height: 46px; display: grid; place-items: center; color: #16803C; } .dl-tiles span svg { width: 40px; height: 40px; }
+.dl-tiles span.warn { color: #F28C00; } .dl-tiles span.gold { color: #E0A800; } .dl-tiles span.gd { color: #16803C; }
+.dl-tiles small { display: block; color: #2B2F55; font-weight: 500; } .dl-tiles b { font-size: 1.25rem; color: #1B1F3B; }
+.dl-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 18px; align-items: start; }
+.dl-card { background: #fff; border-radius: 18px; box-shadow: 0 8px 24px -14px rgba(20,30,70,.25); padding: 20px 22px; }
+.dl-left h3, .dl-acts h3 { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; font-size: 1.3rem; color: #1B1F3B; } .dl-left h3 svg, .dl-acts h3 svg { color: #16803C; width: 30px; height: 30px; }
+.dl-left blockquote { margin: 0; background: #F3F5F8; border-radius: 14px; padding: 20px 24px; font-size: 1.1rem; line-height: 1.5; color: #1B1F3B; position: relative; }
+.dl-left blockquote::before { content: '“'; color: #16803C; font-size: 2.4rem; font-weight: 800; position: absolute; left: 10px; top: 0; line-height: 1; } .dl-left blockquote { padding-left: 42px; }
+.dl-left hr { border: 0; border-top: 1px solid #E6E8F0; margin: 22px 0 18px; }
+.dl-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; } .dl-photos img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; display: block; }
+.dl-photos .f { display: grid; place-items: center; aspect-ratio: 4/3; background: #F3F5F8; border-radius: 12px; font-size: 2rem; text-align: center; } .dl-photos small { font-size: .75rem; }
+.dl-right { display: grid; gap: 16px; }
+.dl-links { padding: 10px; display: grid; gap: 8px; } .dl-links a { display: flex; align-items: center; gap: 14px; background: #E8F6EC; border-radius: 12px; padding: 14px 16px; font-weight: 700; font-size: 1.1rem; color: #1B1F3B; text-decoration: none; }
+.dl-links a svg:first-child { color: #16803C; width: 30px; height: 30px; } .dl-links a span { flex: 1; } .dl-links a:hover { background: #D8F0DF; }
+.dl-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; } .dl-tabs a { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 8px; border-radius: 12px; background: #EDEFF5; color: #1B1F3B; font-weight: 700; text-decoration: none; }
+.dl-tabs a.on { background: #fff; box-shadow: 0 6px 16px -10px rgba(20,30,70,.4); border-bottom: 4px solid #16803C; } .dl-tabs i { background: #16803C; color: #fff; font-style: normal; border-radius: 999px; padding: 1px 9px; font-size: .9rem; }
+.dl .lit-body { padding: 16px; } .dl .lit-msgs { max-height: 300px; overflow-y: auto; }
+.dl-tl { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid #CFE8D8; display: grid; gap: 14px; } .dl-tl li { position: relative; display: grid; } .dl-tl li::before { content: ''; position: absolute; left: -25px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: #16803C; }
+.dl-tl small { color: #5A5F80; } .dl-tl span { font-weight: 600; color: #1B1F3B; } .dl-tl li.now span { color: #16803C; }
+.dl-acts > div { display: flex; gap: 14px; flex-wrap: wrap; } .dl-acts button { flex: 1; min-width: 130px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 10px; border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer; border: 1.5px solid; }
+.dl-acts .ok { background: #F1FBF4; border-color: #A9DDBA; color: #137A3C; } .dl-acts .ko { background: #FFF1F2; border-color: #F5B5BA; color: #D12B3B; } .dl-acts .wt { background: #FFF6D8; border-color: #F2D58A; color: #8A5A00; }
+@media (max-width: 1100px) { .dl-grid { grid-template-columns: 1fr; } .dl-tiles { grid-template-columns: 1fr 1fr; } .dl-recu { margin-left: 0; } .dl-tiles > div.g { border-radius: 14px; } }
+@media (max-width: 600px) { .dl-tiles { grid-template-columns: 1fr; } .dl-head h2 { font-size: 1.3rem; } .dl-tabs a { font-size: .85rem; flex-direction: column; gap: 4px; } }
+.dl .lit-send button { background: #16803C; } .dl-tiles b { font-size: 1.12rem; line-height: 1.25; } .dl-tiles > div { min-width: 0; }

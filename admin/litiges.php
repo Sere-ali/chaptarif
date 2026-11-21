@@ -42,7 +42,7 @@ function lit_say(array $b, array $me, string $body, array $att = []): void
 }
 
 $SC = scope_sql('b.universe');
-$base = "FROM bookings b LEFT JOIN users u ON u.id = b.user_id WHERE (b.status = 'EN_LITIGE' OR (COALESCE(b.dispute_reason, '') <> '' AND b.status IN ('REMBOURSE','VALIDE')))" . $SC;
+$base = "FROM bookings b LEFT JOIN users u ON u.id = b.user_id LEFT JOIN providers pr ON pr.id = b.provider_id WHERE (b.status = 'EN_LITIGE' OR (COALESCE(b.dispute_reason, '') <> '' AND b.status IN ('REMBOURSE','VALIDE')))" . $SC;
 
 // ---- Actions ----
 if (is_post()) {
@@ -93,7 +93,7 @@ $VW = ['nouveaux' => ["b.status = 'EN_LITIGE' AND COALESCE(b.admin_note,'') = ''
     'acceptes' => ["b.status = 'REMBOURSE'", 'Sinistres acceptés', 'Réclamations acceptées (client remboursé).'],
     'refuses' => ["b.status = 'VALIDE'", 'Sinistres refusés', 'Réclamations refusées (somme versée au prestataire).'],
     'clotures' => ["b.status IN ('REMBOURSE','VALIDE')", 'Sinistres clôturés', 'Tous les dossiers traités.']];
-$vw = isset($VW[$_GET['v'] ?? '']) ? $_GET['v'] : (isset($_GET['id']) || isset($_GET['st']) || isset($_GET['liste']) ? '' : 'nouveaux');
+$vw = isset($VW[$_GET['v'] ?? '']) ? $_GET['v'] : (isset($_GET['id']) ? '' : 'nouveaux');
 $tabs = all("SELECT b.universe, COUNT(*) n $base GROUP BY b.universe ORDER BY n DESC");
 $where = ''; $p = [];
 if ($uk !== '' && in_array($uk, array_column($tabs, 'universe'), true)) { $where .= ' AND b.universe = ?'; $p[] = $uk; } else $uk = '';
@@ -147,10 +147,9 @@ if ($vw !== '' && !$selId) {
     view('admin/footer');
     exit;
 }
-$sel = null;
-if ($selId) { $sel = one("SELECT b.*, u.name AS uname, u.phone AS uphone, u.id AS uid $base AND b.id = ?", [$selId]); if ($sel) $sel['user_id'] = $sel['user_id']; }
-if (!$sel && $rows && !$selId && empty($_GET['liste'])) $sel = one("SELECT b.*, u.name AS uname, u.phone AS uphone, u.id AS uid $base AND b.id = ?", [$rows[0]['id']]);
-$tab = in_array($_GET['tab'] ?? '', ['msg', 'notes', 'att'], true) ? $_GET['tab'] : 'msg';
+$sel = $selId ? one("SELECT b.*, u.name AS uname, u.phone AS uphone, u.id AS uid, pr.name AS pname $base AND b.id = ?", [$selId]) : null;
+if (!$sel) redirect('/admin/litiges?v=nouveaux');
+$tab = in_array($_GET['tab'] ?? '', ['msg', 'suivi', 'notes'], true) ? $_GET['tab'] : 'msg';
 
 $page = 'Sinistres / Litiges';
 $nav = 'disputes';
@@ -167,62 +166,55 @@ $curU = $sel['universe'] ?? ($uk ?: ($tabs[0]['universe'] ?? ''));
 $steps = '<div class="lit-steps">';
 foreach ($tabs as $i => $t) { $steps .= ($i ? '<span class="lit-line"></span>' : '') . '<a class="' . ($curU === $t['universe'] ? 'on' : '') . '" href="' . e($qs(['u' => $t['universe'], 'id' => null, 'page' => null])) . '"><i>' . ($i + 1) . '</i>' . e(lit_svc($t['universe'])) . '</a>'; }
 $shellAfter = $tabs ? $steps . '</div>' : '';
+$ls = lit_state($sel); $open = $sel['status'] === 'EN_LITIGE';
+$isNew = $open && trim((string) $sel['admin_note']) === '';
+$conv = lit_conv($sel, false);
+$msgs = $conv ? all('SELECT * FROM chat_messages WHERE conversation_id = ? AND user_id = ? ORDER BY id', [$conv['id'], $sel['user_id']]) : [];
+$atts = array_values(array_filter($msgs, fn($m) => !empty($m['att_url'])));
+$ini = lit_ini($sel['uname']);
+$page = 'Gestion des litiges'; $shellSub = ''; $shellAfter = '';
+$tabUrl = fn($t) => '/admin/litiges?id=' . $sel['id'] . '&tab=' . $t;
 view('admin/header', compact('page', 'nav', 'shell', 'shellSub', 'shellAfter'));
+$I = fn($p) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
+$chev = $I('<path d="m9 6 6 6-6 6"/>');
+$stLabel = $isNew ? 'À traiter' : ($ls[0] === 'wait' ? 'En attente' : $ls[1]);
+$stCls = $isNew ? 'wait' : $ls[0];
 ?>
-<div class="lit">
-  <div class="lit-grid <?= $sel ? 'has-sel' : '' ?>">
-    <aside class="lit-list">
-      <div class="lit-tabs">
-        <?php $all = array_sum(array_column($tabs, 'n')); ?>
-        <?php foreach ($tabs as $t): ?><a class="<?= $uk === $t['universe'] ? 'on' : '' ?>" href="<?= e($qs(['u' => $t['universe'], 'id' => null, 'page' => null])) ?>"><?= lit_icon($t['universe']) ?><?= e(lit_svc($t['universe'])) ?></a><?php endforeach; ?>
-        <a class="<?= $uk === '' ? 'on' : '' ?>" href="<?= e($qs(['u' => '', 'id' => null, 'page' => null])) ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>Tous</a>
+<div class="dl">
+  <a class="dl-back" href="/admin/litiges?v=<?= $open ? ($isNew ? 'nouveaux' : 'attente') : ($ls[0] === 'ok' ? 'acceptes' : 'refuses') ?>"><?= $I('<path d="M19 12H5M11 6l-6 6 6 6"/>') ?>Retour à la liste</a>
+  <div class="dl-head">
+    <span class="dl-doc"><?= $I('<path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 12h6M10 16h6"/>') ?></span>
+    <h2>Dossier de litige – N° <?= e(lit_ref($sel)) ?></h2>
+    <em class="dl-st <?= $stCls ?>"><?= $isNew ? $I('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>') : '' ?><?= e($stLabel) ?></em>
+    <span class="dl-recu"><?= $I('<rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>') ?>Reçu le <?= e(lit_when($sel['created_at'], true)) ?></span>
+  </div>
+  <div class="dl-tiles">
+    <div class="g"><span><?= lit_icon($sel['universe']) ?></span><div><small>Service concerné</small><b><?= e(lit_svc($sel['universe'])) ?></b></div></div>
+    <div><span class="warn"><?= $I('<path d="M12 3 2.5 20h19z"/><path d="M12 10v5M12 17.5h.01"/>') ?></span><div><small>Type de réclamation</small><b><?= e(mb_strimwidth(trim(preg_split('/[.!?\\n]/u', (string) $sel['dispute_reason'])[0]), 0, 30, '…')) ?></b></div></div>
+    <div><span class="gold"><?= $I('<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.300 7-3V6M5 12v6c0 1.700 3.100 3 7 3s7-1.300 7-3v-6"/>') ?></span><div><small>Montant de la prestation</small><b><?= e(lit_money($sel['total'])) ?></b></div></div>
+    <div><span class="gd"><?= $I('<rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M8 14h.01M12 14h.01M16 14h.01"/>') ?></span><div><small>Date de la prestation</small><b><?= e(lit_when($sel['service_date'] ?: $sel['created_at'])) ?></b></div></div>
+  </div>
+  <div class="dl-grid">
+    <div class="dl-card dl-left">
+      <h3><?= $I('<path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 13l2 2 3-4"/>') ?>Déclaration du client</h3>
+      <blockquote><?= nl2br(e((string) $sel['dispute_reason'])) ?></blockquote>
+      <hr>
+      <h3><?= $I('<path d="m21 11-8.6 8.6a5 5 0 0 1-7-7L14 4a3.4 3.4 0 0 1 4.8 4.8l-8.4 8.4a1.8 1.8 0 0 1-2.5-2.5L15 7.5"/>') ?>Pièces jointes (<?= count($atts) ?>)</h3>
+      <?php if (!$atts): ?><p class="muted">Aucune pièce jointe pour ce dossier.</p><?php else: ?>
+      <div class="dl-photos"><?php foreach ($atts as $m): ?><a href="<?= e($m['att_url']) ?>" target="_blank" rel="noopener"><?php if ($m['att_type'] === 'image'): ?><img src="<?= e($m['att_url']) ?>" alt="" loading="lazy"><?php else: ?><span class="f">📎<small><?= e($m['att_name'] ?: 'Fichier') ?></small></span><?php endif; ?></a><?php endforeach; ?></div><?php endif; ?>
+    </div>
+    <div class="dl-right">
+      <div class="dl-card dl-links">
+        <a href="/admin/client?id=<?= (int) $sel['uid'] ?>"><?= $I('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.500 8-6.500s8 2.500 8 6.500z"/>') ?><span>Client : <?= e($sel['uname'] ?: '—') ?></span><?= $chev ?></a>
+        <?php if (!empty($sel['provider_id'])): ?><a href="/admin/prestataire/voir?id=<?= (int) $sel['provider_id'] ?>"><?= $I('<circle cx="9" cy="8" r="3.500"/><path d="M2.500 20c0-3.500 3-5.500 6.500-5.500s6.500 2 6.500 5.500M16 5a3.500 3.500 0 0 1 0 6.500M18 14.700c2 .7 3.500 2.300 3.500 5.300"/>') ?><span>Prestataire : <?= e($sel['pname'] ?: '—') ?></span><?= $chev ?></a><?php endif; ?>
+        <a href="/admin/reservation?id=<?= (int) $sel['id'] ?>"><?= $I('<rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>') ?><span>Détail de la prestation</span><?= $chev ?></a>
       </div>
-      <form class="lit-search" method="get"><input type="hidden" name="u" value="<?= e($uk) ?>">
-        <label><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input name="q" value="<?= e($s) ?>" placeholder="Rechercher un litige..."></label>
-        <select name="st" onchange="this.form.submit()"><option value="">Statut : Tous</option><option value="wait" <?= $st === 'wait' ? 'selected' : '' ?>>En attente</option><option value="ok" <?= $st === 'ok' ? 'selected' : '' ?>>Accepté</option><option value="ko" <?= $st === 'ko' ? 'selected' : '' ?>>Refusé</option></select>
-      </form>
-      <?php if (!$rows): ?><p class="muted lit-empty">Aucun litige pour ces critères.</p><?php endif; ?>
-      <?php foreach ($rows as $r): $sc = lit_state($r)[0]; ?>
-        <a class="lit-item <?= $sel && (int) $sel['id'] === (int) $r['id'] ? 'on' : '' ?>" href="<?= e($qs(['id' => $r['id'], 'tab' => 'msg'])) ?>">
-          <span class="lit-av u-<?= e($r['universe'] === 'pressing' ? 'blue' : 'pu') ?> s-<?= $sc ?>"><?= lit_icon($r['universe']) ?></span>
-          <span class="lit-it"><b><?= e(lit_ref($r)) ?></b><small>Service : <?= e(lit_svc($r['universe'])) ?></small><small>Client : <?= e(lit_short($r['uname'])) ?></small></span>
-          <span class="lit-r"><small><?= e(lit_when($r['created_at'])) ?></small><?= $badge($r) ?></span>
-        </a>
-      <?php endforeach; ?>
-      <?php if ($pages > 1): ?><nav class="lit-pager">
-        <a class="<?= $pg <= 1 ? 'off' : '' ?>" href="<?= e($qs(['page' => max(1, $pg - 1)])) ?>">‹</a><?php for ($i = 1; $i <= $pages; $i++): ?><a class="<?= $i === $pg ? 'on' : '' ?>" href="<?= e($qs(['page' => $i > 1 ? $i : null])) ?>"><?= $i ?></a><?php endfor; ?><a class="<?= $pg >= $pages ? 'off' : '' ?>" href="<?= e($qs(['page' => min($pages, $pg + 1)])) ?>">›</a></nav><?php endif; ?>
-    </aside>
-
-    <section class="lit-detail">
-    <?php if (!$sel): ?>
-      <div class="lit-none"><p>Sélectionnez un litige dans la liste.</p></div>
-    <?php else:
-      $sc = lit_state($sel)[0]; $ux = universe($sel['universe']);
-      $conv = lit_conv($sel, false);
-      $msgs = $conv ? all('SELECT * FROM chat_messages WHERE conversation_id = ? AND user_id = ? ORDER BY id', [$conv['id'], $sel['user_id']]) : [];
-      $atts = array_values(array_filter($msgs, fn($m) => !empty($m['att_url'])));
-      $open = $sel['status'] === 'EN_LITIGE';
-      $tabUrl = fn($t) => $qs(['id' => $sel['id'], 'tab' => $t]);
-      $ini = lit_ini($sel['uname']);
-    ?>
-      <a class="lit-back" href="/admin/litiges?v=nouveaux">← Retour à la liste</a>
-      <div class="lit-card lit-top">
-        <span class="lit-av big u-pu"><?= lit_icon($sel['universe']) ?></span>
-        <div class="lit-top-t"><h2>Litige n° <?= e(lit_ref($sel)) ?> <?= $badge($sel) ?></h2><small>Service : <?= e(lit_svc($sel['universe'])) ?> <i>•</i> Date : <?= e(lit_when($sel['created_at'], true)) ?></small></div>
-        <a class="lit-ghost" href="/admin/reservation?id=<?= (int) $sel['id'] ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Voir l'historique</a>
-      </div>
-      <div class="lit-tiles">
-        <div><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5z"/></svg></span><small>Client</small><b><a href="/admin/client?id=<?= (int) $sel['uid'] ?>"><?= e(lit_short($sel['uname'])) ?></a></b></div>
-        <div><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span><small>Prestation</small><b><?= e($sel['title']) ?></b></div>
-        <div><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/><circle cx="16.5" cy="13.5" r="1.3"/></svg></span><small>Montant</small><b><?= e(lit_money($sel['total'])) ?></b></div>
-      </div>
-      <nav class="lit-tabsbar">
-        <a class="<?= $tab === 'msg' ? 'on' : '' ?>" href="<?= e($tabUrl('msg')) ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 11.5h.01M12 11.5h.01M15 11.5h.01"/></svg>Messagerie</a>
-        <a class="<?= $tab === 'notes' ? 'on' : '' ?>" href="<?= e($tabUrl('notes')) ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 3v3M15 3v3M9 11h6M9 15h6"/></svg>Bloc-notes interne</a>
-        <a class="<?= $tab === 'att' ? 'on' : '' ?>" href="<?= e($tabUrl('att')) ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 11-8.6 8.6a5 5 0 0 1-7-7L14 4a3.4 3.4 0 0 1 4.8 4.8l-8.4 8.4a1.8 1.8 0 0 1-2.5-2.5L15 7.5"/></svg>Pièces jointes (<?= count($atts) ?>)</a>
+      <nav class="dl-tabs">
+        <a class="<?= $tab === 'msg' ? 'on' : '' ?>" href="<?= e($tabUrl('msg')) ?>"><?= $I('<path d="M21 12a8 8 0 0 1-11.600 7.100L4 20l1-4.600A8 8 0 1 1 21 12z"/>') ?>Chat<?= $msgs ? ' <i>' . count($msgs) . '</i>' : '' ?></a>
+        <a class="<?= $tab === 'suivi' ? 'on' : '' ?>" href="<?= e($tabUrl('suivi')) ?>"><?= $I('<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h4"/>') ?>Suivi du dossier</a>
+        <a class="<?= $tab === 'notes' ? 'on' : '' ?>" href="<?= e($tabUrl('notes')) ?>"><?= $I('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>') ?>Notes internes</a>
       </nav>
-
-      <div class="lit-card lit-body">
+      <div class="dl-card lit-body">
       <?php if ($tab === 'msg'): ?>
         <div class="lit-msgs" id="litMsgs">
           <?php if (!$msgs && $sel['dispute_reason']): ?>
@@ -237,35 +229,36 @@ view('admin/header', compact('page', 'nav', 'shell', 'shellSub', 'shellAfter'));
           <?php endforeach; ?>
         </div>
         <form class="lit-send" method="post" enctype="multipart/form-data"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $sel['id'] ?>"><input type="hidden" name="action" value="msg"><input type="hidden" name="tab" value="msg">
-          <label class="lit-clip" title="Joindre un fichier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 11-8.6 8.6a5 5 0 0 1-7-7L14 4a3.4 3.4 0 0 1 4.8 4.8l-8.4 8.4a1.8 1.8 0 0 1-2.5-2.5L15 7.5"/></svg><input type="file" name="file" hidden onchange="this.parentNode.classList.toggle('has', this.files.length>0)"></label>
+          <label class="lit-clip" title="Joindre un fichier"><?= $I('<path d="m21 11-8.6 8.6a5 5 0 0 1-7-7L14 4a3.4 3.4 0 0 1 4.8 4.8l-8.4 8.4a1.8 1.8 0 0 1-2.5-2.5L15 7.5"/>') ?><input type="file" name="file" hidden onchange="this.parentNode.classList.toggle('has', this.files.length>0)"></label>
           <input name="body" maxlength="1000" placeholder="Écrire un message au client..." autocomplete="off">
-          <button aria-label="Envoyer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+          <button aria-label="Envoyer"><?= $I('<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>') ?></button>
         </form>
-      <?php elseif ($tab === 'notes'): ?>
+      <?php elseif ($tab === 'suivi'):
+        $ev = [[$sel['created_at'], 'Réservation créée']];
+        if ($sel['paid_at']) $ev[] = [$sel['paid_at'], 'Paiement reçu — ' . lit_money($sel['total']) . ' placés sous séquestre'];
+        foreach (all('SELECT type, amount, created_at FROM transactions WHERE booking_id = ? ORDER BY id', [$sel['id']]) as $t) $ev[] = [$t['created_at'], ucfirst(strtolower(str_replace('_', ' ', $t['type']))) . ' — ' . lit_money($t['amount'])];
+        $ev[] = [$sel['updated_at'], 'Litige déclaré : ' . $sel['dispute_reason']];
+        foreach (preg_split('/\n/', trim((string) $sel['admin_note'])) as $ln) if (preg_match('/^\[(.+?)\] (.*)$/', $ln, $mm)) $ev[] = [$mm[1], $mm[2]];
+        usort($ev, fn($x, $y) => strcmp((string) $x[0], (string) $y[0])); ?>
+        <ol class="dl-tl"><?php foreach ($ev as $x): ?><li><small><?= e(lit_when($x[0], true)) ?></small><span><?= e($x[1]) ?></span></li><?php endforeach; ?>
+        <li class="now"><small>Statut actuel</small><span><?= e($stLabel) ?></span></li></ol>
+      <?php else: ?>
         <div class="lit-notes">
           <?php if (trim((string) $sel['admin_note']) !== ''): ?><pre><?= e(trim($sel['admin_note'])) ?></pre><?php else: ?><p class="muted">Aucune note pour le moment. Ces notes ne sont jamais visibles par le client.</p><?php endif; ?>
           <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $sel['id'] ?>"><input type="hidden" name="action" value="note"><input type="hidden" name="tab" value="notes">
             <textarea name="note" rows="3" maxlength="500" placeholder="Ajouter une note interne..." required></textarea><button class="lit-save">Ajouter la note</button></form>
         </div>
-      <?php else: ?>
-        <div class="lit-atts">
-          <?php if (!$atts): ?><p class="muted">Aucune pièce jointe dans la messagerie de ce dossier.</p><?php endif; ?>
-          <?php foreach ($atts as $m): ?>
-            <a href="<?= e($m['att_url']) ?>" target="_blank" rel="noopener"><?php if ($m['att_type'] === 'image'): ?><img src="<?= e($m['att_url']) ?>" alt="" loading="lazy"><?php else: ?><span>📎</span><?php endif; ?><small><?= e($m['att_name'] ?: 'Fichier') ?></small></a>
-          <?php endforeach; ?>
-        </div>
       <?php endif; ?>
       </div>
-
       <?php if ($open): ?>
-      <form class="lit-card lit-acts" method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $sel['id'] ?>"><input type="hidden" name="tab" value="<?= e($tab) ?>"><input type="hidden" name="note" value="">
-        <button class="ok" name="action" value="accept" data-stepup onclick="var m=prompt('Motif envoyé au client (facultatif) :');if(m===null)return false;this.form.note.value=m;return confirm('Accepter la réclamation et rembourser intégralement le client ?')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg>Accepter</button>
-        <button class="ko" name="action" value="refuse" data-stepup onclick="var m=prompt('Motif envoyé au client (facultatif) :');if(m===null)return false;this.form.note.value=m;return confirm('Refuser la réclamation et payer le prestataire ?')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Refuser</button>
-        <button class="wt" name="action" value="hold"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>Mettre en attente</button>
+      <form class="dl-card dl-acts" method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $sel['id'] ?>"><input type="hidden" name="tab" value="<?= e($tab) ?>"><input type="hidden" name="note" value="">
+        <h3><?= $I('<path d="M12 3v18M5 21h14M6 7h12M6 7l-3 7a3.500 3.500 0 0 0 6 0zM18 7l-3 7a3.500 3.500 0 0 0 6 0z"/>') ?>Actions sur le dossier</h3>
+        <div><button class="ok" name="action" value="accept" data-stepup onclick="var m=prompt('Motif envoyé au client (facultatif) :');if(m===null)return false;this.form.note.value=m;return confirm('Accepter la réclamation et rembourser intégralement le client ?')"><?= $I('<path d="m5 12.500 4.500 4.500L19 7"/>') ?>Accepter</button>
+        <button class="ko" name="action" value="refuse" data-stepup onclick="var m=prompt('Motif envoyé au client (facultatif) :');if(m===null)return false;this.form.note.value=m;return confirm('Refuser la réclamation et payer le prestataire ?')"><?= $I('<path d="M6 6l12 12M18 6 6 18"/>') ?>Refuser</button>
+        <button class="wt" name="action" value="hold"><?= $I('<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>') ?>Mettre en attente</button></div>
       </form>
       <?php endif; ?>
-    <?php endif; ?>
-    </section>
+    </div>
   </div>
 </div>
 <script>var lm=document.getElementById('litMsgs');if(lm)lm.scrollTop=lm.scrollHeight;</script>
