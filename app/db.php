@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 37;
+const SCHEMA_VERSION = 38;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -218,6 +218,10 @@ function db_migrate(): void
             id $PK, user_id INTEGER NOT NULL, parent_id INTEGER, body TEXT NOT NULL DEFAULT '', mentions TEXT,
             att_url TEXT, att_type TEXT, att_name TEXT, created_at TEXT, deleted INTEGER NOT NULL DEFAULT 0)",
         "CREATE INDEX IF NOT EXISTS idx_team_parent ON team_messages(parent_id, id)",
+        "CREATE TABLE IF NOT EXISTS passkeys (
+            id $PK, user_id INTEGER NOT NULL, cred_id TEXT NOT NULL UNIQUE, public_key TEXT NOT NULL, sign_count INTEGER NOT NULL DEFAULT 0,
+            label TEXT, created_at TEXT, last_used_at TEXT)",
+        "CREATE INDEX IF NOT EXISTS idx_passkeys_user ON passkeys(user_id)",
         "CREATE TABLE IF NOT EXISTS team_reads (user_id INTEGER PRIMARY KEY, last_id INTEGER NOT NULL DEFAULT 0)",
         "CREATE TABLE IF NOT EXISTS translations (id $PK, hash TEXT NOT NULL, src TEXT, dst TEXT, body TEXT, created_at TEXT)",
         "CREATE UNIQUE INDEX IF NOT EXISTS uq_translation_hash ON translations(hash)",

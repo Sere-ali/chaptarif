@@ -64,10 +64,10 @@ if (PHP_SAPI !== 'cli') {
     }
     // Politique de sécurité du contenu : ressources limitées au site et aux fournisseurs utilisés.
     header("Content-Security-Policy: default-src 'self'; "
-        . "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
+        . "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://challenges.cloudflare.com; "
         . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
         . "font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; "
-        . "connect-src 'self' https://nominatim.openstreetmap.org; frame-src 'self' blob:; worker-src 'self' blob:; "
+        . "connect-src 'self' https://nominatim.openstreetmap.org; frame-src 'self' blob: https://challenges.cloudflare.com; worker-src 'self' blob:; "
         . "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https:"
         . ($https ? '; upgrade-insecure-requests' : ''));
     header('Cross-Origin-Opener-Policy: same-origin');
@@ -92,6 +92,7 @@ require APP . '/security.php';
 require APP . '/team.php';
 require APP . '/translate.php';
 require APP . '/conversations.php';
+require APP . '/webauthn.php';
 
 db_migrate();
 if (PHP_SAPI !== 'cli') maintenance_maybe();

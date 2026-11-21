@@ -37,7 +37,9 @@ if (is_post()) {
         redirect(login_dest($next, $user));
     }
     if ($action === 'signup') {
-        $name = mb_substr(trim((string) ($_POST['name'] ?? '')), 0, 80);
+        $nom = mb_substr(trim((string) ($_POST['nom'] ?? '')), 0, 40);
+        $prenom = mb_substr(trim((string) ($_POST['prenom'] ?? '')), 0, 40);
+        $name = trim($prenom . ' ' . $nom);
         $birth = (string) ($_POST['birthdate'] ?? '');
         $phone = normalize_phone((string) ($_POST['phone'] ?? ''));
         $pw = (string) ($_POST['password'] ?? '');
@@ -45,7 +47,8 @@ if (is_post()) {
         $err = null;
         $bd = DateTime::createFromFormat('Y-m-d', $birth);
         if (too_many_attempts('signup:' . client_ip(), 6, 30)) $err = 'Trop de tentatives. Patientez quelques minutes.';
-        elseif (mb_strlen($name) < 3 || !str_contains($name, ' ')) $err = 'Entrez votre nom et prénom.';
+        elseif (mb_strlen($nom) < 2 || mb_strlen($prenom) < 2) $err = 'Entrez votre nom et votre prénom.';
+        elseif (!turnstile_ok()) $err = 'Vérification anti-robot échouée. Réessayez.';
         elseif (!$bd || $bd->format('Y-m-d') !== $birth || $bd > new DateTime('today') || $bd < new DateTime('1900-01-01')) $err = 'Date de naissance invalide.';
         elseif ($bd->diff(new DateTime('today'))->y < 18) $err = 'Vous devez avoir au moins 18 ans pour créer un compte.';
         elseif (!$phone) $err = 'Numéro invalide. Choisissez l’indicatif de votre pays puis saisissez votre numéro (ex. 07 00 00 00 00 pour la Côte d’Ivoire).';
@@ -61,20 +64,11 @@ if (is_post()) {
             flash('error', $err);
             redirect($qs('signup'));
         }
-        // Vérification du numéro par code SMS/WhatsApp dès qu'une passerelle d'envoi est active :
-        // personne ne peut créer un compte avec le numéro de quelqu'un d'autre.
-        if (true) {
-            $r = otp_send($phone, true);
-            if (!$r['ok'] || empty($r['sent'])) { flash('error', $r['error'] ?? "L'envoi du code n'est pas disponible pour le moment. Réessayez plus tard."); redirect($qs('signup')); }
-            $_SESSION['signup_pending'] = ['name' => $name, 'birth' => $birth, 'phone' => $phone, 'hash' => password_hash($pw, PASSWORD_DEFAULT), 't' => time()];
-            flash('info', 'Votre code de vérification : ' . $r['demo_code'] . ' (valable 5 minutes). Saisissez-le ci-dessous.');
-            redirect('/connexion?mode=signup&step=code&next=' . urlencode($next));
-        }
         $id = insert('users', ['role' => 'client', 'name' => $name, 'birthdate' => $birth, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
         $user = one('SELECT * FROM users WHERE id = ?', [$id]);
         login_user($user); login_device_check($user);
-        flash('success', 'Compte créé. Bienvenue sur ChapTarif !');
-        redirect(login_dest($next, $user));
+        $_SESSION['after_signup'] = login_dest($next, $user);
+        redirect('/compte-cree');
     }
     if ($action === 'signup_verify') {
         $sp = $_SESSION['signup_pending'] ?? null;
@@ -170,6 +164,10 @@ view('layout/header', compact('title'));
         <label class="fld"><span>Mot de passe</span><input type="password" name="password" autocomplete="current-password" required></label>
         <button class="btn btn-primary btn-block btn-lg">Se connecter</button>
       </form>
+      <div class="pk-or"><span>ou</span></div>
+      <button type="button" class="btn btn-soft btn-block pk-login" data-passkey-login data-next="<?= e($next) ?>">🔐 Me connecter avec ma clé de sécurité</button>
+      <p class="fine center" data-passkey-msg></p>
+      <script src="/assets/js/passkey.js?v=1" defer></script>
       <p class="center mt"><a href="<?= e($qs('reset')) ?>">Mot de passe oublié ?</a></p>
 
     <?php elseif ($mode === 'signup' && ($_GET['step'] ?? '') === 'code' && !empty($_SESSION['signup_pending'])): ?>
@@ -187,11 +185,13 @@ view('layout/header', compact('title'));
       <form method="post" action="/connexion">
         <?= csrf_field() ?>
         <input type="hidden" name="step" value="signup"><input type="hidden" name="next" value="<?= e($next) ?>">
-        <label class="fld"><span>Nom et prénom</span><input name="name" maxlength="80" autocomplete="name" placeholder="Ex. Koné Aminata" required></label>
+        <label class="fld"><span>Nom <b class="req">*</b></span><input name="nom" maxlength="40" autocomplete="family-name" placeholder="Ex. Koffi" required></label>
+        <label class="fld"><span>Prénom <b class="req">*</b></span><input name="prenom" maxlength="40" autocomplete="given-name" placeholder="Ex. Ahou" required></label>
         <label class="fld"><span>Date de naissance</span><input type="date" name="birthdate" autocomplete="bday" max="<?= date('Y-m-d') ?>" required></label>
         <label class="fld"><span>Numéro de téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
         <label class="fld"><span>Mot de passe (8 caractères minimum)</span><input type="password" name="password" minlength="8" autocomplete="new-password" required></label>
         <label class="fld"><span>Confirmer le mot de passe</span><input type="password" name="password2" minlength="8" autocomplete="new-password" required></label>
+        <?= turnstile_widget() ?>
         <button class="btn btn-primary btn-block btn-lg">Créer mon compte</button>
       </form>
 

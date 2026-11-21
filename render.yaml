@@ -36,6 +36,10 @@ services:
         sync: false
       - key: APP_URL
         sync: false         # ex. https://chaptarif.onrender.com
+      - key: TURNSTILE_SITE_KEY
+        sync: false         # Cloudflare Turnstile (anti-robot) : clé du site
+      - key: TURNSTILE_SECRET_KEY
+        sync: false         # Cloudflare Turnstile : clé secrète
       - key: OTP_DEMO
         value: "1"          # mettez "0" dès qu'une passerelle SMS est branchée
       - key: INFOBIP_BASE_URL
