@@ -77,7 +77,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=57">
+<link rel="stylesheet" href="/assets/css/admin.css?v=60">
 </head>
 <?php if (($shell ?? true)):
 if (!function_exists('sh_ico')) {
@@ -105,6 +105,8 @@ if (!function_exists('sh_ico')) {
             'tag' => '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/>',
             'log' => '<path d="M5 4h14v16H5zM9 9h6M9 13h6M9 17h3"/>',
             'inbox' => '<path d="M3 13l3-8h12l3 8v6H3zM3 13h5l1 3h6l1-3h5"/>',
+            'layers' => '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 12.500 9 5 9-5M3 17l9 5 9-5"/>',
+            'history' => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
             'bell' => '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>',
             'headset' => '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/><path d="M19.5 19c0 1.5-2 2.5-5 2.5"/>'];
         return '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' . ($p[$n] ?? '') . '</svg>';
@@ -134,32 +136,47 @@ try {
 $__curV = (string) ($_GET['v'] ?? 'nouveaux');
 $__subIco = ['nouveaux' => '<circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none"/>', 'attente' => '<path d="M6 3h12M6 21h12M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/>', 'acceptes' => '<path d="m5 12.5 4.5 4.5L19 7"/>', 'refuses' => '<path d="M6 6l12 12M18 6 6 18"/>', 'clotures' => '<rect x="4" y="4" width="16" height="5" rx="1"/><path d="M5 9v10h14V9M10 13h4"/>'];
 $__subL = ['nouveaux' => 'Nouveaux sinistres', 'attente' => 'Sinistres en attente', 'acceptes' => 'Sinistres acceptés', 'refuses' => 'Sinistres refusés', 'clotures' => 'Sinistres clôturés'];
+$__hr = []; foreach ($items as $__it) if ($__it[1] !== null) $__hr[$__it[0]] = $__it[1];
+$__shown = ['dashboard', 'offers', 'disputes', 'messages', 'clients', 'settings'];
+$__top = ($nav === 'disputes') ? 'Gestion des litiges' : ($page ?? '');
+$__chev = '<svg class="sh-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+$__subL = ['nouveaux' => 'À traiter', 'acceptes' => 'Acceptés', 'refuses' => 'Refusés', 'attente' => 'En attente'];
+$__subIco = ['nouveaux' => '<path d="M3 13l3-8h12l3 8v6H3zM3 13h5l1 3h6l1-3h5"/>', 'acceptes' => '<circle cx="12" cy="12" r="9"/><path d="m8 12.500 3 3 5-6"/>', 'refuses' => '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>', 'attente' => '<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>'];
 ?><body class="adm adm-shell">
+<header class="tb">
+  <a class="tb-logo" href="/admin"><b>Chap</b><i>Tarif</i><svg viewBox="0 0 120 14" preserveAspectRatio="none"><path d="M2 3c28 9 66 10 116-3" fill="none" stroke="#16A34A" stroke-width="3.500" stroke-linecap="round"/></svg></a>
+  <h1 class="tb-title"><?= e($__top) ?></h1>
+  <a class="sh-bell" href="/admin/litiges?v=nouveaux" aria-label="Litiges à traiter"><?= sh_ico('bell') ?><?= $disputes ? '<em></em>' : '' ?></a>
+  <details class="sh-me"><summary><span class="sh-av"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.200"/><path d="M4 21c0-4.200 3.600-6.800 8-6.800s8 2.600 8 6.800z"/></svg></span><b><?= e(admin_role_label($me)) ?></b><i>⌄</i></summary>
+    <div><span><?= e($me['email']) ?></span><a href="/admin/mot-de-passe">Changer mon mot de passe</a><a href="/" target="_blank" rel="noopener">Voir le site</a>
+    <form method="post" action="/admin/logout"><?= csrf_field() ?><button>Se déconnecter</button></form></div></details>
+</header>
 <aside class="sh-side">
-  <a class="sh-brand" href="/admin"><img src="/assets/img/logo.svg" width="40" height="40" alt=""><span><b>Chap</b><i>Tarif</i></span></a>
   <div class="sh-scroll">
-  <nav><?php foreach ($__sh as [$k, $href, $ic, $label]): ?><a href="<?= $href ?>" class="<?= $nav === $k ? 'on' : '' ?>"<?= $k === 'help' ? ' target="_blank" rel="noopener"' : '' ?>><?= sh_ico($ic) ?><span><?= e($label) ?></span><?= $k === 'disputes' && $disputes ? '<em>' . $disputes . '</em>' : '' ?></a>
-    <?php if ($k === 'disputes'): ?><div class="sh-sub"><?php foreach ($__subL as $vk => $vl): ?><a href="/admin/litiges?v=<?= $vk ?>" class="<?= $nav === 'disputes' && $__curV === $vk ? 'on' : '' ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><?= $__subIco[$vk] ?></svg><span><?= e($vl) ?></span><?= $vk === 'nouveaux' && $__vc[$vk] ? '<em>' . $__vc[$vk] . '</em>' : '' ?></a><?php endforeach; ?></div><?php endif; ?>
-    <?php endforeach; ?></nav>
+  <nav class="sh-main">
+    <a href="/admin" class="<?= $nav === 'dashboard' ? 'on' : '' ?>"><?= sh_ico('home') ?><span>Tableau de bord</span></a>
+    <a href="<?= e($__hr['offers'] ?? '/admin/offres') ?>" class="<?= $nav === 'offers' ? 'on' : '' ?>"><?= sh_ico('layers') ?><span>Services</span></a>
+    <a href="/admin/litiges?v=nouveaux" class="sh-par <?= $nav === 'disputes' ? 'on' : '' ?>"><?= sh_ico('scale') ?><span>Litiges &amp; Sinistres</span><?= $__chev ?></a>
+    <div class="sh-sub"><?php foreach ($__subL as $vk => $vl): ?><a href="/admin/litiges?v=<?= $vk ?>" class="<?= $nav === 'disputes' && $__curV === $vk ? 'on' : '' ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $__subIco[$vk] ?></svg><span><?= e($vl) ?><?= $vk === 'nouveaux' ? ' (' . $__vc['nouveaux'] . ')' : '' ?></span></a><?php endforeach; ?></div>
+    <hr>
+    <a href="/admin/litiges?v=clotures" class="<?= $nav === 'disputes' && $__curV === 'clotures' ? 'on' : '' ?>"><?= sh_ico('history') ?><span>Historique des litiges</span></a>
+    <hr>
+    <?php if (isset($__hr['messages'])): ?><a href="<?= e($__hr['messages']) ?>" class="<?= $nav === 'messages' ? 'on' : '' ?>"><?= sh_ico('chat') ?><span>Messages</span><?= $unread ? '<em>' . $unread . '</em>' : '' ?></a><?php endif; ?>
+    <a href="/admin/clients" class="<?= $nav === 'clients' ? 'on' : '' ?>"><?= sh_ico('users') ?><span>Utilisateurs</span></a>
+    <?php if (is_super($me)): ?><a href="/admin/parametres" class="<?= $nav === 'settings' ? 'on' : '' ?>"><?= sh_ico('gear') ?><span>Paramètres</span></a><?php endif; ?>
+  </nav>
   <?php $__sec = ''; $__buf = ''; foreach ($items as $it) {
       if ($it[1] === null) { if ($__buf !== '') echo '<div class="sh-sec"><h4>' . e($__sec) . '</h4><nav>' . $__buf . '</nav></div>'; $__sec = $it[0]; $__buf = ''; continue; }
       [$k, $href, , $label, $n] = $it;
-      if (in_array($k, $__main, true) && $k !== 'x') continue;
+      if (in_array($k, $__shown, true)) continue;
       $__buf .= '<a href="' . $href . '" class="' . ($nav === $k ? 'on' : '') . '">' . sh_ico($__icons[$k] ?? 'inbox') . '<span>' . e(trim(preg_replace('/^[^\p{L}]+/u', '', $label))) . '</span>' . ($n ? '<em>' . $n . '</em>' : '') . '</a>';
   }
   if ($__buf !== '') echo '<div class="sh-sec"><h4>' . e($__sec) . '</h4><nav>' . $__buf . '</nav></div>'; ?>
   </div>
-  <a class="sh-help" href="<?= $__ph !== '' ? 'tel:' . e(preg_replace('/[^+\d]/', '', $__ph)) : '/contact' ?>"><?= sh_ico('headset') ?><span><b>Assistance</b><small><?= $__ph !== '' ? e($__ph) : 'Contacter le support' ?></small></span></a>
+  <form class="sh-out" method="post" action="/admin/logout"><?= csrf_field() ?><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M15 8l4 4-4 4M19 12H9"/></svg>Déconnexion</button></form>
 </aside>
 <div class="main" data-live>
-  <header class="sh-top">
-    <span class="sh-ico"><?= sh_ico($__icons[$nav] ?? 'home') ?></span>
-    <div class="sh-t"><h1><?= e($page ?? '') ?></h1><?php if (!empty($shellSub)): ?><p><?= e($shellSub) ?></p><?php endif; ?></div>
-    <a class="sh-bell" href="/admin/litiges?v=nouveaux" aria-label="Litiges en attente"><?= sh_ico('bell') ?><?= $disputes ? '<em>' . $disputes . '</em>' : '' ?></a>
-    <details class="sh-me"><summary><span class="sh-av"><?= e(initials($me['name'] ?: $me['email'])) ?></span><b><?= e(explode(' ', trim((string) ($me['name'] ?: $me['email'])))[0]) ?></b><i>⌄</i></summary>
-      <div><span><?= e($me['email']) ?></span><a href="/admin/mot-de-passe">Changer mon mot de passe</a><a href="/" target="_blank" rel="noopener">Voir le site</a>
-      <form method="post" action="/admin/logout"><?= csrf_field() ?><button>Se déconnecter</button></form></div></details>
-  </header>
+<?php if (!empty($shellHead)): ?><div class="sh-pt"><span class="sh-ico"><?= sh_ico($__icons[$nav] ?? 'home') ?></span><div><h2><?= e($page ?? '') ?></h2><?php if (!empty($shellSub)): ?><p><?= e($shellSub) ?></p><?php endif; ?></div></div><?php endif; ?>
   <?= $shellAfter ?? '' ?>
 <?php else: ?>
 <body class="adm">

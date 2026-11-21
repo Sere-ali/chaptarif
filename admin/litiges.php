@@ -8,6 +8,7 @@ function lit_icon(string $uk): string
     $p = match (true) {
         in_array($uk, ['pressing'], true) => '<path d="M12 6.5a2 2 0 1 1 2 2c-1 .3-2 .9-2 2v1.2"/><path d="M12 12 3 18.2A1 1 0 0 0 3.6 20h16.8a1 1 0 0 0 .6-1.8z"/>',
         in_array($uk, ['cars', 'covoiturage', 'location_car', 'location_camion', 'location_vehicule', 'chauffeur'], true) => '<path d="M4 16V9l2-4h12l2 4v7M4 16h16M7.5 19.5v-3.5M16.5 19.5v-3.5"/>',
+        in_array($uk, ['menage', 'menage_domicile', 'service_personne'], true) => '<path d="M14 3.5 10.5 11M9 10.5l4 2.5-1 3.5c-1.5.5-4 1-8 .5 2-1.5 3-3.5 3.5-5.5zM8 16.5l-1 3.5M11 17.5l-.5 3"/>',
         default => '<path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     };
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
@@ -113,8 +114,8 @@ if ($vw !== '' && !$selId) {
     $total = (int) val("SELECT COUNT(*) $tj", $tp);
     [$pg, $pages] = paginate($total, 20);
     $rows = all("SELECT b.*, u.name AS uname, pr.name AS pname $tj ORDER BY b.id DESC LIMIT 20 OFFSET " . (($pg - 1) * 20), $tp);
-    $page = $VW[$vw][1]; $nav = 'disputes'; $shell = true; $shellSub = $VW[$vw][2]; $shellAfter = '';
-    view('admin/header', compact('page', 'nav', 'shell', 'shellSub', 'shellAfter'));
+    $page = $VW[$vw][1]; $nav = 'disputes'; $shell = true; $shellSub = $VW[$vw][2]; $shellAfter = ''; $shellHead = true;
+    view('admin/header', compact('page', 'nav', 'shell', 'shellSub', 'shellAfter', 'shellHead'));
     $allN = array_sum(array_column($tabs, 'n'));
     $tq = fn(array $o) => '/admin/litiges?' . http_build_query(array_filter(array_merge(['v' => $vw, 'u' => $uk, 'q' => $s], $o), fn($v) => $v !== '' && $v !== null));
     ?>
@@ -197,11 +198,11 @@ $stCls = $isNew ? 'wait' : $ls[0];
   <div class="dl-grid">
     <div class="dl-card dl-left">
       <h3><?= $I('<path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 13l2 2 3-4"/>') ?>Déclaration du client</h3>
-      <blockquote><?= nl2br(e((string) $sel['dispute_reason'])) ?></blockquote>
+      <blockquote><?= nl2br(e((string) $sel['dispute_reason'])) ?><span class="q2">”</span></blockquote>
       <hr>
       <h3><?= $I('<path d="m21 11-8.6 8.6a5 5 0 0 1-7-7L14 4a3.4 3.4 0 0 1 4.8 4.8l-8.4 8.4a1.8 1.8 0 0 1-2.5-2.5L15 7.5"/>') ?>Pièces jointes (<?= count($atts) ?>)</h3>
       <?php if (!$atts): ?><p class="muted">Aucune pièce jointe pour ce dossier.</p><?php else: ?>
-      <div class="dl-photos"><?php foreach ($atts as $m): ?><a href="<?= e($m['att_url']) ?>" target="_blank" rel="noopener"><?php if ($m['att_type'] === 'image'): ?><img src="<?= e($m['att_url']) ?>" alt="" loading="lazy"><?php else: ?><span class="f">📎<small><?= e($m['att_name'] ?: 'Fichier') ?></small></span><?php endif; ?></a><?php endforeach; ?></div><?php endif; ?>
+      <div class="dl-photos"><?php foreach ($atts as $m): ?><a href="<?= e($m['att_url']) ?>" target="_blank" rel="noopener"><?php if ($m['att_type'] === 'image'): ?><img src="<?= e($m['att_url']) ?>" alt="" loading="lazy"><i class="ib"><?= $I('<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.5"/><path d="m4 18 5-5 4 4 3-3 4 4"/>') ?></i><?php else: ?><span class="f">📎<small><?= e($m['att_name'] ?: 'Fichier') ?></small></span><?php endif; ?></a><?php endforeach; ?></div><?php endif; ?>
     </div>
     <div class="dl-right">
       <div class="dl-card dl-links">
