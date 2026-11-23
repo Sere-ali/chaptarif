@@ -288,18 +288,46 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   </div>
 </section>
 
-<section class="section section-dark" id="sequestre">
+<section class="section hw" id="sequestre">
   <div class="container">
-    <div class="sec-head light">
-      <span class="eyebrow">Tiers de confiance</span>
+    <div class="hw-how reveal">
+      <h2>Comment ça marche ?</h2>
+      <ol class="hw-steps">
+        <li><span class="hw-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="5" width="22" height="34" rx="4"/><path d="M16 14h12M16 20h8M16 26h6"/><circle cx="31" cy="30" r="6" fill="#fff"/><path d="m35.500 34.500 6 6"/></svg></span><div><b><i>1</i> Trouvez<br>un service</b><p>Choisissez le service dont vous avez besoin.</p></div></li>
+        <li><span class="hw-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="10" width="34" height="30" rx="5"/><path d="M7 19h34M16 5v8M32 5v8M18 30l5 5 8-9"/></svg></span><div><b><i>2</i> Réservez<br>en ligne</b><p>Sélectionnez un prestataire et une date disponible.</p></div></li>
+        <li><span class="hw-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="14" width="30" height="20" rx="4"/><path d="M5 21h30M10 28h8"/><circle cx="36" cy="33" r="7" fill="#fff"/><path d="m32.500 33 2.500 2.500 4-5M38 8c3 2 4 5 4 8"/></svg></span><div><b><i>3</i> Payez<br>en toute sécurité</b><p>Réglez via Wave, Orange Money, MTN ou Moov.</p></div></li>
+        <li><span class="hw-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="9" r="6" fill="#fff"/><path d="m21.500 9 2 2 3.500-4M4 22l9-7 8 3 6-2 9 5-3 6M8 28l8 8c2 2 4 1 5-1M14 31l5 5M26 30l-3 3 6 6c1.500 1 3 0 4-1l7-9"/></svg></span><div><b><i>4</i> Profitez<br>de la prestation</b><p>Le prestataire réalise le service et vous validez la prestation.</p></div></li>
+      </ol>
     </div>
-    <ol class="steps">
-      <li class="reveal"><span class="step-n">1</span><h4>Vous réservez</h4><p>Sélectionnez votre prestation ou formule au tarif transparent et fixé à l'avance.</p></li>
-      <li class="reveal"><span class="step-n">2</span><h4>Vous payez</h4><p>Réglez via Wave, Orange Money, MTN ou Moov. Vos règlements sont conservés sur un compte sécurisé.</p></li>
-      <li class="reveal"><span class="step-n">3</span><h4>Le service est rendu</h4><p>Le prestataire effectue la mission commandée</p></li>
-      <li class="reveal"><span class="step-n">4</span><h4>Vous validez</h4><p>Confirmez la bonne fin de la mission directement depuis l'application ou transmettez votre code de validation au prestataire.</p></li>
-      <li class="reveal"><span class="step-n">5</span><h4>Paiement libéré</h4><p>Le règlement est automatiquement versé au prestataire. En cas de réclamation, vous pouvez déclarer un litige pour geler les fonds.</p></li>
-    </ol>
+    <div class="hw-row">
+      <div class="hw-why reveal">
+        <div>
+          <h2>Pourquoi choisir ChapTarif ?</h2>
+          <ul class="hw-ck">
+            <li><b>Un large choix de services</b><small>(Transports, Immobilier, Service à la personne, Beauté)</small></li>
+            <li><b>Des prestataires contrôlés et fiables</b></li>
+            <li><b>Des tarifs clairs et sans frais cachés</b></li>
+            <li><b>Un paiement sécurisé</b> (Wave, Orange Money, MTN, Moov)</li>
+            <li><b>Un support client à votre écoute</b></li>
+          </ul>
+        </div>
+        <div class="hw-phone" aria-hidden="true"><div><img src="/assets/img/logo.svg" width="46" height="46" alt=""><strong>ChapTarif</strong><p><span style="background:#E3F0FF">🚗</span><span style="background:#FFF1DF">🏠</span><span style="background:#EFE6FF">🧴</span><span style="background:#FFE6F0">🪷</span></p></div></div>
+      </div>
+      <div class="hw-sec reveal">
+        <h2><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 8 11v11c0 10 7 17 16 21 9-4 16-11 16-21V11z"/><path d="m17 24 5 5 9-10"/></svg>Votre sécurité, notre priorité</h2>
+        <div class="hw-sec3">
+          <div><span class="hw-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="21" width="28" height="20" rx="4"/><path d="M16 21v-6a8 8 0 0 1 16 0v6M24 29v4"/></svg></span><b>Données<br>protégées</b><p>Vos informations sont chiffrées et confidentielles.</p></div>
+          <div><span class="hw-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 36c-2-6-1-12 0-15 2-6 8-9 14-7 5 2 8 6 7 12M20 40c-2-4-3-9-2-14 1-4 5-6 8-4 3 1 4 4 3 8M26 42c-1-3-1-6 0-9"/></svg></span><b>Compte sécurisé<br>par empreinte</b><p>Une connexion simple, rapide et fiable.</p></div>
+          <div><span class="hw-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 8 11v11c0 10 7 17 16 21 9-4 16-11 16-21V11z"/><path d="m17 24 5 5 9-10"/></svg></span><b>Paiement sécurisé<br>et encadré</b><p>La prestation est validée avant le versement au prestataire.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="hw-bar reveal">
+      <strong class="hw-pay">Moyens de paiement</strong>
+      <span class="hw-chips"><span class="chip chip-wave">wave</span><span class="chip chip-om">Orange Money</span><span class="chip chip-mtn">MTN MoMo</span><span class="chip chip-moov">Moov Money</span></span>
+      <span class="hw-help"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M8 28v-6a16 16 0 0 1 32 0v6"/><rect x="5" y="26" width="8" height="12" rx="3" fill="currentColor"/><rect x="35" y="26" width="8" height="12" rx="3" fill="currentColor"/><path d="M39 38c0 4-4 6-9 6"/></svg><span><b>Besoin d'aide ?</b><small>Notre équipe vous répond rapidement.</small></span></span>
+      <a class="hw-btn" href="/contact"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-13.200 8L3 21l1.100-4.600A9 9 0 1 1 21 12z"/><path d="M9 9c0 3 3 6 6 6l1.500-1.500-2-1.200-1 .7c-1-.4-2-1.400-2.400-2.400l.7-1-1.200-2z"/></svg>Contacter le support</a>
+    </div>
   </div>
 </section>
 
