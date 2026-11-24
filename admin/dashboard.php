@@ -16,6 +16,11 @@ $chatTot = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user'")
 $chatToday = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND created_at >= ?", [date('Y-m-d') . ' 00:00:00']);
 $chatNew = (int) val("SELECT COUNT(*) FROM chat_messages WHERE sender = 'user' AND read_by_admin = 0");
 $clientsWeek = (int) val("SELECT COUNT(*) FROM users WHERE role = 'client' AND created_at >= ?", [date('Y-m-d', strtotime('-7 days')) . ' 00:00:00']);
+$real = "NOT ((status = 'EN_ATTENTE_PAIEMENT' AND COALESCE(payment_ref, '') <> 'EN_ATTENTE_VALIDATION') OR (status = 'ANNULE' AND paid_at IS NULL))";
+$nbBook = (int) val("SELECT COUNT(*) FROM bookings WHERE $real$SB");
+$nbBookToday = (int) val("SELECT COUNT(*) FROM bookings WHERE $real$SB AND created_at >= ?", [date('Y-m-d') . ' 00:00:00']);
+$candWait = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status = 'pending'$SP");
+$candTot = (int) val("SELECT COUNT(*) FROM providers WHERE source = 'candidature' AND kyc_status <> 'incomplete'$SP");
 $nbToday = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN $paid$SB AND paid_at >= ?", [date('Y-m-d') . ' 00:00:00']);
 $toPay = $scoped ? 0 : (int) val("SELECT COALESCE(SUM(amount),0) FROM transactions WHERE status = 'A_VIRER'");
 
@@ -51,7 +56,8 @@ view('admin/header', compact('page', 'nav'));
 <div class="kpis">
   <a class="kpi hl kpi-link" href="/admin/chat"><span class="kpi-ico"></span><small>Chats reçus</small><b><?= $chatTot ?></b><em><?= $chatToday ?> aujourd'hui · <?= $chatNew ?> non lu<?= $chatNew > 1 ? 's' : '' ?></em></a>
   <a class="kpi kpi-link" href="/admin/clients"><span class="kpi-ico"></span><small>Clients inscrits</small><b><?= $clients ?></b><em><?= $clientsWeek ?> cette semaine</em></a>
-  <a class="kpi kpi-link" href="/admin/reservations"><span class="kpi-ico"></span><small>Réservations payées</small><b><?= $nbPaid ?></b><em><?= $nbToday ?> aujourd'hui</em></a>
+  <a class="kpi kpi-link" href="/admin/reservations"><span class="kpi-ico"></span><small>Réservations</small><b><?= $nbBook ?></b><em><?= $nbBookToday ?> aujourd'hui</em></a>
+  <a class="kpi kpi-link" href="/admin/candidatures"><span class="kpi-ico"></span><small>Candidatures prestataires</small><b><?= $candWait ?></b><em>à examiner · <?= $candTot ?> reçue<?= $candTot > 1 ? 's' : '' ?> au total</em></a>
   <a class="kpi kpi-link" href="/admin/prestataires"><span class="kpi-ico"></span><small>Prestataires</small><b><?= $provTot ?></b><em><?= $provOk ?> validé<?= $provOk > 1 ? 's' : '' ?> · <?= $provWait ?> en attente</em></a>
   <div class="kpi"><span class="kpi-ico"></span><small>Litiges ouverts</small><b><?= $disputes ?></b><em><a href="/admin/litiges">Traiter les litiges →</a></em></div>
 </div>

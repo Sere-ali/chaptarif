@@ -26,6 +26,7 @@ $in = $sum('ENCAISSEMENT'); $com = $sum('COMMISSION'); $abo = $sum('ABONNEMENT')
 $escrow = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN ('BLOQUE','EN_LITIGE')");
 $gmv = (int) val("SELECT COALESCE(SUM(total),0) FROM bookings WHERE status IN ('BLOQUE','VALIDE','EN_LITIGE')");
 $nbPaid = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN ('BLOQUE','VALIDE','EN_LITIGE')");
+$nbPaidToday = (int) val("SELECT COUNT(*) FROM bookings WHERE status IN ('BLOQUE','VALIDE','EN_LITIGE') AND paid_at >= ?", [date('Y-m-d') . ' 00:00:00']);
 
 $type = (string) ($_GET['type'] ?? '');
 $status = (string) ($_GET['status'] ?? '');
@@ -62,6 +63,7 @@ view('admin/header', compact('page', 'nav'));
   <div class="kpi"><span class="kpi-ico"></span><small>Encaissé (période)</small><b><?= fcfa($in) ?></b><em>Paiements clients</em></div>
   <div class="kpi hl"><span class="kpi-ico"></span><small>Revenus ChapTarif</small><b><?= fcfa($com + $abo) ?></b><em>Commissions <?= fcfa($com) ?> · Abonnements <?= fcfa($abo) ?></em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Volume d'affaires</small><b><?= fcfa($gmv) ?></b><em><?= $nbPaid ?> réservations payées</em></div>
+  <div class="kpi"><span class="kpi-ico"></span><small>Réservations payées</small><b><?= $nbPaid ?></b><em><?= $nbPaidToday ?> aujourd'hui</em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Reversé aux prestataires</small><b><?= fcfa($pay) ?></b><em>Remboursements : <?= fcfa($ref) ?></em></div>
   <div class="kpi"><span class="kpi-ico"></span><small>Solde séquestre actuel</small><b><?= fcfa($escrow) ?></b><em>Fonds clients bloqués</em></div>
 </div>
