@@ -21,11 +21,6 @@ if (is_post()) {
     }
     // Limite propre aux candidatures (les essais de connexion ne comptent pas).
     if (too_many_attempts('apply:' . client_ip(), 5, 60, false)) $errors[] = 'Trop de candidatures depuis cette connexion. Réessayez plus tard.';
-    // Vérification du numéro par SMS dès qu'une passerelle d'envoi est active (inutile pour un client déjà connecté).
-    if (!$self && !$errors && $phone && (infobip_configured() || whatsapp_configured())) {
-        $oc = preg_replace('/\D/', '', (string) ($_POST['otp'] ?? ''));
-        if (too_many_attempts('otp:' . $phone, 8, 15, false) || !otp_verify($phone, $oc)) { record_attempt('otp:' . $phone); $errors[] = 'Code de vérification SMS incorrect ou expiré.'; }
-    }
     $need = isset($U[$uk]) ? kyc_docs_required($uk) : [];
     $DL = kyc_doc_labels();
     foreach ($need as $nk) if (empty($_FILES[$nk]['name'])) $errors[] = $DL[$nk][0] . ' : document obligatoire.';
@@ -156,14 +151,6 @@ view('layout/header', compact('title', 'desc', 'active'));
           <div class="row2">
             <label class="fld"><span>Mot de passe (8 caractères min.)</span><input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
             <label class="fld"><span>Confirmer le mot de passe</span><input type="password" name="password2" minlength="8" required autocomplete="new-password"></label>
-          </div>
-          <?php endif; ?>
-          <?php if (!$selfMode && (infobip_configured() || whatsapp_configured())): ?>
-          <div class="pa-otp" data-otp>
-            <b>Vérification de votre numéro</b>
-            <p class="fine">Nous envoyons un code par SMS au numéro indiqué à l'étape 1.</p>
-            <div class="pa-otp-row"><button type="button" class="btn btn-soft" data-otp-send>Recevoir le code</button><input name="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="\d{6}" placeholder="Code à 6 chiffres" required></div>
-            <p class="fine" data-otp-msg hidden></p>
           </div>
           <?php endif; ?>
         </fieldset>
