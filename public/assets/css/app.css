@@ -1899,3 +1899,7 @@ body:has(.ps-tabs) { padding-bottom: 96px; }
 @media (min-width: 900px) { .ch-tar-g { max-width: 720px; margin: 0 auto; } .ch-tar h3 { justify-content: center; } .ch-p { font-size: .85rem; } }
 .ch-p { font-size: clamp(.56rem, 2.75vw, .72rem); padding: 6px 2px; }
 @media (min-width: 900px) { .ch-p { font-size: .85rem; padding: 8px 10px; } }
+
+/* Prix alignés dans les listes de prestations */
+.on-price { width: 108px; box-sizing: border-box; text-align: center; padding-left: 0; padding-right: 0; }
+@media (max-width: 480px) { .on-price { width: 98px; } }
