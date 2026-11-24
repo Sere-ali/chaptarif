@@ -184,6 +184,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
       <div class="pm-stats">
         <div class="s1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><b><?= (int) $bk['n'] ?></b><small>Réservations</small></div>
         <div class="s2"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#7C4DDB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><b><?= (int) $bk['ok'] ?></b><small>Prestations terminées</small></div>
+        <div class="s3"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#E8590C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M7 21h10M5 7h14"/><path d="m5 7-3 7a3.5 3.5 0 0 0 6 0zM19 7l-3 7a3.5 3.5 0 0 0 6 0z"/></svg><b><?= (int) val("SELECT COUNT(*) FROM bookings WHERE provider_id = ? AND paid_at IS NOT NULL AND (status = 'EN_LITIGE' OR COALESCE(dispute_reason, '') <> '')", [$p['id']]) ?></b><small>Litiges / Réclamations</small></div>
       </div>
     </div>
 
