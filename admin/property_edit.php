@@ -77,7 +77,7 @@ view('admin/header', compact('page', 'nav'));
       <?php if ($imgs): ?><div class="img-list"><?php foreach ($imgs as $k => $src): ?><label title="Cocher pour supprimer"><img src="<?= e(cld($src, 'w_280,h_200,c_fill,q_auto,f_auto')) ?>" alt=""><input type="checkbox" name="remove[]" value="<?= $k ?>"></label><?php endforeach; ?></div><p class="fine">Cochez une photo pour la retirer. La première photo sert de couverture.</p><?php endif; ?>
       <label class="fld file mt"><span> Ajouter des photos (plusieurs possibles)</span><input type="file" name="photos[]" accept="image/*" multiple></label>
       <label class="fld"><span>…ou coller une URL Cloudinary existante</span><input name="image_url" placeholder="https://res.cloudinary.com/…"></label>
-      <?php if (!cld_config()): ?><div class="warn-box"> CLOUDINARY_URL n'est pas configurée : l'envoi de photos est désactivé.</div><?php endif; ?>
+      <?php if (!files_ready() && !cld_config()): ?><div class="warn-box"> Le disque de stockage n'est pas configuré : l'envoi de photos est désactivé.</div><?php endif; ?>
     </div>
   </div>
   <button class="btn btn-primary btn-lg">Enregistrer le logement</button>

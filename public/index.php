@@ -94,8 +94,25 @@ $routes = [
     // Super admin uniquement
     '/admin/administrateurs'=> 'admin/admins.php',
     '/admin/parametres'     => 'admin/settings.php',
+    '/admin/transfert-fichiers' => 'admin/migrate_files.php',
     '/admin/journal'        => 'admin/audit.php',
 ];
+
+// Fichiers publics stockés sur le disque (photos) : /f/chaptarif/<dossier>/<id>.<ext>
+if (str_starts_with($path, '/f/')) {
+    $id = substr($path, 3);
+    if (!files_id_ok($id) || !files_exists($id, false)) { http_response_code(404); exit; }
+    $ext = strtolower(pathinfo($id, PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'pdf', 'webm', 'ogg', 'mp3', 'm4a', 'wav', 'mp4', 'ogv', 'txt', 'doc', 'docx', 'xls', 'xlsx'], true)) { http_response_code(404); exit; }
+    $fp = files_path($id, false);
+    header('Content-Type: ' . files_mime($ext));
+    header('Content-Length: ' . filesize($fp));
+    header('Cache-Control: public, max-age=31536000, immutable');
+    header('X-Content-Type-Options: nosniff');
+    if (in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'], true)) header('Content-Disposition: inline; filename="' . basename($id) . '"');
+    readfile($fp);
+    exit;
+}
 
 if (!isset($routes[$path])) not_found();
 

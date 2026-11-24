@@ -69,7 +69,7 @@ view('admin/header', compact('page', 'nav'));
       <dl class="kv mt">
         <dt>Base de données</dt><dd><?= e(db_driver() === 'pgsql' ? 'PostgreSQL' : 'SQLite (local)') ?></dd>
         <dt>Paiements</dt><dd><?= payment_mode() === 'paydunya' ? '<span class="badge badge-green">PayDunya (réel)</span>' : (payment_mode() === 'cinetpay' ? '<span class="badge badge-green">CinetPay (réel)</span>' : (payment_mode() === 'manuel' ? '<span class="badge badge-green">Manuel · validation admin</span>' : '<span class="badge badge-amber">Simulation</span>')) ?></dd>
-        <dt>Cloudinary</dt><dd><?= cld_config() ? '<span class="badge badge-green">Connecté · ' . e(cld_cloud()) . '</span>' : '<span class="badge badge-red">Non configuré</span>' ?></dd>
+        <dt>Stockage des fichiers</dt><dd><?= files_ready() ? '<span class="badge badge-green">Disque Render · ' . e(files_root()) . '</span> <a href="/admin/transfert-fichiers">Transfert Cloudinary</a>' : (cld_config() ? '<span class="badge badge-green">Connecté · ' . e(cld_cloud()) . ' (temporaire) · <a href="/admin/transfert-fichiers">Quitter Cloudinary</a></span>' : '<span class="badge badge-red">Non configuré</span>') ?></dd>
         <dt>SMS OTP</dt><dd><?= (env('SMS_API_URL') || env('INFOBIP_API_KEY')) ? '<span class="badge badge-green">Passerelle configurée</span>' : '<span class="badge badge-amber">Aucune passerelle' . (sms_demo_mode() ? ' · code affiché (démo)' : '') . '</span>' ?></dd>
       </dl>
       <p class="fine">Ces éléments se configurent via les variables d'environnement Render (voir README).</p>

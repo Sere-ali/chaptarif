@@ -16,8 +16,10 @@ services:
         fromDatabase:
           name: chaptarif-db
           property: connectionString
+      # Photos et documents : disque persistant monté sur /var/data (à ajouter dans Render > Disks).
+      # CLOUDINARY_URL n'est utile que le temps du transfert (Admin > Paramètres > Quitter Cloudinary).
       - key: CLOUDINARY_URL
-        sync: false         # cloudinary://API_KEY:API_SECRET@epxlbn9z
+        sync: false
       - key: SUPERADMIN_EMAIL
         sync: false
       - key: SUPERADMIN_PASSWORD

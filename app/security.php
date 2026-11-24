@@ -203,8 +203,18 @@ function cld_admin_call(string $method, string $path, array $query = []): ?array
 /** Crée une sauvegarde chiffrée et l'envoie hors du serveur (Cloudinary, accès privé). Garde 30 sauvegardes. */
 function backup_run(string $by = 'auto'): array
 {
+    if (files_ready()) {
+        $b = backup_build();
+        $pid = 'chaptarif/backups/chaptarif-' . date('Ymd-His') . '.ctbk';
+        if (!files_put($pid, $b['blob'], true)) return ['ok' => false, 'error' => 'Écriture de la sauvegarde impossible sur le disque.'];
+        setting_set('backup_last', now());
+        setting_set('backup_last_size', (string) strlen($b['blob']));
+        audit('securite.sauvegarde', $pid, ['par' => $by, 'lignes' => array_sum($b['counts'])]);
+        foreach (array_slice(backup_list(), 30) as $old) @unlink(files_path($old['public_id'], true));
+        return ['ok' => true, 'public_id' => $pid, 'bytes' => strlen($b['blob']), 'counts' => $b['counts']];
+    }
     $c = cld_config();
-    if (!$c) return ['ok' => false, 'error' => 'Stockage externe (Cloudinary) non configuré.'];
+    if (!$c) return ['ok' => false, 'error' => 'Stockage des fichiers non configuré (disque Render).'];
     $b = backup_build();
     $tmp = tempnam(sys_get_temp_dir(), 'ctbk');
     file_put_contents($tmp, $b['blob']);
@@ -235,6 +245,14 @@ function backup_run(string $by = 'auto'): array
 
 function backup_list(): array
 {
+    if (files_ready()) {
+        $l = [];
+        foreach (glob(files_root() . '/private/chaptarif/backups/*.ctbk') ?: [] as $fp) {
+            $l[] = ['public_id' => 'chaptarif/backups/' . basename($fp), 'created_at' => date('c', filemtime($fp)), 'bytes' => filesize($fp)];
+        }
+        usort($l, fn($a, $b) => strcmp($b['created_at'], $a['created_at']));
+        if ($l || !cld_config()) return $l;
+    }
     $r = cld_admin_call('GET', 'resources/raw/authenticated', ['prefix' => 'chaptarif/backups/', 'max_results' => 100]);
     $l = $r['resources'] ?? [];
     usort($l, fn($a, $b) => strcmp($b['created_at'], $a['created_at']));
@@ -246,13 +264,15 @@ function backup_test_restore(): array
 {
     $list = backup_list();
     if (!$list) return ['ok' => false, 'error' => 'Aucune sauvegarde trouvée.'];
-    $c = cld_config();
     $pid = $list[0]['public_id'];
+    if (is_file(files_path($pid, true))) { $blob = (string) file_get_contents(files_path($pid, true)); goto decrypt; }
+    $c = cld_config();
     $sig = substr(strtr(base64_encode(sha1($pid . $c['secret'], true)), '+/', '-_'), 0, 8);
     $ch = curl_init('https://res.cloudinary.com/' . $c['cloud'] . '/raw/authenticated/s--' . $sig . '--/' . $pid);
     curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 60, CURLOPT_FOLLOWLOCATION => true]);
     $blob = (string) curl_exec($ch);
     curl_close($ch);
+    decrypt:
     $data = backup_decrypt($blob);
     if (!$data) {
         security_event('sauvegarde.restauration_echec', 'critical', 'La dernière sauvegarde ne peut pas être déchiffrée : ' . $pid);
@@ -280,7 +300,7 @@ function maintenance_maybe(): void
             q('DELETE FROM security_events WHERE created_at < ? AND level = ?', [date('Y-m-d H:i:s', time() - 365 * 86400), 'info']);
             docs_retention_purge();
             reconcile_run();
-            if (cld_config()) backup_run('auto');
+            if (files_ready() || cld_config()) backup_run('auto');
         } catch (Throwable $e) {
             error_log('maintenance: ' . $e->getMessage());
         }
@@ -290,6 +310,8 @@ function maintenance_maybe(): void
 /** Supprime un document privé de Cloudinary. */
 function cld_destroy_private(string $publicIdWithFormat): void
 {
+    files_delete($publicIdWithFormat);
+    if (!cld_config()) return;
     $pid = preg_replace('/\.[a-z0-9]{2,5}$/i', '', $publicIdWithFormat);
     cld_admin_call('DELETE', 'resources/image/authenticated', ['public_ids[]' => $pid]);
 }
@@ -297,7 +319,6 @@ function cld_destroy_private(string $publicIdWithFormat): void
 /** Supprime les pièces d'un prestataire (identité, casier, etc.) — la photo de profil publique est conservée. */
 function provider_docs_destroy(array $p): void
 {
-    if (!cld_config()) return;
     foreach (provider_docs($p) as $k => $pid) {
         if ($k === 'photo' || !is_string($pid) || $pid === '') continue;
         cld_destroy_private($pid);

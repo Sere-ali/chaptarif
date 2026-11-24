@@ -83,6 +83,7 @@ if (PHP_SAPI !== 'cli') {
 require APP . '/db.php';
 require APP . '/helpers.php';
 require APP . '/auth.php';
+require APP . '/files.php';
 require APP . '/cloudinary.php';
 require APP . '/pricing.php';
 require APP . '/escrow.php';

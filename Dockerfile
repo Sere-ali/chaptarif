@@ -8,9 +8,10 @@ RUN php -r 'exit(version_compare(PHP_VERSION, "8.3.36", ">=") ? 0 : 1);' \
 
 RUN apt-get update \
  && apt-get -y upgrade \
- && apt-get install -y --no-install-recommends libpq-dev ca-certificates \
+ && apt-get install -y --no-install-recommends libpq-dev ca-certificates libjpeg-dev libpng-dev libwebp-dev \
  && update-ca-certificates \
- && docker-php-ext-install pdo_pgsql pgsql opcache \
+ && docker-php-ext-configure gd --with-jpeg --with-webp \
+ && docker-php-ext-install pdo_pgsql pgsql opcache gd exif \
  && a2enmod rewrite headers expires deflate \
  && rm -rf /var/lib/apt/lists/*
 

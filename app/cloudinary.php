@@ -24,6 +24,7 @@ function img(string $publicId, string $t = 'q_auto,f_auto'): string
     // Image fournie dans le site (public/assets/img/<id>.jpg) : prioritaire sur Cloudinary.
     $local = dirname(__DIR__) . '/public/assets/img/' . $publicId . '.jpg';
     if (preg_match('/^[a-z0-9_-]+$/i', $publicId) && is_file($local)) return '/assets/img/' . $publicId . '.jpg?v=' . filemtime($local);
+    if (preg_match('/^[a-z0-9_-]+$/i', $publicId) && files_exists('chaptarif/' . $publicId . '.jpg', false)) return '/f/chaptarif/' . $publicId . '.jpg';
     return 'https://res.cloudinary.com/' . cld_cloud() . '/image/upload/' . $t . '/chaptarif/' . $publicId . '.jpg';
 }
 
@@ -39,6 +40,13 @@ function cld(string $url, string $t = 'q_auto,f_auto'): string
  * @return array{ok:bool, url?:string, public_id?:string, error?:string}
  */
 function cld_upload(array $file, string $folder = 'chaptarif/uploads', string $type = 'upload', ?array $extraMimes = null): array
+{
+    // Disque Render d'abord ; Cloudinary seulement tant que le disque n'est pas branché.
+    if (files_ready()) return files_upload($file, $folder, $type === 'authenticated', $extraMimes);
+    return cld_upload_remote($file, $folder, $type, $extraMimes);
+}
+
+function cld_upload_remote(array $file, string $folder, string $type, ?array $extraMimes): array
 {
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) return ['ok' => false, 'error' => 'Aucun fichier reçu.'];
     if ($file['size'] > 8 * 1024 * 1024) return ['ok' => false, 'error' => 'Fichier trop lourd (8 Mo max).'];
@@ -84,6 +92,7 @@ function cld_upload_many(array $files, string $folder): array
 /** Adresse d'un document de prestataire : la photo d'identité est stockée en public, les autres pièces en privé. */
 function cld_doc_url(string $publicIdWithFormat, string $transform = ''): string
 {
+    if (files_exists($publicIdWithFormat, false)) return '/f/' . $publicIdWithFormat;
     if (str_starts_with($publicIdWithFormat, 'chaptarif/prestataires/') && ($c = cld_config())) {
         return 'https://res.cloudinary.com/' . $c['cloud'] . '/image/upload/' . ($transform !== '' ? $transform . '/' : '') . $publicIdWithFormat;
     }

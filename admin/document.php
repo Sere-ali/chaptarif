@@ -6,8 +6,24 @@ $p = one('SELECT * FROM providers WHERE id = ?', [(int) ($_GET['id'] ?? 0)]);
 $k = (string) ($_GET['k'] ?? '');
 $docs = $p ? provider_docs($p) : [];
 if ($p && !scope_allows($p['universe'])) { http_response_code(403); exit('Hors de votre périmètre.'); }
-if (!$p || !preg_match('/^[a-z_]{2,30}$/', $k) || empty($docs[$k]) || !cld_config()) { http_response_code(404); exit('Document introuvable.'); }
+if (!$p || !preg_match('/^[a-z_]{2,30}$/', $k) || empty($docs[$k]) || (!files_ready() && !cld_config())) { http_response_code(404); exit('Document introuvable.'); }
 $pdf = str_ends_with(strtolower($docs[$k]), '.pdf');
+// Fichier sur le disque du serveur (privé ou public) : servi directement, réservé aux administrateurs.
+foreach ([true, false] as $__pv) {
+    if (files_exists($docs[$k], $__pv)) {
+        if (!isset($_GET['t'])) audit('document.consultation', $p['name'] . ' #' . $p['id'], ['document' => $k]);
+        $__fp = files_path($docs[$k], $__pv);
+        header('Content-Type: ' . files_mime(pathinfo($__fp, PATHINFO_EXTENSION)));
+        header('Content-Length: ' . filesize($__fp));
+        header('Content-Disposition: inline; filename="' . $k . ($pdf ? '.pdf' : '.jpg') . '"');
+        header('Cache-Control: private, no-store');
+        header('X-Content-Type-Options: nosniff');
+        header('Content-Security-Policy: default-src \'none\'; img-src \'self\'; style-src \'unsafe-inline\'; frame-ancestors \'self\'');
+        readfile($__fp);
+        exit;
+    }
+}
+if (!cld_config()) { http_response_code(404); exit('Document introuvable.'); }
 $get = function (string $url): array {
     $ch = curl_init($url);
     curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true, CURLOPT_TIMEOUT => 20, CURLOPT_CONNECTTIMEOUT => 6]);
