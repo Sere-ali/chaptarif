@@ -77,7 +77,7 @@ if (is_super($me)) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/assets/css/app.css?v=4">
-<link rel="stylesheet" href="/assets/css/admin.css?v=62">
+<link rel="stylesheet" href="/assets/css/admin.css?v=63">
 </head>
 <?php if (($shell ?? true)):
 if (!function_exists('sh_ico')) {
@@ -153,25 +153,59 @@ $__subIco = ['nouveaux' => '<path d="M3 13l3-8h12l3 8v6H3zM3 13h5l1 3h6l1-3h5"/>
 </header>
 <aside class="sh-side">
   <div class="sh-scroll">
-  <nav class="sh-main">
+  <?php
+  $__bs = (string) ($_GET['status'] ?? ''); $__on = fn(string $k) => $nav === $k;
+  $__ok = fn(string $k) => isset($__hr[$k]);
+  $__G = [
+    ['Réservations', 'cal', [
+        $__ok('bookings') ? ['/admin/reservations', 'Toutes les réservations', 0, $__on('bookings') && $__bs === ''] : null,
+        $__ok('bookings') ? ['/admin/reservations?status=EN_ATTENTE_PAIEMENT', 'En attente', 0, $__on('bookings') && $__bs === 'EN_ATTENTE_PAIEMENT'] : null,
+        $__ok('bookings') ? ['/admin/reservations?status=BLOQUE', 'Confirmées', 0, $__on('bookings') && $__bs === 'BLOQUE'] : null,
+        $__ok('bookings') ? ['/admin/reservations?status=VALIDE', 'Terminées', 0, $__on('bookings') && $__bs === 'VALIDE'] : null,
+        $__ok('bookings') ? ['/admin/reservations?status=ANNULE', 'Annulées', 0, $__on('bookings') && $__bs === 'ANNULE'] : null,
+        $__ok('abandoned') ? [$__hr['abandoned'] ?? '', 'Non abouties', 0, $__on('abandoned')] : null]],
+    ['Prestataires', 'users', [
+        $__ok('candidatures') ? [$__hr['candidatures'] ?? '', 'Candidatures prestataires', $pendingCandidatures, $__on('candidatures')] : null,
+        $__ok('providers') ? [$__hr['providers'] ?? '', 'Prestataires & KYC', $pendingKyc, $__on('providers')] : null,
+        $__ok('listings') ? [$__hr['listings'] ?? '', 'Annonces prestataires', $pendingListings, $__on('listings')] : null,
+        $__ok('covoiturage') ? [$__hr['covoiturage'] ?? '', 'Trajets covoiturage', 0, $__on('covoiturage')] : null,
+        $__ok('properties') ? [$__hr['properties'] ?? '', 'Immobilier', 0, $__on('properties')] : null,
+        $__ok('trips') ? [$__hr['trips'] ?? '', 'Départs cars', 0, $__on('trips')] : null]],
+    ['Messagerie', 'chat', [
+        $__ok('messages') ? [$__hr['messages'] ?? '', 'Messages', $unread, $__on('messages')] : null,
+        $__ok('chat') ? [$__hr['chat'] ?? '', 'Chat service client', $chatUnread, $__on('chat')] : null,
+        $__ok('chatpro') ? [$__hr['chatpro'] ?? '', 'Chat prestataires', $chatUnreadProMine, $__on('chatpro')] : null,
+        $__ok('team') ? [$__hr['team'] ?? '', 'Chat gestionnaires', $teamUnread, $__on('team')] : null]],
+    ['Litiges & réclamations', 'scale', [
+        ['/admin/litiges?v=nouveaux', 'À traiter', $__vc['nouveaux'], $__on('disputes') && $__curV === 'nouveaux'],
+        ['/admin/litiges?v=attente', 'En attente', 0, $__on('disputes') && $__curV === 'attente'],
+        ['/admin/litiges?v=acceptes', 'Acceptés', 0, $__on('disputes') && $__curV === 'acceptes'],
+        ['/admin/litiges?v=refuses', 'Refusés', 0, $__on('disputes') && $__curV === 'refuses'],
+        ['/admin/litiges?v=clotures', 'Historique des litiges', 0, $__on('disputes') && $__curV === 'clotures']]],
+    ['Finances', 'card', [
+        $__ok('finances') ? [$__hr['finances'] ?? '', 'Finances & séquestre', 0, $__on('finances')] : null,
+        $__ok('control') ? [$__hr['control'] ?? '', 'Contrôle des billets', 0, $__on('control')] : null]],
+    ['Gestion & paramètres', 'gear', [
+        $__ok('offers') ? [$__hr['offers'] ?? '', 'Services & catégories', 0, $__on('offers')] : null,
+        $__ok('clients') ? [$__hr['clients'] ?? '', 'Utilisateurs', 0, $__on('clients')] : null,
+        $__ok('zones') ? [$__hr['zones'] ?? '', 'Zones & quartiers', 0, $__on('zones')] : null,
+        $__ok('codes') ? [$__hr['codes'] ?? '', 'Codes de réduction', 0, $__on('codes')] : null,
+        $__ok('settings') ? [$__hr['settings'] ?? '', 'Paramètres', 0, $__on('settings')] : null,
+        $__ok('audit') ? [$__hr['audit'] ?? '', "Journal d'audit", 0, $__on('audit')] : null,
+        $__ok('security') ? [$__hr['security'] ?? '', 'Sécurité', (int) ($secAlerts ?? 0), $__on('security')] : null,
+        $__ok('admins') ? [$__hr['admins'] ?? '', 'Administrateurs', 0, $__on('admins')] : null]],
+  ]; ?>
+  <nav class="sh-main sh-tree">
     <a href="/admin" class="<?= $nav === 'dashboard' ? 'on' : '' ?>"><?= sh_ico('home') ?><span>Tableau de bord</span></a>
-    <a href="<?= e($__hr['offers'] ?? '/admin/offres') ?>" class="<?= $nav === 'offers' ? 'on' : '' ?>"><?= sh_ico('layers') ?><span>Services</span></a>
-    <a href="/admin/litiges?v=nouveaux" class="sh-par <?= $nav === 'disputes' ? 'on' : '' ?>"><?= sh_ico('scale') ?><span>Litiges &amp; Sinistres</span><?= $__chev ?></a>
-    <div class="sh-sub"><?php foreach ($__subL as $vk => $vl): ?><a href="/admin/litiges?v=<?= $vk ?>" class="<?= $nav === 'disputes' && $__curV === $vk ? 'on' : '' ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?= $__subIco[$vk] ?></svg><span><?= e($vl) ?><?= $vk === 'nouveaux' ? ' (' . $__vc['nouveaux'] . ')' : '' ?></span></a><?php endforeach; ?></div>
+    <?php if (isset($__hr['tasks'])): ?><a href="<?= e($__hr['tasks']) ?>" class="<?= $nav === 'tasks' ? 'on' : '' ?>"><?= sh_ico('check') ?><span>Mes tâches</span><?= $myOpenTasks ? '<em>' . $myOpenTasks . '</em>' : '' ?></a><?php endif; ?>
+    <?php foreach ($__G as [$gt, $gi, $gl]): $gl = array_values(array_filter($gl)); if (!$gl) continue; ?>
     <hr>
-    <a href="/admin/litiges?v=clotures" class="<?= $nav === 'disputes' && $__curV === 'clotures' ? 'on' : '' ?>"><?= sh_ico('history') ?><span>Historique des litiges</span></a>
-    <hr>
-    <?php if (isset($__hr['messages'])): ?><a href="<?= e($__hr['messages']) ?>" class="<?= $nav === 'messages' ? 'on' : '' ?>"><?= sh_ico('chat') ?><span>Messages</span><?= $unread ? '<em>' . $unread . '</em>' : '' ?></a><?php endif; ?>
-    <a href="/admin/clients" class="<?= $nav === 'clients' ? 'on' : '' ?>"><?= sh_ico('users') ?><span>Utilisateurs</span></a>
-    <?php if (is_super($me)): ?><a href="/admin/parametres" class="<?= $nav === 'settings' ? 'on' : '' ?>"><?= sh_ico('gear') ?><span>Paramètres</span></a><?php endif; ?>
+    <div class="sh-grp">
+      <div class="sh-gh" role="button" tabindex="0"><?= sh_ico($gi) ?><span><?= e($gt) ?></span><?= $__chev ?></div>
+      <div class="sh-sub2"><?php foreach ($gl as [$gh, $glb, $gn, $gon]): ?><a href="<?= e($gh) ?>" class="<?= $gon ? 'on' : '' ?>"><i></i><span><?= e($glb) ?></span><?= $gn ? '<em>' . (int) $gn . '</em>' : '' ?></a><?php endforeach; ?></div>
+    </div>
+    <?php endforeach; ?>
   </nav>
-  <?php $__sec = ''; $__buf = ''; foreach ($items as $it) {
-      if ($it[1] === null) { if ($__buf !== '') echo '<div class="sh-sec"><h4>' . e($__sec) . '</h4><nav>' . $__buf . '</nav></div>'; $__sec = $it[0]; $__buf = ''; continue; }
-      [$k, $href, , $label, $n] = $it;
-      if (in_array($k, $__shown, true)) continue;
-      $__buf .= '<a href="' . $href . '" class="' . ($nav === $k ? 'on' : '') . '">' . sh_ico($__icons[$k] ?? 'inbox') . '<span>' . e(trim(preg_replace('/^[^\p{L}]+/u', '', $label))) . '</span>' . ($n ? '<em>' . $n . '</em>' : '') . '</a>';
-  }
-  if ($__buf !== '') echo '<div class="sh-sec"><h4>' . e($__sec) . '</h4><nav>' . $__buf . '</nav></div>'; ?>
   </div>
   <form class="sh-out" method="post" action="/admin/logout"><?= csrf_field() ?><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M15 8l4 4-4 4M19 12H9"/></svg>Déconnexion</button></form>
 </aside>

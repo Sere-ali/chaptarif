@@ -764,3 +764,21 @@ body.adm-shell > .main { grid-column: 2; grid-row: 2; padding: 20px 26px 40px; m
 /* logo d'origine dans la barre du haut (inchangé) */
 .tb .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: 6px; } .tb .brand img { width: 44px; height: 44px; } .tb .brand-txt { font-size: 1.9rem; }
 @media (max-width: 800px) { .tb .brand img { width: 34px; height: 34px; } .tb .brand-txt { font-size: 1.45rem; } }
+
+/* Menu en groupes repliables */
+.sh-tree { display: grid; gap: 4px; }
+.sh-tree > a { display: flex; align-items: center; gap: 16px; padding: 13px 16px; border-radius: 14px; font-size: 1.08rem; font-weight: 700; color: #F1FFF5; text-decoration: none; }
+.sh-tree > a svg { width: 28px; height: 28px; } .sh-tree > a:hover { background: rgba(255,255,255,.1); } .sh-tree > a.on { background: #16A34A; color: #fff; }
+.sh-tree > a em, .sh-sub2 a em { margin-left: auto; background: #E53935; color: #fff; font-style: normal; font-size: .78rem; font-weight: 800; min-width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 999px; padding: 0 6px; }
+.sh-tree > hr { border: 0; border-top: 1px solid rgba(255,255,255,.25); margin: 6px 8px; width: auto; }
+.sh-gh { display: flex; align-items: center; gap: 16px; padding: 13px 16px; border-radius: 14px; font-size: 1.08rem; font-weight: 800; color: #fff; cursor: pointer; }
+.sh-grp .sh-gh svg:first-child { width: 28px; height: 28px; }
+.sh-gh .sh-chev { width: 20px; height: 20px; margin-left: auto; transition: transform .2s; } .sh-grp.shut .sh-gh .sh-chev { transform: rotate(-90deg); }
+.sh-gh:hover { background: rgba(255,255,255,.08); }
+.sh-sub2 { display: grid; gap: 2px; padding: 2px 0 6px; }
+.sh-sub2 a { display: flex; align-items: center; gap: 16px; padding: 8px 16px 8px 30px; border-radius: 12px; color: #E8FBEE; text-decoration: none; font-size: 1rem; font-weight: 500; }
+.sh-sub2 a i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; opacity: .9; }
+.sh-sub2 a:hover { background: rgba(255,255,255,.1); } .sh-sub2 a.on { background: #E8F7EC; color: #0A4E24; font-weight: 700; }
+@media (max-width: 800px) { .sh-tree { display: flex; gap: 6px; align-items: center; } .sh-tree > hr, .sh-gh { display: none; } .sh-grp, .sh-sub2 { display: contents; } .sh-tree > a, .sh-sub2 a { white-space: nowrap; padding: 9px 12px; font-size: .95rem; } .sh-tree > a svg { width: 20px; height: 20px; } .sh-sub2 a { padding-left: 12px; } .sh-sub2 a i { display: none; } }
+
+.sh-grp.shut .sh-sub2 { display: none; }
