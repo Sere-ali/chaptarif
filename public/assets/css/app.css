@@ -1878,9 +1878,14 @@ body:has(.ps-tabs) { padding-bottom: 96px; }
 /* Tarifs de location d'un chauffeur */
 .ch-tar { background: #E9F5EE; border-radius: 18px; padding: 14px; margin: 0 0 14px; }
 .ch-tar h3 { margin: 0 0 12px; font-size: 1rem; font-weight: 800; color: #14663A; display: flex; align-items: center; gap: 8px; }
-.ch-tar-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.ch-c { border-radius: 14px; padding: 12px 6px; text-align: center; display: grid; justify-items: center; gap: 4px; align-content: start; }
+.ch-tar-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-items: stretch; }
+.ch-c { position: relative; font: inherit; cursor: pointer; border: 2px solid transparent; border-radius: 14px; padding: 12px 6px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform .12s, box-shadow .12s, border-color .12s; }
+.ch-t { flex: 1; display: grid; justify-items: center; align-content: start; gap: 4px; }
 .ch-c b { font-size: .84rem; color: #1b2a24; line-height: 1.15; } .ch-c small { font-size: .7rem; color: #5b6b63; margin-top: -3px; }
 .ch-c1 { background: #DDEFE4; color: #14663A; } .ch-c2 { background: #E2ECFB; color: #1D5FC7; } .ch-c3 { background: #FFF1CC; color: #D98800; }
-.ch-p { margin-top: 4px; color: #fff; font-weight: 800; font-size: .74rem; padding: 6px 8px; border-radius: 999px; white-space: nowrap; }
+.ch-p { color: #fff; font-weight: 800; font-size: .74rem; padding: 6px 8px; border-radius: 999px; white-space: nowrap; width: 100%; box-sizing: border-box; }
 .ch-p1 { background: #14663A; } .ch-p2 { background: #1458B8; } .ch-p3 { background: #E08A00; }
+.ch-ok { display: none; position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; line-height: 20px; border-radius: 50%; color: #fff; font-style: normal; font-size: .72rem; font-weight: 800; }
+.ch-c1 .ch-ok { background: #14663A; } .ch-c2 .ch-ok { background: #1458B8; } .ch-c3 .ch-ok { background: #E08A00; } .ch-c.on .ch-ok { display: block; }
+.ch-c.on { border-color: currentColor; box-shadow: 0 8px 18px -10px currentColor; transform: translateY(-1px); }
+.ch-tar-hint { margin: 8px 2px 0; text-align: center; color: #4d6a5b; }

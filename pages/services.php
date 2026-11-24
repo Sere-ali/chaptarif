@@ -232,11 +232,25 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <?php $__t = fn(string $k, int $d) => number_format((int) setting($k, $d), 0, '', ' ') . ' FCFA'; ?>
           <div class="ch-tar">
             <h3><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 12 5l8 4.500-8 4.500z"/><path d="M7 11.500V15c0 1.500 2.200 3 5 3s5-1.500 5-3v-3.500"/></svg>Tarifs de location d'un chauffeur</h3>
-            <div class="ch-tar-g">
-              <div class="ch-c ch-c1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b>Demi-journée</b><span class="ch-p ch-p1"><?= $__t('chauffeur_tarif_demi', 5000) ?></span></div>
-              <div class="ch-c ch-c2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><b>Journée</b><small>(Abidjan)</small><span class="ch-p ch-p2"><?= $__t('chauffeur_tarif_jour', 9000) ?></span></div>
-              <div class="ch-c ch-c3"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.200 7-11.500A7 7 0 0 0 5 9.500C5 14.800 12 21 12 21z"/><circle cx="12" cy="9.500" r="2.500"/></svg><b>Hors Abidjan</b><span class="ch-p ch-p3"><?= $__t('chauffeur_tarif_hors', 12500) ?></span></div>
+            <div class="ch-tar-g" role="radiogroup" aria-label="Choisir un tarif">
+              <button type="button" class="ch-c ch-c1" data-tarif="demi" role="radio"><span class="ch-t"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b>Demi-journée</b></span><span class="ch-p ch-p1"><?= $__t('chauffeur_tarif_demi', 5000) ?></span><i class="ch-ok">✓</i></button>
+              <button type="button" class="ch-c ch-c2" data-tarif="jour" role="radio"><span class="ch-t"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><b>Journée</b><small>(Abidjan)</small></span><span class="ch-p ch-p2"><?= $__t('chauffeur_tarif_jour', 9000) ?></span><i class="ch-ok">✓</i></button>
+              <button type="button" class="ch-c ch-c3" data-tarif="hors" role="radio"><span class="ch-t"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><b>Hors Abidjan</b></span><span class="ch-p ch-p3"><?= $__t('chauffeur_tarif_hors', 12500) ?></span><i class="ch-ok">✓</i></button>
             </div>
+            <p class="fine ch-tar-hint">Touchez un tarif pour le sélectionner.</p>
+            <script>
+            (function () { var box = document.currentScript.parentNode; function init() {
+              var f = box.closest('form'); if (!f) return;
+              var dest = f.querySelector('[name=dest]'), du = f.querySelector('[name=duree]'), cards = box.querySelectorAll('.ch-c');
+              function sync() { var k = dest.value === 'hors' ? 'hors' : (du.value === 'demi' ? 'demi' : 'jour');
+                cards.forEach(function (c) { var on = c.dataset.tarif === k; c.classList.toggle('on', on); c.setAttribute('aria-checked', on ? 'true' : 'false'); }); }
+              cards.forEach(function (c) { c.addEventListener('click', function () { var k = c.dataset.tarif;
+                if (k === 'hors') { dest.value = 'hors'; if (du.value === 'demi') du.value = '1'; }
+                else { dest.value = 'abidjan'; du.value = k === 'demi' ? 'demi' : (du.value === 'demi' ? '1' : du.value); }
+                dest.dispatchEvent(new Event('change', { bubbles: true })); du.dispatchEvent(new Event('change', { bubbles: true })); sync(); }); });
+              dest.addEventListener('change', sync); du.addEventListener('change', sync); sync();
+            } if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init(); })();
+            </script>
           </div>
           <label class="fld"><span> Adresse de prise en charge</span><input name="pickup" required maxlength="200" placeholder="Ex. Marcory, Zone 4"></label>
           <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
@@ -244,7 +258,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <label class="fld"><span> Destination</span><?= $destSel ?></label>
           <label class="fld"><span> Date et heure d'arrivée du chauffeur</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
           <label class="fld"><span> Boîte de vitesse</span><select name="gearbox"><option value="les2">Les deux (manuelle ou automatique)</option><option value="manuelle">Manuelle</option><option value="automatique">Automatique</option></select></label>
-          <label class="fld"><span> Durée souhaitée</span><select name="duree"><option value="demi">Demi-journée</option><?php for ($i = 1; $i <= 7; $i++): ?><option value="<?= $i ?>"><?= $i ?> jour<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?><option value="semaine">1 semaine</option><option value="mois">1 mois</option></select></label>
+          <label class="fld"><span> Durée souhaitée</span><select name="duree"><option value="demi">Demi-journée</option><?php for ($i = 1; $i <= 7; $i++): ?><option value="<?= $i ?>"<?= $i === 1 ? ' selected' : '' ?>><?= $i ?> jour<?= $i > 1 ? 's' : '' ?></option><?php endfor; ?><option value="semaine">1 semaine</option><option value="mois">1 mois</option></select></label>
         <?php else: ?>
           <label class="fld"><span> Adresse de chargement</span><input name="load" required maxlength="200" placeholder="Ex. Abobo, Sagbé"></label>
           <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
