@@ -314,6 +314,30 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   </div>
 </section>
 
+
+<section class="section" id="faq">
+  <div class="container narrow">
+    <div class="sec-head"><span class="eyebrow">Questions fréquentes</span></div>
+    <div class="fq">
+      <details open><summary>Comment mon paiement est-il géré ?</summary>
+        <ol class="fq-st">
+          <li><i>1</i><span class="fq-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="12" width="36" height="26" rx="5"/><path d="M6 20h36M32 30h4"/></svg></span><p>Vous payez le service sur <span class="b1">Chap</span><span class="b2">Tarif</span>.</p></li>
+          <li><i>2</i><span class="fq-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="21" width="28" height="20" rx="4"/><path d="M16 21v-6a8 8 0 0 1 16 0v6M24 29v4"/></svg></span><p>Votre argent est bloqué en toute sécurité sur la plateforme, le temps que le service soit réalisé.</p></li>
+          <li><i>3</i><span class="fq-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="16"/><path d="m16 25 6 6 11-12"/></svg></span><p>Une fois le service terminé, vous libérez les fonds en communiquant un code de validation au prestataire. Il reçoit alors son paiement sur son compte Mobile Money (Wave, Orange Money, MTN Money ou Moov Money).</p></li>
+        </ol></details>
+      <details><summary>Comment les prestataires sont-ils vérifiés ?</summary>
+        <div class="fq-v"><span class="fq-big"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="24" height="32" rx="4"/><path d="M14 20l3 3 5-6M14 30l3 3 5-6"/><rect x="22" y="22" width="20" height="14" rx="3" fill="#E6F4FF"/><circle cx="29" cy="28" r="2"/><path d="M26 34c0-2 6-2 6 0M35 28h4"/></svg></span>
+        <ul class="fq-ck"><li>Chaque prestataire fournit une <b>pièce d'identité (CNI)</b> contrôlée par notre équipe.</li><li>Selon l'activité, des documents complémentaires sont demandés (ex. : <b>permis</b> pour les chauffeurs).</li><li>Pour les <b>ménages</b>, un <b>casier judiciaire</b> est exigé.</li><li>Pour les logements, nous vérifions le <b>titre de propriété</b> et réalisons une <b>inspection physique</b>.</li></ul></div></details>
+      <details><summary>Dois-je créer un compte pour consulter les tarifs et les prestataires ?</summary>
+        <div class="fq-a"><div><span class="fq-big"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="4" width="24" height="40" rx="5"/><circle cx="26" cy="20" r="6"/><path d="m30 24 6 6"/></svg></span><p><em>Non.</em> Vous pouvez explorer librement les prestataires, consulter leurs tarifs et les comparer, sans créer de compte.</p></div>
+        <div><span class="fq-big"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="4" width="24" height="40" rx="5"/><circle cx="24" cy="18" r="5"/><path d="M16 38l5 5 11-11M17 28h14"/></svg></span><p class="fq-pill">Un compte est uniquement nécessaire pour réserver un service.</p></div></div></details>
+      <details><summary>Quels moyens de paiement sont acceptés ?</summary>
+        <div class="fq-p"><div class="fq-logos"><span class="chip-wave">Wave</span><span class="chip-om">Orange Money</span><span class="chip-mtn">MTN Mobile Money</span><span class="chip-moov">Moov Money</span></div>
+        <p>Vous pouvez payer via <b>Wave</b>, <b>Orange Money</b>, <b>MTN Mobile Money</b> et <b>Moov Money</b>, directement dans l'application <span class="b1">Chap</span><span class="b2">Tarif</span>.</p></div></details>
+      <details><summary>Que se passe-t-il si le prestataire ne vient pas&nbsp;?</summary><p>Ouvrez un litige depuis « Mes réservations ». Le paiement est gelé et, si l'absence est confirmée, vous êtes intégralement remboursé.</p></details>
+    </div>
+  </div>
+</section>
 <section class="section hw" id="sequestre">
   <div class="container">
     <div class="hw-how reveal">
@@ -353,30 +377,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <span class="hw-chips"><span class="chip chip-wave">wave</span><span class="chip chip-om">Orange Money</span><span class="chip chip-mtn">MTN MoMo</span><span class="chip chip-moov">Moov Money</span></span>
       <span class="hw-help"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M8 28v-6a16 16 0 0 1 32 0v6"/><rect x="5" y="26" width="8" height="12" rx="3" fill="currentColor"/><rect x="35" y="26" width="8" height="12" rx="3" fill="currentColor"/><path d="M39 38c0 4-4 6-9 6"/></svg><span><b>Besoin d'aide ?</b><small>Notre équipe vous répond rapidement.</small></span></span>
       <a class="hw-btn" href="/contact"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-13.200 8L3 21l1.100-4.600A9 9 0 1 1 21 12z"/><path d="M9 9c0 3 3 6 6 6l1.500-1.500-2-1.200-1 .7c-1-.4-2-1.400-2.400-2.400l.7-1-1.200-2z"/></svg>Contacter le support</a>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="faq">
-  <div class="container narrow">
-    <div class="sec-head"><span class="eyebrow">Questions fréquentes</span></div>
-    <div class="fq">
-      <details open><summary>Comment mon paiement est-il géré ?</summary>
-        <ol class="fq-st">
-          <li><i>1</i><span class="fq-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="12" width="36" height="26" rx="5"/><path d="M6 20h36M32 30h4"/></svg></span><p>Vous payez le service sur <span class="b1">Chap</span><span class="b2">Tarif</span>.</p></li>
-          <li><i>2</i><span class="fq-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="21" width="28" height="20" rx="4"/><path d="M16 21v-6a8 8 0 0 1 16 0v6M24 29v4"/></svg></span><p>Votre argent est bloqué en toute sécurité sur la plateforme, le temps que le service soit réalisé.</p></li>
-          <li><i>3</i><span class="fq-ic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="16"/><path d="m16 25 6 6 11-12"/></svg></span><p>Une fois le service terminé, vous libérez les fonds en communiquant un code de validation au prestataire. Il reçoit alors son paiement sur son compte Mobile Money (Wave, Orange Money, MTN Money ou Moov Money).</p></li>
-        </ol></details>
-      <details><summary>Comment les prestataires sont-ils vérifiés ?</summary>
-        <div class="fq-v"><span class="fq-big"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="24" height="32" rx="4"/><path d="M14 20l3 3 5-6M14 30l3 3 5-6"/><rect x="22" y="22" width="20" height="14" rx="3" fill="#E6F4FF"/><circle cx="29" cy="28" r="2"/><path d="M26 34c0-2 6-2 6 0M35 28h4"/></svg></span>
-        <ul class="fq-ck"><li>Chaque prestataire fournit une <b>pièce d'identité (CNI)</b> contrôlée par notre équipe.</li><li>Selon l'activité, des documents complémentaires sont demandés (ex. : <b>permis</b> pour les chauffeurs).</li><li>Pour les <b>ménages</b>, un <b>casier judiciaire</b> est exigé.</li><li>Pour les logements, nous vérifions le <b>titre de propriété</b> et réalisons une <b>inspection physique</b>.</li></ul></div></details>
-      <details><summary>Dois-je créer un compte pour consulter les tarifs et les prestataires ?</summary>
-        <div class="fq-a"><div><span class="fq-big"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="4" width="24" height="40" rx="5"/><circle cx="26" cy="20" r="6"/><path d="m30 24 6 6"/></svg></span><p><em>Non.</em> Vous pouvez explorer librement les prestataires, consulter leurs tarifs et les comparer, sans créer de compte.</p></div>
-        <div><span class="fq-big"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="4" width="24" height="40" rx="5"/><circle cx="24" cy="18" r="5"/><path d="M16 38l5 5 11-11M17 28h14"/></svg></span><p class="fq-pill">Un compte est uniquement nécessaire pour réserver un service.</p></div></div></details>
-      <details><summary>Quels moyens de paiement sont acceptés ?</summary>
-        <div class="fq-p"><div class="fq-logos"><span class="chip-wave">Wave</span><span class="chip-om">Orange Money</span><span class="chip-mtn">MTN Mobile Money</span><span class="chip-moov">Moov Money</span></div>
-        <p>Vous pouvez payer via <b>Wave</b>, <b>Orange Money</b>, <b>MTN Mobile Money</b> et <b>Moov Money</b>, directement dans l'application <span class="b1">Chap</span><span class="b2">Tarif</span>.</p></div></details>
-      <details><summary>Que se passe-t-il si le prestataire ne vient pas&nbsp;?</summary><p>Ouvrez un litige depuis « Mes réservations ». Le paiement est gelé et, si l'absence est confirmée, vous êtes intégralement remboursé.</p></details>
     </div>
   </div>
 </section>
