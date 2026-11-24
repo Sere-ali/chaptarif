@@ -87,7 +87,8 @@ if (is_post()) {
         flash('success', 'Numéro vérifié, compte créé. Bienvenue sur ChapTarif !');
         redirect(login_dest($next, $user));
     }
-    if ($action === 'reset_send') {
+    if ($action === 'reset_send' || $action === 'reset_verify') redirect($qs('reset'));
+    if (false && $action === 'reset_send') {
         $phone = normalize_phone((string) ($_POST['phone'] ?? ''));
         if (!$phone) {
             flash('error', 'Numéro invalide.');
@@ -112,7 +113,7 @@ if (is_post()) {
         flash('info', 'Si ce numéro a un compte, un code à 6 chiffres vient d\'être envoyé par SMS.');
         redirect('/connexion?mode=reset&step=code&next=' . urlencode($next));
     }
-    if ($action === 'reset_verify') {
+    if (false && $action === 'reset_verify') {
         $phone = $_SESSION['reset_phone'] ?? null;
         $code = preg_replace('/\D/', '', (string) ($_POST['code'] ?? ''));
         $pw = (string) ($_POST['password'] ?? '');
@@ -195,28 +196,15 @@ view('layout/header', compact('title'));
         <button class="btn btn-primary btn-block btn-lg">Créer mon compte</button>
       </form>
 
-    <?php elseif ($step === 'phone'): ?>
-      <h1 class="h2">Mot de passe oublié</h1>
-      <p class="muted">Entrez votre numéro : vous recevrez un code à 6 chiffres par SMS pour choisir un nouveau mot de passe.</p>
-      <form method="post" action="/connexion">
-        <?= csrf_field() ?>
-        <input type="hidden" name="step" value="reset_send"><input type="hidden" name="next" value="<?= e($next) ?>">
-        <label class="fld"><span>Numéro de téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
-        <button class="btn btn-primary btn-block btn-lg">Recevoir mon code</button>
-      </form>
-      <p class="center mt"><a href="<?= e($qs()) ?>">Retour à la connexion</a></p>
-
     <?php else: ?>
-      <h1 class="h2">Nouveau mot de passe</h1>
-      <p class="muted">Code envoyé au <b><?= e(fmt_phone($_SESSION['reset_phone'])) ?></b>. <a href="<?= e($qs('reset')) ?>">Modifier</a></p>
-      <form method="post" action="/connexion">
-        <?= csrf_field() ?>
-        <input type="hidden" name="step" value="reset_verify"><input type="hidden" name="next" value="<?= e($next) ?>">
-        <input class="otp-input" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="\d{6}" placeholder="••••••" required autofocus>
-        <label class="fld"><span>Nouveau mot de passe (8 caractères minimum)</span><input type="password" name="password" minlength="8" autocomplete="new-password" required></label>
-        <label class="fld"><span>Confirmer le mot de passe</span><input type="password" name="password2" minlength="8" autocomplete="new-password" required></label>
-        <button class="btn btn-primary btn-block btn-lg">Enregistrer</button>
-      </form>
+      <h1 class="h2">Mot de passe oublié</h1>
+      <p class="muted">Pas besoin de mot de passe : connectez-vous avec votre empreinte digitale (clé de sécurité) enregistrée sur cet appareil.</p>
+      <button type="button" class="btn btn-primary btn-block btn-lg pk-login" data-passkey-login data-next="<?= e($next) ?>">🔐 Me connecter avec mon empreinte</button>
+      <p class="fine center" data-passkey-msg></p>
+      <script src="/assets/js/passkey.js?v=1" defer></script>
+      <p class="muted center mt">Aucune empreinte enregistrée ? Contactez le support ChapTarif : nous vous aiderons à retrouver l'accès.</p>
+      <p class="center mt"><a class="btn btn-soft" href="/contact">Contacter le support</a></p>
+      <p class="center mt"><a href="<?= e($qs()) ?>">Retour à la connexion</a></p>
     <?php endif; ?>
     <p class="fine center">En continuant, vous acceptez nos <a href="/mentions-legales">conditions générales</a>.</p>
   </div>

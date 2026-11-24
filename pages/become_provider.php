@@ -57,10 +57,14 @@ if (is_post()) {
         redirect('/espace-prestataire');
     }
     if (!one('SELECT id FROM users WHERE phone = ?', [$phone])) {
-        insert('users', ['role' => 'client', 'name' => $name, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
-        flash('success', 'Candidature envoyée ! Connectez-vous juste à côté avec votre numéro et votre mot de passe pour présenter vos services. Notre équipe vérifie votre dossier (pièces demandées) et vous appelle sous 30 minutes.');
+        $uid = insert('users', ['role' => 'client', 'name' => $name, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
+        $nu = one('SELECT * FROM users WHERE id = ?', [$uid]);
+        login_user($nu); login_device_check($nu);
+        flash('success', 'Candidature envoyée ! Notre équipe vérifie votre dossier (pièces demandées) et vous appelle sous 30 minutes.');
+        $_SESSION['after_signup'] = '/espace-prestataire';
+        redirect('/compte-cree');
     } else {
-        flash('success', 'Candidature envoyée ! Ce numéro a déjà un compte : connectez-vous (code ou mot de passe existant) pour accéder à votre espace. Notre équipe vérifie votre dossier sous 30 minutes.');
+        flash('success', 'Candidature envoyée ! Ce numéro a déjà un compte : connectez-vous (mot de passe ou empreinte) pour accéder à votre espace. Notre équipe vérifie votre dossier sous 30 minutes.');
     }
     redirect('/devenir-prestataire#connexion');
 }
