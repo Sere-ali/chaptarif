@@ -288,6 +288,32 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
   </div>
 </section>
 
+
+<section class="section">
+  <div class="container">
+    <div class="pc reveal">
+      <a class="pc-logo" href="/"><img src="/assets/img/logo.svg" width="46" height="46" alt=""><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></a>
+      <span class="pc-tag"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="15" width="36" height="25" rx="5"/><path d="M17 15v-4a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v4M6 26h36"/></svg>Espace Prestataires</span>
+      <h2>Développez votre activité<br>avec <span class="b1">Chap</span><span class="b2">Tarif</span></h2>
+      <p class="pc-sub">Gagnez en visibilité, recevez plus de réservations et développez votre clientèle dans votre domaine.</p>
+      <div class="pc-uni">
+        <span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 28l3-9a4 4 0 0 1 4-3h18a4 4 0 0 1 4 3l3 9v8a2 2 0 0 1-2 2h-4v-4H14v4h-4a2 2 0 0 1-2-2zM8 28h32M14 28h.01M34 28h.01"/></svg>Transports</span>
+        <span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24 24 8l18 16M11 21v19h26V21M20 40V29h8v11"/></svg>Immobilier</span>
+        <span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h18l-2 18H10zM11 22l3-8h6l3 8M32 10l5 2v6l3 2v20H30V20l2-2z"/></svg>Ménage<br>&amp; Pressing</span>
+        <span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 40c-8 0-14-5-16-14 6 0 10 2 12 6-2-9 0-17 4-22 4 5 6 13 4 22 2-4 6-6 12-6-2 9-8 14-16 14z"/></svg>Beauté</span>
+      </div>
+      <div class="pc-row">
+        <ul class="pc-ck"><li>Inscription gratuite<br>et simple</li><li>Gestion de vos réservations</li><li>Paiements sécurisés</li><li>Suivi de votre activité<br>sur l'application</li></ul>
+        <div class="pc-opt">
+          <div class="pc-oh"><span class="pc-oi"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 40V28M18 40V20M28 40V24M38 40V12M10 22l10-8 8 6 12-12M32 8h8v8"/></svg></span><div><h3>Option <span>Visibilité</span> Plus</h3><small>Donnez plus de visibilité à votre activité !</small></div><em>Facultatif</em></div>
+          <div class="pc-ob"><div class="pc-ph"><i>Recherche d'un prestataire</i><b>↑ Votre profil<br>en avant</b><u></u><u></u></div><div><p>Votre profil bénéficie d'un positionnement prioritaire dans les résultats de recherche de votre domaine.</p><strong>9.999 FCFA / mois</strong></div></div>
+        </div>
+      </div>
+      <a class="pc-btn" href="/devenir-prestataire">Devenir prestataire <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+</section>
+
 <section class="section hw" id="sequestre">
   <div class="container">
     <div class="hw-how reveal">
@@ -327,31 +353,6 @@ view('layout/header', compact('title', 'active', 'bodyClass'));
       <span class="hw-chips"><span class="chip chip-wave">wave</span><span class="chip chip-om">Orange Money</span><span class="chip chip-mtn">MTN MoMo</span><span class="chip chip-moov">Moov Money</span></span>
       <span class="hw-help"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M8 28v-6a16 16 0 0 1 32 0v6"/><rect x="5" y="26" width="8" height="12" rx="3" fill="currentColor"/><rect x="35" y="26" width="8" height="12" rx="3" fill="currentColor"/><path d="M39 38c0 4-4 6-9 6"/></svg><span><b>Besoin d'aide ?</b><small>Notre équipe vous répond rapidement.</small></span></span>
       <a class="hw-btn" href="/contact"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-13.200 8L3 21l1.100-4.600A9 9 0 1 1 21 12z"/><path d="M9 9c0 3 3 6 6 6l1.500-1.500-2-1.200-1 .7c-1-.4-2-1.400-2.400-2.400l.7-1-1.200-2z"/></svg>Contacter le support</a>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="pc reveal">
-      <a class="pc-logo" href="/"><img src="/assets/img/logo.svg" width="46" height="46" alt=""><span class="brand-txt"><span class="b1">Chap</span><span class="b2">Tarif</span></span></a>
-      <span class="pc-tag"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="15" width="36" height="25" rx="5"/><path d="M17 15v-4a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v4M6 26h36"/></svg>Espace Prestataires</span>
-      <h2>Développez votre activité<br>avec <span class="b1">Chap</span><span class="b2">Tarif</span></h2>
-      <p class="pc-sub">Gagnez en visibilité, recevez plus de réservations et développez votre clientèle dans votre domaine.</p>
-      <div class="pc-uni">
-        <span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 28l3-9a4 4 0 0 1 4-3h18a4 4 0 0 1 4 3l3 9v8a2 2 0 0 1-2 2h-4v-4H14v4h-4a2 2 0 0 1-2-2zM8 28h32M14 28h.01M34 28h.01"/></svg>Transports</span>
-        <span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24 24 8l18 16M11 21v19h26V21M20 40V29h8v11"/></svg>Immobilier</span>
-        <span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h18l-2 18H10zM11 22l3-8h6l3 8M32 10l5 2v6l3 2v20H30V20l2-2z"/></svg>Ménage<br>&amp; Pressing</span>
-        <span><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 40c-8 0-14-5-16-14 6 0 10 2 12 6-2-9 0-17 4-22 4 5 6 13 4 22 2-4 6-6 12-6-2 9-8 14-16 14z"/></svg>Beauté</span>
-      </div>
-      <div class="pc-row">
-        <ul class="pc-ck"><li>Inscription gratuite<br>et simple</li><li>Gestion de vos réservations</li><li>Paiements sécurisés</li><li>Suivi de votre activité<br>sur l'application</li></ul>
-        <div class="pc-opt">
-          <div class="pc-oh"><span class="pc-oi"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 40V28M18 40V20M28 40V24M38 40V12M10 22l10-8 8 6 12-12M32 8h8v8"/></svg></span><div><h3>Option <span>Visibilité</span> Plus</h3><small>Donnez plus de visibilité à votre activité !</small></div><em>Facultatif</em></div>
-          <div class="pc-ob"><div class="pc-ph"><i>Recherche d'un prestataire</i><b>↑ Votre profil<br>en avant</b><u></u><u></u></div><div><p>Votre profil bénéficie d'un positionnement prioritaire dans les résultats de recherche de votre domaine.</p><strong>9.999 FCFA / mois</strong></div></div>
-        </div>
-      </div>
-      <a class="pc-btn" href="/devenir-prestataire">Devenir prestataire <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a>
     </div>
   </div>
 </section>
