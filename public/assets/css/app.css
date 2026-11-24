@@ -1874,3 +1874,13 @@ body:has(.ps-tabs) { padding-bottom: 96px; }
 .d-item .d-soon-b, body.dom-transport .d-item .d-soon-b { background: #E7EAEE; color: #3B4552; box-shadow: none; display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: .82rem; line-height: 1.15; text-align: left; }
 .uni.uni-soon { cursor: default; } .uni-soon .uni-cta.soon-b { background: #E7EAEE; color: #3B4552; box-shadow: none; }
 .d-item .d-item-btn.d-soon-b, body.dom-transport .d-item.d-alt .d-item-btn.d-soon-b { background: #E7EAEE !important; color: #3B4552 !important; box-shadow: none !important; }
+
+/* Tarifs de location d'un chauffeur */
+.ch-tar { background: #E9F5EE; border-radius: 18px; padding: 14px; margin: 0 0 14px; }
+.ch-tar h3 { margin: 0 0 12px; font-size: 1rem; font-weight: 800; color: #14663A; display: flex; align-items: center; gap: 8px; }
+.ch-tar-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ch-c { border-radius: 14px; padding: 12px 6px; text-align: center; display: grid; justify-items: center; gap: 4px; align-content: start; }
+.ch-c b { font-size: .84rem; color: #1b2a24; line-height: 1.15; } .ch-c small { font-size: .7rem; color: #5b6b63; margin-top: -3px; }
+.ch-c1 { background: #DDEFE4; color: #14663A; } .ch-c2 { background: #E2ECFB; color: #1D5FC7; } .ch-c3 { background: #FFF1CC; color: #D98800; }
+.ch-p { margin-top: 4px; color: #fff; font-weight: 800; font-size: .74rem; padding: 6px 8px; border-radius: 999px; white-space: nowrap; }
+.ch-p1 { background: #14663A; } .ch-p2 { background: #1458B8; } .ch-p3 { background: #E08A00; }

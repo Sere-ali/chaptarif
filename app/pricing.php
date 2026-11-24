@@ -241,6 +241,7 @@ function build_quote(string $universe, array $in): array
             if (!$offer) $offer = !empty($in['offer'])
                 ? one('SELECT * FROM offers WHERE id = ? AND universe = ? AND active = 1', [(int) $in['offer'], $universe])
                 : auto_offer($universe, $in);
+            if (!$offer && $universe === 'chauffeur') $offer = ['id' => 0, 'title' => 'Chauffeur à la demande', 'subtitle' => '', 'price' => 0, 'unit' => 'jour'];
             if (!$prov || !$offer) return $fail('Ce service ouvre bientôt dans votre zone. Écrivez-nous via l\'onglet Chat : nous vous trouvons un loueur.');
             $lat = $in['lat'] ?? ''; $lng = $in['lng'] ?? '';
             $geo0 = (is_numeric($lat) && is_numeric($lng) && abs((float) $lat) <= 90 && abs((float) $lng) <= 180) ? round((float) $lat, 5) . ', ' . round((float) $lng, 5) : '';
@@ -301,10 +302,16 @@ function build_quote(string $universe, array $in): array
                 $t1 = $dt('start');
                 if (!$t1) return $fail('Indiquez une date et une heure d\'arrivée valides.');
                 $du = (string) ($in['duree'] ?? '');
-                $map = ['1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, 'semaine' => 7, 'mois' => 30];
+                $map = ['demi' => 1, '1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, 'semaine' => 7, 'mois' => 30];
                 if (!isset($map[$du])) return $fail('Choisissez la durée souhaitée.');
                 $days = $map[$du];
-                $dl = $du === 'semaine' ? '1 semaine' : ($du === 'mois' ? '1 mois' : $du . ' jour' . ((int) $du > 1 ? 's' : ''));
+                $dl = $du === 'demi' ? 'Demi-journée' : ($du === 'semaine' ? '1 semaine' : ($du === 'mois' ? '1 mois' : $du . ' jour' . ((int) $du > 1 ? 's' : '')));
+                if (!$isListing) { // Tarifs fixes ChapTarif : demi-journée / journée Abidjan / hors Abidjan
+                    $offer['price'] = $dest === 'Hors Abidjan' ? (int) setting('chauffeur_tarif_hors', 12500) : ($du === 'demi' ? (int) setting('chauffeur_tarif_demi', 5000) : (int) setting('chauffeur_tarif_jour', 9000));
+                    $offer['unit'] = 'jour';
+                    $offer['title'] = $du === 'demi' && $dest !== 'Hors Abidjan' ? 'Chauffeur · demi-journée' : ($dest === 'Hors Abidjan' ? 'Chauffeur · hors Abidjan' : 'Chauffeur · journée Abidjan');
+                    $s[1][1] = $offer['title'];
+                }
                 $geo = $geo0;
                 $gb = ['manuelle' => 'Manuelle', 'automatique' => 'Automatique'][(string) ($in['gearbox'] ?? '')] ?? 'Manuelle ou automatique';
                 $d = ['pickup' => $pickup, 'gps' => $geo, 'destination' => $dest, 'arrival' => date('d/m/Y H:i', $t1), 'duration' => $dl, 'days' => $days, 'gearbox' => $gb];
