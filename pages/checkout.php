@@ -1,6 +1,7 @@
 <?php
 if (is_post()) {
     $uk = (string) ($_POST['universe'] ?? '');
+    if (universe_closed($uk)) { flash('info', 'Ce service sera bientôt disponible.'); redirect('/transport'); }
     $r = build_quote($uk, $_POST);
     if (!$r['ok']) {
         flash('error', $r['error']);

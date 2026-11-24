@@ -114,6 +114,10 @@ if (str_starts_with($path, '/f/')) {
     exit;
 }
 
+// Services pas encore ouverts : le public ne voit qu'une page « Bientôt disponible ».
+$soonMap = ['/cars' => 'cars', '/covoiturage' => 'covoiturage', '/location-car' => 'location_car', '/location-camion' => 'location_camion'];
+if (isset($soonMap[$path]) && universe_closed($soonMap[$path])) { $soonUk = $soonMap[$path]; $routes[$path] = 'pages/soon.php'; }
+
 if (!isset($routes[$path])) not_found();
 
 // Mode maintenance (le back-office reste accessible)

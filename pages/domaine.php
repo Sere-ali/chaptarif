@@ -25,16 +25,16 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass') + ['noinde
 <section class="section-tight">
   <div class="container">
     <div class="uni-grid">
-      <?php foreach ($subs as $x): ?>
-        <a class="uni reveal" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>;--bg:<?= $x['bg'] ?>">
+      <?php foreach ($d['keys'] as $__sk): $x = universe($__sk); $__soon = universe_closed($__sk); ?>
+        <<?= $__soon ? 'div' : 'a' ?> class="uni reveal<?= $__soon ? ' uni-soon' : '' ?>" <?= $__soon ? '' : 'href="' . $x['url'] . '"' ?> style="--c:<?= $x['color'] ?>;--bg:<?= $x['bg'] ?>">
           <div class="uni-img"><img src="<?= e(img($x['img'], 'w_640,h_420,c_fill,q_auto,f_auto')) ?>" alt="<?= e($x['name']) ?>" decoding="async" width="640" height="420"></div>
           <div class="uni-body"><span class="uni-emoji"><?= $x['emoji'] ?></span>
             <h3><?= e($x['name']) ?></h3>
             <p class="uni-sub"><?= e($x['sub']) ?></p>
             <p><?= e($x['pitch']) ?></p>
-            <span class="uni-cta">Comparer & réserver <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
+            <?php if ($__soon): ?><span class="uni-cta soon-b">⏱ Bientôt disponible</span><?php else: ?><span class="uni-cta">Comparer & réserver <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><?php endif; ?>
           </div>
-        </a>
+        </<?= $__soon ? 'div' : 'a' ?>>
       <?php endforeach; ?>
     </div>
   </div>
@@ -56,15 +56,15 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass') + ['noinde
     <h2 class="d-h2"><?= e($d['select_h2'] ?? 'Sélectionnez votre besoin') ?></h2>
     <p class="d-sub"><?= e($d['select_sub'] ?? 'Trouvez le meilleur tarif, en quelques clics.') ?></p>
     <div class="d-list">
-      <?php foreach ($d['keys'] as $sk): $x = universe($sk); ?>
-        <a class="d-item reveal<?= in_array($sk, ['covoiturage', 'chauffeur', 'menage', 'maquilleuse'], true) ? ' d-alt' : '' ?>" href="<?= $x['url'] ?>" style="--c:<?= $x['color'] ?>">
+      <?php foreach ($d['keys'] as $sk): $x = universe($sk); $__soon = universe_closed($sk); ?>
+        <<?= $__soon ? 'div' : 'a' ?> class="d-item reveal<?= in_array($sk, ['covoiturage', 'chauffeur', 'menage', 'maquilleuse'], true) ? ' d-alt' : '' ?><?= $__soon ? ' d-soon' : '' ?>" <?= $__soon ? '' : 'href="' . $x['url'] . '"' ?> style="--c:<?= $x['color'] ?>">
           <span class="d-item-img"><img src="<?= in_array($dk, ['transport', 'service-a-la-personne', 'beaute'], true) && is_file(__DIR__ . '/../public/assets/img/tr-' . $sk . '.jpg') ? '/assets/img/tr-' . $sk . '.jpg' : e(img($x['img'], 'w_200,h_200,c_fill,q_auto,f_auto')) ?>" alt="" decoding="async" width="60" height="60"></span>
           <span class="d-item-body">
             <b><?= e($x['name']) ?></b>
             <small><?= e($x['pitch']) ?></small>
           </span>
-          <span class="d-item-btn">Choisir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
-        </a>
+          <?php if ($__soon): ?><span class="d-item-btn d-soon-b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Bientôt<br>disponible</span></span><?php else: ?><span class="d-item-btn">Choisir <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span><?php endif; ?>
+        </<?= $__soon ? 'div' : 'a' ?>>
       <?php endforeach; ?>
     </div>
     <?php $adsUniverse = $d['keys']; $adsType = ''; include __DIR__ . '/../views/provider_ads.php'; ?>

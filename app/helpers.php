@@ -1046,3 +1046,17 @@ function provider_promote_pending(array $u): int
     if ($n) q("UPDATE providers SET kyc_status = 'pending' WHERE phone = ? AND kyc_status = 'incomplete'", [$u['phone']]);
     return $n;
 }
+
+
+/** Services pas encore ouverts au public (page « Bientôt disponible »). Réglage « soon_universes » modifiable, administrateurs exceptés. */
+function universe_soon(string $k): bool
+{
+    static $list = null;
+    if ($list === null) $list = array_filter(array_map('trim', explode(',', (string) setting('soon_universes', 'cars,covoiturage,location_car,location_camion'))));
+    return in_array($k, $list, true);
+}
+
+function universe_closed(string $k): bool
+{
+    return universe_soon($k) && !is_admin();
+}
