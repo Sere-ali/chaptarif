@@ -12,6 +12,8 @@ if (current_user() && !is_post()) redirect(login_dest($next, current_user()));
 
 $mode = in_array($_GET['mode'] ?? '', ['signup', 'reset'], true) ? $_GET['mode'] : 'login';
 $step = ($_GET['step'] ?? '') === 'code' && !empty($_SESSION['reset_phone']) ? 'code' : 'phone';
+$pk = $_SESSION['pk_pending'] ?? null;
+$pkStep = ($_GET['step'] ?? '') === 'passkey' && is_array($pk) && time() - (int) $pk['t'] < 600;
 $qs = fn(string $m = '') => '/connexion?' . ($m ? 'mode=' . $m . '&' : '') . 'next=' . urlencode($next);
 
 if (is_post()) {
@@ -32,6 +34,11 @@ if (is_post()) {
             redirect($errBack);
         }
         clear_attempts($key);
+        // Empreinte enregistrée : elle est demandée après le mot de passe (double vérification).
+        if (provider_has_passkey($user)) {
+            $_SESSION['pk_pending'] = ['uid' => (int) $user['id'], 'next' => login_dest($next, $user), 't' => time()];
+            redirect('/connexion?step=passkey');
+        }
         login_user($user); login_device_check($user);
         flash('success', 'Bienvenue sur ChapTarif !');
         redirect(login_dest($next, $user));
@@ -149,14 +156,23 @@ view('layout/header', compact('title'));
 <section class="section auth-wrap">
   <div class="auth-card card">
     <img src="/assets/img/logo.svg" width="56" alt="" class="auth-logo">
-    <?php if ($mode !== 'reset'): ?>
+    <?php if ($mode !== 'reset' && !$pkStep): ?>
     <div class="auth-tabs" style="display:flex;gap:6px;background:#EEF3F8;border-radius:999px;padding:4px;margin:0 0 18px">
       <a href="<?= e($qs()) ?>" class="btn btn-sm <?= $mode === 'login' ? 'btn-primary' : 'btn-ghost' ?>" style="flex:1;text-align:center">Se connecter</a>
       <a href="<?= e($qs('signup')) ?>" class="btn btn-sm <?= $mode === 'signup' ? 'btn-primary' : 'btn-ghost' ?>" style="flex:1;text-align:center">Créer un compte</a>
     </div>
     <?php endif; ?>
 
-    <?php if ($mode === 'login'): ?>
+    <?php if ($pkStep): ?>
+      <h1 class="h2 center">Confirmez avec votre empreinte</h1>
+      <div class="pk-fp center" style="margin:10px 0"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#1F9D55" stroke-width="1.6" stroke-linecap="round"><path d="M12 11v3.5c0 2-.5 3.5-1.5 5"/><path d="M8.5 15c0-2 .2-3 .7-4a3.2 3.2 0 0 1 5.6 0c.5 1 .7 2.2.7 4 0 1.8-.3 3-1 4.5"/><path d="M5.5 13c0-4 2.5-7 6.5-7s6.5 3 6.5 7c0 2-.3 3.5-1 5"/><path d="M4 16c.4-1 .5-2 .5-3a7.5 7.5 0 0 1 15 0"/></svg></div>
+      <p class="muted center">Pour votre sécurité, confirmez votre identité avec votre empreinte digitale, votre visage ou le verrouillage de votre téléphone.</p>
+      <button type="button" class="btn btn-primary btn-block btn-lg pk-login" data-passkey-login data-auto data-next="<?= e((string) $pk['next']) ?>">🔐 Confirmer</button>
+      <p class="fine center" data-passkey-msg></p>
+      <script src="/assets/js/passkey.js?v=2" defer></script>
+      <p class="center mt"><a href="/contact">Appareil perdu ? Contacter le support</a></p>
+      <p class="center mt"><a href="<?= e($qs()) ?>">Annuler</a></p>
+    <?php elseif ($mode === 'login'): ?>
       <h1 class="h2">Connexion</h1>
       <form method="post" action="/connexion">
         <?= csrf_field() ?>
@@ -168,7 +184,7 @@ view('layout/header', compact('title'));
       <div class="pk-or"><span>ou</span></div>
       <button type="button" class="btn btn-soft btn-block pk-login" data-passkey-login data-next="<?= e($next) ?>">🔐 Me connecter avec ma clé de sécurité</button>
       <p class="fine center" data-passkey-msg></p>
-      <script src="/assets/js/passkey.js?v=1" defer></script>
+      <script src="/assets/js/passkey.js?v=2" defer></script>
       <p class="center mt"><a href="<?= e($qs('reset')) ?>">Mot de passe oublié ?</a></p>
 
     <?php elseif ($mode === 'signup' && ($_GET['step'] ?? '') === 'code' && !empty($_SESSION['signup_pending'])): ?>
@@ -201,7 +217,7 @@ view('layout/header', compact('title'));
       <p class="muted">Pas besoin de mot de passe : connectez-vous avec votre empreinte digitale (clé de sécurité) enregistrée sur cet appareil.</p>
       <button type="button" class="btn btn-primary btn-block btn-lg pk-login" data-passkey-login data-next="<?= e($next) ?>">🔐 Me connecter avec mon empreinte</button>
       <p class="fine center" data-passkey-msg></p>
-      <script src="/assets/js/passkey.js?v=1" defer></script>
+      <script src="/assets/js/passkey.js?v=2" defer></script>
       <p class="muted center mt">Aucune empreinte enregistrée ? Contactez le support ChapTarif : nous vous aiderons à retrouver l'accès.</p>
       <p class="center mt"><a class="btn btn-soft" href="/contact">Contacter le support</a></p>
       <p class="center mt"><a href="<?= e($qs()) ?>">Retour à la connexion</a></p>

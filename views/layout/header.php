@@ -36,7 +36,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/app.css?v=144">
+<link rel="stylesheet" href="/assets/css/app.css?v=145">
 <link rel="stylesheet" href="/assets/css/polish.css?v=9">
 <link rel="stylesheet" href="/assets/css/motion.css?v=2">
 <link rel="stylesheet" href="/assets/css/forms.css?v=13">
@@ -94,7 +94,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
       <?php endif; ?>
       <?php if ($u && ($active ?? '') !== 'account'): ?>
         <a class="btn btn-soft btn-sm" href="/compte"><span class="dot-live"></span> Mes réservations</a>
-      <?php else: ?>
+      <?php elseif (!$u): ?>
         <a class="btn btn-primary btn-sm" href="/connexion">Se connecter</a>
       <?php endif; ?>
       <button class="lang-btn" type="button" data-lang-toggle aria-label="<?= $__en ? 'Passer en français' : 'Switch to English' ?>" title="<?= $__en ? 'Passer en français' : 'Switch to English' ?>"><?= $__en ? 'EN' : 'FR' ?></button>
@@ -114,6 +114,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
     <a href="/espace-prestataire"> Mon espace prestataire</a>
     <a href="/prestataire/valider">Valider une mission</a>
     <a href="/contact">Contact & aide</a>
+    <?php if ($u): ?><form method="post" action="/deconnexion" class="mm-out"><?= csrf_field() ?><button type="submit">Se déconnecter</button></form><?php endif; ?>
   </div>
 </header>
 <?php endif; ?>

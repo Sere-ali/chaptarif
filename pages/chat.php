@@ -9,13 +9,37 @@ $isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch';
 // Client : une conversation par demande, avec numéro de dossier et statut.
 // ---------------------------------------------------------------------------
 $conv = null; $cid = 0; $about = null; $pourQ = '';
+$legacy = false; $P = $providerMode ? '&pro=1' : ''; $CH = $providerMode ? '/chat?pro=1' : '/chat';
 if ($providerMode) {
-    if (!empty($_GET['client'])) {
+    $legacy = !empty($_GET['general']) || !empty($_GET['client']);
+    if (!$legacy && !val('SELECT 1 FROM providers WHERE phone = ?', [$me['phone'] ?? ''])) redirect('/devenir-prestataire');
+    if ($legacy && !empty($_GET['client'])) {
         $cb = one('SELECT b.id, b.ref, u.name, u.phone FROM bookings b JOIN providers p ON p.id = b.provider_id JOIN users u ON u.id = b.user_id WHERE b.id = ? AND p.phone = ?', [(int) $_GET['client'], $me['phone']]);
         if ($cb) { $about = 'Pour le client ' . ($cb['name'] ?: 'client') . ' (réservation ' . $cb['ref'] . ')'; $pourQ = '&client=' . (int) $cb['id']; }
     }
     $scope = 'conversation_id IS NULL';
-    $url = '/chat?pro=1' . $pourQ;
+    $url = '/chat?pro=1' . ($legacy ? ($pourQ ?: '&general=1') : '');
+    if (!$legacy) {
+        // Nouvelle demande du prestataire
+        if (is_post() && ($_POST['action'] ?? '') === 'create') {
+            $kind = (string) ($_POST['kind'] ?? '');
+            if (!isset(conv_kinds_for(true)[$kind])) { flash('error', 'Choisissez ce que vous souhaitez faire.'); redirect('/chat?pro=1&new=1'); }
+            $bid = (int) ($_POST['booking'] ?? 0);
+            $b = $bid ? one('SELECT b.id, b.ref, b.title FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE b.id = ? AND p.phone = ?', [$bid, $me['phone']]) : null;
+            if ((int) val('SELECT COUNT(*) FROM conversations WHERE user_id = ? AND created_at > ?', [$uid, date('Y-m-d H:i:s', time() - 3600)]) >= 10) { flash('error', 'Trop de demandes en peu de temps : patientez un moment.'); redirect('/chat?pro=1'); }
+            $newId = conv_create($uid, $kind, $b ? (int) $b['id'] : null, $b ? null : conv_kind($kind)[3], null);
+            $c = one('SELECT * FROM conversations WHERE id = ?', [$newId]);
+            insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $newId, 'sender' => 'admin', 'body' => conv_welcome($c), 'read_by_user' => 1, 'read_by_admin' => 1, 'created_at' => now()]);
+            redirect('/chat?pro=1&c=' . $newId);
+        }
+        $cid = (int) ($_GET['c'] ?? 0);
+        if ($cid) {
+            $conv = one("SELECT * FROM conversations WHERE id = ? AND user_id = ? AND kind LIKE 'pro%'", [$cid, $uid]);
+            if (!$conv) redirect('/chat?pro=1');
+        }
+        $scope = 'conversation_id = ' . $cid;
+        $url = '/chat?pro=1&c=' . $cid;
+    }
 } else {
     // Anciens liens : « Écrire au prestataire » → nouvelle conversation pré-remplie.
     $preBooking = 0; $preProv = 0;
@@ -51,12 +75,12 @@ if ($providerMode) {
 }
 
 // ---- Actions sur les messages (envoi, réactions, mise à jour en direct) ----
-if (($providerMode || $conv) && is_post() && ($_POST['action'] ?? '') === 'react') {
+if (($legacy || $conv) && is_post() && ($_POST['action'] ?? '') === 'react') {
     $mid = (int) ($_POST['id'] ?? 0);
     $ok = one("SELECT id FROM chat_messages WHERE id = ? AND user_id = ? AND $scope", [$mid, $uid]) && reaction_toggle('chat', $mid, $uid, 'user', (string) ($_POST['emoji'] ?? ''));
     header('Content-Type: application/json'); echo json_encode(['ok' => (bool) $ok]); exit;
 }
-if (($providerMode || $conv) && is_post()) {
+if (($legacy || $conv) && is_post()) {
     $body = trim(mb_substr((string) ($_POST['body'] ?? ''), 0, 1000));
     $recent = (int) val('SELECT COUNT(*) FROM chat_messages WHERE user_id = ? AND sender = ? AND created_at > ?', [$uid, 'user', date('Y-m-d H:i:s', time() - 60)]);
     $att = chat_attachment();
@@ -72,7 +96,7 @@ if (($providerMode || $conv) && is_post()) {
     if ($err) flash('error', $err);
     redirect($url);
 }
-if (($providerMode || $conv) && isset($_GET['poll'])) {
+if (($legacy || $conv) && isset($_GET['poll'])) {
     $after = (int) ($_GET['after'] ?? 0);
     $rows = chat_decorate(all("SELECT * FROM chat_messages WHERE user_id = ? AND $scope AND id > ? ORDER BY id LIMIT 100", [$uid, $after]), false, 'Service client');
     q("UPDATE chat_messages SET read_by_user = 1 WHERE user_id = ? AND $scope AND sender = 'admin' AND read_by_user = 0", [$uid]);
@@ -85,15 +109,15 @@ if (($providerMode || $conv) && isset($_GET['poll'])) {
 
 $active = 'chat';
 
-// ---- Espace prestataire : fil unique ----
-if ($providerMode) {
+// ---- Espace prestataire : ancien fil unique (messages généraux) ----
+if ($providerMode && $legacy) {
     q("UPDATE chat_messages SET read_by_user = 1 WHERE user_id = ? AND $scope AND sender = 'admin' AND read_by_user = 0", [$uid]);
     $msgs = chat_decorate(array_reverse(all("SELECT * FROM chat_messages WHERE user_id = ? AND $scope ORDER BY id DESC LIMIT 100", [$uid])), false, 'Service client');
     $last = $msgs ? (int) end($msgs)['id'] : 0;
     $title = 'Chat avec l’équipe ChapTarif'; $bodyClass = 'chat-page';
     view('layout/header', compact('title', 'active', 'providerMode', 'bodyClass'));
     echo '<section class="wa-wrap">';
-    view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => $url, 'name' => 'Équipe ChapTarif', 'sub' => 'Messagerie prestataires · réponse rapide', 'back' => '/espace-prestataire', 'admin' => false]);
+    view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => $url, 'name' => 'Équipe ChapTarif', 'sub' => 'Messagerie prestataires · réponse rapide', 'back' => '/chat?pro=1', 'admin' => false]);
     echo '</section>';
     view('layout/footer', compact('active', 'providerMode'));
     return;
@@ -119,7 +143,7 @@ if ($conv) {
           <?php if ($w['time']): ?><li>🕖 <?= e($w['time_label']) ?> : <?= e($w['time']) ?></li><?php endif; ?>
           <?php if ($w['route']): ?><li>📍 <?= e($w['route']) ?></li><?php endif; ?>
         </ul>
-        <a class="cv-bk-btn" href="/compte#<?= e($b['ref']) ?>">Voir ma réservation</a>
+        <a class="cv-bk-btn" href="<?= $providerMode ? '/espace-prestataire?vue=reservations#b' . (int) $b['id'] : '/compte#' . e($b['ref']) ?>">Voir ma réservation</a>
       </div>
     </div>
     <?php endif; ?>
@@ -129,7 +153,7 @@ if ($conv) {
     $bodyClass = 'chat-page';
     view('layout/header', compact('title', 'active', 'providerMode', 'bodyClass'));
     echo '<section class="wa-wrap">';
-    view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => $url, 'name' => conv_title($conv, $b), 'sub' => $b ? 'Réf. ' . $b['ref'] : 'Dossier ' . $conv['ref'], 'back' => '/chat', 'admin' => false, 'top' => $top,
+    view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => $url, 'name' => conv_title($conv, $b), 'sub' => $b ? 'Réf. ' . $b['ref'] : 'Dossier ' . $conv['ref'], 'back' => $CH, 'admin' => false, 'top' => $top,
         'footnote' => $conv['status'] === 'resolu' ? 'Ce dossier est résolu. Écrivez-nous si besoin : il sera rouvert.' : 'Nous vous tiendrons informé de l’avancée de votre demande ici.']);
     echo '</section>'; ?>
 <script>
@@ -151,29 +175,33 @@ $title = 'Chat';
 view('layout/header', compact('title', 'active', 'providerMode'));
 
 // ---- Client : nouvelle conversation ----
-if (isset($_GET['new']) || $preBooking || $preProv):
-    $bks = all("SELECT id, ref, universe, title, details, service_date, status, provider_id FROM bookings WHERE user_id = ? AND status <> 'ANNULE' ORDER BY id DESC LIMIT 8", [$uid]);
-    $preKind = $preBooking || $preProv ? 'question' : '';
+if (isset($_GET['new']) || (!$providerMode && ($preBooking || $preProv))):
+    $bks = $providerMode
+        ? all("SELECT b.id, b.ref, b.universe, b.title, b.details, b.service_date, b.status, b.provider_id FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE p.phone = ? AND b.paid_at IS NOT NULL AND b.status <> 'ANNULE' ORDER BY b.id DESC LIMIT 8", [$me['phone']])
+        : all("SELECT id, ref, universe, title, details, service_date, status, provider_id FROM bookings WHERE user_id = ? AND status <> 'ANNULE' ORDER BY id DESC LIMIT 8", [$uid]);
+    $preKind = !$providerMode && ($preBooking || $preProv) ? 'question' : '';
 ?>
 <section class="cv-wrap">
   <header class="cv-top"><h1>Nouvelle demande</h1></header>
-  <form method="post" action="/chat" class="cv-new" data-cv-new>
+  <form method="post" action="<?= e($CH) ?>" class="cv-new" data-cv-new>
     <?= csrf_field() ?><input type="hidden" name="action" value="create">
     <?php if ($preProv): ?><input type="hidden" name="prestataire" value="<?= $preProv ?>"><?php endif; ?>
     <?php if ($preBooking): ?><input type="hidden" name="pour_presta" value="1"><?php endif; ?>
     <h2 class="cv-q">Que souhaitez-vous faire ?</h2>
     <div class="cv-opts">
-      <?php foreach (CONV_KINDS as $kk => $kv): if ($kk === 'assistance') continue; ?>
+      <?php foreach (conv_kinds_for($providerMode) as $kk => $kv): ?>
         <label class="cv-opt"><input type="radio" name="kind" value="<?= $kk ?>" <?= $preKind === $kk ? 'checked' : '' ?> required><span class="cv-opt-ic"><?= $kv[2] ?></span><span class="cv-opt-l"><?= e($kv[0]) ?></span><i class="cv-dot"></i></label>
       <?php endforeach; ?>
     </div>
+    <?php if ($providerMode && !$bks): ?><input type="hidden" name="booking" value="0"><?php else: ?>
     <h2 class="cv-q">Cela concerne-t-il une réservation ?</h2>
     <div class="cv-opts">
       <?php foreach ($bks as $bk): $w = conv_booking_when($bk); ?>
         <label class="cv-opt cv-opt-bk"><input type="radio" name="booking" value="<?= (int) $bk['id'] ?>" <?= $preBooking === (int) $bk['id'] ? 'checked' : '' ?>><span class="cv-th"><?= conv_thumb($bk) ?></span><span class="cv-opt-l"><b><?= e($bk['title']) ?></b><small><span class="mono"><?= e($bk['ref']) ?></span><?= $w['date'] ? ' · ' . e($w['date']) : '' ?><?= $w['time'] ? ' · ' . e($w['time']) : '' ?></small></span><i class="cv-dot"></i></label>
       <?php endforeach; ?>
-      <label class="cv-opt"><input type="radio" name="booking" value="0" <?= $preBooking ? '' : 'checked' ?>><span class="cv-opt-ic">📄</span><span class="cv-opt-l">Aucune réservation / Autre sujet</span><i class="cv-dot"></i></label>
+      <label class="cv-opt"><input type="radio" name="booking" value="0" <?= !$providerMode && $preBooking ? '' : 'checked' ?>><span class="cv-opt-ic">📄</span><span class="cv-opt-l">Aucune réservation / Autre sujet</span><i class="cv-dot"></i></label>
     </div>
+    <?php endif; ?>
     <button class="btn btn-primary btn-block cv-go">Continuer ›</button>
   </form>
 </section>
@@ -182,7 +210,7 @@ else:
 // ---- Client : liste des conversations ----
     $convs = all('SELECT c.*, (SELECT COUNT(*) FROM chat_messages m WHERE m.conversation_id = c.id AND m.sender = \'admin\' AND m.read_by_user = 0) AS unread,
         (SELECT MAX(m.id) FROM chat_messages m WHERE m.conversation_id = c.id AND m.sender = \'user\') AS lu, (SELECT MAX(m.id) FROM chat_messages m WHERE m.conversation_id = c.id) AS la
-        FROM conversations c WHERE c.user_id = ? ORDER BY c.last_msg_at DESC, c.id DESC LIMIT 200', [$uid]);
+        FROM conversations c WHERE c.user_id = ? AND c.kind ' . ($providerMode ? '' : 'NOT ') . 'LIKE \'pro%\' ORDER BY c.last_msg_at DESC, c.id DESC LIMIT 200', [$uid]);
     $bmap = conv_bookings($convs);
     $pids = array_values(array_filter(array_map(fn($c) => (int) ($c['lu'] ?: $c['la']), $convs)));
     $prev = [];
@@ -201,7 +229,7 @@ else:
 <section class="cv-wrap">
   <h1 class="cv-h1">Chat &amp; Assistance</h1>
   <p class="cv-lead">Une question, un problème, une réclamation ?<br>Notre équipe est là pour vous aider.</p>
-  <a class="cv-newbtn" href="/chat?new=1"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" stroke-width="2.8"/></svg><span>+ Nouvelle demande</span></a>
+  <a class="cv-newbtn" href="<?= $providerMode ? '/chat?pro=1&amp;new=1' : '/chat?new=1' ?>"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" stroke-width="2.8"/></svg><span>+ Nouvelle demande</span></a>
   <h2 class="cv-h2">Mes conversations</h2>
   <?php if (!$convs): ?>
     <p class="cv-empty">Aucune conversation pour le moment. Appuyez sur « Nouvelle demande » pour nous écrire.</p>
@@ -213,9 +241,12 @@ else:
     <button type="button" data-f="resolu">Résolues (<?= $cnt['resolu'] ?>)</button>
   </nav>
   <?php endif; ?>
+  <?php if ($providerMode && (int) val('SELECT COUNT(*) FROM chat_messages WHERE user_id = ? AND conversation_id IS NULL', [$uid]) > 0): ?>
+  <p class="cv-empty" style="text-align:center"><a href="/chat?pro=1&amp;general=1">Voir mes anciens messages avec l'équipe</a></p>
+  <?php endif; ?>
   <div class="cv-list">
     <?php foreach ($convs as $c): $b = $c['booking_id'] ? ($bmap[(int) $c['booking_id']] ?? null) : null; $pv = $prev[(int) ($c['lu'] ?: $c['la'])] ?? ''; ?>
-      <a class="cv-item<?= (int) $c['unread'] > 0 ? ' unread' : '' ?>" href="/chat?c=<?= (int) $c['id'] ?>" data-st="<?= e($c['status']) ?>">
+      <a class="cv-item<?= (int) $c['unread'] > 0 ? ' unread' : '' ?>" href="/chat?<?= $providerMode ? 'pro=1&amp;' : '' ?>c=<?= (int) $c['id'] ?>" data-st="<?= e($c['status']) ?>">
         <span class="cv-th<?= $b ? '' : ' cv-th-help' ?>"><?php if ($b): ?><?= conv_thumb($b) ?><?php else: ?><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/><path d="M19.5 19v.5a2.5 2.5 0 0 1-2.5 2.5h-3"/></svg><?php endif; ?></span>
         <span class="cv-it-main">
           <b><?= $b ? e($b['title']) : 'Assistance ChapTarif <i class="cv-verif" aria-hidden="true">✓</i>' ?></b>

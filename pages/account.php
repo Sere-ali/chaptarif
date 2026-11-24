@@ -39,7 +39,7 @@ view('layout/header', compact('title', 'active'));
     <?php endif; ?>
     <div class="acc-head">
       <div><h1 class="h2">Mes réservations</h1><?php if (client_code($u)): ?><p class="acc-no"><span class="mcode">N° client <?= e(client_code($u)) ?></span></p><?php endif; ?><?php if (!empty($u['name'])): ?><p class="acc-name"><?= e($u['name']) ?></p><?php endif; ?></div>
-      <a class="btn btn-soft btn-sm" href="/cle-de-securite">🔐 Clé de sécurité</a>
+      <?php if (val('SELECT 1 FROM providers WHERE phone = ?', [$u['phone'] ?? ''])): ?><a class="btn btn-primary btn-sm" href="/espace-prestataire">💼 Espace pro →</a><?php endif; ?>
       <form method="post" action="/deconnexion"><?= csrf_field() ?><button class="btn btn-ghost btn-sm">Se déconnecter</button></form>
     </div>
 

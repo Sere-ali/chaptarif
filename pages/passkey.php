@@ -27,6 +27,12 @@ if ($a === 'login_options') { $out(['ok' => true, 'options' => wa_login_options(
 if ($a === 'login_finish') {
     $r = wa_login_finish($in);
     if (!is_array($r)) { $out(['ok' => false, 'error' => $r]); exit; }
+    $pk = $_SESSION['pk_pending'] ?? null;
+    if (is_array($pk)) {
+        // Double vérification après le mot de passe : la clé doit être celle du même compte.
+        if ((int) $r['id'] !== (int) $pk['uid'] || time() - (int) $pk['t'] > 600) { $out(['ok' => false, 'error' => 'Cette clé ne correspond pas à votre compte.']); exit; }
+        $in['next'] = $pk['next']; unset($_SESSION['pk_pending']);
+    }
     login_user($r); login_device_check($r);
     $dest = safe_path((string) ($in['next'] ?? '/compte'), '/compte');
     if ($dest === '/compte' && val('SELECT 1 FROM providers WHERE phone = ?', [$r['phone']])) $dest = '/espace-prestataire';

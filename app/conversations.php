@@ -14,7 +14,20 @@ const CONV_KINDS = [
     'remboursement' => ['Demander un remboursement', 'RMB', '💸', 'Remboursement'],
     'autre'         => ['Autre demande', 'DEM', '💬', 'Demande'],
     'assistance'    => ['Assistance ChapTarif', 'AST', '🛟', 'Assistance'],
+    // Prestataires
+    'pro_question'    => ['Poser une question', 'PQS', '❓', 'Question'],
+    'pro_reservation' => ['Un problème avec une réservation', 'PRS', '⚠️', 'Réservation'],
+    'pro_paiement'    => ['Paiement / mes gains', 'PPA', '💰', 'Paiement'],
+    'pro_dossier'     => ['Mon dossier et mes documents', 'PDO', '📄', 'Dossier'],
+    'pro_annonce'     => ['Mes annonces et mon profil', 'PAN', '📢', 'Annonce'],
+    'pro_autre'       => ['Autre demande', 'PDM', '💬', 'Demande'],
 ];
+
+/** Types de demande proposés : ceux du client, ou ceux du prestataire. */
+function conv_kinds_for(bool $pro): array
+{
+    return array_filter(CONV_KINDS, fn($v, $k) => $k !== 'assistance' && str_starts_with($k, 'pro_') === $pro, ARRAY_FILTER_USE_BOTH);
+}
 
 /** Statuts : [libellé, couleur]. */
 const CONV_STATUSES = [

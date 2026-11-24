@@ -1864,3 +1864,7 @@ body:has(.ps-tabs) { padding-bottom: 96px; }
 .fq details > p { padding: 20px 28px 26px; }
 @media (max-width: 640px) { .fq summary { padding: 16px 18px; } .fq details > :not(summary) { padding: 16px 18px 20px; } .fq-v, .fq-p { grid-template-columns: 1fr; } .fq-big { width: 120px; height: 120px; } .fq-ic { width: 54px; height: 54px; } .fq-a > div { grid-template-columns: 84px 1fr; } .fq-a .fq-big { width: 84px; height: 84px; } .fq-a .fq-big svg { width: 50px; height: 50px; } .fq-p p { font-size: 1.1rem; } }
 .fq-p { grid-template-columns: 300px 1fr; } @media (max-width: 640px) { .fq-p { grid-template-columns: 1fr; } }
+
+/* Menu mobile : bouton Se déconnecter */
+.mm-out { margin: 6px 0 4px; padding-top: 8px; border-top: 1px dashed var(--line, #dfe6ee); }
+.mm-out button { width: 100%; text-align: left; padding: 12px 6px; background: none; border: 0; font: inherit; font-weight: 700; color: #C0392B; cursor: pointer; border-radius: 10px; }

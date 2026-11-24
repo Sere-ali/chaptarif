@@ -40,4 +40,6 @@
     b.disabled = true;
     window.ctPasskey.login(b.getAttribute('data-next')).then(function (r) { location.href = r.next; }).catch(function (x) { b.disabled = false; if (msg) msg.textContent = fail(x); });
   });
+  function auto() { var b = document.querySelector('[data-passkey-login][data-auto]'); if (b) setTimeout(function () { b.click(); }, 400); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();
