@@ -517,7 +517,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 .sum-row.total span { color: var(--ink); font-weight: 700; }
 .escrow-note { margin-top: 14px; background: #F1FBF5; border: 1px solid #CFEBDC; border-radius: 12px; padding: 12px; font-size: .86rem; color: #1D6444; }
 
-.auth-wrap { display: grid; place-items: center; padding: 56px 20px 90px; background: var(--grad-soft); min-height: 70vh; }
+.auth-wrap { display: grid; place-items: center; grid-template-columns: minmax(0,1fr); padding: 56px 20px 90px; background: var(--grad-soft); min-height: 70vh; }
 .auth-card { width: 100%; max-width: 440px; padding: 34px; text-align: left; }
 .auth-logo { margin: 0 auto 14px; }
 .auth-card h1 { text-align: center; }

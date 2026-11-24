@@ -17,7 +17,7 @@ if ($mine && !array_filter($mine, fn($p) => in_array($p['kyc_status'], ['verifie
     $title = 'Veuillez patienter';
     view('layout/header', compact('title'));
     ?>
-    <section class="section auth-wrap"><div class="auth-card card sec-card" style="text-align:center">
+    <section class="section auth-wrap" style="padding-left:16px;padding-right:16px;overflow-x:hidden"><div class="auth-card card sec-card" style="text-align:center;box-sizing:border-box;width:100%;max-width:440px;margin:0 auto">
       <div style="font-size:54px">⏳</div>
       <h1 class="h2 center">Veuillez patienter svp</h1>
       <p class="center muted">Votre dossier est en cours de vérification par notre équipe (sous 24 à 48 h). Votre espace prestataire s'ouvrira dès qu'il sera validé.</p>
