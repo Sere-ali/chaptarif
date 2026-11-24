@@ -13,7 +13,7 @@ if (is_post()) {
     }
     redirect('/admin/candidatures');
 }
-$rows = all("SELECT * FROM providers WHERE source = 'candidature'" . scope_sql('universe') . " ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC");
+$rows = all("SELECT * FROM providers WHERE source = 'candidature' AND kyc_status <> 'incomplete'" . scope_sql('universe') . " ORDER BY CASE kyc_status WHEN 'pending' THEN 0 ELSE 1 END, id DESC");
 $counts = ['pending' => 0, 'verified' => 0, 'rejected' => 0];
 foreach ($rows as $r0) if (isset($counts[$r0['kyc_status']])) $counts[$r0['kyc_status']]++;
 $tab = in_array($_GET['statut'] ?? '', ['pending', 'verified', 'rejected', 'all'], true) ? $_GET['statut'] : ($counts['pending'] ? 'pending' : 'all');

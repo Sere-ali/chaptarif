@@ -1031,3 +1031,18 @@ function prov_listed_sql(string $a = ''): string
     $p = $a === '' ? '' : $a . '.';
     return " AND (COALESCE({$p}source, '') <> 'candidature' OR {$p}kyc_status = 'verified')";
 }
+
+
+/** Un dossier de prestataire n'est transmis à l'équipe qu'une fois l'empreinte (passkey) enregistrée. */
+function provider_has_passkey(array $u): bool
+{
+    return (int) val('SELECT COUNT(*) FROM passkeys WHERE user_id = ?', [$u['id']]) > 0;
+}
+
+function provider_promote_pending(array $u): int
+{
+    if (empty($u['phone']) || !provider_has_passkey($u)) return 0;
+    $n = (int) val("SELECT COUNT(*) FROM providers WHERE phone = ? AND kyc_status = 'incomplete'", [$u['phone']]);
+    if ($n) q("UPDATE providers SET kyc_status = 'pending' WHERE phone = ? AND kyc_status = 'incomplete'", [$u['phone']]);
+    return $n;
+}

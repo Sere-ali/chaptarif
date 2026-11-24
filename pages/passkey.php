@@ -19,7 +19,8 @@ if ($a === 'reg_finish') {
     $err = wa_register_finish($me, $in);
     if ($err) { $out(['ok' => false, 'error' => $err]); exit; }
     audit('passkey.add', (string) $me['id'], '');
-    flash('success', 'Clé de sécurité activée. Vous pouvez maintenant vous connecter avec votre empreinte, votre visage ou le verrouillage de votre téléphone.');
+    $sent = provider_promote_pending($me);
+    if ($sent) flash('success', 'Empreinte enregistrée : votre candidature est envoyée. Notre équipe vérifie votre dossier.'); else flash('success', 'Clé de sécurité activée. Vous pouvez maintenant vous connecter avec votre empreinte, votre visage ou le verrouillage de votre téléphone.');
     $out(['ok' => true, 'next' => safe_path((string) ($_SESSION['after_signup'] ?? '/compte'), '/compte')]); unset($_SESSION['after_signup']); exit;
 }
 if ($a === 'login_options') { $out(['ok' => true, 'options' => wa_login_options()]); exit; }

@@ -48,23 +48,28 @@ if (is_post()) {
         'universe' => $uk, 'name' => $name, 'phone' => $phone, 'email' => mb_substr((string) ($_POST['email'] ?? ''), 0, 120),
         'commune' => in_array($_POST['commune'] ?? '', communes(), true) ? $_POST['commune'] : null,
         'bio' => mb_substr(trim((string) ($_POST['bio'] ?? '')), 0, 400), 'vehicle' => mb_substr((string) ($_POST['vehicle'] ?? ''), 0, 80),
-        'kyc_status' => 'pending', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'permis_public_id' => $permis, 'vehicule_public_id' => $vehicule, 'docs' => json_encode($docs, JSON_UNESCAPED_SLASHES), 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
+        'kyc_status' => ($self && provider_has_passkey($cu)) ? 'pending' : 'incomplete', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'permis_public_id' => $permis, 'vehicule_public_id' => $vehicule, 'docs' => json_encode($docs, JSON_UNESCAPED_SLASHES), 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
         'photo_url' => $photoUrl, 'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
     ]);
     // Compte d'accès : jamais écrasé si le numéro a déjà un compte.
     if ($self) {
-        flash('success', 'Candidature envoyée ! Votre espace prestataire utilise votre compte actuel. Notre équipe vérifie votre dossier (pièces demandées) et vous appelle sous 30 minutes.');
+        if (!provider_has_passkey($cu)) {
+            $_SESSION['after_signup'] = '/espace-prestataire';
+            flash('info', 'Dernière étape : enregistrez votre empreinte pour envoyer votre candidature.');
+            redirect('/cle-de-securite?pro=1');
+        }
+        flash('success', 'Candidature envoyée ! Notre équipe vérifie votre dossier (pièces demandées).');
         redirect('/espace-prestataire');
     }
     if (!one('SELECT id FROM users WHERE phone = ?', [$phone])) {
         $uid = insert('users', ['role' => 'client', 'name' => $name, 'phone' => $phone, 'password_hash' => password_hash($pw, PASSWORD_DEFAULT), 'active' => 1, 'created_at' => now()]);
         $nu = one('SELECT * FROM users WHERE id = ?', [$uid]);
         login_user($nu); login_device_check($nu);
-        flash('success', 'Candidature envoyée ! Notre équipe vérifie votre dossier (pièces demandées) et vous appelle sous 30 minutes.');
+        flash('info', 'Dernière étape : enregistrez votre empreinte pour envoyer votre candidature.');
         $_SESSION['after_signup'] = '/espace-prestataire';
-        redirect('/compte-cree');
+        redirect('/cle-de-securite?pro=1');
     } else {
-        flash('success', 'Candidature envoyée ! Ce numéro a déjà un compte : connectez-vous (mot de passe ou empreinte) pour accéder à votre espace. Notre équipe vérifie votre dossier sous 30 minutes.');
+        flash('info', 'Ce numéro a déjà un compte : connectez-vous pour enregistrer votre empreinte. Votre candidature est envoyée à l\'équipe une fois l\'empreinte enregistrée.');
     }
     redirect('/devenir-prestataire#connexion');
 }
@@ -138,7 +143,7 @@ view('layout/header', compact('title', 'desc', 'active'));
           <div class="pa-self">✅ Vous êtes connecté avec votre compte client <b><?= e(fmt_phone($cu['phone'])) ?></b>. Votre espace prestataire utilisera ce même compte : pas besoin de créer un nouveau mot de passe.</div>
           <?php else: ?>
           <label class="fld"><span>Téléphone <small>(WhatsApp)</small></span><?= phone_field() ?></label>
-          <p class="pa-hint">📱 Indiquez un numéro sur lequel on peut vous joindre : vous y recevrez le <b>code de confirmation par SMS</b> et les nouvelles réservations.</p>
+          <p class="pa-hint">📱 Indiquez un numéro sur lequel on peut vous joindre : vous y recevrez les nouvelles réservations. 🔐 Pour votre sécurité, l'<b>empreinte (ou le verrouillage du téléphone) est obligatoire</b> : elle sera demandée juste après cette page, avant l'envoi de votre candidature.</p>
           <?php endif; ?>
           <label class="fld"><span>Commune</span><select name="commune"><?php foreach (communes() as $c): ?><option><?= e($c) ?></option><?php endforeach; ?></select></label>
           <label class="fld" id="vehicleFld" hidden><span>Véhicule</span><input name="vehicle" maxlength="80" placeholder="Ex. Minibus 18 places climatisé"></label>
