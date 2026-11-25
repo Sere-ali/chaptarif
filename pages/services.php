@@ -376,7 +376,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
             </label>
           <?php endforeach; ?>
         </div>
-        <p class="co-note">* La cliente doit fournir les mèches.</p>
+        <p class="co-note">* Les mèches doivent être fournies par le client.</p>
         <div class="mq-pers co-pers">
           <span class="co-pers-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.8.2 5 2.5 5 5.8"/></svg></span>
           <b>Nombre de personnes</b>
