@@ -1963,3 +1963,12 @@ body:has(.ps-tabs) { padding-bottom: 96px; }
 @media (max-width: 380px) { .lv-dates { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .lv-dates input { font-size: .8rem; } }
 @media (min-width: 900px) { .lv-t img { max-width: 130px; } .lv-t { min-height: 130px; } }
+
+/* Petit téléphone : l'en-tête connecté ne doit jamais dépasser de l'écran */
+@media (max-width: 420px) {
+  .topbar .top-actions { gap: 6px; }
+  .topbar .top-actions .btn { padding-left: 9px; padding-right: 9px; font-size: .76rem; }
+  .topbar .top-actions .burger { margin-left: 0; }
+  .topbar .top-actions .btn-sm { padding-left: 7px; padding-right: 7px; font-size: .72rem; }
+  .topbar .top-actions .lang-btn, .topbar .top-actions .lang { padding-left: 8px; padding-right: 8px; }
+}
