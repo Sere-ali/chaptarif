@@ -55,7 +55,7 @@ function auto_offer(string $universe, array $in): ?array
     $offers = all('SELECT * FROM offers WHERE universe = ? AND active = 1 ORDER BY sort, price', [$universe]);
     if (!$offers) return null;
     $want = match ($universe) {
-        'location_vehicule' => ($in['vtype'] ?? '') === '4x4' ? ['4x4', 'suv'] : [],
+        'location_vehicule' => in_array($in['vtype'] ?? '', ['4x4', 'suv', 'pickup'], true) ? ['4x4', 'suv'] : (($in['vtype'] ?? '') === 'minibus' ? ['minibus'] : []),
         'location_car' => [(string) (int) ($in['seats'] ?? 0)],
         'location_camion' => [($in['ttype'] ?? '') === 'gros' ? 'gros' : 'moyen'],
         default => [],
@@ -64,7 +64,7 @@ function auto_offer(string $universe, array $in): ?array
         $hay = mb_strtolower($o['title'] . ' ' . $o['subtitle']);
         foreach ($want as $w) if ($w !== '' && $w !== '0' && str_contains($hay, $w)) return $o;
     }
-    if ($universe === 'location_vehicule' && ($in['vtype'] ?? '') !== '4x4') {
+    if ($universe === 'location_vehicule' && !in_array($in['vtype'] ?? '', ['4x4', 'suv', 'pickup', 'minibus'], true)) {
         foreach ($offers as $o) if (!str_contains(mb_strtolower($o['title']), '4x4')) return $o;
     }
     return $offers[0];
@@ -235,6 +235,26 @@ function build_quote(string $universe, array $in): array
                     return $fail('Cette annonce n\'est plus disponible. Choisissez-en une autre.');
                 }
             }
+            // Location de véhicule : le client choisit un type (et un modèle facultatif) → on prend l'annonce d'un loueur qui correspond.
+            if ($universe === 'location_vehicule' && !$isListing) {
+                $VC = vehicle_catalog();
+                $wantCat = (string) ($in['vtype'] ?? ''); if ($wantCat === '4x4') $wantCat = 'suv';
+                $wantModel = trim((string) ($in['model'] ?? ''));
+                if (isset($VC[$wantCat]) && ($wantModel === '' || in_array($wantModel, $VC[$wantCat][2], true))) {
+                    $cands = all("SELECT ps.*, p.rating AS prating FROM provider_services ps JOIN providers p ON p.id = ps.provider_id WHERE p.universe = 'location_vehicule' AND p.active = 1 AND p.kyc_status = 'verified' AND ps.active = 1 AND ps.status = 'approved' AND ps.price IS NOT NULL AND ps.price > 0 ORDER BY CASE WHEN p.sponsored_until >= ? THEN 0 ELSE 1 END, p.rating DESC, ps.price", [date('Y-m-d')]);
+                    foreach ($cands as $cd) {
+                        $at = json_decode((string) ($cd['attrs'] ?? ''), true) ?: [];
+                        $ck0 = $at['cat_key'] ?? (array_keys(array_filter($VC, fn($c) => $c[1] === ($at['categorie'] ?? '')))[0] ?? '');
+                        if ($ck0 !== $wantCat) continue;
+                        if ($wantModel !== '' && ($at['modele'] ?? '') !== $wantModel) continue;
+                        $prov = one('SELECT * FROM providers WHERE id = ?', [(int) $cd['provider_id']]);
+                        $offer = ['id' => (int) $cd['id'], 'title' => $cd['title'], 'price' => (int) $cd['price'], 'unit' => (string) ($cd['unit'] ?? '')];
+                        $isListing = true;
+                        break;
+                    }
+                    if (!$isListing && $wantModel !== '') return $fail('Ce modèle n\'est pas disponible pour le moment. Choisissez « Tous les modèles » ou un autre modèle.');
+                }
+            }
             if (!$prov) $prov = !empty($in['provider'])
                 ? one("SELECT * FROM providers WHERE id = ? AND universe = ? AND active = 1 AND kyc_status = 'verified'", [(int) $in['provider'], $universe])
                 : best_provider($universe);
@@ -268,13 +288,15 @@ function build_quote(string $universe, array $in): array
                 if (!$t2 || $t2 <= $t1) return $fail('La date de retour doit être après le début.');
                 $days = max(1, (int) ceil(($t2 - $t1) / 86400));
                 if ($days > 60) return $fail('Location limitée à 60 jours.');
-                $vt = ($in['vtype'] ?? '') === '4x4' ? '4×4' : 'Autre véhicule';
+                $VCl = vehicle_catalog(); $vk0 = (string) ($in['vtype'] ?? ''); if ($vk0 === '4x4') $vk0 = 'suv';
+                $vt = isset($VCl[$vk0]) ? $VCl[$vk0][1] : 'Autre véhicule';
+                $vmod = trim((string) ($in['model'] ?? '')); if (!isset($VCl[$vk0]) || !in_array($vmod, $VCl[$vk0][2], true)) $vmod = '';
                 $dr = ($in['driver'] ?? '') === 'avec' ? 'Avec chauffeur' : 'Sans chauffeur';
-                $d = ['pickup' => $pickup, 'start' => date('d/m/Y H:i', $t1), 'end' => date('d/m/Y H:i', $t2), 'days' => $days, 'vehicle_type' => $vt, 'driver_option' => $dr];
+                $d = ['pickup' => $pickup, 'start' => date('d/m/Y H:i', $t1), 'end' => date('d/m/Y H:i', $t2), 'days' => $days, 'vehicle_type' => $vt, 'vehicle_model' => $vmod, 'driver_option' => $dr];
                 $s[] = ['Prise en charge', $pickup];
                 $s[] = ['Début', $fdt($t1)];
                 $s[] = ['Retour', $fdt($t2)];
-                $s[] = ['Véhicule', $vt . ' · ' . $dr];
+                $s[] = ['Véhicule', $vt . ($vmod !== '' ? ' · ' . $vmod : '') . ' · ' . $dr];
                 $date = date('Y-m-d', $t1);
             } elseif ($universe === 'location_car') {
                 $from = $txt('from_place');

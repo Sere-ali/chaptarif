@@ -36,10 +36,10 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'"><noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/assets/css/app.css?v=158">
+<link rel="stylesheet" href="/assets/css/app.css?v=161">
 <link rel="stylesheet" href="/assets/css/polish.css?v=9">
 <link rel="stylesheet" href="/assets/css/motion.css?v=2">
-<link rel="stylesheet" href="/assets/css/forms.css?v=13">
+<link rel="stylesheet" href="/assets/css/forms.css?v=14">
 <?php if ($__en): ?><style>.i18n-wait body{visibility:hidden}</style><script>setTimeout(function(){document.documentElement.classList.remove('i18n-wait')},2500)</script>
 <script src="/assets/js/i18n-en.js?v=9" defer></script><?php endif; ?>
 <script src="/assets/js/i18n.js?v=6" defer></script>

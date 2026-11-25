@@ -1937,3 +1937,29 @@ body:has(.ps-tabs) { padding-bottom: 96px; }
 .pmh-go { align-self: auto; }
 @media (max-width: 400px) { .pmh-sp img, .pmh-emo { width: 72px; height: 72px; } .pmh-go { font-size: .85rem; } .pmh-b em { padding: 5px 10px; font-size: .82rem; } }
 @media (max-width: 400px) { .pmh-sp { gap: 10px; padding: 10px; } .pmh-sp img, .pmh-emo { width: 66px; height: 66px; } .pmh-row { gap: 6px; flex-wrap: nowrap; } .pmh-go { font-size: .78rem; } .pmh-b em { font-size: .76rem; padding: 5px 8px; } }
+
+/* Location de véhicule : formulaire client (type, modèle, chauffeur) */
+.lv-in { position: relative; display: block; }
+.lv-in svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #5B6B7F; pointer-events: none; }
+.lv-in input { padding-left: 40px !important; }
+.lv-dates { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.lv-dates .fld > span { display: flex; align-items: center; gap: 6px; font-size: .86rem; line-height: 1.15; }
+.lv-dates .fld > span svg { width: 18px; height: 18px; flex: none; color: #1F7A3C; }
+.lv-dates input { min-width: 0; width: 100%; box-sizing: border-box; font-size: .88rem; padding-left: 8px; padding-right: 6px; }
+.lv-h { display: flex; align-items: center; gap: 8px; margin: 14px 0 8px; }
+.lv-h svg { width: 24px; height: 24px; color: #1F7A3C; flex: none; } .lv-h b { font-size: 1.08rem; } .lv-h small { font-weight: 500; color: #5B6B7F; }
+.lv-types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.lv-t { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; padding: 10px 4px 8px; border: 1.5px solid #D9E3EC; border-radius: 14px; background: #fff; cursor: pointer; text-align: center; min-height: 104px; }
+.lv-t input { position: absolute; opacity: 0; pointer-events: none; }
+.lv-t img { width: 100%; max-width: 92px; height: auto; mix-blend-mode: multiply; }
+.lv-t span { font-size: .8rem; font-weight: 700; line-height: 1.12; }
+.lv-t i { display: none; position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; border-radius: 50%; background: #2E9E55; color: #fff; font-style: normal; font-size: .8rem; font-weight: 800; align-items: center; justify-content: center; }
+.lv-t.on { border-color: #2E9E55; background: #EAF8EF; } .lv-t.on i { display: flex; }
+.lv-drv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.lv-d { display: flex; align-items: center; gap: 8px; padding: 12px 10px; border: 1.5px solid #D9E3EC; border-radius: 14px; background: #fff; cursor: pointer; font-weight: 600; font-size: .95rem; }
+.lv-d input { position: absolute; opacity: 0; pointer-events: none; }
+.lv-d i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #9AA9B8; flex: none; box-sizing: border-box; }
+.lv-d.on { border-color: #2E9E55; background: #EAF8EF; } .lv-d.on i { border-color: #2E9E55; background: radial-gradient(#2E9E55 0 45%, #fff 48%); }
+@media (max-width: 380px) { .lv-dates { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .lv-dates input { font-size: .8rem; } }
+@media (min-width: 900px) { .lv-t img { max-width: 130px; } .lv-t { min-height: 130px; } }

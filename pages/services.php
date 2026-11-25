@@ -205,16 +205,39 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
 ?>
         <?php if ($isRental): ?>
         <h2 class="h3">Votre demande</h2>
-        <?php if ($uk === 'location_vehicule'): ?>
-          <label class="fld"><span> Commune ou lieu de prise en charge</span><input name="pickup" required maxlength="200" placeholder="Ex. Cocody, Angré 8e tranche"></label>
+        <?php if ($uk === 'location_vehicule'): $VC = vehicle_catalog(); $vsel = (string) array_key_first($VC); ?>
+          <p class="muted" style="margin:-6px 0 12px">Renseignez les informations pour trouver un véhicule à louer.</p>
+          <label class="fld"><span>Commune ou lieu de prise en charge</span><span class="lv-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg><input name="pickup" required maxlength="200" placeholder="Ex. Cocody, Angré 8e tranche"></span></label>
           <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>
-          <button type="button" class="btn btn-soft btn-block" data-geo="pickup" style="margin:-4px 0 6px"> Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
-          <label class="fld"><span> Date et heure de début</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
-          <label class="fld"><span> Date et heure de retour</span><input type="datetime-local" name="end" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtEnd ?>"></label>
-          <div class="row2">
-            <label class="fld"><span> Type de véhicule</span><select name="vtype"><option value="4x4">4×4</option><option value="autre">Autres</option></select></label>
-            <label class="fld"><span> Chauffeur</span><select name="driver"><option value="sans">Sans chauffeur</option><option value="avec">Avec chauffeur</option></select></label>
+          <button type="button" class="btn btn-soft btn-block" data-geo="pickup" style="margin:-4px 0 6px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="m3 11 18-8-8 18-2-8z"/></svg>Activer ma localisation</button><p class="fine" data-geo-msg style="margin:0 0 10px" hidden></p>
+          <div class="lv-dates">
+            <label class="fld"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Date et heure de début</span><input type="datetime-local" name="start" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtDef ?>"></label>
+            <label class="fld"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Date et heure de retour</span><input type="datetime-local" name="end" required min="<?= $dtMin ?>" max="<?= $dtMax ?>" value="<?= $dtEnd ?>"></label>
           </div>
+          <div class="lv-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-6h14l2 6v4H3zM7 17v2M17 17v2"/></svg><b>Type de véhicule</b></div>
+          <div class="lv-types" role="radiogroup" aria-label="Type de véhicule" data-lv-types>
+            <?php foreach ($VC as $vk => [$vlp, $vlc, $vm]): ?>
+              <label class="lv-t<?= $vk === $vsel ? ' on' : '' ?>"><input type="radio" name="vtype" value="<?= e($vk) ?>" <?= $vk === $vsel ? 'checked' : '' ?>><i>✓</i><img src="/assets/img/veh-<?= e($vk) ?>.jpg" alt="" loading="lazy"><span><?= e($vlc) ?></span></label>
+            <?php endforeach; ?>
+          </div>
+          <div class="lv-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5zM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg><b>Modèle <small>(facultatif)</small></b></div>
+          <label class="fld" style="margin-top:0"><select name="model" data-lv-model aria-label="Modèle"></select></label>
+          <div class="lv-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.8.2 5 2.5 5 5.8"/></svg><b>Chauffeur</b></div>
+          <div class="lv-drv"><label class="lv-d"><input type="radio" name="driver" value="avec"><i></i><span>Avec chauffeur</span></label><label class="lv-d on"><input type="radio" name="driver" value="sans" checked><i></i><span>Sans chauffeur</span></label></div>
+          <script>
+          (function () {
+            var VC = <?= json_encode(array_map(fn($c) => ['label' => $c[1], 'models' => $c[2]], $VC), JSON_UNESCAPED_UNICODE) ?>;
+            var box = document.querySelector('[data-lv-types]'), ms = document.querySelector('[data-lv-model]'); if (!box || !ms) return;
+            function fill() {
+              var r = box.querySelector('input:checked'), k = r ? r.value : 'suv', c = VC[k];
+              box.querySelectorAll('.lv-t').forEach(function (t) { t.classList.toggle('on', t.contains(r)); });
+              ms.innerHTML = ''; var o = document.createElement('option'); o.value = ''; o.textContent = 'Tous les modèles (' + c.label + ')'; ms.appendChild(o);
+              c.models.forEach(function (m) { var x = document.createElement('option'); x.value = m; x.textContent = m; ms.appendChild(x); });
+            }
+            box.addEventListener('change', fill); fill();
+            document.querySelectorAll('.lv-d input').forEach(function (i) { i.addEventListener('change', function () { document.querySelectorAll('.lv-d').forEach(function (d) { d.classList.toggle('on', d.contains(document.querySelector('.lv-d input:checked'))); }); }); });
+          })();
+          </script>
         <?php elseif ($uk === 'location_car'): ?>
           <label class="fld"><span> Lieu de départ</span><input name="from_place" required maxlength="200" placeholder="Ex. Yopougon, Siporex"></label>
           <input type="hidden" name="lat" data-geo-lat><input type="hidden" name="lng" data-geo-lng>

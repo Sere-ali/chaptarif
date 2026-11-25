@@ -653,7 +653,7 @@ function kyc_docs_required(string $universe): array
         'covoiturage' => ['permis', 'photo', 'carte_grise', 'assurance'],
         'chauffeur' => ['permis', 'photo'],
         'cars', 'location_car', 'location_camion' => ['rccm', 'statuts', 'cni_rep_recto', 'cni_rep_verso'],
-        'location_vehicule' => ['cni_recto', 'cni_verso', 'photo', 'carte_grise', 'assurance'],
+        'location_vehicule' => ['cni_recto', 'cni_verso', 'photo'], // carte grise, assurance et visite technique : par véhicule
         'immobilier' => ['titre_propriete', 'cni_proprio_recto', 'cni_proprio_verso'],
         default => ['cni_recto', 'cni_verso', 'photo'],
     };
@@ -833,7 +833,7 @@ function listing_schema(string $universe): array
             'title_ph' => 'Ex. Toyota Prado 4x4 — location à la journée', 'price_label' => 'Tarif par jour (F CFA)', 'units' => ['jour'],
             'fields' => [
                 'modele' => ['Marque & modèle', 'text', 'Ex. Toyota Prado', true],
-                'categorie' => ['Catégorie', 'select', ['Citadine', 'Berline', 'SUV', '4x4', 'Minibus'], true],
+                'categorie' => ['Catégorie', 'select', array_column(vehicle_catalog(), 1), true],
                 'annee' => ['Année', 'number', '2020'],
                 'boite' => ['Boîte de vitesses', 'select', ['Manuelle', 'Automatique']],
                 'carburant' => ['Carburant', 'select', ['Essence', 'Diesel', 'Hybride']],
@@ -1059,4 +1059,26 @@ function universe_soon(string $k): bool
 function universe_closed(string $k): bool
 {
     return universe_soon($k) && !is_admin();
+}
+
+/**
+ * Catalogue des véhicules de location : clé => [libellé prestataire, libellé client, modèles].
+ * Sert à l'inscription des loueurs (véhicules proposés) et au formulaire client (type + modèle).
+ */
+function vehicle_catalog(): array
+{
+    return [
+        'suv' => ['SUV / 4x4', 'SUV / 4x4', ['Toyota Land Cruiser', 'Toyota Prado', 'Range Rover', 'Mercedes-Benz GLE', 'BMW X5 / X6', 'Lexus RX / LX', 'Hyundai Santa Fe', 'Kia Sorento', 'Nissan Patrol', 'Jeep Grand Cherokee']],
+        'berline' => ['Berlines / Limousines', 'Berline / Limousine', ['Toyota Camry', 'Toyota Corolla', 'Honda Accord', 'Hyundai Elantra', 'Kia K5 / Optima', 'Mercedes-Benz Classe C', 'BMW Série 3', 'Peugeot 508', 'Volkswagen Passat']],
+        'citadine' => ['Citadines / Compactes', 'Citadine / Compact', ['Toyota Yaris', 'Toyota Vitz', 'Hyundai i10 / i20', 'Kia Picanto', 'Suzuki Swift', 'Renault Clio', 'Peugeot 208']],
+        'monospace' => ['Monospaces / Familiales', 'Monospace / Familiale', ['Toyota Noah', 'Toyota Voxy', 'Toyota Alphard', 'Hyundai Staria', 'Kia Carnival', 'Honda Odyssey']],
+        'pickup' => ['Pick-up', 'Pick-up', ['Toyota Hilux', 'Ford Ranger', 'Mitsubishi L200', 'Nissan Navara', 'Isuzu D-Max']],
+        'minibus' => ['Minibus / Utilitaires', 'Minibus / Utilitaire', ['Toyota Hiace (15 places)', 'Hyundai H1', 'Citroën Jumper', 'Renault Master']],
+    ];
+}
+
+/** Véhicules d'un prestataire (inscription loueur) avec photos et papiers. */
+function provider_vehicles(int $providerId): array
+{
+    try { return all('SELECT * FROM provider_vehicles WHERE provider_id = ? ORDER BY id', [$providerId]); } catch (Throwable $e) { return []; }
 }

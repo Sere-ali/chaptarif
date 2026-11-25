@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 39;
+const SCHEMA_VERSION = 40;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -197,6 +197,10 @@ function db_migrate(): void
             id $PK, user_id INTEGER, user_label TEXT, action TEXT, target TEXT, details TEXT, ip TEXT, created_at TEXT)",
         "CREATE TABLE IF NOT EXISTS contact_messages (
             id $PK, name TEXT, phone TEXT, email TEXT, message TEXT, handled INTEGER NOT NULL DEFAULT 0, created_at TEXT)",
+        "CREATE TABLE IF NOT EXISTS provider_vehicles (
+            id $PK, provider_id INTEGER NOT NULL, service_id INTEGER, cat TEXT NOT NULL, model TEXT NOT NULL, price INTEGER NOT NULL DEFAULT 0,
+            unit TEXT NOT NULL DEFAULT 'jour', photos TEXT, docs TEXT, created_at TEXT)",
+        "CREATE INDEX IF NOT EXISTS idx_pveh_provider ON provider_vehicles(provider_id)",
         "CREATE TABLE IF NOT EXISTS tasks (
             id $PK, title TEXT NOT NULL, description TEXT, category TEXT NOT NULL DEFAULT 'general',
             priority TEXT NOT NULL DEFAULT 'normale', status TEXT NOT NULL DEFAULT 'a_faire',

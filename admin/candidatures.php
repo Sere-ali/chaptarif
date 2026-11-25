@@ -56,6 +56,7 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
     </div>
     <div class="cd-docs" data-l="Documents">
       <span class="cd-count <?= $have === count($req) ? 'ok' : 'ko' ?>"><?= $have ?>/<?= count($req) ?> fournis</span>
+      <?php $nvh = count(provider_vehicles((int) $p['id'])); if ($nvh): ?><small class="muted"><?= $nvh ?> véhicule<?= $nvh > 1 ? 's' : '' ?> proposé<?= $nvh > 1 ? 's' : '' ?> · détail dans « Voir le profil »</small><?php endif; ?>
       <div class="cd-chips">
         <?php foreach ($req as $dk): ?>
           <?php if (!empty($pdocs[$dk])): ?><a class="cd-chip ok" title="Voir le document" data-doc-view="<?= str_ends_with(strtolower((string) $pdocs[$dk]), '.pdf') ? 'pdf' : 'img' ?>" data-doc-title="<?= e($DL[$dk][0] . ' · ' . $p['name']) ?>" href="<?= e(doc_url($p, $dk)) ?>"><svg class="cd-eye" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg> <?= e($DL[$dk][0]) ?></a><?= del_btn('doc', (int) $p['id'], 'le document « ' . $DL[$dk][0] . ' » de ' . $p['name'], ['key' => $dk]) ?>
