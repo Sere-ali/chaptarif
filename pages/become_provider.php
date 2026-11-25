@@ -92,7 +92,7 @@ if (is_post()) {
         'commune' => in_array($_POST['commune'] ?? '', communes(), true) ? $_POST['commune'] : null,
         'bio' => mb_substr(trim((string) ($_POST['bio'] ?? '')), 0, 400), 'vehicle' => mb_substr((string) ($_POST['vehicle'] ?? ''), 0, 80),
         'kyc_status' => ($self && provider_has_passkey($cu)) ? 'pending' : 'incomplete', 'cni_public_id' => $cni, 'casier_public_id' => $casier, 'permis_public_id' => $permis, 'vehicule_public_id' => $vehicule, 'docs' => json_encode($docs, JSON_UNESCAPED_SLASHES), 'payout_method' => in_array($_POST['payout_method'] ?? '', ['wave', 'orange', 'mtn', 'moov'], true) ? $_POST['payout_method'] : 'wave',
-        'photo_url' => $photoUrl, 'payout_number' => $payout, 'source' => 'candidature', 'dossier_due' => dossier_fee() > 0 ? 1 : 0, 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
+        'photo_url' => $photoUrl, 'payout_number' => $payout, 'source' => 'candidature', 'active' => 0, 'rating' => 0, 'missions' => 0, 'created_at' => now(),
     ]);
     // Véhicules du loueur : une annonce (à valider par l'équipe) + le détail (photos, papiers) par véhicule.
     if ($vehicles && $newProvId) {
@@ -265,7 +265,6 @@ view('layout/header', compact('title', 'desc', 'active'));
           <button type="button" class="btn btn-primary btn-lg" data-pa-next>Continuer →</button>
           <button class="btn btn-primary btn-lg" data-pa-send hidden>Envoyer ma candidature</button>
         </div>
-        <?php if (dossier_fee() > 0): ?><p class="fine" style="text-align:center;margin:8px 0">Frais de dossier : <b><?= e(fcfa(dossier_fee())) ?></b>, à régler en Mobile Money après l'envoi de votre candidature.</p><?php endif; ?>
         <p class="pa-alt">Déjà prestataire ? <button type="button" class="linklike" data-pa-tab="login">Se connecter</button></p>
       </form>
     </div>

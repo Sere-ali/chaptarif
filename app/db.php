@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 41;
+const SCHEMA_VERSION = 40;
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -292,10 +292,6 @@ function db_migrate(): void
         "ALTER TABLE users ADD COLUMN admin_scope TEXT",
         "ALTER TABLE chat_messages ADD COLUMN conversation_id INTEGER",
         "ALTER TABLE chat_messages ADD COLUMN in_thread INTEGER NOT NULL DEFAULT 0",
-        "ALTER TABLE providers ADD COLUMN dossier_due INTEGER NOT NULL DEFAULT 0",
-        "ALTER TABLE providers ADD COLUMN dossier_state TEXT",
-        "ALTER TABLE providers ADD COLUMN dossier_method TEXT",
-        "ALTER TABLE providers ADD COLUMN dossier_paid_at TEXT",
         "ALTER TABLE contact_messages ADD COLUMN reply TEXT",
         "ALTER TABLE contact_messages ADD COLUMN replied_at TEXT",
         "ALTER TABLE contact_messages ADD COLUMN replied_by INTEGER",

@@ -14,17 +14,6 @@ if ($mine && array_filter($mine, fn($p) => $p['kyc_status'] === 'incomplete')) {
 }
 // Tant que le dossier n'est pas validé par l'équipe, l'espace n'est pas accessible.
 if ($mine && !array_filter($mine, fn($p) => in_array($p['kyc_status'], ['verified', 'rejected'], true))) {
-    // Frais de dossier à régler (Mobile Money) à l'inscription.
-    $due = null; foreach ($mine as $mp0) if (dossier_pending($mp0)) { $due = $mp0; break; }
-    $dnums = array_filter(payment_numbers());
-    $dmeth = array_intersect_key(payment_methods(), $dnums);
-    if ($due && is_post() && ($_POST['action'] ?? '') === 'dossier_claim' && isset($dmeth[(string) ($_POST['method'] ?? '')])) {
-        q("UPDATE providers SET dossier_state = 'declared', dossier_method = ? WHERE phone = ? AND dossier_due = 1 AND COALESCE(dossier_state, '') <> 'paid'", [(string) $_POST['method'], $me['phone']]);
-        audit('prestataire.dossier_declare', $due['name'] . ' #' . $due['id']);
-        flash('success', 'Merci ! Nous vérifions la réception de vos ' . fcfa(dossier_fee()) . ' et validons votre dossier sous 24 à 48 h.');
-        redirect('/espace-prestataire');
-    }
-    if ($due) $due = one('SELECT * FROM providers WHERE id = ?', [$due['id']]);
     $title = 'Veuillez patienter';
     view('layout/header', compact('title'));
     ?>
@@ -32,23 +21,6 @@ if ($mine && !array_filter($mine, fn($p) => in_array($p['kyc_status'], ['verifie
       <div style="font-size:54px">⏳</div>
       <h1 class="h2 center">Veuillez patienter svp</h1>
       <p class="center muted">Votre dossier est en cours de vérification par notre équipe (sous 24 à 48 h). Votre espace prestataire s'ouvrira dès qu'il sera validé.</p>
-      <?php if ($due && ($due['dossier_state'] ?? '') === 'declared'): ?>
-        <p class="center" style="background:#FFF7E0;border-radius:12px;padding:10px;margin:10px 0"><b>Frais de dossier <?= e(fcfa(dossier_fee())) ?></b><br><small>Paiement déclaré : en cours de vérification par l'équipe.</small></p>
-      <?php elseif ($due): ?>
-        <div style="background:#FFF7E0;border-radius:14px;padding:14px;margin:12px 0;text-align:left;box-sizing:border-box">
-          <b>Frais de dossier : <?= e(fcfa(dossier_fee())) ?></b>
-          <p class="muted" style="margin:6px 0 10px;font-size:14px">Envoyez ce montant par Mobile Money, puis cliquez sur « J'ai envoyé le paiement ». Votre dossier sera validé après réception.</p>
-          <?php if ($dmeth): ?>
-          <form method="post"><?= csrf_field() ?><input type="hidden" name="action" value="dossier_claim">
-            <?php foreach ($dmeth as $mk => $mm): $first = !isset($once); $once = 1; ?>
-              <label style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #E5E0D0;border-radius:10px;margin-bottom:8px;background:#fff"><input type="radio" name="method" value="<?= e($mk) ?>" <?= $first ? 'checked' : '' ?>><span style="flex:1"><b><?= e($mm[0]) ?></b></span><span class="mono"><?= e(fmt_phone($dnums[$mk])) ?></span></label>
-            <?php endforeach; ?>
-            <p class="fine" style="margin:6px 0 10px">Motif : « Dossier <?= e($due['name']) ?> ».</p>
-            <button class="btn btn-primary btn-block btn-lg">✓ J'ai envoyé le paiement</button>
-          </form>
-          <?php else: ?><p class="muted">Moyen de paiement bientôt disponible : contactez le support.</p><?php endif; ?>
-        </div>
-      <?php endif; ?>
       <a class="btn btn-soft btn-block btn-lg" href="/contact">Contacter le support</a>
       <a class="btn btn-ghost btn-block btn-lg" style="margin-top:10px" href="/">Retour à l'accueil</a>
     </div></section>
