@@ -65,16 +65,16 @@ view('admin/header', compact('page', 'nav'));
   </div>
 </div>
 
-<?php $pvs = provider_vehicles((int) $p['id']); if ($pvs): $VCa = vehicle_catalog(); $vdl = ['cg' => 'Carte grise', 'as' => 'Assurance', 'vt' => 'Visite technique']; ?>
+<?php $pvs = provider_vehicles((int) $p['id']); if ($pvs): $VCa = vehicle_catalog(); $vdl = ['cg' => 'Papiers du véhicule']; ?>
 <div class="panel">
   <h3 class="h4">Véhicules proposés (<?= count($pvs) ?>)</h3>
   <?php foreach ($pvs as $v): $vph = json_decode((string) $v['photos'], true) ?: []; $vdc = json_decode((string) $v['docs'], true) ?: []; ?>
     <div style="border:1px solid #E1EAF0;border-radius:14px;padding:12px;margin-top:10px">
-      <b><?= e($v['model']) ?></b> <span class="badge badge-gray"><?= e($VCa[$v['cat']][1] ?? $v['cat']) ?></span> · <b><?= fcfa($v['price']) ?></b> / jour
+      <b><?= e($v['model']) ?></b> <span class="badge badge-gray"><?= e($VCa[$v['cat']][1] ?? $v['cat']) ?></span> · <?php if ((int) $v['price'] > 0): ?><b><?= fcfa($v['price']) ?></b> / jour<?php else: ?><span class="muted">prix à renseigner par le prestataire</span><?php endif; ?>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><?php foreach ($vph as $u1): ?><a href="<?= e($u1) ?>" target="_blank" rel="noopener"><img src="<?= e(cld($u1, 'w_240,h_180,c_fill,q_auto,f_auto')) ?>" alt="" loading="lazy" style="width:92px;height:70px;object-fit:cover;border-radius:10px"></a><?php endforeach; ?></div>
       <div class="cd-chips"><?php foreach ($vdl as $dk => $dl): $kk = 'v' . (int) $v['id'] . '_' . $dk; ?>
         <?php if (!empty($vdc[$dk])): ?><a class="cd-chip ok" title="Voir le document" data-doc-view="<?= str_ends_with(strtolower((string) $vdc[$dk]), '.pdf') ? 'pdf' : 'img' ?>" data-doc-title="<?= e($dl . ' · ' . $v['model']) ?>" href="<?= e(doc_url($p, $kk)) ?>"><?= e($dl) ?></a>
-        <?php elseif ($dk !== 'vt'): ?><span class="cd-chip ko">✕ <?= e($dl) ?></span><?php endif; ?>
+        <?php else: ?><span class="cd-chip ko">✕ <?= e($dl) ?></span><?php endif; ?>
       <?php endforeach; ?></div>
     </div>
   <?php endforeach; ?>

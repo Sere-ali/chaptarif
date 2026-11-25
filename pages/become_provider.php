@@ -54,13 +54,12 @@ if (is_post()) {
         for ($i = 0; $i < $nv; $i++) {
             $ck = (string) ($_POST["v_cat_$i"] ?? ''); $mo = (string) ($_POST["v_model_$i"] ?? '');
             if (!isset($VC[$ck]) || !in_array($mo, $VC[$ck][2], true)) continue;
-            $vehicles[] = ['i' => $i, 'cat' => $ck, 'model' => $mo, 'price' => (int) preg_replace('/\D/', '', (string) ($_POST["v_price_$i"] ?? '')), 'photos' => [], 'docs' => []];
+            $vehicles[] = ['i' => $i, 'cat' => $ck, 'model' => $mo, 'price' => 0, 'photos' => [], 'docs' => []];
         }
         if (!$vehicles) $errors[] = 'Sélectionnez au moins un véhicule à proposer à la location.';
         foreach ($vehicles as &$vh) {
             if ($errors) break;
             $vn = $vh['model'];
-            if ($vh['price'] < 1000 || $vh['price'] > 5000000) { $errors[] = $vn . ' : indiquez un prix de location par jour valide.'; break; }
             $ph = $upList('v_photos_' . $vh['i']);
             if (!$ph) { $errors[] = $vn . ' : ajoutez au moins une photo du véhicule.'; break; }
             foreach (array_slice($ph, 0, 10) as $pf) {
@@ -68,7 +67,7 @@ if (is_post()) {
                 if (!$r['ok'] || ($r['format'] ?? '') === 'pdf') { $errors[] = $vn . ' : photo refusée (' . ($r['ok'] ? 'format image requis' : $r['error']) . ').'; break 2; }
                 $vh['photos'][] = $r['url'];
             }
-            foreach (['cg' => ['Carte grise', true], 'as' => ['Assurance', true], 'vt' => ['Visite technique', false]] as $dk => [$dl, $req]) {
+            foreach (['cg' => ['Papiers du véhicule', true]] as $dk => [$dl, $req]) {
                 $df = $upList("v_{$dk}_" . $vh['i']);
                 if (!$df) { if ($req) { $errors[] = $vn . ' : ' . $dl . ' obligatoire.'; break 2; } continue; }
                 $r = cld_upload($df[0], 'chaptarif/kyc', 'authenticated');
@@ -99,7 +98,7 @@ if (is_post()) {
     if ($vehicles && $newProvId) {
         $VC = vehicle_catalog(); $allDocs = $docs; $sort = 0;
         foreach ($vehicles as $vh) {
-            $sid = insert('provider_services', ['provider_id' => $newProvId, 'title' => $vh['model'], 'description' => null, 'price' => $vh['price'], 'unit' => 'jour',
+            $sid = insert('provider_services', ['provider_id' => $newProvId, 'title' => $vh['model'], 'description' => null, 'price' => null, 'unit' => 'jour',
                 'photo_url' => $vh['photos'][0] ?? null, 'attrs' => json_encode(['modele' => $vh['model'], 'categorie' => $VC[$vh['cat']][1], 'cat_key' => $vh['cat']], JSON_UNESCAPED_UNICODE),
                 'status' => 'pending', 'active' => 1, 'sort' => ++$sort, 'created_at' => now(), 'updated_at' => now()]);
             $vid = insert('provider_vehicles', ['provider_id' => $newProvId, 'service_id' => $sid, 'cat' => $vh['cat'], 'model' => $vh['model'], 'price' => $vh['price'], 'unit' => 'jour',
@@ -255,7 +254,7 @@ view('layout/header', compact('title', 'desc', 'active'));
 
         <fieldset class="pa-step" data-step="5" hidden>
           <div class="veh-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-6h14l2 6v4H3zM7 17v2M17 17v2"/></svg><b>Ajoutez les détails de vos véhicules sélectionnés</b></div>
-          <p class="veh-info">ⓘ Ajoutez jusqu’à <b>10 photos</b> par véhicule, renseignez le prix de location et joignez les papiers du véhicule (carte grise, assurance, visite technique).</p>
+          <p class="veh-info">ⓘ Ajoutez jusqu’à <b>10 photos</b> par véhicule et une pièce jointe des papiers du véhicule (carte grise, assurance, visite technique, etc.).</p>
           <div id="vehDetails"></div>
           <p class="veh-info veh-foot"><span>ⓘ Répétez l’opération pour chaque véhicule sélectionné.</span><b data-veh-todo></b></p>
         </fieldset>
@@ -334,7 +333,7 @@ view('layout/header', compact('title', 'desc', 'active'));
   function vcount() { var n = picked().length, t = f.querySelector('[data-veh-count]'); if (t) t.textContent = n ? n + ' véhicule' + (n > 1 ? 's' : '') + ' sélectionné' + (n > 1 ? 's' : '') + '.' : 'Aucun véhicule sélectionné.'; }
   f.querySelectorAll('.veh-cb').forEach(function (c) { c.addEventListener('change', function () { c.closest('.veh-it').classList.toggle('on', c.checked); vcount(); err.hidden = true; }); });
   function validVeh4() { if (!picked().length) { err.textContent = 'Sélectionnez au moins un véhicule à proposer.'; err.hidden = false; return false; } return true; }
-  function todo() { var t = f.querySelector('[data-veh-todo]'); if (!t) return; var n = picked().filter(function (p) { var st = vs[p.key]; var c = vcards[p.key]; return !(st && st.photos.length && c && c.querySelector('[data-p]').value && c.querySelector('[data-cg]').files.length && c.querySelector('[data-as]').files.length); }).length; t.innerHTML = '<i>' + n + '</i> véhicule(s) à compléter'; }
+  function todo() { var t = f.querySelector('[data-veh-todo]'); if (!t) return; var n = picked().filter(function (p) { var st = vs[p.key]; var c = vcards[p.key]; return !(st && st.photos.length && c && c.querySelector('[data-cg]').files.length); }).length; t.innerHTML = '<i>' + n + '</i> véhicule(s) à compléter'; }
   function resize(file, max, q) {
     return new Promise(function (ok) {
       if (!/^image\//.test(file.type) || file.type === 'image/gif') return ok(file);
@@ -349,11 +348,8 @@ view('layout/header', compact('title', 'desc', 'active'));
     var el = document.createElement('div'); el.className = 'vd'; el.dataset.key = p.key;
     el.innerHTML = '<div class="vd-id"><img src="/assets/img/veh-' + p.cat + '.jpg" alt=""><b></b><em></em></div>' +
       '<div class="vd-sec"><h4>📷 Photos du véhicule <small>(max. 10)</small></h4><div class="vd-ph" data-ph></div><input type="file" accept="image/*" multiple hidden data-pin></div>' +
-      '<div class="vd-sec"><h4>🪙 Prix à la location</h4><div class="vd-row"><select data-u aria-label="Unité"><option value="jour">Par jour</option></select><input data-p inputmode="numeric" placeholder="Ex. 60 000" aria-label="Prix en FCFA" required><span class="vd-f">FCFA</span></div></div>' +
       '<div class="vd-sec"><h4>📄 Papiers du véhicule</h4>' +
-      '<label class="vd-doc"><span>Carte grise <small>(obligatoire)</small></span><input type="file" accept="image/*,application/pdf" data-cg required></label>' +
-      '<label class="vd-doc"><span>Assurance <small>(obligatoire)</small></span><input type="file" accept="image/*,application/pdf" data-as required></label>' +
-      '<label class="vd-doc"><span>Visite technique <small>(facultatif)</small></span><input type="file" accept="image/*,application/pdf" data-vt></label></div>';
+      '<label class="vd-doc"><span>Carte grise, assurance, visite technique… <small>(un seul fichier : photo ou PDF)</small></span><input type="file" accept="image/*,application/pdf" data-cg required></label></div>';
     el.querySelector('b').textContent = p.model; el.querySelector('em').textContent = VC[p.cat].label;
     var pin = el.querySelector('[data-pin]'), ph = el.querySelector('[data-ph]');
     function draw() {
@@ -366,8 +362,7 @@ view('layout/header', compact('title', 'desc', 'active'));
       var fl = Array.prototype.slice.call(pin.files).slice(0, 10 - st.photos.length); pin.value = '';
       Promise.all(fl.map(function (x) { return resize(x, 1280, .82).then(function (b) { return { blob: b, url: URL.createObjectURL(b) }; }); })).then(function (r) { st.photos = st.photos.concat(r); draw(); todo(); });
     });
-    el.querySelectorAll('input[data-cg],input[data-as],input[data-vt]').forEach(function (i) { i.addEventListener('change', function () { i.closest('.vd-doc').classList.toggle('has', !!i.files.length); todo(); }); });
-    el.querySelector('[data-p]').addEventListener('input', function (e) { var v = e.target.value.replace(/\D/g, '').slice(0, 7); e.target.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, ' '); todo(); });
+    el.querySelectorAll('input[data-cg]').forEach(function (i) { i.addEventListener('change', function () { i.closest('.vd-doc').classList.toggle('has', !!i.files.length); todo(); }); });
     draw(); return el;
   }
   function buildDetails() {
@@ -381,9 +376,7 @@ view('layout/header', compact('title', 'desc', 'active'));
     for (var i = 0; i < pk.length; i++) {
       var c = vcards[pk[i].key], st = vs[pk[i].key], m = pk[i].model, msg = '', el = null;
       if (!st.photos.length) { msg = m + ' : ajoutez au moins une photo.'; el = c.querySelector('[data-ph]'); }
-      else if (+c.querySelector('[data-p]').value.replace(/\D/g, '') < 1000) { msg = m + ' : indiquez le prix de location par jour.'; el = c.querySelector('[data-p]'); }
-      else if (!c.querySelector('[data-cg]').files.length) { msg = m + ' : ajoutez la carte grise.'; el = c.querySelector('[data-cg]'); }
-      else if (!c.querySelector('[data-as]').files.length) { msg = m + ' : ajoutez l’assurance.'; el = c.querySelector('[data-as]'); }
+      else if (!c.querySelector('[data-cg]').files.length) { msg = m + ' : ajoutez les papiers du véhicule.'; el = c.querySelector('[data-cg]'); }
       if (msg) { err.textContent = msg; err.hidden = false; c.scrollIntoView({ behavior: 'smooth', block: 'center' }); c.classList.add('shake'); setTimeout(function () { c.classList.remove('shake'); }, 500); return false; }
     }
     return true;
@@ -395,9 +388,9 @@ view('layout/header', compact('title', 'desc', 'active'));
     fd.append('v_count', pk.length);
     pk.forEach(function (p, i) {
       var c = vcards[p.key], st = vs[p.key];
-      fd.append('v_cat_' + i, p.cat); fd.append('v_model_' + i, p.model); fd.append('v_price_' + i, c.querySelector('[data-p]').value.replace(/\D/g, '')); fd.append('v_unit_' + i, 'jour');
+      fd.append('v_cat_' + i, p.cat); fd.append('v_model_' + i, p.model); fd.append('v_unit_' + i, 'jour');
       st.photos.forEach(function (it, j) { fd.append('v_photos_' + i + '[]', it.blob, 'photo' + (j + 1) + '.jpg'); });
-      [['cg', 'data-cg'], ['as', 'data-as'], ['vt', 'data-vt']].forEach(function (d) {
+      [['cg', 'data-cg']].forEach(function (d) {
         var fl = c.querySelector('[' + d[1] + ']').files[0]; if (!fl) return;
         jobs.push(resize(fl, 1800, .85).then(function (b) { fd.append('v_' + d[0] + '_' + i, b, fl.name.replace(/\.[^.]+$/, '') + (b === fl ? fl.name.replace(/^.*(\.[^.]+)$/, '$1') : '.jpg')); }));
       });
