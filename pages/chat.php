@@ -26,6 +26,7 @@ if ($providerMode) {
             if (!isset(conv_kinds_for(true)[$kind])) { flash('error', 'Choisissez ce que vous souhaitez faire.'); redirect('/chat?pro=1&new=1'); }
             $bid = (int) ($_POST['booking'] ?? 0);
             $b = $bid ? one('SELECT b.id, b.ref, b.title FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE b.id = ? AND p.phone = ?', [$bid, $me['phone']]) : null;
+            if ($kind === 'pro_reservation' && !$b && val("SELECT 1 FROM bookings b JOIN providers p ON p.id = b.provider_id WHERE p.phone = ? AND b.paid_at IS NOT NULL AND b.status <> 'ANNULE'", [$me['phone']])) { flash('error', 'Choisissez la réservation concernée.'); redirect('/chat?pro=1&new=1'); }
             if ((int) val('SELECT COUNT(*) FROM conversations WHERE user_id = ? AND created_at > ?', [$uid, date('Y-m-d H:i:s', time() - 3600)]) >= 10) { flash('error', 'Trop de demandes en peu de temps : patientez un moment.'); redirect('/chat?pro=1'); }
             $newId = conv_create($uid, $kind, $b ? (int) $b['id'] : null, $b ? null : conv_kind($kind)[3], null);
             $c = one('SELECT * FROM conversations WHERE id = ?', [$newId]);
@@ -51,6 +52,7 @@ if ($providerMode) {
         if (!isset(CONV_KINDS[$kind]) || $kind === 'assistance') { flash('error', 'Choisissez ce que vous souhaitez faire.'); redirect('/chat?new=1'); }
         $bid = (int) ($_POST['booking'] ?? 0);
         $b = $bid ? one('SELECT id, ref, title, provider_id FROM bookings WHERE id = ? AND user_id = ?', [$bid, $uid]) : null;
+        if (in_array($kind, ['reclamation', 'modification', 'remboursement'], true) && !$b && val("SELECT 1 FROM bookings WHERE user_id = ? AND status <> 'ANNULE'", [$uid])) { flash('error', 'Choisissez la réservation concernée.'); redirect('/chat?new=1'); }
         $recent = (int) val('SELECT COUNT(*) FROM conversations WHERE user_id = ? AND created_at > ?', [$uid, date('Y-m-d H:i:s', time() - 3600)]);
         if ($recent >= 10) { flash('error', 'Trop de demandes en peu de temps : patientez un moment.'); redirect('/chat'); }
         $ab = null;
@@ -196,13 +198,35 @@ if (isset($_GET['new']) || (!$providerMode && ($preBooking || $preProv))):
       <?php endforeach; ?>
     </div>
     <?php if ($providerMode && !$bks): ?><input type="hidden" name="booking" value="0"><?php else: ?>
-    <h2 class="cv-q">Cela concerne-t-il une réservation ?</h2>
+    <div data-cv-bk<?= ($preBooking || !$bks) ? '' : ' hidden' ?>>
+    <h2 class="cv-q" data-cv-bkq>Cela concerne-t-il une réservation ?</h2>
     <div class="cv-opts">
       <?php foreach ($bks as $bk): $w = conv_booking_when($bk); ?>
         <label class="cv-opt cv-opt-bk"><input type="radio" name="booking" value="<?= (int) $bk['id'] ?>" <?= $preBooking === (int) $bk['id'] ? 'checked' : '' ?>><span class="cv-th"><?= conv_thumb($bk) ?></span><span class="cv-opt-l"><b><?= e($bk['title']) ?></b><small><span class="mono"><?= e($bk['ref']) ?></span><?= $w['date'] ? ' · ' . e($w['date']) : '' ?><?= $w['time'] ? ' · ' . e($w['time']) : '' ?></small></span><i class="cv-dot"></i></label>
       <?php endforeach; ?>
-      <label class="cv-opt"><input type="radio" name="booking" value="0" <?= !$providerMode && $preBooking ? '' : 'checked' ?>><span class="cv-opt-ic">📄</span><span class="cv-opt-l">Aucune réservation / Autre sujet</span><i class="cv-dot"></i></label>
+      <label class="cv-opt" data-cv-none><input type="radio" name="booking" value="0" <?= !$providerMode && $preBooking ? '' : 'checked' ?>><span class="cv-opt-ic">📄</span><span class="cv-opt-l">Aucune réservation / Autre sujet</span><i class="cv-dot"></i></label>
     </div>
+    </div>
+    <?php $needKinds = $providerMode ? ['pro_reservation'] : ['reclamation', 'modification', 'remboursement']; ?>
+    <script>
+    (function () {
+      var f = document.querySelector('[data-cv-new]'), box = f && f.querySelector('[data-cv-bk]'); if (!box) return;
+      var NEED = <?= json_encode($needKinds) ?>, pre = <?= ($preBooking ? 'true' : 'false') ?>, hasBk = <?= $bks ? 'true' : 'false' ?>;
+      var none = box.querySelector('[data-cv-none]'), nr = none.querySelector('input'), rs = box.querySelectorAll('input[name=booking]:not([value="0"])'), q = box.querySelector('[data-cv-bkq]');
+      function upd() {
+        var k = f.querySelector('input[name=kind]:checked'), need = !!k && NEED.indexOf(k.value) > -1;
+        box.hidden = !(need || pre);
+        q.textContent = need ? 'Quelle réservation est concernée ?' : 'Cela concerne-t-il une réservation ?';
+        var forced = need && hasBk;
+        none.hidden = forced;
+        rs.forEach(function (r, i) { r.required = forced && i === 0; });
+        if (forced) { if (nr.checked) nr.checked = false; }
+        else if (!pre && !box.querySelector('input[name=booking]:checked')) nr.checked = true;
+        else if (!pre && !need) nr.checked = true;
+      }
+      f.addEventListener('change', upd); upd();
+    })();
+    </script>
     <?php endif; ?>
     <button class="btn btn-primary btn-block cv-go">Continuer ›</button>
   </form>
