@@ -176,6 +176,7 @@ view('layout/header', compact('title', 'active', 'providerMode'));
       <?php foreach ($recentAll as $b): $bx = $uByP[(int) $b['provider_id']] ?? ['emoji' => '']; ?>
         <a class="pm-bk pmh-bk" href="/espace-prestataire?vue=reservations#b<?= (int) $b['id'] ?>"><i><?= $bx['emoji'] ?></i><span><b>N° <?= e($b['ref']) ?></b><small><?= e($b['title']) ?><?= $b['service_date'] ? ' · ' . e(date('d/m/Y', strtotime((string) $b['service_date']))) : '' ?></small></span><?= status_badge($b['status']) ?><em>›</em></a>
       <?php endforeach; ?>
+      <a class="pm-switch" href="/compte" style="margin-top:18px"><span>🛍️</span><b>Passer à mon espace client<small>Réserver un service, voir mes commandes</small></b><em>›</em></a>
     </div>
     <?php endif; ?>
     <?php if ($multi && !$listHome && $vue === ''): ?><p><a class="btn btn-ghost btn-sm" href="/espace-prestataire">← Mes espaces</a></p><?php endif; ?>
