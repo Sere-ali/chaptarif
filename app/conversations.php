@@ -136,8 +136,7 @@ function provider_validated_chat(array $p): void
         $subject = 'Inscription validée';
         if (val("SELECT 1 FROM conversations c WHERE c.user_id = ? AND c.kind = 'pro_dossier' AND c.subject = ?", [$uid, $subject])) return;
         $cid = conv_create($uid, 'pro_dossier', null, $subject);
-        $name = trim((string) ($p['name'] ?? ''));
-        $body = "Bonjour" . ($name !== '' ? ' ' . $name : '') . ",\n\nBonne nouvelle : votre inscription sur ChapTarif a été validée ✅\nVotre espace prestataire est maintenant ouvert : vous pouvez publier vos annonces et recevoir des réservations.\n\nBienvenue dans l'équipe ChapTarif !";
+        $body = "🎉 Bonne nouvelle !\n\nVotre demande d’inscription sur ChapTarif a été validée.\n\nVotre espace prestataire est désormais actif !\n\nVous pouvez maintenant recevoir des demandes de clients et commencer à développer votre activité sur la plateforme.\n\nMerci pour votre confiance et plein succès dans votre activité !\n\nL’équipe ChapTarif";
         insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $cid, 'sender' => 'admin', 'body' => $body, 'read_by_user' => 0, 'read_by_admin' => 1, 'created_at' => now()]);
         conv_touch($cid, false);
     } catch (Throwable $e) { error_log('provider_validated_chat: ' . $e->getMessage()); }

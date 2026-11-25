@@ -125,6 +125,17 @@ $active = 'pro';
 $editId = (int) ($_GET['edit'] ?? 0);
 $vue = (string) ($_GET['vue'] ?? '');
 $providerMode = true;
+// Plusieurs espaces : accueil avec la liste « Mes espaces prestataires », puis la page de l'espace choisi.
+$espaceId = (int) ($_GET['espace'] ?? 0);
+$mineIds = array_map(fn($p) => (int) $p['id'], $mine);
+if ($espaceId && in_array($espaceId, $mineIds, true)) $_SESSION['pro_espace'] = $espaceId; else $espaceId = 0;
+$multi = count($mine) > 1;
+$listHome = $multi && $vue === '' && !$espaceId;
+if ($listHome) unset($_SESSION['pro_espace']);
+$selId = (int) ($_SESSION['pro_espace'] ?? 0);
+$showMine = $mine;
+if ($multi && !$listHome && $selId && in_array($selId, $mineIds, true)) $showMine = array_values(array_filter($mine, fn($p) => (int) $p['id'] === $selId));
+if ($listHome) $showMine = [];
 view('layout/header', compact('title', 'active', 'providerMode'));
 ?>
 <section class="section-tight ps">
@@ -136,7 +147,40 @@ view('layout/header', compact('title', 'active', 'providerMode'));
         <a class="btn btn-primary" href="/devenir-prestataire">Devenir prestataire</a></div>
     <?php endif; ?>
 
-    <?php foreach ($mine as $p):
+    <?php if ($listHome):
+        $allIds = $mineIds; $in = implode(',', $allIds);
+        $bkAll = one("SELECT COUNT(*) AS n, COALESCE(SUM(CASE WHEN status = 'VALIDE' THEN 1 ELSE 0 END),0) AS ok, COALESCE(SUM(CASE WHEN status = 'EN_LITIGE' OR COALESCE(dispute_reason, '') <> '' THEN 1 ELSE 0 END),0) AS lit FROM bookings WHERE provider_id IN ($in) AND paid_at IS NOT NULL");
+        $recentAll = all("SELECT b.id, b.ref, b.title, b.status, b.service_date, b.provider_id FROM bookings b WHERE b.provider_id IN ($in) AND b.paid_at IS NOT NULL ORDER BY b.id DESC LIMIT 3");
+        $uByP = []; foreach ($mine as $mp) $uByP[(int) $mp['id']] = $U[$mp['universe']] ?? ['name' => $mp['universe'], 'emoji' => '']; ?>
+    <div class="pmh">
+      <h1 class="pmh-hi">Bonjour <span>👋</span></h1>
+      <h2 class="pmh-t"><i></i>Mes espaces prestataires</h2>
+      <?php foreach ($mine as $mp): $mx = $uByP[(int) $mp['id']]; $mlive = $mp['kyc_status'] === 'verified' && (int) $mp['active'] === 1;
+            $mimg = !empty($mx['img']) ? img($mx['img'], 'w_300,h_240,c_fill,q_auto,f_auto') : ''; ?>
+        <a class="pmh-sp" href="/espace-prestataire?espace=<?= (int) $mp['id'] ?>">
+          <?php if ($mimg): ?><img src="<?= e($mimg) ?>" alt="" loading="lazy"><?php else: ?><span class="pmh-emo"><?= $mx['emoji'] ?></span><?php endif; ?>
+          <span class="pmh-b"><b><?= e($mp['name']) ?></b><small><?= e($mx['short'] ?? $mx['name']) ?> · <?= e($mp['commune']) ?></small>
+            <span class="pmh-row">
+            <?php if ($mlive): ?><em class="pmh-ok">✓ Profil validé</em><?php elseif ($mp['kyc_status'] === 'rejected'): ?><em class="pmh-ko">⚠ À corriger</em><?php else: ?><em class="pmh-wait">🕒 En attente</em><?php endif; ?>
+            <span class="pmh-go">Voir mon espace →</span></span></span>
+        </a>
+      <?php endforeach; ?>
+      <h2 class="pmh-t"><i></i>Mon activité</h2>
+      <div class="pmh-st">
+        <div class="a"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><b>Réservations</b><strong><?= (int) $bkAll['n'] ?></strong></div>
+        <div class="b"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1D5FD1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><b>Prestations terminées</b><strong><?= (int) $bkAll['ok'] ?></strong></div>
+        <div class="c"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#E8970C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><b>Litiges / Réclamations</b><strong><?= (int) $bkAll['lit'] ?></strong></div>
+      </div>
+      <div class="pmh-rh"><h2 class="pmh-t"><i></i>Dernières réservations</h2><a href="/espace-prestataire?vue=reservations">Voir tout →</a></div>
+      <?php if (!$recentAll): ?><p class="pmh-empty">📅 Aucune réservation pour le moment.</p><?php endif; ?>
+      <?php foreach ($recentAll as $b): $bx = $uByP[(int) $b['provider_id']] ?? ['emoji' => '']; ?>
+        <a class="pm-bk pmh-bk" href="/espace-prestataire?vue=reservations#b<?= (int) $b['id'] ?>"><i><?= $bx['emoji'] ?></i><span><b>N° <?= e($b['ref']) ?></b><small><?= e($b['title']) ?><?= $b['service_date'] ? ' · ' . e(date('d/m/Y', strtotime((string) $b['service_date']))) : '' ?></small></span><?= status_badge($b['status']) ?><em>›</em></a>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+    <?php if ($multi && !$listHome && $vue === ''): ?><p><a class="btn btn-ghost btn-sm" href="/espace-prestataire">← Mes espaces</a></p><?php endif; ?>
+
+    <?php foreach ($showMine as $p):
         $x = $U[$p['universe']] ?? ['name' => $p['universe'], 'emoji' => ''];
         $live = $p['kyc_status'] === 'verified' && (int) $p['active'] === 1;
         $svcs = all('SELECT * FROM provider_services WHERE provider_id = ? ORDER BY sort, id', [$p['id']]);
