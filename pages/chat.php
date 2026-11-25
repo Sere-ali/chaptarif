@@ -275,8 +275,8 @@ else:
       <a class="cv-item<?= (int) $c['unread'] > 0 ? ' unread' : '' ?>" href="/chat?<?= $providerMode ? 'pro=1&amp;' : '' ?>c=<?= (int) $c['id'] ?>" data-st="<?= e($c['status']) ?>">
         <span class="cv-th<?= $b ? '' : ' cv-th-help' ?>"><?php if ($b): ?><?= conv_thumb($b) ?><?php else: ?><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/><path d="M19.5 19v.5a2.5 2.5 0 0 1-2.5 2.5h-3"/></svg><?php endif; ?></span>
         <span class="cv-it-main">
-          <b><?= $b ? e($b['title']) : 'Assistance ChapTarif <i class="cv-verif" aria-hidden="true">✓</i>' ?></b>
-          <small><?= $b ? 'Réf. <span>' . e($b['ref']) . '</span>' : 'Dossier <span>' . e($c['ref']) . '</span>' ?></small>
+          <b><?= $c['kind'] === 'assistance' ? 'Assistance ChapTarif <i class="cv-verif" aria-hidden="true">✓</i>' : e(conv_kind($c['kind'])[3]) ?></b>
+          <small>Dossier <span><?= e($c['ref']) ?></span><?= $b ? ' · ' . e($b['title']) : '' ?></small>
           <?php if ($pv !== ''): ?><small class="cv-prev" data-no-tr><?= e(mb_strimwidth(preg_replace('/\s+/u', ' ', $pv), 0, 70, '…')) ?></small><?php endif; ?>
         </span>
         <span class="cv-it-r"><?= conv_badge($c['status']) ?><small><?= e($when($c['last_msg_at'])) ?></small><?php if ((int) $c['unread'] > 0): ?><i class="cv-unread"><?= (int) $c['unread'] ?></i><?php endif; ?></span>
