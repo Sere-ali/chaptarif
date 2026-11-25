@@ -4,7 +4,7 @@ if (is_post()) {
     $p = one('SELECT * FROM providers WHERE id = ?' . scope_sql('universe'), [(int) ($_POST['id'] ?? 0)]);
     if ($p) {
         $act = $_POST['action'] ?? '';
-        if ($act === 'verify') { q("UPDATE providers SET kyc_status = 'verified', active = 1 WHERE id = ?", [$p['id']]); flash('success', "{$p['name']} vérifié et activé."); }
+        if ($act === 'verify') { q("UPDATE providers SET kyc_status = 'verified', active = 1 WHERE id = ?", [$p['id']]); provider_validated_chat($p); flash('success', "{$p['name']} vérifié et activé."); }
         if ($act === 'reject') { q("UPDATE providers SET kyc_status = 'rejected', active = 0 WHERE id = ?", [$p['id']]); flash('info', "Dossier de {$p['name']} refusé."); }
         if ($act === 'toggle') { q('UPDATE providers SET active = ? WHERE id = ?', [(int) $p['active'] ? 0 : 1, $p['id']]); flash('success', 'Statut mis à jour.'); }
         if ($act === 'sponsor') {
