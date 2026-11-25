@@ -244,3 +244,19 @@ a.wa-about:hover { background: #DCE8FD; }
 .wa-msg .wa-reply:hover, .wa-msg .wa-thr:hover { background: rgba(31,157,107,.15); }
 .wa-th-log .wa-reply, .wa-th-log .wa-thr { display: none; }
 .wa-log > .wa-msg.wa-in-thread { display: none; }
+
+/* Statut de la demande : badge d'en-tête, bandeau dans la conversation, message d'information */
+.wa-head .wa-st { margin-left: auto; flex: none; padding: 9px 16px; border-radius: 999px; font-weight: 800; font-size: .9rem; white-space: nowrap; }
+.wa-st-resolu { background: #1B7F3A; color: #fff; }
+.wa-st-en_cours { background: #E3F4E8; color: #14703A; }
+.wa-st-en_attente { background: #FFF1D6; color: #9A5B00; }
+.wa-msg.wa-sys { align-self: stretch; max-width: 100%; background: none; box-shadow: none; padding: 6px 0; display: flex; justify-content: center; position: relative; }
+.wa-sys::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px solid #cfd8d3; z-index: 0; }
+.wa-sys-box { position: relative; z-index: 1; text-align: center; background: #E1F4D8; border: 1.5px solid #cfe8c4; border-radius: 22px; padding: 10px 22px; }
+.wa-sys:not(.ok) .wa-sys-box { background: #EEF1F4; border-color: #dde3e8; }
+.wa-sys-box b { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.05rem; color: #111b21; }
+.wa-sys-box b i { font-style: normal; width: 26px; height: 26px; border-radius: 50%; background: #1B7F3A; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: .9rem; }
+.wa-sys:not(.ok) .wa-sys-box b i { background: #667781; }
+.wa-sys-box small { display: block; color: #3b4a54; font-size: .82rem; margin-top: 2px; }
+.wa-foot-note.info { margin: 8px 12px; padding: 12px 14px 12px 40px; border-radius: 14px; background: #E8EEF0; border: 1px solid #d5dde1; color: #1f2c34; font-size: .88rem; text-align: left; position: relative; }
+.wa-foot-note.info::before { content: "i"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border: 2px solid #1f2c34; border-radius: 50%; font-weight: 800; font-size: .72rem; display: flex; align-items: center; justify-content: center; }

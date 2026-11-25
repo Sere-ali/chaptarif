@@ -131,6 +131,8 @@
   var add = function (m) {
     if (seen[m.id]) return; seen[m.id] = 1;
     var emp = q('[data-chat-empty]'); if (emp) emp.remove();
+    var sy = /^(✔ Demande résolue|↻ Demande rouverte) · (Dossier .+)$/.exec(m.body || '');
+    if (sy) { var sd = el('div', 'wa-msg wa-sys' + (sy[1].charAt(0) === '✔' ? ' ok' : '')); sd.dataset.id = m.id; var bx = el('div', 'wa-sys-box'), bb = el('b'); bb.appendChild(el('i', '', sy[1].charAt(0) === '✔' ? '✓' : '↻')); bb.appendChild(document.createTextNode(sy[1].slice(2))); bx.appendChild(bb); bx.appendChild(el('small', '', sy[2] + ' · ' + m.time)); sd.appendChild(bx); log.appendChild(sd); if (m.id > last) last = m.id; down(); return; }
     var d = el('div', 'wa-msg ' + (m.me ? 'me' : 'them')); d.dataset.id = m.id; if (m.reply_to) d.dataset.replyTo = m.reply_to; if (m.th) d.classList.add('wa-in-thread');
     if (m.about) { var ab = el(m.about_uid ? 'a' : 'div', 'wa-about', '✉️ ' + m.about + (m.about_uid ? ' →' : '')); if (m.about_uid) ab.href = '/admin/chat?u=' + m.about_uid; d.appendChild(ab); }
     if (m.quote) { var qq = el('div', 'wa-quote'); qq.dataset.goto = m.quote.id; qq.appendChild(el('b', '', m.quote.who)); qq.appendChild(el('span', '', m.quote.text)); d.appendChild(qq); }

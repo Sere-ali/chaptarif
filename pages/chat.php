@@ -158,16 +158,22 @@ if ($conv) {
     view('layout/header', compact('title', 'active', 'providerMode', 'bodyClass'));
     echo '<section class="wa-wrap">';
     view('chat_box', ['msgs' => $msgs, 'last' => $last, 'url' => $url, 'name' => conv_title($conv, $b), 'sub' => $b ? 'Réf. ' . $b['ref'] : 'Dossier ' . $conv['ref'], 'back' => $CH, 'admin' => false, 'top' => $top,
-        'footnote' => $conv['status'] === 'resolu' ? 'Ce dossier est résolu. Écrivez-nous si besoin : il sera rouvert.' : 'Nous vous tiendrons informé de l’avancée de votre demande ici.']);
+        'headStatus' => $conv['status'], 'footInfo' => $conv['status'] === 'resolu',
+        'footnote' => $conv['status'] === 'resolu' ? 'Cette demande est résolue. Envoyez un nouveau message pour la rouvrir.' : 'Nous vous tiendrons informé de l’avancée de votre demande ici.']);
     echo '</section>'; ?>
 <script>
 (function () { // statut du dossier mis à jour en direct
   var el = document.querySelector('[data-cv-status]'); if (!el) return; var cur = <?= json_encode($conv['status']) ?>;
   var L = { en_cours: ['En cours', 'green'], en_attente: ['En attente', 'amber'], resolu: ['Résolu', 'gray'] };
+  var hd = document.querySelector('[data-cv-head]'), ft = document.querySelector('[data-cv-foot]');
+  function paint() { var t0 = window.ctT || function (s) { return s; };
+    if (hd) { hd.className = 'wa-st wa-st-' + cur; hd.textContent = (cur === 'resolu' ? '✓ ' : '') + t0(L[cur][0]); }
+    if (ft) { ft.classList.toggle('info', cur === 'resolu'); ft.textContent = cur === 'resolu' ? t0('Cette demande est résolue. Envoyez un nouveau message pour la rouvrir.') : t0('Nous vous tiendrons informé de l’avancée de votre demande ici.'); } }
+  paint();
   var t = window.ctT || function (s) { return s; };
   var box = document.querySelector('[data-chat]'); if (!box) return;
   box.addEventListener('chat:poll', function (ev) { var j = ev.detail || {};
-    if (j.status && j.status !== cur && L[j.status]) { cur = j.status; el.innerHTML = '<span class="cv-badge cv-' + L[cur][1] + '">' + t(L[cur][0]) + '</span>'; } });
+    if (j.status && j.status !== cur && L[j.status]) { cur = j.status; paint(); el.innerHTML = '<span class="cv-badge cv-' + L[cur][1] + '">' + t(L[cur][0]) + '</span>'; } });
 })();
 </script>
 <?php

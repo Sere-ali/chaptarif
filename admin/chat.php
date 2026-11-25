@@ -26,7 +26,7 @@ if (is_post() && $conv && ($_POST['action'] ?? '') === 'status') {
         q('UPDATE conversations SET status = ?, updated_at = ? WHERE id = ?', [$st, now(), $cid]);
         audit('chat.status', $conv['ref'], ['status' => $st]);
         if ($st === 'resolu' && $conv['status'] !== 'resolu') {
-            insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $cid, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => 'Votre demande (dossier ' . $conv['ref'] . ') est marquée comme résolue. Si besoin, écrivez-nous ici : le dossier sera rouvert.', 'read_by_user' => 0, 'read_by_admin' => 1, 'created_at' => now()]);
+            insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $cid, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => '✔ Demande résolue · Dossier ' . $conv['ref'], 'read_by_user' => 0, 'read_by_admin' => 1, 'created_at' => now()]);
             conv_touch($cid, false);
         }
     }

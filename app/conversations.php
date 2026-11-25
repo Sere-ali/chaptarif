@@ -123,6 +123,9 @@ function conv_booking_when(array $b): array
 /** Après un message : date du dernier message, et réouverture si le client écrit dans un dossier résolu. */
 function conv_touch(int $cid, bool $fromClient): void
 {
+    if ($fromClient && ($cv = one('SELECT ref, status, user_id FROM conversations WHERE id = ?', [$cid])) && $cv['status'] === 'resolu') {
+        insert('chat_messages', ['user_id' => (int) $cv['user_id'], 'conversation_id' => $cid, 'sender' => 'admin', 'body' => '↻ Demande rouverte · Dossier ' . $cv['ref'], 'read_by_user' => 1, 'read_by_admin' => 1, 'created_at' => now()]);
+    }
     if ($fromClient) q("UPDATE conversations SET last_msg_at = ?, updated_at = ?, status = CASE WHEN status = 'resolu' THEN 'en_cours' ELSE status END WHERE id = ?", [now(), now(), $cid]);
     else q('UPDATE conversations SET last_msg_at = ?, updated_at = ? WHERE id = ?', [now(), now(), $cid]);
 }

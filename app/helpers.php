@@ -594,6 +594,9 @@ function chat_meta(int $userId, bool $admin, ?string $scope = null): array
 
 function chat_msg_html(array $m): string
 {
+    if (($m['body'] ?? '') !== '' && preg_match('/^(✔ Demande résolue|↻ Demande rouverte) · (Dossier .+)$/u', (string) $m['body'], $sy)) {
+        return '<div class="wa-msg wa-sys' . (str_starts_with($sy[1], '✔') ? ' ok' : '') . '" data-id="' . (int) $m['id'] . '"><div class="wa-sys-box"><b>' . (str_starts_with($sy[1], '✔') ? '<i>✓</i>' : '<i>↻</i>') . e(mb_substr($sy[1], 2)) . '</b><small>' . e($sy[2]) . ' · ' . e(substr($m['created_at'], 11, 5)) . '</small></div></div>';
+    }
     $h = '<div class="wa-msg ' . ($m['mine'] ? 'me' : 'them') . (!empty($m['in_thread']) ? ' wa-in-thread' : '') . '" data-id="' . (int) $m['id'] . '"' . (!empty($m['reply_to']) ? ' data-reply-to="' . (int) $m['reply_to'] . '"' : '') . '>';
     if (!empty($m['about_admin'])) $h .= !empty($m['about_uid'])
         ? '<a class="wa-about" href="/admin/chat?u=' . (int) $m['about_uid'] . '" title="Ouvrir la conversation">✉️ ' . e($m['about_admin']) . ' →</a>'
