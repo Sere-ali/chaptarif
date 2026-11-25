@@ -49,7 +49,7 @@ view('layout/header', compact('title', 'desc', 'active', 'bodyClass'));
   </div>
 </section>
 
-<form class="section-tight" method="post" action="/reserver" data-service-form data-universe="<?= e($uk) ?>" data-garantie-pct="<?= e((string) $garantiePct) ?>" data-dossier="<?= (int) setting('dossier_fee', 500) ?>" data-fee-pct="<?= $uk === 'menage' ? e((string) setting('service_fee_menage_pct', 10)) : '0' ?>">
+<form class="section-tight" method="post" action="/reserver" data-service-form data-universe="<?= e($uk) ?>" data-garantie-pct="<?= e((string) $garantiePct) ?>" data-fee-pct="<?= $uk === 'menage' ? e((string) setting('service_fee_menage_pct', 10)) : '0' ?>">
   <?= csrf_field() ?>
   <input type="hidden" name="universe" value="<?= e($uk) ?>">
   <div class="container <?= ($isRental || in_array($uk, ['coiffeuse', 'maquilleuse', 'onglerie'], true)) ? 'narrow-2 svc-solo' : 'two-col wide-left' ?>">
@@ -337,7 +337,6 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <div class="mq-step"><button type="button" data-mq-minus aria-label="Moins">−</button><input name="personnes" value="0" inputmode="numeric" readonly data-mq-n><button type="button" data-mq-plus aria-label="Plus">+</button></div>
         </div>
         <div class="mq-total"><b>Total estimatif</b><span data-mq-total>0 FCFA</span></div>
-        <p class="fine" style="margin:4px 0 0">Dont <?= fcfa((int) setting('dossier_fee', 500)) ?> de frais de dossier.</p>
         <p class="fine" data-mq-msg hidden></p>
         <script>
         (function () {
@@ -348,7 +347,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
             var p = parseInt(n.value, 10) || 0, t = 0, on = 0;
             cbs.forEach(function (c) { if (c.checked) { on++; t += c.dataset.pp === '1' ? (+c.dataset.price) * p : +c.dataset.price; } });
             cbs.forEach(function (c) { c.disabled = !c.checked && on >= 2; c.closest('.mq-row').classList.toggle('on', c.checked); c.closest('.mq-row').classList.toggle('off', c.disabled); });
-            tot.textContent = fmt(t ? t + <?= (int) setting('dossier_fee', 500) ?> : 0);
+            tot.textContent = fmt(t);
           }
           cbs.forEach(function (c) { c.addEventListener('change', calc); });
           document.querySelector('[data-mq-minus]').addEventListener('click', function () { n.value = Math.max(0, (parseInt(n.value, 10) || 0) - 1); calc(); });
@@ -384,11 +383,10 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <div class="mq-step"><button type="button" data-co-minus aria-label="Moins">−</button><input name="personnes" value="1" inputmode="numeric" readonly data-co-n><button type="button" data-co-plus aria-label="Plus">+</button></div>
         </div>
         <div class="mq-total"><b>Total estimatif</b><span data-on-total>0 FCFA</span></div>
-        <p class="fine" style="margin:4px 0 0">Dont <?= fcfa((int) setting('dossier_fee', 500)) ?> de frais de dossier.</p>
         <script>
         (function () { var b = document.querySelector('[data-on]'), t = document.querySelector('[data-on-total]'), n = document.querySelector('[data-co-n]'); if (!b) return;
           function calc() { var r = b.querySelector('input:checked'); b.querySelectorAll('.on-row').forEach(function (x) { x.classList.toggle('on', x.contains(r)); });
-            t.textContent = (r ? (+r.dataset.price) * (parseInt(n.value, 10) || 1) + <?= (int) setting('dossier_fee', 500) ?> : 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }
+            t.textContent = ((r ? +r.dataset.price : 0) * (parseInt(n.value, 10) || 1)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; }
           b.addEventListener('change', calc);
           document.querySelector('[data-co-minus]').addEventListener('click', function () { n.value = Math.max(1, (parseInt(n.value, 10) || 1) - 1); calc(); });
           document.querySelector('[data-co-plus]').addEventListener('click', function () { n.value = Math.min(30, (parseInt(n.value, 10) || 1) + 1); calc(); }); })();
@@ -415,14 +413,13 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <?php endforeach; ?>
         </div>
         <div class="mq-total"><b>Total estimatif</b><span data-on-total>0 FCFA</span></div>
-        <p class="fine" style="margin:4px 0 0">Dont <?= fcfa((int) setting('dossier_fee', 500)) ?> de frais de dossier.</p>
         <p class="fine" data-on-msg hidden style="color:#C62828;font-weight:600"></p>
         <script>
         (function () { var b = document.querySelector('[data-on]'), t = document.querySelector('[data-on-total]'), m = document.querySelector('[data-on-msg]'); if (!b) return;
           var cbs = b.querySelectorAll('input');
           function upd() { var sum = 0, n = 0; cbs.forEach(function (c) { if (c.checked) { sum += +c.dataset.price; n++; } });
             cbs.forEach(function (c) { c.disabled = !c.checked && n >= 2; var r = c.closest('.on-row'); r.classList.toggle('on', c.checked); r.classList.toggle('off', c.disabled); });
-            t.textContent = (sum ? sum + <?= (int) setting('dossier_fee', 500) ?> : 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; if (n) m.hidden = true; }
+            t.textContent = sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA'; if (n) m.hidden = true; }
           b.addEventListener('change', upd); upd();
           b.closest('form').addEventListener('submit', function (e) { if (!b.querySelector('input:checked')) { e.preventDefault(); m.textContent = 'Cochez au moins une prestation.'; m.hidden = false; m.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }); })();
         </script>
@@ -450,7 +447,6 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
           <?php if (!$autoProv): ?><div><span><?= e($copy['prov_label']) ?></span><b data-sum-prov>—</b></div><?php endif; ?>
           <?php if ($hasGarantie): ?><div data-sum-garantie-row hidden><span>Garantie dommage (<?= e(str_replace('.', ',', (string) $garantiePct)) ?>% du montant de la formule)</span><b data-sum-garantie>—</b></div><?php endif; ?>
           <?php if ($uk === 'menage'): ?><div><span>Frais de service</span><b data-sum-fee>—</b></div><?php endif; ?>
-          <div><span>Frais de dossier</span><b data-sum-dossier>—</b></div>
           <div class="total"><span>Total</span><b data-sum-total>—</b></div>
         </div>
         <?php elseif (!in_array($uk, ['maquilleuse', 'coiffeuse', 'onglerie'], true)): ?>

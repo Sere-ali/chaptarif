@@ -450,8 +450,6 @@ function build_quote(string $universe, array $in): array
     $rate = commission_rate($universe);
     $q['commission'] = (int) round($q['amount'] * $rate / 100);
     $q['provider_amount'] = $q['amount'] - $q['commission'];
-    $q['dossier_fee'] = max(0, (int) setting('dossier_fee', 500));
-    $q['service_fee'] += $q['dossier_fee'];
     $q['total'] = $q['amount'] + $q['service_fee'];
     $q['created'] = time();
     return ['ok' => true, 'quote' => $q];

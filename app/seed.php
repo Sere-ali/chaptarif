@@ -26,7 +26,6 @@ function seed_all(): void
         'commission_location_vehicule'=> '15',
         'commission_chauffeur'  => '15',
         'cars_service_fee'      => '400',
-        'dossier_fee'           => '500',
         'sponsor_price'         => '9999',
         'garantie_dommage_pct'  => '6.72',
         'support_phone'         => '+225 07 00 00 00 00',
