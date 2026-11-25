@@ -109,9 +109,10 @@ view('layout/header', compact('title', 'active'));
           <?php endforeach; ?>
           <hr>
           <div class="sum-row"><span>Prestation</span><b><?= fcfa($q['amount']) ?></b></div>
-          <?php $gar = (int) ($q['garantie_fee'] ?? 0); $fraisOnly = (int) $q['service_fee'] - $gar; ?>
+          <?php $gar = (int) ($q['garantie_fee'] ?? 0); $dos = (int) ($q['dossier_fee'] ?? 0); $fraisOnly = (int) $q['service_fee'] - $gar - $dos; ?>
           <?php if ($gar): ?><div class="sum-row"><span>Garantie dommage (<?= e(str_replace('.', ',', (string) (float) setting('garantie_dommage_pct', 6.72))) ?>% du montant de la formule)</span><b><?= fcfa($gar) ?></b></div><?php endif; ?>
-          <?php if ($fraisOnly > 0 || isset($q['garantie_fee'])): ?><div class="sum-row"><span>Frais de service</span><b><?= $fraisOnly > 0 ? fcfa($fraisOnly) : 'Offerts' ?></b></div><?php endif; ?>
+          <?php if ($fraisOnly > 0 || (isset($q['garantie_fee']) && !$dos)): ?><div class="sum-row"><span>Frais de service</span><b><?= $fraisOnly > 0 ? fcfa($fraisOnly) : 'Offerts' ?></b></div><?php endif; ?>
+          <?php if ($dos): ?><div class="sum-row"><span>Frais de dossier</span><b><?= fcfa($dos) ?></b></div><?php endif; ?>
           <?php if (!empty($q['discount'])): ?><div class="sum-row"><span>Code de réduction (<?= e($q['discount_code']) ?>)</span><b>− <?= fcfa($q['discount']) ?></b></div><?php endif; ?>
           <form method="post" action="/reserver/code" class="promo-sum">
             <?= csrf_field() ?>
