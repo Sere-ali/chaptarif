@@ -923,7 +923,7 @@ function listing_lines(string $universe, ?string $json): array
 function maquillage_formules(): array
 {
     return [
-        'formule_mariee' => ['title' => 'Formule Mariée', 'desc' => 'Coiffure et maquillage et retouches incluses', 'price' => 150000, 'per_person' => false, 'icon' => 'bride', 'badge' => 'Nouvelle formule'],
+        'formule_mariee' => ['title' => 'Formule Mariée', 'desc' => 'Coiffure et maquillage et retouches incluses', 'price' => 150000, 'per_person' => false, 'icon' => 'bride'],
         'mariee' => ['title' => 'Maquillage de la mariée', 'desc' => 'Pour la mariée – prestation individuelle.', 'price' => 50000, 'per_person' => false, 'icon' => 'crown'],
         'invitees' => ['title' => 'Mariage (invités, famille, proches…)', 'desc' => 'Pour les proches et le cortège.', 'price' => 15000, 'per_person' => true, 'icon' => 'group'],
         'evenementiel' => ['title' => 'Maquillage Événementiel', 'desc' => 'Soirée, festival, anniversaire, etc.', 'price' => 15000, 'per_person' => true, 'icon' => 'glass'],

@@ -1903,3 +1903,8 @@ body:has(.ps-tabs) { padding-bottom: 96px; }
 /* Prix alignés dans les listes de prestations */
 .on-price { width: 108px; box-sizing: border-box; text-align: center; padding-left: 0; padding-right: 0; }
 @media (max-width: 480px) { .on-price { width: 98px; } }
+
+/* Nombre de personnes : chiffres à 2 chiffres toujours visibles */
+.mq-step { flex: none; }
+.mq-step input { width: 56px !important; min-width: 56px; flex: none; font-size: 1.1rem; color: #0F172A; opacity: 1; -webkit-text-fill-color: #0F172A; }
+.mq-pers > b { min-width: 0; flex: 1 1 auto; }

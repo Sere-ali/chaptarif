@@ -299,7 +299,7 @@ $destSel = '<select name="dest" required><option value="abidjan">Abidjan</option
                 <a class="mq-devis" href="/devis-maquillage">Cliquer pour un devis <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
               </div>
             <?php else: ?>
-              <label class="mq-row<?= !empty($f['badge']) ? ' mq-new' : '' ?>">
+              <label class="mq-row<?= ($f['title'] ?? '') === 'Formule Mariée' ? ' mq-new' : '' ?>">
                 <?php if (!empty($f['badge'])): ?><span class="mq-badge">★ <?= e($f['badge']) ?></span><?php endif; ?>
                 <span class="mq-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><?= $mqIco[$f['icon']] ?></svg></span>
                 <span class="mq-txt"><b><?= e($f['title']) ?></b><small><?= e($f['desc']) ?></small></span>
