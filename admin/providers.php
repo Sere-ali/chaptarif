@@ -4,7 +4,9 @@ if (is_post()) {
     $p = one('SELECT * FROM providers WHERE id = ?' . scope_sql('universe'), [(int) ($_POST['id'] ?? 0)]);
     if ($p) {
         $act = $_POST['action'] ?? '';
-        if ($act === 'verify') { q("UPDATE providers SET kyc_status = 'verified', active = 1 WHERE id = ?", [$p['id']]); provider_validated_chat($p); flash('success', "{$p['name']} vérifié et activé."); }
+        if ($act === 'dossier_ok') { q("UPDATE providers SET dossier_state = 'paid', dossier_paid_at = ? WHERE id = ?", [now(), $p['id']]); flash('success', 'Frais de dossier confirmés pour ' . $p['name'] . '.'); }
+        if ($act === 'verify' && dossier_pending($p)) { flash('error', 'Impossible de valider : les frais de dossier (' . fcfa(dossier_fee()) . ') ne sont pas confirmés. Confirmez la réception du paiement d\'abord.'); $act = 'blocked'; }
+        elseif ($act === 'verify') { q("UPDATE providers SET kyc_status = 'verified', active = 1 WHERE id = ?", [$p['id']]); provider_validated_chat($p); flash('success', "{$p['name']} vérifié et activé."); }
         if ($act === 'reject') { q("UPDATE providers SET kyc_status = 'rejected', active = 0 WHERE id = ?", [$p['id']]); flash('info', "Dossier de {$p['name']} refusé."); }
         if ($act === 'toggle') { q('UPDATE providers SET active = ? WHERE id = ?', [(int) $p['active'] ? 0 : 1, $p['id']]); flash('success', 'Statut mis à jour.'); }
         if ($act === 'sponsor') {
@@ -95,6 +97,9 @@ if ($landing): ?>
         <td><?= (int) $p['active'] ? '<span class="badge badge-green">Actif</span>' : '<span class="badge badge-gray">Inactif</span>' ?></td>
         <td><div class="acts">
           <a class="btn btn-primary btn-xs" href="/admin/prestataire/voir?id=<?= (int) $p['id'] ?>">👁 Voir le profil</a>
+          <?php if (dossier_pending($p)): ?>
+            <form method="post" data-confirm="Confirmer la réception de <?= e(fcfa(dossier_fee())) ?> de frais de dossier ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-soft btn-xs" name="action" value="dossier_ok">💰 <?= ($p['dossier_state'] ?? '') === 'declared' ? 'Déclaré : confirmer ' : 'Confirmer ' ?><?= e(fcfa(dossier_fee())) ?></button></form>
+          <?php endif; ?>
           <?php if ($p['kyc_status'] !== 'verified'): ?>
             <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-primary btn-xs" name="action" value="verify">✓ Valider KYC</button></form>
           <?php endif; ?>

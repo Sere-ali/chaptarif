@@ -331,6 +331,10 @@ function kyc_badge(string $s, ?array $p = null): string
     return $h;
 }
 
+/** Frais de dossier prestataire : dus à l'inscription, à confirmer par l'équipe. */
+function dossier_fee(): int { return max(0, (int) setting('dossier_fee', 500)); }
+function dossier_pending(array $p): bool { return (int) ($p['dossier_due'] ?? 0) === 1 && ($p['dossier_state'] ?? '') !== 'paid'; }
+
 function is_sponsored(?array $p): bool
 {
     return $p && !empty($p['sponsored_until']) && $p['sponsored_until'] >= date('Y-m-d');

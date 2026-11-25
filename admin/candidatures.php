@@ -7,7 +7,9 @@ if (is_post()) {
     $p = one("SELECT * FROM providers WHERE id = ? AND source = 'candidature'" . scope_sql('universe'), [(int) ($_POST['id'] ?? 0)]);
     if ($p) {
         $act = $_POST['action'] ?? '';
-        if ($act === 'verify') { q("UPDATE providers SET kyc_status = 'verified', active = 1 WHERE id = ?", [$p['id']]); provider_validated_chat($p); flash('success', "{$p['name']} vérifié et activé."); }
+        if ($act === 'dossier_ok') { q("UPDATE providers SET dossier_state = 'paid', dossier_paid_at = ? WHERE id = ?", [now(), $p['id']]); flash('success', 'Frais de dossier confirmés pour ' . $p['name'] . '.'); }
+        if ($act === 'verify' && dossier_pending($p)) { flash('error', 'Impossible de valider : les frais de dossier (' . fcfa(dossier_fee()) . ') ne sont pas confirmés. Confirmez la réception du paiement d\'abord.'); $act = 'blocked'; }
+        elseif ($act === 'verify') { q("UPDATE providers SET kyc_status = 'verified', active = 1 WHERE id = ?", [$p['id']]); provider_validated_chat($p); flash('success', "{$p['name']} vérifié et activé."); }
         if ($act === 'reject') { q("UPDATE providers SET kyc_status = 'rejected', active = 0 WHERE id = ?", [$p['id']]); flash('info', "Candidature de {$p['name']} refusée."); }
         audit('candidature.' . $act, $p['name'] . ' #' . $p['id']);
     }
@@ -66,6 +68,9 @@ $tabs = ['pending' => 'À vérifier', 'verified' => 'Validées', 'rejected' => '
     </div>
     <div class="cd-status" data-l="Statut"><?= kyc_badge($p['kyc_status'], $p) ?></div>
     <div class="cd-acts" data-l="Actions">
+      <?php if (dossier_pending($p)): ?>
+        <form method="post" data-confirm="Confirmer la réception de <?= e(fcfa(dossier_fee())) ?> de frais de dossier ?"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-soft btn-sm" name="action" value="dossier_ok">💰 <?= ($p['dossier_state'] ?? '') === 'declared' ? 'Paiement déclaré : confirmer ' : 'Confirmer ' ?><?= e(fcfa(dossier_fee())) ?></button></form>
+      <?php endif; ?>
       <?php if ($p['kyc_status'] !== 'verified'): ?>
         <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $p['id'] ?>"><button class="btn btn-primary btn-sm" name="action" value="verify">✓ Valider</button></form>
       <?php endif; ?>

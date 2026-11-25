@@ -16,7 +16,7 @@ $groups = [
         'commission_location_camion' => 'Location de camion', 'commission_location_vehicule' => 'Location de véhicule', 'commission_chauffeur' => 'Louer un chauffeur', 'commission_coiffeuse' => 'Coiffeuse à domicile',
         'commission_maquilleuse' => 'Maquilleuse à domicile', 'commission_onglerie' => 'Onglerie à domicile',
     ],
-    'Frais & abonnements (F CFA)' => ['cars_service_fee' => 'Frais de service par billet de car', 'sponsor_price' => 'Abonnement « Recommandé » / mois'],
+    'Frais & abonnements (F CFA)' => ['dossier_fee' => 'Frais de dossier prestataire (à l\'inscription)', 'cars_service_fee' => 'Frais de service par billet de car', 'sponsor_price' => 'Abonnement « Recommandé » / mois'],
     'Garantie Dommage (option payante)' => ['garantie_dommage_pct' => 'Garantie ménage et pressing, en % du prix de la prestation', 'service_fee_menage_pct' => 'Frais de service ménage, en % du prix de la prestation'],
     'Support client' => ['support_phone' => 'Téléphone', 'support_email' => 'E-mail'],
     'Paiement manuel · numéros de réception Mobile Money' => [
