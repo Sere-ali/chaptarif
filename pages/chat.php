@@ -29,7 +29,6 @@ if ($providerMode) {
             if ((int) val('SELECT COUNT(*) FROM conversations WHERE user_id = ? AND created_at > ?', [$uid, date('Y-m-d H:i:s', time() - 3600)]) >= 10) { flash('error', 'Trop de demandes en peu de temps : patientez un moment.'); redirect('/chat?pro=1'); }
             $newId = conv_create($uid, $kind, $b ? (int) $b['id'] : null, $b ? null : conv_kind($kind)[3], null);
             $c = one('SELECT * FROM conversations WHERE id = ?', [$newId]);
-            insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $newId, 'sender' => 'admin', 'body' => conv_welcome($c), 'read_by_user' => 1, 'read_by_admin' => 1, 'created_at' => now()]);
             redirect('/chat?pro=1&c=' . $newId);
         }
         $cid = (int) ($_GET['c'] ?? 0);
@@ -60,7 +59,6 @@ if ($providerMode) {
         elseif ($pv && ($pn = val("SELECT name FROM providers WHERE id = ? AND active = 1 AND kyc_status = 'verified'", [$pv]))) $ab = 'Pour le prestataire ' . $pn;
         $newId = conv_create($uid, $kind, $b ? (int) $b['id'] : null, $b ? null : conv_kind($kind)[3], $ab);
         $c = one('SELECT * FROM conversations WHERE id = ?', [$newId]);
-        insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $newId, 'sender' => 'admin', 'body' => conv_welcome($c), 'read_by_user' => 1, 'read_by_admin' => 1, 'created_at' => now()]);
         redirect('/chat?c=' . $newId);
     }
 
@@ -90,6 +88,10 @@ if (($legacy || $conv) && is_post()) {
         if ($rt && !val("SELECT 1 FROM chat_messages WHERE id = ? AND $scope", [$rt])) $rt = null;
         insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $conv ? $cid : null, 'sender' => 'user', 'body' => $body, 'about' => $about, 'read_by_user' => 1, 'read_by_admin' => 0, 'reply_to' => $rt, 'in_thread' => ($rt && !empty($_POST['thread'])) ? 1 : 0, 'created_at' => now()] + $att['data']);
         if ($conv) conv_touch($cid, true);
+        // Message automatique : seulement après le premier message écrit par le client.
+        if ($conv && !(int) val("SELECT COUNT(*) FROM chat_messages WHERE conversation_id = ? AND sender = 'admin'", [$cid])) {
+            insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $cid, 'sender' => 'admin', 'body' => conv_welcome($conv), 'read_by_user' => 1, 'read_by_admin' => 1, 'created_at' => now()]);
+        }
         $ok = true;
     } elseif ($att['ok'] && $recent >= 15) $err = 'Trop de messages : patientez une minute.';
     if ($isAjax) { header('Content-Type: application/json'); echo json_encode(['ok' => $ok, 'error' => $err]); exit; }
