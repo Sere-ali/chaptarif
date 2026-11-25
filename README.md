@@ -124,3 +124,7 @@ render.yaml blueprint Render · Dockerfile
 Les visuels du site sont hébergés sur Cloudinary (cloud `epxlbn9z`, dossier `chaptarif/`). Les photos ajoutées depuis le back-office (prestataires, logements) sont envoyées dans `chaptarif/prestataires` et `chaptarif/immobilier` ; les pièces d'identité dans `chaptarif/kyc` en accès **authentifié** (non publiques).
 
 Note légale : complétez `/mentions-legales` (raison sociale, RCCM, etc.) avant l'ouverture au public.
+
+## Tests automatiques
+
+`BASE=http://localhost:8000 node tests/smoke.mjs` vérifie (téléphone + ordinateur) que les pages publiques s'affichent sans erreur ni débordement, et que les protections de sécurité répondent (fichiers internes, admin, paiement, jetons CSRF, en-têtes).
