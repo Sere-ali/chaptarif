@@ -3,7 +3,7 @@
  * Accès base de données : PostgreSQL (Render, via DATABASE_URL) ou SQLite (local).
  */
 
-const SCHEMA_VERSION = 42; // 41 déjà appliquée en production : ne pas réutiliser
+const SCHEMA_VERSION = 43; // 41 déjà appliquée en production : ne pas réutiliser
 const PROPERTY_TYPES = ['Studio', '1 chambre salon', '2 chambres salon', '3 chambres salon', '4 chambres salon', 'Villa', 'Duplex'];
 
 function db(): PDO
@@ -295,6 +295,7 @@ function db_migrate(): void
         "ALTER TABLE contact_messages ADD COLUMN reply TEXT",
         "ALTER TABLE contact_messages ADD COLUMN replied_at TEXT",
         "ALTER TABLE contact_messages ADD COLUMN replied_by INTEGER",
+        "ALTER TABLE contact_messages ADD COLUMN mailed_at TEXT",
         "CREATE INDEX IF NOT EXISTS idx_chat_conv ON chat_messages(conversation_id, id)",
     ] as $alter) {
         try { db()->exec($alter); } catch (Throwable $e) { /* colonne déjà existante */ }

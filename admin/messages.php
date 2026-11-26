@@ -11,20 +11,35 @@ if (is_post()) {
         $n = 0; foreach (all('SELECT id, message, email FROM contact_messages WHERE handled = 0 AND reply IS NULL') as $r) if (contact_is_spam((string) $r['message'], (string) $r['email'])) { q('UPDATE contact_messages SET handled = 2 WHERE id = ?', [$r['id']]); $n++; }
         flash('success', $n . ' message(s) classé(s) en spam.'); redirect('/admin/messages');
     }
+    if ($act === 'resend_mail') {
+        $m0 = one('SELECT * FROM contact_messages WHERE id = ?', [$mid]);
+        if ($m0 && !empty($m0['email']) && !empty($m0['reply'])) {
+            [$sent, $err] = send_mail((string) $m0['email'], 'Re : votre message à ChapTarif', $m0['reply'] . "\n\n--\nL'équipe ChapTarif\n" . mail_from() . "\nhttps://chaptarif.com");
+            if ($sent) { q('UPDATE contact_messages SET mailed_at = ? WHERE id = ?', [now(), $mid]); audit('message.email', '#' . $mid); flash('success', 'E-mail envoyé à ' . $m0['email'] . ' depuis ' . mail_from() . '.'); }
+            else flash('error', 'E-mail non envoyé : ' . $err);
+        }
+        redirect('/admin/messages#m' . $mid);
+    }
     if ($act === 'reply') {
         $m0 = one('SELECT * FROM contact_messages WHERE id = ?', [$mid]);
         $txt = trim((string) ($_POST['reply'] ?? ''));
         if ($m0 && $txt !== '') {
             q('UPDATE contact_messages SET reply = ?, replied_at = ?, replied_by = ?, handled = 1 WHERE id = ?', [$txt, now(), $me['id'], $mid]);
             audit('message.reponse', '#' . $mid);
+            $mailNote = '';
+            if (!empty($m0['email']) && mail_configured()) {
+                [$sent, $err] = send_mail((string) $m0['email'], 'Re : votre message à ChapTarif', $txt . "\n\n--\nL'équipe ChapTarif\n" . mail_from() . "\nhttps://chaptarif.com");
+                if ($sent) { q('UPDATE contact_messages SET mailed_at = ? WHERE id = ?', [now(), $mid]); $mailNote = ' E-mail envoyé à ' . $m0['email'] . ' depuis ' . mail_from() . '.'; }
+                else $mailNote = ' E-mail non envoyé (' . $err . ') : utilisez le bouton « Envoyer par e-mail ».';
+            }
             $uid = (int) val('SELECT id FROM users WHERE phone = ?', [(string) $m0['phone']]);
             if ($uid) {
                 $cid = conv_create($uid, 'assistance', null, 'Réponse à votre message');
                 insert('chat_messages', ['user_id' => $uid, 'conversation_id' => $cid, 'sender' => 'admin', 'admin_id' => $me['id'], 'body' => $txt, 'read_by_user' => 0, 'read_by_admin' => 1, 'created_at' => now()]);
                 conv_touch($cid, false);
-                flash('success', 'Réponse envoyée dans le chat du client. Vous pouvez aussi l\'envoyer par e-mail ou WhatsApp avec les boutons ci-dessous.');
+                flash('success', 'Réponse envoyée dans le chat du client.' . ($mailNote ?: ' Vous pouvez aussi l\'envoyer par e-mail ou WhatsApp avec les boutons ci-dessous.'));
             } else {
-                flash('success', 'Réponse enregistrée. Ce contact n\'a pas de compte : envoyez-la par e-mail ou WhatsApp avec les boutons ci-dessous.');
+                flash('success', 'Réponse enregistrée.' . ($mailNote ?: ' Ce contact n\'a pas de compte : envoyez-la par e-mail ou WhatsApp avec les boutons ci-dessous.'));
             }
         }
         redirect('/admin/messages#m' . $mid);
@@ -58,7 +73,9 @@ view('admin/header', compact('page', 'nav'));
         $mt = $m['email'] ? 'mailto:' . rawurlencode((string) $m['email']) . '?subject=' . rawurlencode('Re : votre message à ChapTarif') . '&body=' . rawurlencode((string) $m['reply']) : ''; ?>
         <div class="mr-sent"><small class="muted">Votre réponse · <?= fmt_date($m['replied_at'], true) ?></small>
           <p style="white-space:pre-wrap;margin:4px 0 8px"><?= e($m['reply']) ?></p>
-          <div class="mr-acts"><?php if ($mt): ?><a class="btn btn-soft btn-xs" href="<?= e($mt) ?>">✉️ Envoyer par e-mail</a><?php endif; ?>
+          <div class="mr-acts"><?php if (!empty($m['mailed_at'])): ?><span class="badge badge-green">✉️ Envoyé par e-mail · <?= fmt_date($m['mailed_at'], true) ?></span><?php endif; ?>
+          <?php if ($m['email'] && mail_configured()): ?><form method="post" style="display:inline"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $m['id'] ?>"><button class="btn btn-soft btn-xs" name="action" value="resend_mail">✉️ <?= empty($m['mailed_at']) ? 'Envoyer' : 'Renvoyer' ?> depuis <?= e(mail_from()) ?></button></form>
+          <?php elseif ($mt): ?><a class="btn btn-soft btn-xs" href="<?= e($mt) ?>">✉️ Envoyer par e-mail</a><?php endif; ?>
           <?php if ($wa): ?><a class="btn btn-soft btn-xs" target="_blank" rel="noopener" href="https://wa.me/<?= e($wa) ?>?text=<?= rawurlencode((string) $m['reply']) ?>">💬 WhatsApp</a><?php endif; ?></div></div>
       <?php endif; ?>
       <div class="mr-box">
