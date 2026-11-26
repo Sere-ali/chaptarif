@@ -3,7 +3,15 @@ require_admin();
 $me = require_admin();
 if (is_post()) {
     $mid = (int) ($_POST['id'] ?? 0);
-    if (($_POST['action'] ?? '') === 'reply') {
+    $act = (string) ($_POST['action'] ?? '');
+    if ($act === 'spam') { q('UPDATE contact_messages SET handled = 2 WHERE id = ?', [$mid]); flash('success', 'Message classé en spam.'); redirect('/admin/messages'); }
+    if ($act === 'notspam') { q('UPDATE contact_messages SET handled = 0 WHERE id = ?', [$mid]); flash('success', 'Message remis dans les messages à traiter.'); redirect('/admin/messages'); }
+    if ($act === 'purge_spam') { q('DELETE FROM contact_messages WHERE handled = 2'); audit('message.spam_vide', ''); flash('success', 'Spam supprimé.'); redirect('/admin/messages'); }
+    if ($act === 'sort_spam') {
+        $n = 0; foreach (all('SELECT id, message, email FROM contact_messages WHERE handled = 0 AND reply IS NULL') as $r) if (contact_is_spam((string) $r['message'], (string) $r['email'])) { q('UPDATE contact_messages SET handled = 2 WHERE id = ?', [$r['id']]); $n++; }
+        flash('success', $n . ' message(s) classé(s) en spam.'); redirect('/admin/messages');
+    }
+    if ($act === 'reply') {
         $m0 = one('SELECT * FROM contact_messages WHERE id = ?', [$mid]);
         $txt = trim((string) ($_POST['reply'] ?? ''));
         if ($m0 && $txt !== '') {
@@ -25,16 +33,25 @@ if (is_post()) {
     audit('message.traite', '#' . $mid);
     redirect('/admin/messages');
 }
-$rows = all('SELECT * FROM contact_messages ORDER BY handled, id DESC LIMIT 200');
+$showSpam = isset($_GET['spam']);
+$nSpam = (int) val('SELECT COUNT(*) FROM contact_messages WHERE handled = 2');
+$rows = all('SELECT * FROM contact_messages WHERE ' . ($showSpam ? 'handled = 2' : 'handled < 2') . ' ORDER BY handled, id DESC LIMIT 200');
 $page = 'Messages de contact';
 $nav = 'messages';
 view('admin/header', compact('page', 'nav'));
 ?>
 <div class="panel">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <a class="btn <?= $showSpam ? 'btn-soft' : 'btn-primary' ?> btn-xs" href="/admin/messages">Messages</a>
+    <a class="btn <?= $showSpam ? 'btn-primary' : 'btn-soft' ?> btn-xs" href="/admin/messages?spam=1">🚫 Spam (<?= $nSpam ?>)</a>
+    <?php if (!$showSpam): ?><form method="post"><?= csrf_field() ?><button class="btn btn-soft btn-xs" name="action" value="sort_spam">🧹 Trier le spam automatiquement</button></form>
+    <?php elseif ($nSpam): ?><form method="post" data-confirm="Supprimer définitivement tout le spam ?"><?= csrf_field() ?><button class="btn btn-soft btn-xs" name="action" value="purge_spam">🗑 Vider le spam</button></form><?php endif; ?>
+  </div>
   <?php foreach ($rows as $m): ?>
-    <div class="card" id="m<?= (int) $m['id'] ?>" style="<?= $m['handled'] ? 'opacity:.6' : '' ?>">
+    <div class="card" id="m<?= (int) $m['id'] ?>" style="<?= (int) $m['handled'] === 1 ? 'opacity:.6' : '' ?>">
       <div class="panel-h"><div><b><?= e($m['name']) ?></b> · <a href="tel:<?= e($m['phone']) ?>"><?= e($m['phone']) ?></a> <?= $m['email'] ? '· <a href="mailto:' . e($m['email']) . '">' . e($m['email']) . '</a>' : '' ?><br><small class="muted"><?= fmt_date($m['created_at'], true) ?></small></div>
-      <?php if (!$m['handled']): ?><form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $m['id'] ?>"><button class="btn btn-soft btn-xs">✓ Marquer traité</button></form><?php else: ?><span class="badge badge-green">Traité</span><?php endif; ?><?= del_btn('message', (int) $m['id'], 'ce message') ?></div>
+      <?php if ((int) $m['handled'] === 0): ?><form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $m['id'] ?>"><button class="btn btn-soft btn-xs">✓ Marquer traité</button></form><?php elseif ((int) $m['handled'] === 1): ?><span class="badge badge-green">Traité</span><?php endif; ?>
+      <form method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $m['id'] ?>"><button class="btn btn-soft btn-xs" name="action" value="<?= (int) $m['handled'] === 2 ? 'notspam' : 'spam' ?>"><?= (int) $m['handled'] === 2 ? 'Pas du spam' : '🚫 Spam' ?></button></form><?= del_btn('message', (int) $m['id'], 'ce message') ?></div>
       <p style="white-space:pre-wrap;margin:0" data-tr-text><?= e($m['message']) ?></p>
       <?php if (!empty($m['reply'])):
         $wa = preg_replace('/\D+/', '', (string) $m['phone']);

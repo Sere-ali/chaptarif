@@ -12,7 +12,7 @@ if (is_post()) {
     record_attempt('contact:' . client_ip());
     insert('contact_messages', [
         'name' => mb_substr((string) $_POST['name'], 0, 80), 'phone' => mb_substr((string) $_POST['phone'], 0, 30),
-        'email' => mb_substr((string) ($_POST['email'] ?? ''), 0, 120), 'message' => mb_substr($msg, 0, 3000), 'handled' => 0, 'created_at' => now(),
+        'email' => mb_substr((string) ($_POST['email'] ?? ''), 0, 120), 'message' => mb_substr($msg, 0, 3000), 'handled' => contact_is_spam($msg, (string) ($_POST['email'] ?? '')) ? 2 : 0, 'created_at' => now(),
     ]);
     flash('success', 'Message reçu ! Nous vous répondons rapidement.');
     redirect('/contact');

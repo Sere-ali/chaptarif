@@ -592,6 +592,17 @@ function chat_meta(int $userId, bool $admin, ?string $scope = null): array
     return ['rx' => (object) $rx, 'rc' => (object) chat_reply_counts($ids)];
 }
 
+/** Démarchage commercial / spam typique des formulaires de contact (liens + vocabulaire de prospection). */
+function contact_is_spam(string $msg, string $email = ''): bool
+{
+    $t = mb_strtolower($msg);
+    $kw = 0;
+    foreach (['seo', 'ranking', 'backlink', 'followers', 'instagram', 'unsubscribe', 'free trial', 'proposal', 'quote/package', 'traffic', 'organically', 'outreach', 'guest post', 'domain', 'digital marketing', 'we recently built', 'our team helps', 'i took a quick look', 'your website', 'web design', 'crypto', 'bitcoin', 'casino', 'backlinks', 'lead generation'] as $w) if (str_contains($t, $w)) $kw++;
+    $links = preg_match_all('~https?://|www\\.~i', $t);
+    if ($kw >= 3 || ($kw >= 2 && $links) || str_contains($t, 'unsubscribe')) return true;
+    return $links >= 3;
+}
+
 function chat_msg_html(array $m): string
 {
     if (($m['body'] ?? '') !== '' && preg_match('/^(✔ Demande résolue|↻ Demande rouverte) · (Dossier .+)$/u', (string) $m['body'], $sy)) {
