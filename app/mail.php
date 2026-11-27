@@ -27,9 +27,11 @@ function send_mail(string $to, string $subject, string $body): array
     $fp = @stream_socket_client(($port === 465 ? 'ssl://' : 'tcp://') . $host . ':' . $port, $en, $es, 12, STREAM_CLIENT_CONNECT, $ctx);
     if (!$fp) return [false, 'Connexion au serveur e-mail impossible.'];
     stream_set_timeout($fp, 15);
-    $read = static function () use ($fp): array {
+    $last = '';
+    $read = static function () use ($fp, &$last): array {
         $code = 0; $txt = '';
         while (($l = fgets($fp, 1024)) !== false) { $txt .= $l; $code = (int) substr($l, 0, 3); if (strlen($l) < 4 || $l[3] !== '-') break; }
+        $last = trim($txt);
         return [$code, $txt];
     };
     $cmd = static function (string $c, array $ok) use ($fp, $read): bool { fwrite($fp, $c . "\r\n"); [$code] = $read(); return in_array($code, $ok, true); };
@@ -60,6 +62,8 @@ function send_mail(string $to, string $subject, string $body): array
         return [true, ''];
     } catch (Throwable $e) {
         @fclose($fp);
-        return [false, $e->getMessage()];
+        $detail = $last !== '' ? ' — réponse du serveur : ' . mb_substr($last, 0, 160) : '';
+        error_log('send_mail: ' . $e->getMessage() . $detail);
+        return [false, $e->getMessage() . $detail];
     }
 }
