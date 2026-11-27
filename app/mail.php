@@ -25,7 +25,7 @@ function send_mail(string $to, string $subject, string $body): array
     $clean = static fn (string $s): string => trim(preg_replace('/[\r\n]+/', ' ', $s));
     $ctx = stream_context_create(['ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
     $fp = @stream_socket_client(($port === 465 ? 'ssl://' : 'tcp://') . $host . ':' . $port, $en, $es, 12, STREAM_CLIENT_CONNECT, $ctx);
-    if (!$fp) return [false, 'Connexion au serveur e-mail impossible.'];
+    if (!$fp) { $why = trim((string) $es) ?: ('code ' . $en); error_log("send_mail: connexion $host:$port impossible ($why)"); return [false, 'Connexion au serveur e-mail impossible (' . mb_substr($why, 0, 140) . ').']; }
     stream_set_timeout($fp, 15);
     $last = '';
     $read = static function () use ($fp, &$last): array {
