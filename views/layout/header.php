@@ -41,7 +41,7 @@ $__en = ($_COOKIE['ct_lang'] ?? '') === 'en';
 <link rel="stylesheet" href="/assets/css/motion.css?v=2">
 <link rel="stylesheet" href="/assets/css/forms.css?v=14">
 <?php if ($__en): ?><style>.i18n-wait body{visibility:hidden}</style><script>setTimeout(function(){document.documentElement.classList.remove('i18n-wait')},2500)</script>
-<script src="/assets/js/i18n-en.js?v=10" defer></script><?php endif; ?>
+<script src="/assets/js/i18n-en.js?v=11" defer></script><?php endif; ?>
 <script src="/assets/js/i18n.js?v=6" defer></script>
 <?php if (!empty($leaflet)): ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
