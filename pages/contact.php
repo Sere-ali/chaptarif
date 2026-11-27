@@ -9,9 +9,14 @@ if (is_post()) {
         flash('error', 'Trop de messages envoyés. Réessayez plus tard.');
         redirect('/contact');
     }
+    $phone = normalize_phone((string) ($_POST['phone'] ?? ''));
+    if (!$phone) {
+        flash('error', 'Numéro invalide. Choisissez l’indicatif de votre pays puis saisissez votre numéro WhatsApp.');
+        redirect('/contact');
+    }
     record_attempt('contact:' . client_ip());
     insert('contact_messages', [
-        'name' => mb_substr((string) $_POST['name'], 0, 80), 'phone' => mb_substr((string) $_POST['phone'], 0, 30),
+        'name' => mb_substr((string) $_POST['name'], 0, 80), 'phone' => $phone,
         'email' => mb_substr((string) ($_POST['email'] ?? ''), 0, 120), 'message' => mb_substr($msg, 0, 3000), 'handled' => contact_is_spam($msg, (string) ($_POST['email'] ?? '')) ? 2 : 0, 'created_at' => now(),
     ]);
     flash('success', 'Message reçu ! Nous vous répondons rapidement.');
@@ -34,7 +39,8 @@ view('layout/header', compact('title'));
     <form class="card form-card" method="post"><?= csrf_field() ?>
       <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <label class="fld"><span>Nom</span><input name="name" required maxlength="80"></label>
-      <div class="row2"><label class="fld"><span>Téléphone (WhatsApp)</span><input name="phone" required inputmode="tel"></label><label class="fld"><span>E-mail</span><input type="email" name="email"></label></div>
+      <label class="fld"><span>Téléphone (WhatsApp)</span><?= phone_field() ?></label>
+      <label class="fld"><span>E-mail</span><input type="email" name="email"></label>
       <label class="fld"><span>Message</span><textarea name="message" rows="5" required minlength="10"></textarea></label>
       <button class="btn btn-primary btn-block btn-lg">Envoyer</button>
     </form>
