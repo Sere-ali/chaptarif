@@ -70,6 +70,7 @@ view('admin/header', compact('page', 'nav'));
       <p style="white-space:pre-wrap;margin:0" data-tr-text><?= e($m['message']) ?></p>
       <?php if (!empty($m['reply'])):
         $wa = preg_replace('/\D+/', '', (string) $m['phone']);
+        if (strlen($wa) === 10 && $wa[0] === '0') $wa = '225' . $wa; // numéro ivoirien local → format international pour WhatsApp
         $mt = $m['email'] ? 'mailto:' . rawurlencode((string) $m['email']) . '?subject=' . rawurlencode('Re : votre message à ChapTarif') . '&body=' . rawurlencode((string) $m['reply']) : ''; ?>
         <div class="mr-sent"><small class="muted">Votre réponse · <?= fmt_date($m['replied_at'], true) ?></small>
           <p style="white-space:pre-wrap;margin:4px 0 8px"><?= e($m['reply']) ?></p>
